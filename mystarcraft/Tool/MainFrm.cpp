@@ -73,3 +73,20 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 
 // CMainFrame 메시지 처리기
+
+BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+	m_MainSplitter.CreateStatic(this , 1 , 2);
+
+	m_MainSplitter.CreateView(0,1 , RUNTIME_CLASS(CToolView), CSize(800,600) , pContext);
+	m_MainSplitter.CreateView(0,0,RUNTIME_CLASS(CMinimapview) , CSize(300, 200), pContext);
+
+	m_pToolView = (CToolView*)m_MainSplitter.GetPane(0,0);
+	m_pMiniMapView = (CMinimapview*)m_MainSplitter.GetPane(0,1);
+
+	m_MainSplitter.SetColumnInfo(0,300,10);
+	//return CFrameWnd::OnCreateClient(lpcs, pContext);
+	return TRUE;
+}

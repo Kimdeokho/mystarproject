@@ -5,9 +5,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Headers", "Headers", "{FB499E53-873A-47D5-B49E-BBDDCE6532A1}"
 	ProjectSection(SolutionItems) = preProject
+		Headers\Define.h = Headers\Define.h
+		Headers\Enum.h = Headers\Enum.h
+		Headers\Function.h = Headers\Function.h
 		Headers\Include.h = Headers\Include.h
+		Headers\Struct.h = Headers\Struct.h
 		Headers\value.h = Headers\value.h
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tool", "Tool\Tool.vcproj", "{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +25,10 @@ Global
 		{E23E4F9C-32F6-4EA8-A188-CE842446F9DF}.Debug|Win32.Build.0 = Debug|Win32
 		{E23E4F9C-32F6-4EA8-A188-CE842446F9DF}.Release|Win32.ActiveCfg = Release|Win32
 		{E23E4F9C-32F6-4EA8-A188-CE842446F9DF}.Release|Win32.Build.0 = Release|Win32
+		{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}.Debug|Win32.Build.0 = Debug|Win32
+		{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}.Release|Win32.ActiveCfg = Release|Win32
+		{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

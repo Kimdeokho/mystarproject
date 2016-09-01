@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include "ToolView.h"
+#include "Minimapview.h"
+
 class CMainFrame : public CFrameWnd
 {
 	
@@ -16,6 +19,11 @@ public:
 
 // 작업입니다.
 public:
+	CSplitterWnd	m_MainSplitter;//메인 프레임 분할
+	CSplitterWnd	m_SubSplitter; //서브 프레임 분할
+
+	CToolView*		m_pToolView; //메인뷰
+	CMinimapview*	m_pMiniMapView; //미니맵 뷰
 
 // 재정의입니다.
 public:
@@ -38,6 +46,7 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	DECLARE_MESSAGE_MAP()
 
+	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 };
 
 

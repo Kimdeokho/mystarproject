@@ -56,3 +56,17 @@
 #endif
 
 
+
+
+#include <map>
+#include <vector>
+#include <list>
+#include <cmath>
+#include <ctime>
+#include <algorithm>
+#include <string>
+#include <d3dx9.h>
+#include <d3d9.h>
+#include <afxdlgs.h>
+#include <shlwapi.h>
+#include <fstream>

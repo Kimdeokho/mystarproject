@@ -45,6 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="../Headers"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -67,6 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="d3dx9.lib d3d9.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -186,71 +188,103 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\MainFrm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Tool.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ToolDoc.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ToolView.cpp"
 				>
 			</File>
+			<Filter
+				Name="Device"
+				>
+				<File
+					RelativePath=".\Device.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Device.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="MainFrm"
+				>
+				<File
+					RelativePath=".\MainFrm.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MainFrm.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Default"
+				>
+				<File
+					RelativePath=".\Resource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\stdafx.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="1"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="1"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\stdafx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\targetver.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ToolDoc.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ToolDoc.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="MiniampView"
+				>
+				<File
+					RelativePath=".\Minimapview.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Minimapview.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\MainFrm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\targetver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Tool.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ToolDoc.h"
-				>
-			</File>
 			<File
 				RelativePath=".\ToolView.h"
 				>
@@ -288,5 +322,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="Tool.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

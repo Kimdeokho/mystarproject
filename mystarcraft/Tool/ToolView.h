@@ -5,7 +5,7 @@
 
 #pragma once
 
-
+class CToolDoc;
 class CToolView : public CScrollView
 {
 protected: // serialization에서만 만들어집니다.
@@ -42,6 +42,8 @@ protected:
 // 생성된 메시지 맵 함수
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 #ifndef _DEBUG  // ToolView.cpp의 디버그 버전
