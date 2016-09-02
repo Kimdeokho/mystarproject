@@ -70,3 +70,4 @@
 #include <afxdlgs.h>
 #include <shlwapi.h>
 #include <fstream>
+#include <afxctl.h>

@@ -6,6 +6,7 @@
 
 #include "ToolView.h"
 #include "Minimapview.h"
+#include "MyForm.h"
 
 class CMainFrame : public CFrameWnd
 {
@@ -24,6 +25,7 @@ public:
 
 	CToolView*		m_pToolView; //∏ﬁ¿Œ∫‰
 	CMinimapview*	m_pMiniMapView; //πÃ¥œ∏  ∫‰
+	MyForm*			m_pMyFormView;
 
 // ¿Á¡§¿«¿‘¥œ¥Ÿ.
 public:

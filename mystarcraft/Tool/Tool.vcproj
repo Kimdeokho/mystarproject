@@ -188,6 +188,22 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\MyProPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MyProPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MyProSheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MyProSheet.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ToolView.cpp"
 				>
 			</File>
@@ -276,6 +292,58 @@
 				</File>
 				<File
 					RelativePath=".\Minimapview.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Texture"
+				>
+				<File
+					RelativePath=".\MultiTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MultiTexture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SingleTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SingleTexture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Texture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Texture.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Mgr"
+				>
+				<File
+					RelativePath=".\TextureMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TextureMgr.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="FormView"
+				>
+				<File
+					RelativePath=".\MyForm.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyForm.h"
 					>
 				</File>
 			</Filter>
