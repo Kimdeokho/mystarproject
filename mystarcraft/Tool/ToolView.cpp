@@ -37,7 +37,6 @@ CToolView::CToolView()
 
 CToolView::~CToolView()
 {
-	CDevice::GetInstance()->DestroyInstance();
 }
 
 BOOL CToolView::PreCreateWindow(CREATESTRUCT& cs)
@@ -73,7 +72,7 @@ void CToolView::OnInitialUpdate()
 	CSize sizeTotal;
 	// TODO: 이 뷰의 전체 크기를 계산합니다.
 	sizeTotal.cx = sizeTotal.cy = 100;
-	SetScrollSizes(MM_TEXT, sizeTotal);
+	SetScrollSizes(MM_TEXT, CSize(128*32 , 128*32));
 
 	g_hWnd = m_hWnd;
 	if(FAILED(CDevice::GetInstance()->InitDevice()))

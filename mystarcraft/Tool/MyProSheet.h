@@ -15,8 +15,13 @@ public:
 	virtual ~CMyProSheet();
 public:
 	CMyProPage	m_page1;
+public:
+	BOOL SetPageTitle (int nPage, LPTSTR pszText);  
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	virtual BOOL OnInitDialog();
 };
 
 

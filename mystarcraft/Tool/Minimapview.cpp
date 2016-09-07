@@ -5,7 +5,7 @@
 #include "Tool.h"
 #include "Minimapview.h"
 
-
+#include "Device.h"
 // CMinimapview
 
 IMPLEMENT_DYNCREATE(CMinimapview, CView)
@@ -17,6 +17,7 @@ CMinimapview::CMinimapview()
 
 CMinimapview::~CMinimapview()
 {
+	CDevice::GetInstance()->DestroyInstance();
 }
 
 BEGIN_MESSAGE_MAP(CMinimapview, CView)
@@ -29,6 +30,12 @@ void CMinimapview::OnDraw(CDC* pDC)
 {
 	CDocument* pDoc = GetDocument();
 	// TODO: 여기에 그리기 코드를 추가합니다.
+
+	CDevice::GetInstance()->Render_Begin();
+	CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
+
+	CDevice::GetInstance()->GetSprite()->End();
+	CDevice::GetInstance()->Render_End(m_hWnd);
 }
 
 
