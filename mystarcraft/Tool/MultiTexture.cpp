@@ -1,4 +1,4 @@
-#include "stdAfx.h"
+#include "StdAfx.h"
 #include "MultiTexture.h"
 #include "Device.h"
 
@@ -11,7 +11,7 @@ CMultiTexture::~CMultiTexture(void)
 	Release();
 }
 
-TEXINFO* CMultiTexture::GetTexture( wstring wstrStateKey /*= L"" */
+TEXINFO* CMultiTexture::GetTexture( const wstring& wstrStateKey /*= L"" */
 								   , const int& iCnt /*= 0 */ )
 {
 	map<wstring, vector<TEXINFO*>>::iterator iter = m_MapMulti.find(wstrStateKey);
@@ -22,8 +22,8 @@ TEXINFO* CMultiTexture::GetTexture( wstring wstrStateKey /*= L"" */
 	return iter->second[iCnt];
 }
 
-HRESULT CMultiTexture::InsertTexture( wstring wstrFilePath 
-									 , wstring wstrStateKey /*= L"" */
+HRESULT CMultiTexture::InsertTexture( const wstring& wstrFilePath 
+									 , const wstring& wstrStateKey /*= L"" */
 									 , const int& iCnt /*= 0 */ )
 {
 
@@ -55,7 +55,7 @@ HRESULT CMultiTexture::InsertTexture( wstring wstrFilePath
 			, D3DPOOL_MANAGED
 			, D3DX_DEFAULT
 			, D3DX_DEFAULT
-			, NULL
+			, D3DCOLOR_XRGB(255,255,255)/*투명이 되는 D3DCOLOR 의 값*/
 			, &pTexInfo->ImgInfo
 			, NULL
 			, &pTexInfo->pTexture)))
@@ -84,4 +84,14 @@ void CMultiTexture::Release( void )
 		iter->second.clear();
 	}
 	m_MapMulti.clear();
+}
+
+int CMultiTexture::GetTextureSize( const wstring& wstrStateKey )
+{
+	map<wstring, vector<TEXINFO*>>::iterator iter = m_MapMulti.find(wstrStateKey);
+
+	if(m_MapMulti.end() == iter)
+		return -1;
+
+	return iter->second.size();
 }

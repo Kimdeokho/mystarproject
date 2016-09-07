@@ -208,6 +208,54 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Texture"
+				>
+				<File
+					RelativePath=".\MultiTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MultiTexture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SingleTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SingleTexture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Texture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Texture.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Mgr"
+				>
+				<File
+					RelativePath=".\Device.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Device.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TextureMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TextureMgr.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"

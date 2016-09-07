@@ -14,8 +14,8 @@ CTextureMgr::~CTextureMgr(void)
 	Release();
 }
 
-const TEXINFO* CTextureMgr::GetTexture( wstring wstrObjKey 
-									   , wstring wstrStateKey /*= L"" */
+const TEXINFO* CTextureMgr::GetTexture( const wstring& wstrObjKey 
+									   , const wstring& wstrStateKey /*= L"" */
 									   , const int& iCnt )
 {
 	map<wstring, CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
@@ -26,12 +26,21 @@ const TEXINFO* CTextureMgr::GetTexture( wstring wstrObjKey
 	return iter->second->GetTexture(wstrStateKey, iCnt);
 }
 
+int CTextureMgr::GetTexCnt( const wstring& wstrObjKey , const wstring& wstrStateKey /*= L""*/ )
+{
+	map<wstring, CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
+
+	if(iter == m_MapTexture.end())
+		return NULL;
+
+	return ((CMultiTexture*)iter->second)->GetTextureSize(wstrStateKey);
+}
 
 
-HRESULT CTextureMgr::InsertTexture( wstring wstrFilePath 
-								   , wstring wstrObjKey 
+HRESULT CTextureMgr::InsertTexture( const wstring& wstrFilePath 
+								   , const wstring& wstrObjKey 
 								   , TEXTYPE eTextype 
-								   , wstring wstrStateKey /*= L"" */
+								   , const wstring& wstrStateKey /*= L"" */
 								   , const int& iCnt /*= 0*/ )
 {
 	map<wstring, CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
@@ -59,7 +68,12 @@ HRESULT CTextureMgr::InsertTexture( wstring wstrFilePath
 
 		m_MapTexture.insert(make_pair(wstrObjKey, pTexture));
 	}
-
+	else
+	{
+		if(TEXTYPE_MULTI == eTextype)
+			iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
+	}
+	
 	return S_OK;
 }
 
@@ -72,4 +86,40 @@ void CTextureMgr::Release( void )
 	}
 	m_MapTexture.clear();
 }
+
+HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
+{
+	wifstream	LoadFile;
+
+	LoadFile.open(wstrFilePath.c_str(), ios::in);
+
+	if(!LoadFile.is_open())
+	{
+		ERR_MSG(L"../Data/ImgPath.txt");
+		return E_FAIL;
+	}
+
+	TCHAR	szObjKey[MIN_STR] = L"";
+	TCHAR	szStateKey[MIN_STR] = L"";
+	TCHAR	szCount[MIN_STR] = L"";
+	TCHAR	szImgPath[MAX_PATH] = L"";
+
+	while(!LoadFile.eof())
+	{
+		LoadFile.getline(szObjKey, MIN_STR, L'|');
+		LoadFile.getline(szStateKey, MIN_STR, L'|');
+		LoadFile.getline(szCount, MIN_STR, L'|');
+		LoadFile.getline(szImgPath, MAX_PATH);
+
+		int		iCount = _ttoi(szCount);
+
+		InsertTexture(szImgPath, szObjKey, TEXTYPE_MULTI
+			, szStateKey, iCount);
+	}
+	LoadFile.close();
+
+	return S_OK;
+}
+
+
 

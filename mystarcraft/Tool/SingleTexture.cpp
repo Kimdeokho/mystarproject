@@ -12,8 +12,8 @@ CSingleTexture::~CSingleTexture(void)
 	Release();
 }
 
-HRESULT CSingleTexture::InsertTexture( wstring wstrFilePath 
-								   , wstring wstrStateKey /*= L"" */
+HRESULT CSingleTexture::InsertTexture( const wstring& wstrFilePath 
+								   , const wstring& wstrStateKey /*= L"" */
 								   , const int& iCnt /*= 0 */ )
 {
 	m_pTexInfo = new TEXINFO;
@@ -55,7 +55,7 @@ void CSingleTexture::Release( void )
 	Safe_Delete(m_pTexInfo);
 }
 
-TEXINFO* CSingleTexture::GetTexture( wstring wstrStateKey /*= L"" */, const int& iCnt /*= 0*/ )
+TEXINFO* CSingleTexture::GetTexture( const wstring& wstrStateKey /*= L"" */, const int& iCnt /*= 0*/ )
 {
 	return m_pTexInfo;
 }

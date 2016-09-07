@@ -12,15 +12,18 @@ private:
 	map<wstring, CTexture*>		m_MapTexture;
 
 public:
-	const TEXINFO* GetTexture(wstring wstrObjKey
-		, wstring wstrStateKey = L""
+	const TEXINFO* GetTexture(const wstring& wstrObjKey
+		, const wstring& wstrStateKey = L""
 		, const int& iCnt = 0);
+	int GetTexCnt(const wstring& wstrObjKey
+		, const wstring& wstrStateKey = L"");
 
 public:
-	HRESULT	InsertTexture(wstring wstrFilePath
-		, wstring wstrObjKey
+	HRESULT	ReadImagePath(const wstring& wstrFilePath);
+	HRESULT	InsertTexture(const wstring& wstrFilePath
+		, const wstring& wstrObjKey
 		, TEXTYPE eTextype
-		, wstring wstrStateKey = L""
+		, const wstring& wstrStateKey = L""
 		, const int& iCnt = 0);
 
 	void Release(void);
