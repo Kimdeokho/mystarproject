@@ -334,6 +334,14 @@
 					RelativePath=".\TextureMgr.h"
 					>
 				</File>
+				<File
+					RelativePath=".\TileMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TileMgr.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="FormView"

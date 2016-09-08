@@ -14,10 +14,26 @@ typedef struct tagTexture
 
 typedef struct tagTile
 {
-	D3DXVECTOR3		vPos;
-	D3DXVECTOR3		vSize;
-	BYTE			byDrawId;
+	D3DXVECTOR2		vPos;
+
+	BYTE			byTerrain_ID; //어느 지형
+	BYTE			byGroup_ID; //지형의 어느그룹
+	BYTE			byGroup_sequence; //그룹의 몇번째
+
 	BYTE			byOption;
+	BYTE			byFloor; /*0층이 지하*/
+
+	tagTile()
+	{
+		vPos = D3DXVECTOR2(0,0);
+		byTerrain_ID = TERRAIN_DIRT;
+		byGroup_ID = GROUP_FLAT;
+		byGroup_sequence = 0;
+		byOption = 0;
+		byFloor = 1;
+	}
+	~tagTile(){}
+
 }TILE;
 
 typedef struct tagUnitData

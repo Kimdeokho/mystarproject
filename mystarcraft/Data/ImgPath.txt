@@ -1,0 +1,2 @@
+Tile|None|High_dirt|FLAT|3|..\Texture\Tile\High_dirt\Hdg\hdg%d.png
+Tile|None|Dirt|FLAT|2|..\Texture\Tile\Dirt\Dg\dg%d.png

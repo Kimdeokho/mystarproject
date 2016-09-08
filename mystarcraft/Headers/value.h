@@ -17,3 +17,17 @@ const int RB_TILESIZEY = 64;
 
 
 const int	MIN_STR = 64;
+
+const BYTE	TERRAIN_DIRT = 0;
+const BYTE	TERRAIN_HIGHDIRT = 1;
+
+const BYTE	GROUP_FLAT = 0;
+const BYTE	GROUP_L = 1;
+const BYTE	GROUP_LU = 2;
+const BYTE	GROUP_RU = 3;
+const BYTE	GROUP_R = 4;
+const BYTE	GROUP_RD = 5;
+const BYTE	GROUP_LD = 6;
+
+
+

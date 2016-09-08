@@ -17,7 +17,8 @@ public:
 		, const int& iCnt = 0);
 	int GetTexCnt(const wstring& wstrObjKey
 		, const wstring& wstrStateKey = L"");
-
+	const vector<TEXINFO*>* GetStateTexture(const wstring& wstrObjKey , 
+		const wstring& wstrStateKey);
 public:
 	HRESULT	ReadImagePath(const wstring& wstrFilePath);
 	HRESULT	InsertTexture(const wstring& wstrFilePath

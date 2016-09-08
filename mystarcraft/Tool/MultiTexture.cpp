@@ -95,3 +95,13 @@ int CMultiTexture::GetTextureSize( const wstring& wstrStateKey )
 
 	return iter->second.size();
 }
+
+const vector<TEXINFO*>* CMultiTexture::GetStateTexture(const wstring& wstrstatekey)
+{
+	map<wstring, vector<TEXINFO*>>::iterator iter = m_MapMulti.find(wstrstatekey);
+
+	if(m_MapMulti.end() == iter)
+		return NULL;
+
+	return &iter->second;
+}

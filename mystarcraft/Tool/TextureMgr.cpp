@@ -25,7 +25,16 @@ const TEXINFO* CTextureMgr::GetTexture( const wstring& wstrObjKey
 
 	return iter->second->GetTexture(wstrStateKey, iCnt);
 }
+const vector<TEXINFO*>* CTextureMgr::GetStateTexture(const wstring& wstrObjKey , 
+													 const wstring& wstrStateKey)
+{
+	map<wstring , CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
 
+	if(iter == m_MapTexture.end())
+		return NULL;
+
+	return ((CMultiTexture*)(iter->second))->GetStateTexture(wstrStateKey);
+}
 int CTextureMgr::GetTexCnt( const wstring& wstrObjKey , const wstring& wstrStateKey /*= L""*/ )
 {
 	map<wstring, CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
@@ -73,7 +82,7 @@ HRESULT CTextureMgr::InsertTexture( const wstring& wstrFilePath
 		if(TEXTYPE_MULTI == eTextype)
 			iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
 	}
-	
+
 	return S_OK;
 }
 
@@ -99,6 +108,8 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 		return E_FAIL;
 	}
 
+	TCHAR	szKind[MIN_STR] = L""; //종족인지 타일인지
+	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물인지
 	TCHAR	szObjKey[MIN_STR] = L"";
 	TCHAR	szStateKey[MIN_STR] = L"";
 	TCHAR	szCount[MIN_STR] = L"";

@@ -11,7 +11,7 @@ public:
 	virtual TEXINFO* GetTexture( const wstring& wstrStateKey = L"" 
 		, const int& iCnt = 0 );
 	int GetTextureSize( const wstring& wstrStateKey );
-
+	const vector<TEXINFO*>*	GetStateTexture(const wstring& wstrstatekey);
 public:
 	virtual HRESULT InsertTexture( const wstring& wstrFilePath 
 		, const wstring& wstrStateKey = L"" 

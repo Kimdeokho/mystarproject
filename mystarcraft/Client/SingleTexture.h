@@ -12,7 +12,7 @@ public:
 		, const int& iCnt = 0);
 
 public:
-	virtual HRESULT InsertTexture( const wstring& wstrFilePath 
+	virtual HRESULT InsertTexture(const wstring& wstrFilePath 
 		, const wstring& wstrStateKey = L"" 
 		, const int& iCnt = 0 );
 
