@@ -6,6 +6,9 @@
 #include "Tool.h"
 
 #include "MainFrm.h"
+#include "Device.h"
+#include "TextureMgr.h"
+#include "TileMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -32,10 +35,14 @@ static UINT indicators[] =
 CMainFrame::CMainFrame()
 {
 	// TODO: 여기에 멤버 초기화 코드를 추가합니다.
+	CTextureMgr::GetInstance();
 }
 
 CMainFrame::~CMainFrame()
 {
+	CTextureMgr::DestroyInstance();
+	CTileMgr::DestroyInstance();
+	CDevice::DestroyInstance();
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

@@ -117,6 +117,8 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 
 	while(!LoadFile.eof())
 	{
+		LoadFile.getline(szKind, MIN_STR, L'|');
+		LoadFile.getline(szSystem, MIN_STR, L'|');
 		LoadFile.getline(szObjKey, MIN_STR, L'|');
 		LoadFile.getline(szStateKey, MIN_STR, L'|');
 		LoadFile.getline(szCount, MIN_STR, L'|');

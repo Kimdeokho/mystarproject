@@ -10,6 +10,7 @@ CTileMgr::CTileMgr(void)
 
 CTileMgr::~CTileMgr(void)
 {
+	Release();
 }
 
 void CTileMgr::InitTile(void)
@@ -18,6 +19,7 @@ void CTileMgr::InitTile(void)
 	m_rbTile.reserve(RB_TILECNTX*RB_TILECNTY);
 
 	m_DirtTex.reserve(GROUP_END);
+	m_DirtTex.resize(GROUP_END);
 
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
@@ -51,6 +53,7 @@ void CTileMgr::TileRender(void)
 	int iindex = 0;
 	D3DXMATRIX	matWorld , matTrans;
 	const TEXINFO*	pTexture = NULL;
+
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
 		for(int j = 0; j < SQ_TILECNTX; ++j)
@@ -59,16 +62,26 @@ void CTileMgr::TileRender(void)
 
 			if( m_sqTile[iindex]->byTerrain_ID == TERRAIN_DIRT )
 			{
-				int group_id = m_sqTile[iindex]->byGroup_ID;
-				int squence = m_sqTile[iindex]->byGroup_sequence;
+				int group_id = m_sqTile[iindex]->byGroup_ID;				
 
 				const vector<TEXINFO*>* temp = m_DirtTex[group_id];
+				m_sqTile[iindex]->byGroup_sequence = rand()%temp->size();
+
+				int squence = m_sqTile[iindex]->byGroup_sequence;
+
 				pTexture = (*temp)[squence];
 			}
 
-			CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
+			CDevice::GetInstance()->GetSprite()->SetTransform(&m_sqTile[iindex]->matWorld);
 			CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
 				, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+				, D3DCOLOR_ARGB(255,255,255,255));
+
+			RECT	rc = {0};
+			TCHAR	szTemp[MIN_STR] = L"";
+			wsprintf(szTemp, L"%d", iindex);
+			CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
+				, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
 				, D3DCOLOR_ARGB(255,255,255,255));
 
 		}

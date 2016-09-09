@@ -57,6 +57,28 @@ HRESULT CDevice::InitDevice( void )
 		return E_FAIL;
 	}
 
+	D3DXFONT_DESCW		FontInfo;
+	ZeroMemory(&FontInfo, sizeof(D3DXFONT_DESCW));
+
+	FontInfo.Height = 0;
+	FontInfo.Width = 0;
+	FontInfo.Weight = FW_HEAVY;
+	FontInfo.CharSet = HANGUL_CHARSET;
+	lstrcpy(FontInfo.FaceName, L"±¼¸²");
+
+	if(FAILED(D3DXCreateFontIndirect(m_pDevice, &FontInfo
+		, &m_pFont)))
+	{
+		ERR_MSG(L"Font Init false");
+		return E_FAIL;
+	}
+
+	if(FAILED(D3DXCreateLine(m_pDevice, &m_pLine)))
+	{
+		ERR_MSG(L"Line Init false");
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -106,8 +128,6 @@ void CDevice::Render_End( HWND hWnd )
 	m_pDevice->EndScene();
 	m_pDevice->Present(NULL, NULL, hWnd, NULL);
 }
-
-LPD3DXSPRITE CDevice::GetSprite( void )
-{
-	return m_pSprite;
-}
+LPD3DXSPRITE CDevice::GetSprite( void ){return m_pSprite;}
+LPD3DXFONT CDevice::GetFont( void ){return m_pFont;}
+LPD3DXLINE CDevice::GetLine( void ){return m_pLine;}

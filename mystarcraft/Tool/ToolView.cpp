@@ -64,6 +64,8 @@ void CToolView::OnDraw(CDC* /*pDC*/)
 	CDevice::GetInstance()->Render_Begin();
 	CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
 
+	CTileMgr::GetInstance()->TileRender();
+
 	CDevice::GetInstance()->GetSprite()->End();
 	CDevice::GetInstance()->Render_End(g_hWnd);
 }
@@ -72,10 +74,14 @@ void CToolView::OnInitialUpdate()
 {
 	CScrollView::OnInitialUpdate();
 
+
+	srand((unsigned int)time(NULL));
+
+
 	CSize sizeTotal;
 	// TODO: 이 뷰의 전체 크기를 계산합니다.
 	sizeTotal.cx = sizeTotal.cy = 100;
-	SetScrollSizes(MM_TEXT, CSize(128*32 , 128*32));
+	SetScrollSizes(MM_TEXT, CSize(SQ_TILECNTX*SQ_TILESIZEX , SQ_TILECNTY*SQ_TILESIZEY));
 
 	g_hWnd = m_hWnd;
 	if(FAILED(CDevice::GetInstance()->InitDevice()))
@@ -83,6 +89,13 @@ void CToolView::OnInitialUpdate()
 		AfxMessageBox(L"디바이스 초기화 실패");
 		return;
 	}
+
+	if(CTextureMgr::GetInstance()->ReadImagePath(L"../Data/ImgPath.txt"))
+	{
+		MessageBox(L"텍스쳐 불러오기 실패");
+	}
+
+	CTileMgr::GetInstance()->InitTile();
 }
 
 
