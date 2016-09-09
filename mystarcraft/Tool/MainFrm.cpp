@@ -78,7 +78,6 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
-	std::locale::global(std::locale("ko_KR.UTF-8"));
 
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
