@@ -14,7 +14,7 @@ typedef struct tagTexture
 
 typedef struct tagTile
 {
-	D3DXVECTOR2		vPos;
+	D3DXMATRIX		matWorld;
 
 	BYTE			byTerrain_ID; //어느 지형
 	BYTE			byGroup_ID; //지형의 어느그룹
@@ -25,7 +25,7 @@ typedef struct tagTile
 
 	tagTile()
 	{
-		vPos = D3DXVECTOR2(0,0);
+		D3DXMatrixIdentity(&matWorld);
 		byTerrain_ID = TERRAIN_DIRT;
 		byGroup_ID = GROUP_FLAT;
 		byGroup_sequence = 0;

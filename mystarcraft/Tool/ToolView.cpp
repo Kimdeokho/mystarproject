@@ -9,6 +9,9 @@
 #include "ToolView.h"
 #include "Device.h"
 
+#include "TileMgr.h"
+#include "TextureMgr.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif

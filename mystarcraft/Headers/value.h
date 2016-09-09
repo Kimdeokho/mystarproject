@@ -28,6 +28,6 @@ const BYTE	GROUP_RU = 3;
 const BYTE	GROUP_R = 4;
 const BYTE	GROUP_RD = 5;
 const BYTE	GROUP_LD = 6;
-
+const BYTE	GROUP_END = 7;
 
 
