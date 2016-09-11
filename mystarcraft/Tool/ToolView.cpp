@@ -110,7 +110,7 @@ void CToolView::OnInitialUpdate()
 	float	fColFrm = float(rcWindow.bottom - rcMainView.bottom);
 
 	m_pMainFrm->SetWindowPos(NULL
-		, 100, 100, int(1280 + fRowFrm), int(960 + fColFrm)
+		, 100, 100, int(1280 + fRowFrm), int(720 + fColFrm)
 		, SWP_NOZORDER);
 
 	g_hWnd = m_hWnd;

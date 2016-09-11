@@ -95,7 +95,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	m_MainSplitter.CreateStatic(this , 1 , 2);
 	m_SubSplitter.CreateStatic(&m_MainSplitter , 2,1);
 
-	m_MainSplitter.CreateView(0,1 , RUNTIME_CLASS(CToolView), CSize(800,800) , pContext);
+	m_MainSplitter.CreateView(0,1 , RUNTIME_CLASS(CToolView), CSize(1280,720) , pContext);
 	m_SubSplitter.CreateView(0,0 , RUNTIME_CLASS(CMinimapview) , CSize(300,300) , pContext);
 	m_SubSplitter.CreateView(1,0 , RUNTIME_CLASS(MyForm) , CSize(300,500) , pContext);
 
