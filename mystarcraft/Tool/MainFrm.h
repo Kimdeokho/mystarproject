@@ -4,10 +4,14 @@
 
 #pragma once
 
-#include "ToolView.h"
-#include "Minimapview.h"
-#include "MyForm.h"
+//#include "ToolView.h"
+//#include "Minimapview.h"
+//#include "MyForm.h"
 
+
+class MyForm;
+class CToolView;
+class CMinimapview;
 class CMainFrame : public CFrameWnd
 {
 	
@@ -49,6 +53,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+public:
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 

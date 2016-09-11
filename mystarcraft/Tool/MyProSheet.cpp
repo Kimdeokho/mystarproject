@@ -25,6 +25,7 @@ CMyProSheet::CMyProSheet(LPCTSTR pszCaption, CWnd* pParentWnd, UINT iSelectPage)
 CMyProSheet::CMyProSheet(CWnd* pParentWnd)
 {
 	AddPage(&m_page1);
+	AddPage(&m_page2);
 }
 
 CMyProSheet::~CMyProSheet()
@@ -59,7 +60,7 @@ BOOL CMyProSheet::OnInitDialog()
 	ScreenToClient(rectOld); 
 	int nCy = rectOld.Width()/2; 
 	rectOld.right -= nCy; 
-	rectOld.bottom += rectOld.Height()/2;
+	rectOld.bottom += rectOld.Height();
 
 	// move tab control 
 	::SetWindowPos(hWnd, NULL, 0, 0,rectOld.Width(), rectOld.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE); 
@@ -68,6 +69,7 @@ BOOL CMyProSheet::OnInitDialog()
 	//SetWindowPos(NULL, 0, 0, rectOld.Width(), rectOld.Height(),	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE); 
 
 	SetPageTitle(0 , L"Map");
+	SetPageTitle(1 , L"Object");
 	return bResult;
 }
 BOOL CMyProSheet::SetPageTitle (int nPage, LPTSTR pszText)  

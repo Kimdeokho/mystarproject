@@ -5,6 +5,8 @@
 // MyForm Æû ºäÀÔ´Ï´Ù.
 
 //#include "MyProSheet.h"
+#include "Resource.h"
+
 class CMyProSheet;
 class MyForm : public CFormView
 {

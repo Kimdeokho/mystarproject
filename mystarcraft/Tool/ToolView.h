@@ -5,7 +5,9 @@
 
 #pragma once
 
+
 class CToolDoc;
+class CMainFrame;
 class CToolView : public CScrollView
 {
 protected: // serialization에서만 만들어집니다.
@@ -31,6 +33,9 @@ protected:
 
 // 구현입니다.
 public:
+	bool			m_bGrid;
+	CMainFrame*		m_pMainFrm;
+public:
 	virtual ~CToolView();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
@@ -44,6 +49,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 #ifndef _DEBUG  // ToolView.cpp의 디버그 버전

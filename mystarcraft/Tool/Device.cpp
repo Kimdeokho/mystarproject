@@ -117,16 +117,19 @@ LPDIRECT3DDEVICE9 CDevice::GetDevice( void )
 
 void CDevice::Render_Begin( void )
 {
-	m_pDevice->Clear(0, NULL
-		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
-		, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
+	//m_pDevice->Clear(0, NULL
+	//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
+	//	, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
+
 	m_pDevice->BeginScene();
+	m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
 }
 
-void CDevice::Render_End( HWND hWnd )
+void CDevice::Render_End( void)
 {
+	m_pSprite->End();
 	m_pDevice->EndScene();
-	m_pDevice->Present(NULL, NULL, hWnd, NULL);
+	//m_pDevice->Present(NULL, NULL, hWnd, NULL);
 }
 LPD3DXSPRITE CDevice::GetSprite( void ){return m_pSprite;}
 LPD3DXFONT CDevice::GetFont( void ){return m_pFont;}

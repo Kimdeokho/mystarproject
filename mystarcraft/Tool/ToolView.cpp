@@ -11,6 +11,7 @@
 
 #include "TileMgr.h"
 #include "TextureMgr.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -28,6 +29,7 @@ BEGIN_MESSAGE_MAP(CToolView, CScrollView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CScrollView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CScrollView::OnFilePrintPreview)
 	ON_WM_ERASEBKGND()
+	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 // CToolView 생성/소멸
@@ -61,13 +63,23 @@ void CToolView::OnDraw(CDC* /*pDC*/)
 
 	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
 
+	CDevice::GetInstance()->GetDevice()->Clear(0, NULL
+		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
+		, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
+
+
 	CDevice::GetInstance()->Render_Begin();
-	CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
+	//CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
 
 	CTileMgr::GetInstance()->TileRender();
+	if(m_bGrid == true)
+		CTileMgr::GetInstance()->ShowGrid();
 
-	CDevice::GetInstance()->GetSprite()->End();
-	CDevice::GetInstance()->Render_End(g_hWnd);
+	//CDevice::GetInstance()->GetSprite()->End();
+	CDevice::GetInstance()->Render_End();
+
+
+	CDevice::GetInstance()->GetDevice()->Present(NULL, NULL, m_hWnd, NULL);
 }
 
 void CToolView::OnInitialUpdate()
@@ -78,10 +90,28 @@ void CToolView::OnInitialUpdate()
 	srand((unsigned int)time(NULL));
 
 
-	CSize sizeTotal;
 	// TODO: 이 뷰의 전체 크기를 계산합니다.
-	sizeTotal.cx = sizeTotal.cy = 100;
+
 	SetScrollSizes(MM_TEXT, CSize(SQ_TILECNTX*SQ_TILESIZEX , SQ_TILECNTY*SQ_TILESIZEY));
+
+	m_pMainFrm = (CMainFrame*)AfxGetMainWnd();
+
+	RECT	rcWindow;
+	m_pMainFrm->GetWindowRect(&rcWindow);
+
+	SetRect(&rcWindow, 0, 0
+		, rcWindow.right - rcWindow.left
+		, rcWindow.bottom - rcWindow.top);
+
+	RECT	rcMainView;
+	GetClientRect(&rcMainView);
+
+	float	fRowFrm = float(rcWindow.right - rcMainView.right);
+	float	fColFrm = float(rcWindow.bottom - rcMainView.bottom);
+
+	m_pMainFrm->SetWindowPos(NULL
+		, 100, 100, int(1280 + fRowFrm), int(960 + fColFrm)
+		, SWP_NOZORDER);
 
 	g_hWnd = m_hWnd;
 	if(FAILED(CDevice::GetInstance()->InitDevice()))
@@ -96,6 +126,8 @@ void CToolView::OnInitialUpdate()
 	}
 
 	CTileMgr::GetInstance()->InitTile();
+
+	m_bGrid = false;
 }
 
 
@@ -146,4 +178,25 @@ BOOL CToolView::OnEraseBkgnd(CDC* pDC)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 
 	return false;//CScrollView::OnEraseBkgnd(pDC);
+}
+
+void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CScrollView::OnKeyDown(nChar, nRepCnt, nFlags);
+
+	switch(nChar)
+	{
+	case 71:
+		{
+			if(m_bGrid == true)
+				m_bGrid = false;
+			else
+				m_bGrid = true;
+
+			Invalidate(TRUE);
+			break;
+		}
+	}
 }

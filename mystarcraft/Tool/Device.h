@@ -28,7 +28,7 @@ public:
 	HRESULT InitDevice(void);
 	void Release(void);
 	void Render_Begin(void);
-	void Render_End(HWND hWnd);
+	void Render_End(void);
 
 public:
 	~CDevice(void);

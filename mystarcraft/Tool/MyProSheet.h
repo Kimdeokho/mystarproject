@@ -15,6 +15,7 @@ public:
 	virtual ~CMyProSheet();
 public:
 	CMyProPage	m_page1;
+	CMyProPage	m_page2;
 public:
 	BOOL SetPageTitle (int nPage, LPTSTR pszText);  
 protected:

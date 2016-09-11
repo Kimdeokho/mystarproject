@@ -6,6 +6,7 @@
 #include "Minimapview.h"
 
 #include "Device.h"
+#include "TileMgr.h"
 // CMinimapview
 
 IMPLEMENT_DYNCREATE(CMinimapview, CView)
@@ -31,11 +32,19 @@ void CMinimapview::OnDraw(CDC* pDC)
 	CDocument* pDoc = GetDocument();
 	// TODO: 여기에 그리기 코드를 추가합니다.
 
-	CDevice::GetInstance()->Render_Begin();
-	CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
+	CDevice::GetInstance()->GetDevice()->Clear(0, NULL
+		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
+		, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
 
-	CDevice::GetInstance()->GetSprite()->End();
-	CDevice::GetInstance()->Render_End(m_hWnd);
+	CDevice::GetInstance()->Render_Begin();
+	//CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
+
+	CTileMgr::GetInstance()->MinimapRender();
+	//CDevice::GetInstance()->GetSprite()->End();
+	CDevice::GetInstance()->Render_End();
+
+	CDevice::GetInstance()->GetDevice()->Present(NULL, NULL, m_hWnd, NULL);
+
 }
 
 

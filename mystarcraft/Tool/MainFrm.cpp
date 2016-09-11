@@ -9,6 +9,9 @@
 #include "Device.h"
 #include "TextureMgr.h"
 #include "TileMgr.h"
+#include "ToolView.h"
+#include "Minimapview.h"
+#include "MyForm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,6 +23,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
+	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -91,9 +95,9 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	m_MainSplitter.CreateStatic(this , 1 , 2);
 	m_SubSplitter.CreateStatic(&m_MainSplitter , 2,1);
 
-	m_MainSplitter.CreateView(0,1 , RUNTIME_CLASS(CToolView), CSize(800,600) , pContext);
-	m_SubSplitter.CreateView(0,0 , RUNTIME_CLASS(CMinimapview) , CSize(300,225) , pContext);
-	m_SubSplitter.CreateView(1,0 , RUNTIME_CLASS(MyForm) , CSize(300,375) , pContext);
+	m_MainSplitter.CreateView(0,1 , RUNTIME_CLASS(CToolView), CSize(800,800) , pContext);
+	m_SubSplitter.CreateView(0,0 , RUNTIME_CLASS(CMinimapview) , CSize(300,300) , pContext);
+	m_SubSplitter.CreateView(1,0 , RUNTIME_CLASS(MyForm) , CSize(300,500) , pContext);
 
 	m_pToolView = (CToolView*)m_MainSplitter.GetPane(0,1);
 	m_pMiniMapView = (CMinimapview*)m_SubSplitter.GetPane(0,0);
@@ -103,4 +107,11 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	//return CFrameWnd::OnCreateClient(lpcs, pContext);
 
 	return TRUE;
+}
+
+void CMainFrame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CFrameWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
