@@ -4,6 +4,8 @@
 
 // CMyProSheet
 #include "MyProPage.h"
+#include "MyProPage2.h"
+
 class CMyProSheet : public CPropertySheet
 {
 	DECLARE_DYNAMIC(CMyProSheet)
@@ -15,7 +17,7 @@ public:
 	virtual ~CMyProSheet();
 public:
 	CMyProPage	m_page1;
-	CMyProPage	m_page2;
+	CMyProPage2	m_page2;
 public:
 	BOOL SetPageTitle (int nPage, LPTSTR pszText);  
 protected:

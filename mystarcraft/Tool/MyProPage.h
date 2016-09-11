@@ -1,4 +1,5 @@
 #pragma once
+#include "afxwin.h"
 
 
 // CMyProPage 대화 상자입니다.
@@ -23,4 +24,5 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
+	CListBox m_maptileListbox;
 };

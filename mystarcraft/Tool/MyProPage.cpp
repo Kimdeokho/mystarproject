@@ -23,6 +23,7 @@ CMyProPage::~CMyProPage()
 void CMyProPage::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LIST1, m_maptileListbox);
 }
 
 
