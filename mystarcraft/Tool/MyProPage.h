@@ -24,5 +24,10 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
+
+public:
 	CListBox m_maptileListbox;
+	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	virtual BOOL OnSetActive();
+	afx_msg void OnEnable(BOOL bEnable);
 };

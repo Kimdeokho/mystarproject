@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CToolView, CScrollView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CScrollView::OnFilePrintPreview)
 	ON_WM_ERASEBKGND()
 	ON_WM_KEYDOWN()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 // CToolView 생성/소멸
@@ -74,6 +75,7 @@ void CToolView::OnDraw(CDC* /*pDC*/)
 	CTileMgr::GetInstance()->TileRender();
 	if(m_bGrid == true)
 		CTileMgr::GetInstance()->ShowGrid();
+	CTileMgr::GetInstance()->Rohmbus_Render();
 
 	//CDevice::GetInstance()->GetSprite()->End();
 	CDevice::GetInstance()->Render_End();
@@ -110,7 +112,7 @@ void CToolView::OnInitialUpdate()
 	float	fColFrm = float(rcWindow.bottom - rcMainView.bottom);
 
 	m_pMainFrm->SetWindowPos(NULL
-		, 100, 100, int(1280 + fRowFrm), int(720 + fColFrm)
+		, 100, 100, int(WINSIZE_X + fRowFrm), int(WINSIZE_Y + fColFrm)
 		, SWP_NOZORDER);
 
 	g_hWnd = m_hWnd;
@@ -199,4 +201,17 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			break;
 		}
 	}
+}
+
+void CToolView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+
+	CScrollView::OnMouseMove(nFlags, point);
+
+	CTileMgr::GetInstance()->Rohmbus_Picking(point);
+
+	Invalidate(FALSE);
+
 }

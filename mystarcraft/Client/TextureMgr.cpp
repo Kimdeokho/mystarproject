@@ -109,7 +109,7 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 	}
 
 	TCHAR	szKind[MIN_STR] = L""; //종족인지 타일인지
-	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물인지
+	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물인지 텍스쳐 STL 따로 관리하려고
 	TCHAR	szObjKey[MIN_STR] = L"";
 	TCHAR	szStateKey[MIN_STR] = L"";
 	TCHAR	szCount[MIN_STR] = L"";
@@ -126,6 +126,7 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 
 		InsertTexture(szImgPath, szObjKey, TEXTYPE_MULTI
 			, szStateKey, iCount);
+
 	}
 	LoadFile.close();
 

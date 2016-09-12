@@ -2,6 +2,9 @@
 #include "TextureMgr.h"
 #include "SingleTexture.h"
 #include "MultiTexture.h"
+#include "MainFrm.h"
+#include "MyForm.h"
+#include "MyProSheet.h"
 
 IMPLEMENT_SINGLETON(CTextureMgr)
 
@@ -108,6 +111,10 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 		return E_FAIL;
 	}
 
+	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
+	MyForm* pMyForm = pMainFrm->m_pMyFormView;
+	CMyProSheet* pProSheet = pMyForm->m_pProSheet;
+
 	TCHAR	szKind[MIN_STR] = L""; //종족인지 타일인지
 	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물인지
 	TCHAR	szObjKey[MIN_STR] = L"";
@@ -128,7 +135,16 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 
 		InsertTexture(szImgPath, szObjKey, TEXTYPE_MULTI
 			, szStateKey, iCount);
+
+		if(!_tcscmp(szKind , _T("Tile")))
+		{
+			if(!pProSheet->FindStr(szObjKey, 0))
+				pProSheet->AddString(szObjKey,0);
+		}
+
 	}
+
+	pProSheet->SetCursel(0,0);
 	LoadFile.close();
 
 	return S_OK;

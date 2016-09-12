@@ -196,6 +196,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MyProPage2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MyProPage2.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MyProSheet.cpp"
 				>
 			</File>

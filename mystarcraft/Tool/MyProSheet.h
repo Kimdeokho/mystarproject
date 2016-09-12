@@ -3,6 +3,7 @@
 
 
 // CMyProSheet
+#include "Include.h"
 #include "MyProPage.h"
 #include "MyProPage2.h"
 
@@ -20,6 +21,9 @@ public:
 	CMyProPage2	m_page2;
 public:
 	BOOL SetPageTitle (int nPage, LPTSTR pszText);  
+	void AddString(const TCHAR* _wstr , int _order);
+	void SetCursel(int page, int iidx);
+	bool FindStr(const TCHAR* _str , int _idx);
 protected:
 	DECLARE_MESSAGE_MAP()
 public:

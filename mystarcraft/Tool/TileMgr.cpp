@@ -9,6 +9,7 @@
 IMPLEMENT_SINGLETON(CTileMgr)
 CTileMgr::CTileMgr(void)
 {
+	m_rbidx = 0;
 	m_pToolView = NULL;
 }
 
@@ -33,7 +34,7 @@ void CTileMgr::InitTile(void)
 	{
 		for(int j = 0; j < SQ_TILECNTX; ++j)
 		{
-			int iindex = i*SQ_TILECNTY + j;
+			int iindex = i*SQ_TILECNTX + j;
 
 			TILE*	ptile = new TILE();
 			ptile->vPos.x = (float)(SQ_TILESIZEX/2 + j*SQ_TILESIZEX);
@@ -45,16 +46,18 @@ void CTileMgr::InitTile(void)
 		}
 	}
 
-	for(int i = 0; i < RB_TILECNTX; ++i)
+	for(int i = 0; i < RB_TILECNTY; ++i)
 	{
-		for(int j = 0; j < RB_TILECNTY; ++j)
+		for(int j = 0; j < RB_TILECNTX; ++j)
 		{
 			D3DXVECTOR2	vPos;
 
 			if(i%2 == 0)
-				vPos = D3DXVECTOR2( float(j*RB_TILESIZEX) , float(i*RB_TILESIZEY) );
+				vPos = D3DXVECTOR2( float(j*RB_TILESIZEX) , float(i*RB_TILESIZEY)/2 );
 			else
-				vPos = D3DXVECTOR2( float(RB_TILESIZEX/2) + float(j*RB_TILESIZEX) , float(i*RB_TILESIZEY) );
+				vPos = D3DXVECTOR2( float(RB_TILESIZEX/2) + float(j*RB_TILESIZEX) , float(i*RB_TILESIZEY)/2 );
+
+			m_rbTile.push_back(vPos);
 		}
 	}
 }
@@ -145,6 +148,51 @@ void CTileMgr::TileRender(void)
 	CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
 		, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
 		, D3DCOLOR_ARGB(255,255,255,255));
+
+	matfont._41 = 300;
+	matfont._42 = 440;
+	wsprintf(szTemp, L"마름모인덱스 %d", m_rbidx);
+	CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
+	CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
+		, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
+		, D3DCOLOR_ARGB(255,255,255,255));
+
+}
+void CTileMgr::Rohmbus_Render(void)
+{
+	if(m_rbidx < 0)
+		return;
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+
+	D3DXVECTOR2	vPoint[5];
+
+	float tilesizeX = (float)RB_TILESIZEX/2;
+	float tilesizeY = (float)RB_TILESIZEY/2;
+	int scollX = m_pToolView->GetScrollPos(0);
+	int scollY = m_pToolView->GetScrollPos(1);
+
+	D3DXVECTOR2	vCenter = m_rbTile[m_rbidx];
+	vPoint[0].x = vCenter.x - tilesizeX - scollX;
+	vPoint[0].y = vCenter.y - scollY;
+
+	vPoint[1].x = vCenter.x - scollX;
+	vPoint[1].y = vCenter.y - tilesizeY - scollY;
+
+	vPoint[2].x = vCenter.x + tilesizeX - scollX;
+	vPoint[2].y = vCenter.y - scollY;
+
+	vPoint[3].x = vCenter.x - scollX;
+	vPoint[3].y = vCenter.y + tilesizeY - scollY;
+
+	vPoint[4] = vPoint[0];
+
+	CDevice::GetInstance()->GetLine()->SetWidth(2.0f);
+	CDevice::GetInstance()->GetLine()->Draw(vPoint , 5 , D3DCOLOR_ARGB(255,0,255,0));
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
 }
 void CTileMgr::ShowGrid(void)
 {
@@ -189,4 +237,45 @@ void CTileMgr::Release(void)
 	m_rbTile.clear();
 
 	vector<D3DXVECTOR2>().swap(m_rbTile);
+}
+
+void CTileMgr::SetMousept(const CPoint& pt)
+{
+}
+void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
+{
+
+	float tilesizeX = (float)RB_TILESIZEX/2;
+	float tilesizeY = (float)RB_TILESIZEY/2;
+
+	float a = -(tilesizeY / tilesizeX);
+
+	float b[4] = {0};
+
+	m_rbidx = -1;
+
+	int mouseptX = _pt.x + m_pToolView->GetScrollPos(0);
+	int mouseptY = _pt.y + m_pToolView->GetScrollPos(1);
+
+	for(int i = 0; i < RB_TILECNTY; ++i)
+	{
+		for(int j = 0; j < RB_TILECNTX; ++j)
+		{
+			int iindex = i*RB_TILECNTX + j;
+
+			b[0] = m_rbTile[iindex].y - a * (m_rbTile[iindex].x - tilesizeX) ;
+			b[1] = m_rbTile[iindex].y - a * (m_rbTile[iindex].x + tilesizeX) ;
+			b[2] = m_rbTile[iindex].y + a * (m_rbTile[iindex].x - tilesizeX) ;
+			b[3] = m_rbTile[iindex].y + a * (m_rbTile[iindex].x + tilesizeX) ;
+
+			if( a*mouseptX + b[0] < mouseptY &&
+				a*mouseptX + b[1] > mouseptY &&
+				-a*mouseptX  + b[2] > mouseptY &&
+				-a*mouseptX + b[3] < mouseptY )
+			{
+				m_rbidx = iindex;
+				return;
+			}
+		}
+	}
 }

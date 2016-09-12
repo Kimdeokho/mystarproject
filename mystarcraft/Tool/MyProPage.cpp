@@ -30,6 +30,8 @@ void CMyProPage::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMyProPage, CPropertyPage)
 	ON_WM_SIZE()
 	ON_WM_GETMINMAXINFO()
+	ON_WM_ACTIVATE()
+	ON_WM_ENABLE()
 END_MESSAGE_MAP()
 
 
@@ -64,4 +66,26 @@ void CMyProPage::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 
 	CPropertyPage::OnGetMinMaxInfo(lpMMI);
+}
+
+void CMyProPage::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+{
+	CPropertyPage::OnActivate(nState, pWndOther, bMinimized);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}
+
+BOOL CMyProPage::OnSetActive()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+	//다이얼로그의 활성화 여부를 판단한다
+	return CPropertyPage::OnSetActive();
+}
+
+void CMyProPage::OnEnable(BOOL bEnable)
+{
+	CPropertyPage::OnEnable(bEnable);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 }

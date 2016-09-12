@@ -84,3 +84,46 @@ BOOL CMyProSheet::SetPageTitle (int nPage, LPTSTR pszText)
 
 	return TRUE;  
 }  
+
+void CMyProSheet::AddString(const TCHAR* _wstr , int _order)
+{
+	switch(_order)
+	{
+	case 0:
+		{
+			m_page1.m_maptileListbox.AddString(_wstr);
+			break;
+		}
+	case 1:
+		{
+			break;
+		}
+	}
+}
+void CMyProSheet::SetCursel(int page , int iidx)
+{
+	switch(page)
+	{
+	case 0:
+		{
+			m_page1.m_maptileListbox.SetCurSel(iidx);
+			break;
+		}
+	}
+}
+bool CMyProSheet::FindStr(const TCHAR* _str , int _idx)
+{
+	bool bresult = false;
+	if(_idx == 0)
+	{
+		if( 0 > m_page1.m_maptileListbox.FindString(0 , _str))
+			bresult = false;
+		else
+			bresult = true;
+	}
+	else if(_idx == 1)
+	{
+
+	}
+	return bresult;
+}

@@ -29,11 +29,12 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
 private:
-	CMyProSheet*	m_pProSheet;
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual void OnInitialUpdate();
 	afx_msg void OnDestroy();
+public:
+	CMyProSheet*	m_pProSheet;
 };
 
 

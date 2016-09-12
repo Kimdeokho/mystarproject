@@ -9,8 +9,8 @@ const int SQ_TILECNTY = 128;
 const int SQ_TILESIZEX = 32;
 const int SQ_TILESIZEY = 32;
 
-const int RB_TILECNTX = 32;
-const int RB_TILECNTY = 64;
+const int RB_TILECNTX = 33;
+const int RB_TILECNTY = 132;
 
 const int RB_TILESIZEX = 128;
 const int RB_TILESIZEY = 64;
