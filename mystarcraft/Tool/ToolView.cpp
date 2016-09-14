@@ -12,6 +12,8 @@
 #include "TileMgr.h"
 #include "TextureMgr.h"
 #include "MainFrm.h"
+#include "TerrainBrush.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +33,8 @@ BEGIN_MESSAGE_MAP(CToolView, CScrollView)
 	ON_WM_ERASEBKGND()
 	ON_WM_KEYDOWN()
 	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 END_MESSAGE_MAP()
 
 // CToolView 생성/소멸
@@ -128,8 +132,10 @@ void CToolView::OnInitialUpdate()
 	}
 
 	CTileMgr::GetInstance()->InitTile();
+	CTerrainBrush::GetInstance()->Initialize();
 
 	m_bGrid = false;
+	m_bLbutton = false;
 }
 
 
@@ -212,6 +218,28 @@ void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 
 	CTileMgr::GetInstance()->Rohmbus_Picking(point);
 
-	Invalidate(FALSE);
 
+	Invalidate(FALSE);
+}
+
+void CToolView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CScrollView::OnLButtonDown(nFlags, point);
+
+	m_bLbutton = true;
+	if(CTerrainBrush::GetInstance()->TerrainCheck())
+	{
+		MessageBox(L"지형 체크 실패");
+	}
+	Invalidate(FALSE);
+}
+
+void CToolView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CScrollView::OnLButtonUp(nFlags, point);
+	m_bLbutton = false;
 }

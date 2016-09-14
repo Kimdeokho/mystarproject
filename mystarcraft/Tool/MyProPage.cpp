@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Tool.h"
 #include "MyProPage.h"
-
+#include "TileMgr.h"
 
 // CMyProPage 대화 상자입니다.
 
@@ -80,6 +80,8 @@ BOOL CMyProPage::OnSetActive()
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 
 	//다이얼로그의 활성화 여부를 판단한다
+
+	CTileMgr::GetInstance()->SetRohmbusRender(TRUE);
 	return CPropertyPage::OnSetActive();
 }
 

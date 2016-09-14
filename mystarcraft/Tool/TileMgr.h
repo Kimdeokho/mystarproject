@@ -13,14 +13,19 @@ private:
 	CToolView*				m_pToolView;
 private:
 	vector<const vector<TEXINFO*>*>	m_DirtTex;
-	vector<vector<TEXINFO*>>	m_HighDirtTex;
+	vector<const vector<TEXINFO*>*>	m_HighDirtTex;
 private:
 	int						m_rbidx;
+	bool					m_rbRender;
 public:
 	void ShowGrid(void);
-	void SetMousept(const CPoint& pt);
+	void SetRohmbusRender(bool _bRender);
 	void Rohmbus_Picking(const CPoint&	_pt);
 	void Rohmbus_Render(void);
+	int	 GetRbIdx(void);
+	int	 TileCheck(const int _index , const int _flr);
+	void SetTerrain(const int idx);
+	void SetTerrain(const int idx , const TILE&	temptile);
 public:
 	void InitTile(void);
 	void TileRender(void);

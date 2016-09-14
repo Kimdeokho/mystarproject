@@ -11,6 +11,7 @@ CTileMgr::CTileMgr(void)
 {
 	m_rbidx = 0;
 	m_pToolView = NULL;
+	m_rbRender = false;
 }
 
 CTileMgr::~CTileMgr(void)
@@ -27,9 +28,16 @@ void CTileMgr::InitTile(void)
 
 	m_DirtTex.reserve(GROUP_END);
 	m_DirtTex.resize(GROUP_END);
+	m_HighDirtTex.reserve(GROUP_END);
+	m_HighDirtTex.resize(GROUP_END);
 
 
 	m_DirtTex[GROUP_FLAT] = CTextureMgr::GetInstance()->GetStateTexture(L"Dirt" , L"FLAT");
+
+	m_HighDirtTex[GROUP_FLAT] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"FLAT");
+	m_HighDirtTex[GROUP_L] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"L");
+
+
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
 		for(int j = 0; j < SQ_TILECNTX; ++j)
@@ -98,7 +106,7 @@ void CTileMgr::TileRender(void)
 	int scrollY = m_pToolView->GetScrollPos(1);
 	for(int i = 0; i < 30; ++i)
 	{
-		for(int j = 0; j < 30; ++j)
+		for(int j = 0; j < 40; ++j)
 		{
 			int rowidx = i + scrollY/SQ_TILESIZEY;
 			int colidx = j + scrollX/SQ_TILESIZEX;
@@ -109,11 +117,17 @@ void CTileMgr::TileRender(void)
 
 			if( m_sqTile[iindex]->byTerrain_ID == TERRAIN_DIRT )
 			{
-				int group_id = m_sqTile[iindex]->byGroup_ID;				
-
+				int group_id = m_sqTile[iindex]->byGroup_ID;
 				const vector<TEXINFO*>* temp = m_DirtTex[group_id];
 				int squence = m_sqTile[iindex]->byGroup_sequence;
 
+				pTexture = (*temp)[squence];
+			}
+			else if(m_sqTile[iindex]->byTerrain_ID == TERRAIN_HIGHDIRT)
+			{
+				int group_id = m_sqTile[iindex]->byGroup_ID;
+				const vector<TEXINFO*>* temp = m_HighDirtTex[group_id];
+				int squence = m_sqTile[iindex]->byGroup_sequence;
 				pTexture = (*temp)[squence];
 			}
 
@@ -160,7 +174,7 @@ void CTileMgr::TileRender(void)
 }
 void CTileMgr::Rohmbus_Render(void)
 {
-	if(m_rbidx < 0)
+	if(m_rbidx < 0 || m_rbRender == false)
 		return;
 
 	CDevice::GetInstance()->Render_End();
@@ -198,7 +212,7 @@ void CTileMgr::ShowGrid(void)
 {
 	D3DXVECTOR2	vPoint[2];
 
-	
+
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 
@@ -239,8 +253,13 @@ void CTileMgr::Release(void)
 	vector<D3DXVECTOR2>().swap(m_rbTile);
 }
 
-void CTileMgr::SetMousept(const CPoint& pt)
+void CTileMgr::SetRohmbusRender(bool _bRender)
 {
+	m_rbRender = _bRender;
+}
+int	 CTileMgr::GetRbIdx(void)
+{
+	return m_rbidx;
 }
 void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
 {
@@ -278,4 +297,15 @@ void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
 			}
 		}
 	}
+}
+void CTileMgr::SetTerrain(const int idx , const TILE&	temptile)
+{
+	m_sqTile[idx]->byFloor = temptile.byFloor;
+	m_sqTile[idx]->byGroup_ID = temptile.byGroup_ID;
+	m_sqTile[idx]->byGroup_sequence = temptile.byGroup_sequence;
+	m_sqTile[idx]->byTerrain_ID = temptile.byTerrain_ID;
+}
+int CTileMgr::TileCheck(const int _index , const int _flr)
+{
+	return _flr - m_sqTile[_index]->byFloor;
 }

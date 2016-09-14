@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Tool.h"
 #include "MyProPage2.h"
-
+#include "TileMgr.h"
 
 // CMyProPage2 대화 상자입니다.
 
@@ -31,3 +31,11 @@ END_MESSAGE_MAP()
 
 
 // CMyProPage2 메시지 처리기입니다.
+
+BOOL CMyProPage2::OnSetActive()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+	CTileMgr::GetInstance()->SetRohmbusRender(false);
+	return CPropertyPage::OnSetActive();
+}

@@ -27,6 +27,7 @@ public:
 
 public:
 	CListBox m_maptileListbox;
+public:
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	virtual BOOL OnSetActive();
 	afx_msg void OnEnable(BOOL bEnable);

@@ -1,7 +1,7 @@
 #pragma once
 
-const int WINSIZE_X = 800;
-const int WINSIZE_Y = 600;
+const int WINSIZE_X = 1280;
+const int WINSIZE_Y = 720;
 
 const int SQ_TILECNTX = 128;
 const int SQ_TILECNTY = 128;

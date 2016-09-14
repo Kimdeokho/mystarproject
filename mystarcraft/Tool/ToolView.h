@@ -34,6 +34,7 @@ protected:
 // 구현입니다.
 public:
 	bool			m_bGrid;
+	bool			m_bLbutton;
 	CMainFrame*		m_pMainFrm;
 public:
 	virtual ~CToolView();
@@ -51,6 +52,8 @@ public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // ToolView.cpp의 디버그 버전
