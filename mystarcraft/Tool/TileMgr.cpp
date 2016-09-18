@@ -12,6 +12,7 @@ CTileMgr::CTileMgr(void)
 	m_rbidx = 0;
 	m_pToolView = NULL;
 	m_rbRender = false;
+	m_rbidx = -1;
 }
 
 CTileMgr::~CTileMgr(void)
@@ -36,6 +37,11 @@ void CTileMgr::InitTile(void)
 
 	m_HighDirtTex[GROUP_FLAT] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"FLAT");
 	m_HighDirtTex[GROUP_L] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"L");
+	m_HighDirtTex[GROUP_LU] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"LU");
+	m_HighDirtTex[GROUP_RU] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"RU");
+	m_HighDirtTex[GROUP_R] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"R");
+	m_HighDirtTex[GROUP_RD] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"RD");
+	m_HighDirtTex[GROUP_LD] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"LD");
 
 
 	for(int i = 0; i < SQ_TILECNTY; ++i)
@@ -47,9 +53,11 @@ void CTileMgr::InitTile(void)
 			TILE*	ptile = new TILE();
 			ptile->vPos.x = (float)(SQ_TILESIZEX/2 + j*SQ_TILESIZEX);
 			ptile->vPos.y = (float)(SQ_TILESIZEY/2 + i*SQ_TILESIZEY);
+			TERRAIN_INFO* pterrain_info = new TERRAIN_INFO;
+			ptile->terrainList.push_back(pterrain_info);
 
-			int group_id = ptile->byGroup_ID;
-			ptile->byGroup_sequence = rand()%m_DirtTex[group_id]->size();
+			int group_id = pterrain_info->byGroup_ID;
+			pterrain_info->byGroup_sequence = rand()%m_DirtTex[group_id]->size();
 			m_sqTile.push_back(ptile);
 		}
 	}
@@ -75,6 +83,8 @@ void CTileMgr::MinimapRender(void)
 	D3DXMatrixIdentity(&matWorld);
 	TEXINFO*	pTexture = NULL;
 	int iindex = 0;
+	list<TERRAIN_INFO*>::iterator iter;
+
 	for(int i = 0; i < SQ_TILECNTX; ++i)
 	{
 		for(int j = 0; j < SQ_TILECNTY; ++j)
@@ -83,15 +93,34 @@ void CTileMgr::MinimapRender(void)
 			matWorld._41 = m_sqTile[iindex]->vPos.x;
 			matWorld._42 = m_sqTile[iindex]->vPos.y;
 
-			if(m_sqTile[iindex]->byTerrain_ID == TERRAIN_DIRT)
-			{
-				pTexture = (*m_DirtTex[m_sqTile[iindex]->byGroup_ID])[m_sqTile[iindex]->byGroup_ID];
-			}
+			iter = m_sqTile[iindex]->terrainList.begin();
+			BYTE	group_id = 0;
+			BYTE	squence_id = 0;
 
 			CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
-			CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
-				, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
-				, D3DCOLOR_ARGB(255,255,255,255));
+
+			for( ; iter != m_sqTile[iindex]->terrainList.end(); ++iter)
+			{
+				group_id = (*iter)->byGroup_ID;
+				squence_id = (*iter)->byGroup_sequence;
+				if( (*iter)->byGroup_ID == TERRAIN_DIRT )
+				{
+					pTexture = (*m_DirtTex[group_id])[squence_id];
+				}
+				CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
+					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+					, D3DCOLOR_ARGB(255,255,255,255));
+			}			
+
+			//if(m_sqTile[iindex]->terrainList.begin()->byTerrain_ID == TERRAIN_DIRT)
+			//{
+			//	pTexture = (*m_DirtTex[m_sqTile[iindex]->byGroup_ID])[m_sqTile[iindex]-];
+			//}
+
+			//CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
+			//CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
+			//	, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+			//	, D3DCOLOR_ARGB(255,255,255,255));
 		}
 	}
 }
@@ -115,30 +144,36 @@ void CTileMgr::TileRender(void)
 			if(iindex < 0 || iindex >= SQ_TILECNTX*SQ_TILECNTY)
 				continue;
 
-			if( m_sqTile[iindex]->byTerrain_ID == TERRAIN_DIRT )
-			{
-				int group_id = m_sqTile[iindex]->byGroup_ID;
-				const vector<TEXINFO*>* temp = m_DirtTex[group_id];
-				int squence = m_sqTile[iindex]->byGroup_sequence;
-
-				pTexture = (*temp)[squence];
-			}
-			else if(m_sqTile[iindex]->byTerrain_ID == TERRAIN_HIGHDIRT)
-			{
-				int group_id = m_sqTile[iindex]->byGroup_ID;
-				const vector<TEXINFO*>* temp = m_HighDirtTex[group_id];
-				int squence = m_sqTile[iindex]->byGroup_sequence;
-				pTexture = (*temp)[squence];
-			}
-
+			list<TERRAIN_INFO*>::iterator iter = m_sqTile[iindex]->terrainList.begin();
+			list<TERRAIN_INFO*>::iterator iter_end = m_sqTile[iindex]->terrainList.end();
+			int group_id = 0;
+			int squence = 0;
+			const vector<TEXINFO*>* temp;
 
 			matWorld._41 = m_sqTile[iindex]->vPos.x - scrollX;
 			matWorld._42 = m_sqTile[iindex]->vPos.y - scrollY;
-
 			CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
-			CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
-				, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
-				, D3DCOLOR_ARGB(255,255,255,255));
+
+			for( ; iter != iter_end; ++iter)
+			{
+				if( (*iter)->byTerrain_ID == TERRAIN_DIRT )
+				{
+					group_id = (*iter)->byGroup_ID;
+					temp = m_DirtTex[group_id];
+					squence = (*iter)->byGroup_sequence;
+					pTexture = (*temp)[squence];
+				}
+				if( (*iter)->byTerrain_ID == TERRAIN_HIGHDIRT )
+				{
+					group_id = (*iter)->byGroup_ID;
+					temp = m_HighDirtTex[group_id];
+					squence = (*iter)->byGroup_sequence;
+					pTexture = (*temp)[squence];
+				}
+				CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
+					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+					, D3DCOLOR_ARGB(255,255,255,255));
+			}
 		}
 	}
 
@@ -216,7 +251,7 @@ void CTileMgr::ShowGrid(void)
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 
-	for(int j = 0; j < 30; ++j)
+	for(int j = 0; j < 50; ++j)
 	{
 		vPoint[0] = D3DXVECTOR2( float(j*SQ_TILESIZEX),0);
 		vPoint[1] = D3DXVECTOR2( float(j*SQ_TILESIZEX) , float(SQ_TILECNTY*SQ_TILESIZEY));
@@ -239,8 +274,17 @@ void CTileMgr::ShowGrid(void)
 }
 void CTileMgr::Release(void)
 {
+
 	for(size_t i = 0; i < m_sqTile.size(); ++i)
 	{
+		list<TERRAIN_INFO*>::iterator iter = m_sqTile[i]->terrainList.begin();
+		list<TERRAIN_INFO*>::iterator iter_end = m_sqTile[i]->terrainList.end();
+		for( ; iter != iter_end; ++iter)
+		{
+			Safe_Delete((*iter));
+			//iter = m_sqTile[i]->terrainList.erase(iter);
+		}
+		m_sqTile[i]->terrainList.clear();
 		Safe_Delete(m_sqTile[i]);
 	}
 	m_sqTile.clear();
@@ -271,8 +315,6 @@ void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
 
 	float b[4] = {0};
 
-	m_rbidx = -1;
-
 	int mouseptX = _pt.x + m_pToolView->GetScrollPos(0);
 	int mouseptY = _pt.y + m_pToolView->GetScrollPos(1);
 
@@ -298,12 +340,50 @@ void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
 		}
 	}
 }
-void CTileMgr::SetTerrain(const int idx , const TILE&	temptile)
+void CTileMgr::SetTerrain(const int idx , const TILE&	temptile , TERRAIN_INFO& pterrain_info)
 {
+	if(idx < 0 || idx >= SQ_TILECNTX * SQ_TILECNTY)
+		return;
+
 	m_sqTile[idx]->byFloor = temptile.byFloor;
-	m_sqTile[idx]->byGroup_ID = temptile.byGroup_ID;
-	m_sqTile[idx]->byGroup_sequence = temptile.byGroup_sequence;
-	m_sqTile[idx]->byTerrain_ID = temptile.byTerrain_ID;
+	m_sqTile[idx]->byOption = temptile.byOption;
+
+	TERRAIN_INFO* ptemp = NULL;
+
+
+	if(pterrain_info.bysortLV == 1)
+	{		
+		if(m_sqTile[idx]->terrainList.size() == 2)
+		{
+			ptemp = m_sqTile[idx]->terrainList.back();
+			ptemp->byGroup_ID = pterrain_info.byGroup_ID;
+			ptemp->byGroup_sequence = pterrain_info.byGroup_sequence;
+			ptemp->bysortLV = pterrain_info.bysortLV;
+			ptemp->byTerrain_ID = pterrain_info.byTerrain_ID;
+		}
+		else
+		{
+			ptemp = new TERRAIN_INFO;
+			ptemp->byGroup_ID = pterrain_info.byGroup_ID;
+			ptemp->byGroup_sequence = pterrain_info.byGroup_sequence;
+			ptemp->bysortLV = pterrain_info.bysortLV;
+			ptemp->byTerrain_ID = pterrain_info.byTerrain_ID;
+
+			m_sqTile[idx]->terrainList.push_back(ptemp);
+
+			list<TERRAIN_INFO*> temp = m_sqTile[idx]->terrainList;
+			m_sqTile[idx]->terrainList.sort(rendersort_compare());
+		}
+	}
+	else
+	{
+		ptemp = m_sqTile[idx]->terrainList.front();
+		ptemp->byGroup_ID = pterrain_info.byGroup_ID;
+		ptemp->byGroup_sequence = pterrain_info.byGroup_sequence;
+		ptemp->bysortLV = pterrain_info.bysortLV;
+		ptemp->byTerrain_ID = pterrain_info.byTerrain_ID;
+	}
+
 }
 int CTileMgr::TileCheck(const int _index , const int _flr)
 {

@@ -12,23 +12,47 @@ typedef struct tagTexture
 	D3DXIMAGE_INFO			ImgInfo;
 }TEXINFO;
 
+typedef struct terrainInfo
+{
+	BYTE			byTerrain_ID; //어느 지형
+	BYTE			byGroup_ID; //지형의 어느그룹
+	BYTE			byGroup_sequence; //그룹의 몇번째
+	BYTE			bysortLV; //소팅레벨
+
+	bool operator< (const terrainInfo& temp) const
+	{
+		return this->bysortLV < temp.bysortLV;
+	}
+	terrainInfo()
+	{
+		byTerrain_ID = TERRAIN_DIRT;
+		byGroup_ID = GROUP_FLAT;
+		byGroup_sequence = 0;
+		bysortLV = 0;
+	}
+	~terrainInfo()
+	{
+	}
+}TERRAIN_INFO;
+
 typedef struct tagTile
 {
 	D3DXVECTOR2		vPos;
 
-	BYTE			byTerrain_ID; //어느 지형
-	BYTE			byGroup_ID; //지형의 어느그룹
-	BYTE			byGroup_sequence; //그룹의 몇번째
+	//BYTE			byTerrain_ID; //어느 지형
+	//BYTE			byGroup_ID; //지형의 어느그룹
+	//BYTE			byGroup_sequence; //그룹의 몇번째
+
 
 	BYTE			byOption;
 	BYTE			byFloor; /*0층이 지하*/
-
+	list<TERRAIN_INFO*>	terrainList;
 	tagTile()
 	{
 		vPos = D3DXVECTOR2(0,0);
-		byTerrain_ID = TERRAIN_DIRT;
-		byGroup_ID = GROUP_FLAT;
-		byGroup_sequence = 0;
+		//byTerrain_ID = TERRAIN_DIRT;
+		//byGroup_ID = GROUP_FLAT;
+		//byGroup_sequence = 0;
 		byOption = 0;
 		byFloor = 1;
 	}

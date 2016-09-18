@@ -53,7 +53,7 @@ HRESULT CTerrainBrush::TerrainCheck(void)
 	{
 		for(int j = 0; j < 4; ++j)
 		{
-			iindex = sqidx - 130 + (i*2+j);
+			iindex = sqidx - 130 + (i*SQ_TILECNTX+j);
 
 			if(iindex >= 0 && iindex < SQ_TILECNTX*SQ_TILECNTY)
 			{
@@ -77,7 +77,11 @@ HRESULT CTerrainBrush::TerrainCheck(void)
 	else if(icase == 1)
 	{
 		/*1단계 올릴때*/
-		LeftArea(sqidx);
+
+		if( !str_terrainID.Compare(L"High_dirt") )
+		{
+			High_DirtBrush(sqidx);
+		}
 	}
 	else if(icase == 2)
 	{
@@ -87,14 +91,22 @@ HRESULT CTerrainBrush::TerrainCheck(void)
 
 	return S_OK;
 }
-void CTerrainBrush::LeftArea(const int index)
+void CTerrainBrush::High_DirtBrush(const int idx)
 {
-	int startidx = index - 132;
-	int tempidx = 0;
 	TILE	temptile;
+	TERRAIN_INFO	terrain_info;
 
-	temptile.byGroup_ID = GROUP_L;
-	temptile.byTerrain_ID = m_curTerrainID;
+	LeftArea(idx - 132 , temptile , terrain_info);
+	LeftUpArea(idx - 258 , temptile , terrain_info) ;
+	RightUpArea(idx - 256 , temptile , terrain_info);
+	RightArea(idx - 126 , temptile , terrain_info);
+	RightDown(idx , temptile , terrain_info);
+	LeftDown(idx - 2 , temptile , terrain_info);
+}
+void CTerrainBrush::LeftArea(const int startidx, TILE& temptile, TERRAIN_INFO& pterrain_info)
+{
+	int tempidx = 0;
+
 
 	for(int i = 0; i < 3; ++i)
 	{
@@ -106,9 +118,147 @@ void CTerrainBrush::LeftArea(const int index)
 			else
 				temptile.byFloor = m_curFloor;
 
-			temptile.byGroup_sequence = i*2+j;
+			if(i*2+j == 0)
+				temptile.byOption = 0;
+			else
+				temptile.byOption = 1;
 
-			CTileMgr::GetInstance()->SetTerrain(startidx + tempidx , temptile);
+			
+			pterrain_info.byTerrain_ID = m_curTerrainID;
+			pterrain_info.byGroup_ID = GROUP_L;
+			pterrain_info.byGroup_sequence = i*2+j;
+
+			if(i*2+j >= 0 && i*2+j <= 2)
+				pterrain_info.bysortLV = 1;
+			else
+				pterrain_info.bysortLV = 0;
+
+			CTileMgr::GetInstance()->SetTerrain(startidx + tempidx , temptile, pterrain_info);
+		}
+	}
+}
+void CTerrainBrush::LeftUpArea(const int startidx, TILE& temptile , TERRAIN_INFO& pterrain_info)
+{
+	int tempidx = 0;
+
+	temptile.byFloor = m_curFloor;
+	temptile.byOption = 1;
+
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int j = 0; j < 2; ++j)
+		{
+			tempidx = i * SQ_TILECNTX + j;
+
+			pterrain_info.byTerrain_ID = m_curTerrainID;
+			pterrain_info.byGroup_ID = GROUP_LU;
+			pterrain_info.byGroup_sequence = i*2+j;
+
+			if(i*2+j != 3)
+				pterrain_info.bysortLV = 1;
+			else
+				pterrain_info.bysortLV = 0;
+
+			CTileMgr::GetInstance()->SetTerrain(startidx + tempidx , temptile, pterrain_info);
+		}
+	}
+}
+void CTerrainBrush::RightUpArea(const int startidx, TILE& temptile , TERRAIN_INFO& pterrain_info)
+{
+	int tempidx = 0;
+
+	temptile.byFloor = m_curFloor;
+	temptile.byOption = 1;
+
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int j = 0; j < 2; ++j)
+		{
+			tempidx = i * SQ_TILECNTX + j;
+
+			pterrain_info.byTerrain_ID = m_curTerrainID;
+			pterrain_info.byGroup_ID = GROUP_RU;
+			pterrain_info.byGroup_sequence = i*2+j;
+
+			if(i*2+j != 2)	
+				pterrain_info.bysortLV = 1;
+			else
+				pterrain_info.bysortLV = 0;
+
+			CTileMgr::GetInstance()->SetTerrain(startidx + tempidx , temptile, pterrain_info);
+		}
+	}
+}
+void CTerrainBrush::RightArea(const int startidx, TILE& temptile , TERRAIN_INFO& pterrain_info)
+{
+	int tempidx = 0;
+
+	for(int i = 0; i < 3; ++i)
+	{
+		for(int j = 0; j < 2; ++j)
+		{
+			tempidx = i * SQ_TILECNTX + j;
+			if(i == 2)
+				temptile.byFloor = m_curFloor - 1;
+			else
+				temptile.byFloor = m_curFloor;
+
+			pterrain_info.byGroup_ID = GROUP_R;
+			pterrain_info.byGroup_sequence = i*2+j;
+			pterrain_info.byTerrain_ID = m_curTerrainID;
+
+			if( i == 0 || i*2+j == 3)
+				pterrain_info.bysortLV = 1;
+			else
+				pterrain_info.bysortLV = 0;
+
+			CTileMgr::GetInstance()->SetTerrain(startidx + tempidx , temptile, pterrain_info);
+		}
+	}
+}
+void CTerrainBrush::RightDown(const int startidx, TILE& temptile , TERRAIN_INFO& pterrain_info)
+{
+	int tempidx = 0;
+
+	for(int i = 0; i < 3; ++i)
+	{
+		for(int j = 0; j < 2; ++j)
+		{
+			tempidx = i*SQ_TILECNTX + j;
+			if(i == 2)
+				temptile.byFloor = m_curFloor - 1;
+			else
+				temptile.byFloor = m_curFloor;
+
+			pterrain_info.byGroup_ID = GROUP_RD;
+			pterrain_info.byGroup_sequence = i*2+j;
+			pterrain_info.byTerrain_ID = m_curTerrainID;
+			pterrain_info.bysortLV = 0;
+
+			CTileMgr::GetInstance()->SetTerrain(startidx + tempidx , temptile, pterrain_info);
+		}
+	}
+}
+void CTerrainBrush::LeftDown(const int startidx, TILE& temptile , TERRAIN_INFO& pterrain_info)
+{
+	int tempidx = 0;
+
+	for(int i = 0; i < 3; ++i)
+	{
+		for(int j = 0; j < 2; ++j)
+		{
+			tempidx = i * SQ_TILECNTX + j;
+			if(i == 2)
+				temptile.byFloor = m_curFloor - 1;
+			else
+				temptile.byFloor = m_curFloor;
+
+			pterrain_info.byGroup_ID = GROUP_LD;
+			pterrain_info.byGroup_sequence = i*2+j;
+			pterrain_info.byTerrain_ID = m_curTerrainID;
+			pterrain_info.bysortLV = 0;
+
+			CTileMgr::GetInstance()->SetTerrain(startidx + tempidx , temptile , pterrain_info);
 		}
 	}
 }
@@ -127,3 +277,4 @@ HRESULT	CTerrainBrush::InitBrush(const CString&	_str)
 
 	return S_OK;
 }
+
