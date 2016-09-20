@@ -24,7 +24,9 @@ public:
 	void Rohmbus_Render(void);
 	int	 GetRbIdx(void);
 	int	 TileCheck(const int _index , const int _flr);
-	void SetTerrain(const int idx , const TILE&	temptile , TERRAIN_INFO& pterrain_info);
+	void SetTerrain(const int idx , const TILE&	temptile , TERRAIN_INFO& pterrain_info , bool _bdelete = true);
+public:
+	TERRAIN_INFO* GetTerrain_Info(const int _index);
 public:
 	void InitTile(void);
 	void TileRender(void);

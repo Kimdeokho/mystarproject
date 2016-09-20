@@ -188,31 +188,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\MyProPage.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MyProPage.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MyProPage2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MyProPage2.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MyProSheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MyProSheet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ToolView.cpp"
+				RelativePath=".\TerrainBrush.cpp"
 				>
 			</File>
 			<Filter
@@ -363,6 +339,50 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="MainView"
+				>
+				<File
+					RelativePath=".\ToolView.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ToolView.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Sheet"
+				>
+				<File
+					RelativePath=".\MyProSheet.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyProSheet.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Page"
+				>
+				<File
+					RelativePath=".\MyProPage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyProPage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyProPage2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyProPage2.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"
@@ -370,7 +390,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ToolView.h"
+				RelativePath=".\TerrainBrush.h"
 				>
 			</File>
 		</Filter>
