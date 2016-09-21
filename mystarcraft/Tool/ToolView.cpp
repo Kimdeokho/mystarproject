@@ -12,7 +12,7 @@
 #include "TileMgr.h"
 #include "TextureMgr.h"
 #include "MainFrm.h"
-#include "TerrainBrush.h"
+#include "TerrainBrushMgr.h"
 
 
 #ifdef _DEBUG
@@ -132,7 +132,7 @@ void CToolView::OnInitialUpdate()
 	}
 
 	CTileMgr::GetInstance()->InitTile();
-	CTerrainBrush::GetInstance()->Initialize();
+	CTerrainBrushMgr::GetInstance()->Initialize();
 
 	m_bGrid = false;
 	m_bLbutton = false;
@@ -229,7 +229,7 @@ void CToolView::OnLButtonDown(UINT nFlags, CPoint point)
 	CScrollView::OnLButtonDown(nFlags, point);
 
 	m_bLbutton = true;
-	if(CTerrainBrush::GetInstance()->TerrainCheck())
+	if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
 	{
 		MessageBox(L"지형 체크 실패");
 	}

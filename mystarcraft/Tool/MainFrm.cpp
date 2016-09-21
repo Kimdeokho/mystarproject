@@ -12,7 +12,7 @@
 #include "ToolView.h"
 #include "Minimapview.h"
 #include "MyForm.h"
-#include "TerrainBrush.h"
+#include "TerrainBrushMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,7 +48,7 @@ CMainFrame::~CMainFrame()
 	CTextureMgr::DestroyInstance();
 	CTileMgr::DestroyInstance();
 	CDevice::DestroyInstance();
-	CTerrainBrush::DestroyInstance();
+	CTerrainBrushMgr::DestroyInstance();
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

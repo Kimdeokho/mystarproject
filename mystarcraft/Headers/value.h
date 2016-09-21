@@ -31,4 +31,6 @@ const BYTE	GROUP_RD = 5;
 const BYTE	GROUP_LD = 6;
 const BYTE	GROUP_END = 7;
 
+const int   MOVE_OK = 0;
+const int   MOVE_NONE = 1;
 

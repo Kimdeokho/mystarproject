@@ -399,11 +399,14 @@ void CTileMgr::SetTerrain(const int idx , const TILE&	temptile , TERRAIN_INFO& p
 		m_sqTile[idx]->terrainList.sort(rendersort_compare());
 
 }
-int CTileMgr::TileCheck(const int _index , const int _flr)
+int CTileMgr::FloorCheck(const int _index , const int _flr)
 {
 	return _flr - m_sqTile[_index]->byFloor;
 }
 TERRAIN_INFO* CTileMgr::GetTerrain_Info(const int _index)
 {
-	return m_sqTile[_index]->terrainList.back();
+	if( 0 <= _index && _index <= SQ_TILECNTX * SQ_TILECNTY)
+		return m_sqTile[_index]->terrainList.back();
+	else
+		return NULL;
 }
