@@ -47,6 +47,7 @@ CToolView::CToolView()
 
 CToolView::~CToolView()
 {
+//	CTerrainBrushMgr::GetInstance()->Release();
 }
 
 BOOL CToolView::PreCreateWindow(CREATESTRUCT& cs)

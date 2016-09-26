@@ -60,6 +60,17 @@ typedef struct tagTile
 
 }TILE;
 
+typedef struct tagTile_temp
+{
+	BYTE			byOption;
+	BYTE			byFloor; /*0ÃþÀÌ ÁöÇÏ*/
+
+	tagTile_temp()
+	{
+		byOption = 0;
+		byFloor = 1;
+	}
+}TILE_TEMP;
 typedef struct tagUnitData
 {
 	wstring		wstrName;

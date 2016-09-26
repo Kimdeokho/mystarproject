@@ -48,6 +48,10 @@ BOOL CToolApp::InitInstance()
 	// 응용 프로그램 매니페스트가 ComCtl32.dll 버전 6 이상을 사용하여 비주얼 스타일을
 	// 사용하도록 지정하는 경우, Windows XP 상에서 반드시 InitCommonControlsEx()가 필요합니다. 
 	// InitCommonControlsEx()를 사용하지 않으면 창을 만들 수 없습니다.
+
+	//_CrtSetBreakAlloc(66170);
+	//_CrtMemDumpAllObjectsSince(0); 
+
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
 	// 응용 프로그램에서 사용할 모든 공용 컨트롤 클래스를 포함하도록
@@ -56,7 +60,6 @@ BOOL CToolApp::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
-
 	// OLE 라이브러리를 초기화합니다.
 	if (!AfxOleInit())
 	{
@@ -103,6 +106,12 @@ BOOL CToolApp::InitInstance()
 	m_pMainWnd->UpdateWindow();
 	// 접미사가 있을 경우에만 DragAcceptFiles를 호출합니다.
 	//  SDI 응용 프로그램에서는 ProcessShellCommand 후에 이러한 호출이 발생해야 합니다.
+
+	//afxAmbientActCtx = FALSE;
+
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetBreakAlloc(399);
+
 	return TRUE;
 }
 

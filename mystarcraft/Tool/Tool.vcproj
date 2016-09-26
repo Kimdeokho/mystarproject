@@ -187,10 +187,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\TerrainBrush.cpp"
-				>
-			</File>
 			<Filter
 				Name="Device"
 				>
@@ -311,6 +307,14 @@
 				Name="Mgr"
 				>
 				<File
+					RelativePath=".\TerrainBrushMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TerrainBrushMgr.h"
+					>
+				</File>
+				<File
 					RelativePath=".\TextureMgr.cpp"
 					>
 				</File>
@@ -383,16 +387,32 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Brush"
+				>
+				<File
+					RelativePath=".\HighDirt_Brush.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HighDirt_Brush.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyBrush.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyBrush.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\TerrainBrush.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="리소스 파일"

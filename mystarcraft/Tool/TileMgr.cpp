@@ -9,10 +9,10 @@
 IMPLEMENT_SINGLETON(CTileMgr)
 CTileMgr::CTileMgr(void)
 {
-	m_rbidx = 0;
 	m_pToolView = NULL;
 	m_rbRender = false;
 	m_rbidx = -1;
+	m_sqidx = -1;
 }
 
 CTileMgr::~CTileMgr(void)
@@ -201,7 +201,7 @@ void CTileMgr::TileRender(void)
 
 	matfont._41 = 300;
 	matfont._42 = 440;
-	wsprintf(szTemp, L"마름모인덱스 %d", m_rbidx);
+	wsprintf(szTemp, L"사각인덱스 %d", m_sqidx);
 	CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
 	CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
 		, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
@@ -294,12 +294,12 @@ void CTileMgr::Release(void)
 	}
 	m_sqTile.clear();
 
-	vector<TILE*>().swap(m_sqTile);
+	//vector<TILE*>().swap(m_sqTile);
 
 
 	m_rbTile.clear();
 
-	vector<D3DXVECTOR2>().swap(m_rbTile);
+	//vector<D3DXVECTOR2>().swap(m_rbTile);
 }
 
 void CTileMgr::SetRohmbusRender(bool _bRender)
@@ -323,6 +323,8 @@ void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
 	int mouseptX = _pt.x + m_pToolView->GetScrollPos(0);
 	int mouseptY = _pt.y + m_pToolView->GetScrollPos(1);
 
+	m_sqidx = mouseptY/SQ_TILESIZEY*SQ_TILECNTX + mouseptX/SQ_TILESIZEX;
+	
 	for(int i = 0; i < RB_TILECNTY; ++i)
 	{
 		for(int j = 0; j < RB_TILECNTX; ++j)
@@ -345,7 +347,7 @@ void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
 		}
 	}
 }
-void CTileMgr::SetTerrain(const int idx , const TILE&	temptile , TERRAIN_INFO& pterrain_info , bool _bdelete/* = true*/)
+void CTileMgr::SetTerrain(const int idx , const TILE_TEMP&	temptile , TERRAIN_INFO& pterrain_info , bool _bdelete/* = true*/)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX * SQ_TILECNTY)
 		return;
@@ -405,8 +407,10 @@ int CTileMgr::FloorCheck(const int _index , const int _flr)
 }
 TERRAIN_INFO* CTileMgr::GetTerrain_Info(const int _index)
 {
-	if( 0 <= _index && _index <= SQ_TILECNTX * SQ_TILECNTY)
+	if( 0 <= _index && _index < SQ_TILECNTX * SQ_TILECNTY)
+	{
 		return m_sqTile[_index]->terrainList.back();
+	}
 	else
 		return NULL;
 }

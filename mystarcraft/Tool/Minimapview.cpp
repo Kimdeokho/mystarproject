@@ -18,7 +18,6 @@ CMinimapview::CMinimapview()
 
 CMinimapview::~CMinimapview()
 {
-	CDevice::GetInstance()->DestroyInstance();
 }
 
 BEGIN_MESSAGE_MAP(CMinimapview, CView)

@@ -11,8 +11,6 @@ IMPLEMENT_SINGLETON(CTerrainBrushMgr);
 
 CTerrainBrushMgr::CTerrainBrushMgr(void)
 {
-	for(int i = 0; i < TERRAIN_END; ++i)
-		m_Brush[i] = NULL;
 }
 
 CTerrainBrushMgr::~CTerrainBrushMgr(void)
@@ -22,6 +20,9 @@ CTerrainBrushMgr::~CTerrainBrushMgr(void)
 
 HRESULT CTerrainBrushMgr::Initialize(void)
 {
+	for(int i = 0; i < TERRAIN_END; ++i)
+		m_Brush[i] = NULL;
+
 	m_TerrainListBox = &((CMainFrame*)AfxGetMainWnd())->m_pMyFormView->m_pProSheet->m_page1.m_maptileListbox;
 
 	m_Brush[TERRAIN_HIGHDIRT] = new CHighDirt_Brush;
@@ -80,16 +81,16 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 	{
 		/*2단계 낮출때 */
 	}
-	else if(icase == -1)
+	if(icase == -1)
 	{
 		/*1단계 낮출때*/
 	}
-	else if(icase == 1)
+	if(icase == 1)
 	{
 		/*1단계 올릴때*/
 		m_Brush[m_curTerrainID]->BrushPaint();
 	}
-	else if(icase == 2)
+	if(icase == 2)
 	{
 		/*2단계 올릴때*/
 	}
@@ -152,6 +153,12 @@ void CTerrainBrushMgr::Release(void)
 	for(int i = 0; i < TERRAIN_END; ++i)
 	{
 		Safe_Delete(m_Brush[i]);
+		//delete m_Brush[i];
+		//m_Brush[i] = NULL;
 	}
+	//delete m_Brush[TERRAIN_HIGHDIRT];
+	//m_Brush[TERRAIN_HIGHDIRT] = NULL;
+
+	int a = 0;
 }
 
