@@ -1,8 +1,8 @@
 Tile|None|High_dirt|FLAT|3|..\Texture\Tile\High_dirt\FLAT\hdg%d.png
 Tile|None|High_dirt|L|6|..\Texture\Tile\High_dirt\L\hdl%d.png
 Tile|None|High_dirt|LD|12|..\Texture\Tile\High_dirt\LD\hdld%d.png
-Tile|None|High_dirt|LU|8|..\Texture\Tile\High_dirt\LU\hdlu%d.png
+Tile|None|High_dirt|LU|9|..\Texture\Tile\High_dirt\LU\hdlu%d.png
 Tile|None|High_dirt|R|6|..\Texture\Tile\High_dirt\R\hdr%d.png
 Tile|None|High_dirt|RD|12|..\Texture\Tile\High_dirt\RD\hdrd%d.png
-Tile|None|High_dirt|RU|8|..\Texture\Tile\High_dirt\RU\hdru%d.png
+Tile|None|High_dirt|RU|9|..\Texture\Tile\High_dirt\RU\hdru%d.png
 Tile|None|Dirt|FLAT|2|..\Texture\Tile\Dirt\FLAT\dg%d.png

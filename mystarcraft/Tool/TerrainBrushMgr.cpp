@@ -26,6 +26,7 @@ HRESULT CTerrainBrushMgr::Initialize(void)
 	m_TerrainListBox = &((CMainFrame*)AfxGetMainWnd())->m_pMyFormView->m_pProSheet->m_page1.m_maptileListbox;
 
 	m_Brush[TERRAIN_HIGHDIRT] = new CHighDirt_Brush;
+
 	return S_OK;
 }
 int CTerrainBrushMgr::get_sqindex(void)
@@ -101,14 +102,7 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 void CTerrainBrushMgr::High_DirtBrush(const int idx)/*브러쉬 칠하기로 대체*/
 {
 	TILE	temptile;
-	TERRAIN_INFO	terrain_info;
-
-	//LeftArea(idx - 132 , temptile , terrain_info);
-	//LeftUpArea(idx - 258 , temptile , terrain_info) ;
-	//RightUpArea(idx - 256 , temptile , terrain_info);
-	//RightArea(idx - 126 , temptile , terrain_info);
-	//RightDown(idx , temptile , terrain_info);
-	//LeftDown(idx - 2 , temptile , terrain_info);
+	TERRAIN_INFO	terrain_info;;
 }
 bool CTerrainBrushMgr::Overlap_Group(const int irow ,const int icol ,const int startidx ,const int group_id)
 {

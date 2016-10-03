@@ -125,6 +125,50 @@ void CTileMgr::MinimapRender(void)
 		}
 	}
 }
+void CTileMgr::TileOption_Update(void)
+{
+	int scrollX = m_pToolView->GetScrollPos(0);
+	int scrollY = m_pToolView->GetScrollPos(1);
+
+	int iindex = 0;
+	for(int i = 0; i < 30; ++i)
+	{
+		for(int j = 0; j < 40; ++j)
+		{
+			int rowidx = i + scrollY/SQ_TILESIZEY;
+			int colidx = j + scrollX/SQ_TILESIZEX;
+			iindex = rowidx*SQ_TILECNTX + colidx;
+			if(iindex < 0 || iindex >= SQ_TILECNTX*SQ_TILECNTY)
+				continue;
+
+			TERRAIN_INFO* ptemp = GetTerrain_Info(iindex);
+
+			if(ptemp->byTerrain_ID == TERRAIN_HIGHDIRT)
+			{
+				if(ptemp->byGroup_ID == GROUP_L)
+				{
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+					m_sqTile[iindex]->byFloor = 1;
+				}
+				else if(ptemp->byGroup_ID == GROUP_LU)
+				{
+				}
+				else if(ptemp->byGroup_ID == GROUP_RU)
+				{
+				}
+				else if(ptemp->byGroup_ID == GROUP_R)
+				{
+				}
+				else if(ptemp->byGroup_ID == GROUP_RD)
+				{
+				}
+				else if(ptemp->byGroup_ID == GROUP_LD)
+				{
+				}
+			}
+		}
+	}
+}
 void CTileMgr::TileRender(void)
 {
 	int iindex = 0;
@@ -183,21 +227,21 @@ void CTileMgr::TileRender(void)
 
 	RECT	rc = {0};
 	TCHAR	szTemp[MIN_STR] = L"";
-	wsprintf(szTemp, L"胶农费X %d", m_pToolView->GetScrollPos(0));
-	matfont._41 = 300;
-	matfont._42 = 400;
-	CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
-	CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
-		, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
-		, D3DCOLOR_ARGB(255,255,255,255));
+	//wsprintf(szTemp, L"胶农费X %d", m_pToolView->GetScrollPos(0));
+	//matfont._41 = 300;
+	//matfont._42 = 400;
+	//CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
+	//CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
+	//	, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
+	//	, D3DCOLOR_ARGB(255,255,255,255));
 
-	matfont._41 = 300;
-	matfont._42 = 420;
-	wsprintf(szTemp, L"胶农费Y %d", m_pToolView->GetScrollPos(1));
-	CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
-	CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
-		, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
-		, D3DCOLOR_ARGB(255,255,255,255));
+	//matfont._41 = 300;
+	//matfont._42 = 420;
+	//wsprintf(szTemp, L"胶农费Y %d", m_pToolView->GetScrollPos(1));
+	//CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
+	//CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
+	//	, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
+	//	, D3DCOLOR_ARGB(255,255,255,255));
 
 	matfont._41 = 300;
 	matfont._42 = 440;
@@ -347,13 +391,10 @@ void CTileMgr::Rohmbus_Picking(const CPoint&	_pt)
 		}
 	}
 }
-void CTileMgr::SetTerrain(const int idx , const TILE_TEMP&	temptile , TERRAIN_INFO& pterrain_info , bool _bdelete/* = true*/)
+void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bdelete/* = true*/)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX * SQ_TILECNTY)
 		return;
-
-	m_sqTile[idx]->byFloor = temptile.byFloor;
-	m_sqTile[idx]->byOption = temptile.byOption;
 
 	TERRAIN_INFO* ptemp = NULL;
 
