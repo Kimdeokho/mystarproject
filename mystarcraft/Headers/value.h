@@ -23,15 +23,6 @@ const BYTE	TERRAIN_DIRT = 0;
 const BYTE	TERRAIN_HIGHDIRT = 1;
 const BYTE	TERRAIN_END = 2;
 
-const BYTE	GROUP_FLAT = 0;
-const BYTE	GROUP_L = 1;
-const BYTE	GROUP_LU = 2;
-const BYTE	GROUP_RU = 3;
-const BYTE	GROUP_R = 4;
-const BYTE	GROUP_RD = 5;
-const BYTE	GROUP_LD = 6;
-const BYTE	GROUP_END = 7;
-
 const int   MOVE_OK = 0;
 const int   MOVE_NONE = 1;
 

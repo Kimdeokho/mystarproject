@@ -6,6 +6,7 @@
 #include "MyProSheet.h"
 #include "MyProPage.h"
 #include "HighDirt_Brush.h"
+#include "LowerGround_Brush.h"
 
 IMPLEMENT_SINGLETON(CTerrainBrushMgr);
 
@@ -20,12 +21,13 @@ CTerrainBrushMgr::~CTerrainBrushMgr(void)
 
 HRESULT CTerrainBrushMgr::Initialize(void)
 {
-	for(int i = 0; i < TERRAIN_END; ++i)
+	for(int i = 0; i < FLOOR_END; ++i)
 		m_Brush[i] = NULL;
 
 	m_TerrainListBox = &((CMainFrame*)AfxGetMainWnd())->m_pMyFormView->m_pProSheet->m_page1.m_maptileListbox;
 
-	m_Brush[TERRAIN_HIGHDIRT] = new CHighDirt_Brush;
+	m_Brush[UP_FLOOR_1] = new CHighDirt_Brush;
+	m_Brush[DOWN_FLOOR_1] = new CLowerGround_Brush;
 
 	return S_OK;
 }
@@ -69,7 +71,7 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 
 			if(iindex >= 0 && iindex < SQ_TILECNTX*SQ_TILECNTY)
 			{
-				icase = CTileMgr::GetInstance()->FloorCheck(iindex , m_curFloor);
+				icase = CTileMgr::GetInstance()->FloorCheck(iindex , m_curTerrainID);
 				if(icase != 0)
 					break;
 			}
@@ -85,11 +87,14 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 	if(icase == -1)
 	{
 		/*1단계 낮출때*/
+		m_Brush[DOWN_FLOOR_1]->SetTerrain_ID(m_curTerrainID);
+		m_Brush[DOWN_FLOOR_1]->BrushPaint();
 	}
 	if(icase == 1)
 	{
 		/*1단계 올릴때*/
-		m_Brush[m_curTerrainID]->BrushPaint();
+		m_Brush[UP_FLOOR_1]->SetTerrain_ID(m_curTerrainID);
+		m_Brush[UP_FLOOR_1]->BrushPaint();
 	}
 	if(icase == 2)
 	{
@@ -104,28 +109,6 @@ void CTerrainBrushMgr::High_DirtBrush(const int idx)/*브러쉬 칠하기로 대체*/
 	TILE	temptile;
 	TERRAIN_INFO	terrain_info;;
 }
-bool CTerrainBrushMgr::Overlap_Group(const int irow ,const int icol ,const int startidx ,const int group_id)
-{
-	const TERRAIN_INFO* pterrain_temp = NULL;
-	int tempidx = 0;
-	//for(int i = 0; i < irow; ++i)
-	{
-		//for(int j = 0; j < icol; ++j)
-		{
-			//tempidx = i*SQ_TILECNTX +j;
-			pterrain_temp = CTileMgr::GetInstance()->GetTerrain_Info(startidx);
-
-			if( group_id == pterrain_temp->byGroup_ID )
-				return true;
-		}
-	}
-	return false;
-}
-
-
-
-
-
 HRESULT	CTerrainBrushMgr::InitBrush(const CString&	_str)
 {
 	if(!_str.Compare(L"Dirt"))
@@ -144,14 +127,10 @@ HRESULT	CTerrainBrushMgr::InitBrush(const CString&	_str)
 
 void CTerrainBrushMgr::Release(void)
 {
-	for(int i = 0; i < TERRAIN_END; ++i)
+	for(int i = 0; i < FLOOR_END; ++i)
 	{
 		Safe_Delete(m_Brush[i]);
-		//delete m_Brush[i];
-		//m_Brush[i] = NULL;
 	}
-	//delete m_Brush[TERRAIN_HIGHDIRT];
-	//m_Brush[TERRAIN_HIGHDIRT] = NULL;
 
 	int a = 0;
 }

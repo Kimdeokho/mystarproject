@@ -219,6 +219,13 @@ void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 
 	CTileMgr::GetInstance()->Rohmbus_Picking(point);
 
+	if(m_bLbutton == true)
+	{
+		//if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
+		//{
+		//	MessageBox(L"지형 체크 실패");
+		//}
+	}
 
 	Invalidate(FALSE);
 }
@@ -230,10 +237,12 @@ void CToolView::OnLButtonDown(UINT nFlags, CPoint point)
 	CScrollView::OnLButtonDown(nFlags, point);
 
 	m_bLbutton = true;
+
 	if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
 	{
 		MessageBox(L"지형 체크 실패");
 	}
+
 	Invalidate(FALSE);
 }
 

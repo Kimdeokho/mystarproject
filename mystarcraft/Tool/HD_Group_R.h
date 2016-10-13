@@ -7,6 +7,7 @@ class CHD_Group_R : public CTerrain_Group
 public:
 	virtual void MakeTerrain_Group(const int istartidx);
 	void	Group_R_Algorithm(void);
+	void	Group_R_Algorithm2();
 public:
 	void	OverlapGroup_L(void);
 	void	OverlapGroup_LU(void);

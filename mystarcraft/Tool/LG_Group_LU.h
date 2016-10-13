@@ -1,12 +1,13 @@
 #pragma once
-
 #include "Terrain_Group.h"
-class CHD_Group_RD : public CTerrain_Group
+
+class CLG_Group_LU :
+	public CTerrain_Group
 {
 public:
-	virtual void MakeTerrain_Group(const int istartidx);
-	void	Group_RD_Algorithm(void);
-	void	Group_RD_Algorithm2();
+	virtual void	MakeTerrain_Group(const int istartidx);
+public:
+	void	Group_LU_Algorithm(void);
 public:
 	void	OverlapGroup_L(void);
 	void	OverlapGroup_LU(void);
@@ -26,7 +27,6 @@ public:
 	void	OverlapSequence_LU_1(void);
 	void	OverlapSequence_LU_2(void);
 	void	OverlapSequence_LU_3(void);
-	void	OverlapSequence_LU_8(void);
 
 	void	OverlapSequence_RU_0(void);
 	void	OverlapSequence_RU_1(void);
@@ -54,6 +54,6 @@ public:
 	void	OverlapSequence_R_4(void);
 	void	OverlapSequence_R_5(void);
 public:
-	CHD_Group_RD(void);
-	~CHD_Group_RD(void);
+	CLG_Group_LU(void);
+	virtual ~CLG_Group_LU(void);
 };

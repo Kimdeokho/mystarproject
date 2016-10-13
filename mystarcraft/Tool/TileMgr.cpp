@@ -143,27 +143,54 @@ void CTileMgr::TileOption_Update(void)
 
 			TERRAIN_INFO* ptemp = GetTerrain_Info(iindex);
 
+			
+
 			if(ptemp->byTerrain_ID == TERRAIN_HIGHDIRT)
 			{
+				m_sqTile[iindex]->byOption = MOVE_NONE;
 				if(ptemp->byGroup_ID == GROUP_L)
 				{
-					m_sqTile[iindex]->byOption = MOVE_NONE;
 					m_sqTile[iindex]->byFloor = 1;
 				}
 				else if(ptemp->byGroup_ID == GROUP_LU)
 				{
+					if(iindex != 3)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
 				}
 				else if(ptemp->byGroup_ID == GROUP_RU)
 				{
+					if(iindex != 2)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
 				}
 				else if(ptemp->byGroup_ID == GROUP_R)
-				{
+				{					
+					m_sqTile[iindex]->byFloor = 1;
 				}
 				else if(ptemp->byGroup_ID == GROUP_RD)
 				{
+					if(iindex != 0)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
 				}
 				else if(ptemp->byGroup_ID == GROUP_LD)
 				{
+					if(iindex != 1)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
+				}
+				else if(ptemp->byGroup_ID == GROUP_FLAT)
+				{
+					m_sqTile[iindex]->byOption = MOVE_OK;
+					if(ptemp->byGroup_sequence != 3)
+						m_sqTile[iindex]->byFloor = 2;
+					else
+						m_sqTile[iindex]->byFloor = 1;
 				}
 			}
 		}
@@ -442,9 +469,26 @@ void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bd
 		m_sqTile[idx]->terrainList.sort(rendersort_compare());
 
 }
-int CTileMgr::FloorCheck(const int _index , const int _flr)
+int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 {
-	return _flr - m_sqTile[_index]->byFloor;
+	TERRAIN_INFO* ptemp = m_sqTile[_index]->terrainList.back();
+
+	if(TERRAIN_HIGHDIRT == ptemp->byTerrain_ID)
+	{
+		if(TERRAIN_DIRT == _terrain_id)
+			return -1;
+		else if(TERRAIN_HIGHDIRT == _terrain_id)
+			return 1;
+	}
+	else if(TERRAIN_DIRT == ptemp->byTerrain_ID)
+	{
+		if(TERRAIN_DIRT == _terrain_id)
+			return -1;
+		else if(TERRAIN_HIGHDIRT == _terrain_id)
+			return 1;
+	}
+
+	return 0;
 }
 TERRAIN_INFO* CTileMgr::GetTerrain_Info(const int _index)
 {

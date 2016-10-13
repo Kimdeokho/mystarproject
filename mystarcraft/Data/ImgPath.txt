@@ -1,4 +1,4 @@
-Tile|None|High_dirt|FLAT|3|..\Texture\Tile\High_dirt\FLAT\hdg%d.png
+Tile|None|High_dirt|FLAT|4|..\Texture\Tile\High_dirt\FLAT\hdg%d.png
 Tile|None|High_dirt|L|6|..\Texture\Tile\High_dirt\L\hdl%d.png
 Tile|None|High_dirt|LD|12|..\Texture\Tile\High_dirt\LD\hdld%d.png
 Tile|None|High_dirt|LU|9|..\Texture\Tile\High_dirt\LU\hdlu%d.png

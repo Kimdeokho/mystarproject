@@ -8,9 +8,6 @@ CHD_Group_RU::CHD_Group_RU(void)
 {
 	m_terrain_id = TERRAIN_HIGHDIRT;
 	m_startidx = 0;
-	m_oriidx = 0;
-	m_cursequence = 0;
-	ZeroMemory(&m_sendTerrainInfo , sizeof(TERRAIN_INFO));
 	m_oriTerrainInfo = NULL;
 }
 
@@ -21,28 +18,13 @@ void CHD_Group_RU::MakeTerrain_Group(int istartidx)
 {
 	m_startidx = istartidx;
 
-	int tempidx = 0;
-	for(int i = 0; i < 2; ++i)
-	{
-		for(int j = 0; j < 2; ++j)
-		{
-			m_cursequence = i*2+j;
-			tempidx = i * SQ_TILECNTX + j;
-			m_oriidx = m_startidx + tempidx;
-			m_bTerrainDelete = true;
+	Group_RU_Algorithm();
 
-			SetTerrainInfo(TERRAIN_HIGHDIRT , GROUP_RU , m_cursequence , 0);
 
-			if(m_cursequence != 2)
-				SetTerrainInfo(TERRAIN_HIGHDIRT , GROUP_RU , m_cursequence , 1);
-
-			Group_RU_Algorithm();
-		}
-	}
 }
 void CHD_Group_RU::Group_RU_Algorithm()
 {
-	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx);
+	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
 	{
@@ -70,13 +52,13 @@ void CHD_Group_RU::Group_RU_Algorithm()
 	}
 	else if(GROUP_FLAT == m_oriTerrainInfo->byGroup_ID)
 	{
-		if(TERRAIN_HIGHDIRT == m_oriTerrainInfo->byTerrain_ID)
+		if(m_terrain_id == m_oriTerrainInfo->byTerrain_ID)
 		{
-
+			Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1, 2);
 		}
 		else
 		{
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , true);
+			Make_RU_Terrain(m_startidx);
 		}
 	}
 }
@@ -233,1019 +215,256 @@ void CHD_Group_RU::OverlapGroup_LD(void)
 
 void CHD_Group_RU::OverlapSequence_L_0(void)
 {
-	if(0 == m_cursequence)
-	{
-	}
-	else if(1 == m_cursequence)
-	{
-	}
-	else if(2 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id , GROUP_RU , m_cursequence , 0);
-	}
-	else if(3 == m_cursequence)
-	{
-	}
-	else if(4 == m_cursequence)
-	{
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_L_1(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id , GROUP_RU , m_cursequence , 1);
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_L_2(void)
 {
-	if(0 == m_cursequence)
-	{
-		TERRAIN_INFO* ptemp1 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2);
-		TERRAIN_INFO* ptemp2 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2 + SQ_TILECNTX);
-
-		if(GROUP_LD == ptemp1->byGroup_ID && GROUP_LU == ptemp2->byGroup_ID )
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 + SQ_TILECNTX, m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-		}
-		SetTerrainInfo(m_terrain_id , GROUP_LU , 0 , 1);
-		CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX, m_sendTerrainInfo , m_bTerrainDelete);
-		SetTerrainInfo(m_terrain_id , GROUP_LU , 2 , 1);
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
+	RightEdge_Algorithm();
+	Make_LU_Terrain(m_startidx - SQ_TILECNTX);
+	SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+	SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
 }
 
 void CHD_Group_RU::OverlapSequence_L_3(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-		TERRAIN_INFO* ptemp1 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2);
-		TERRAIN_INFO* ptemp2 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2 + SQ_TILECNTX);
-
-		if(GROUP_LD == ptemp1->byGroup_ID && GROUP_LU == ptemp2->byGroup_ID )
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 + SQ_TILECNTX, m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-		}
-
-		SetTerrainInfo(m_terrain_id , GROUP_LU , 1 , 1);
-		CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX, m_sendTerrainInfo , m_bTerrainDelete);
-		SetTerrainInfo(m_terrain_id , GROUP_LU , 3 , 0);
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_L_4(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_L_5(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 
 
 void CHD_Group_RU::OverlapSequence_LU_0(void)
 {
-	/*설치하려는 그룹 L이 기존의 LU와 겹칠때*/
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LU_1(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LU_2(void)
 {
-	if(0 == m_cursequence)
-	{
-		return;
-	}
-	else if(1 == m_cursequence)
-	{
+	const TERRAIN_INFO* RightSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 1);
 
-	}
-	else if(2 == m_cursequence)
+	if(GROUP_RD == RightSpace->byGroup_ID)
 	{
-
+		SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_LU , 3 , 1 , true);
 	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
+	SetTerrainInfo(m_startidx + SQ_TILECNTX, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+	SetTerrainInfo(m_startidx + SQ_TILECNTX + 1 , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
 }
 
 void CHD_Group_RU::OverlapSequence_LU_3(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-		return;
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 void CHD_Group_RU::OverlapSequence_RU_0(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
+	Make_RU_Terrain(m_startidx);
 }
 
 void CHD_Group_RU::OverlapSequence_RU_1(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
 }
 
 void CHD_Group_RU::OverlapSequence_RU_2(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
 }
 
 void CHD_Group_RU::OverlapSequence_RU_3(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
 }
 
 void CHD_Group_RU::OverlapSequence_RD_0(void)
 {
-	if(0 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id , GROUP_RD , 0 , 0);
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-		}
-	}
-	else if(1 == m_cursequence)
-	{
+	const TERRAIN_INFO* ptemp1 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 2);
 
-	}
-	else if(2 == m_cursequence)
+	if(GROUP_LD == ptemp1->byGroup_ID)
 	{
-
+		Make_FLAT_Terrain(m_startidx , 2 ,2 );
 	}
-	else if(3 == m_cursequence)
+	else
 	{
-
+		SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_RU , 2, 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1 , m_terrain_id , GROUP_RU , 3, 1 , true);
 	}
-
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_RD_1(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id , GROUP_RD , 1 , 0);
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-		}
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_RD_2(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id , GROUP_RU , 2 , 0);
-
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-		}
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_RD_3(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-		m_bTerrainDelete = false;
-		SetTerrainInfo(m_terrain_id , GROUP_RD , 3 , 0);
-		CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
-		SetTerrainInfo(m_terrain_id , GROUP_RU , 3 , 1);
-
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			m_bTerrainDelete = true;
-		}
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_RD_4(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
+	Make_RU_Terrain(m_startidx);
 }
 
 void CHD_Group_RU::OverlapSequence_RD_5(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_R_0(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
+	Make_RU_Terrain(m_startidx);
 }
 
 void CHD_Group_RU::OverlapSequence_R_1(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_R_2(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_R_3(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_R_4(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
+	Make_RU_Terrain(m_startidx);
 }
 
 void CHD_Group_RU::OverlapSequence_R_5(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LD_0(void)
 {
-	/*RU가 LD 0번과 겹친다. */
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id, GROUP_FLAT , 0 , 0);
-	}
-	else if(3 == m_cursequence)
-	{
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LD_1(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-	}
-	else if(3 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id, GROUP_FLAT , 0 , 0);
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LD_2(void)
 {
-	if(0 == m_cursequence)
+	TERRAIN_INFO* ptemp1 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx - 1);
+	TERRAIN_INFO* ptemp2 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 2);
+
+	const TERRAIN_INFO* ru_top1 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx - SQ_TILECNTX);
+	const TERRAIN_INFO* ru_top2 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx - SQ_TILECNTX + 1);
+
+	const TERRAIN_INFO* Edge1 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 2);
+	const TERRAIN_INFO* Edge2 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 3);
+	const TERRAIN_INFO* Edge3 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 2 + SQ_TILECNTX);
+	const TERRAIN_INFO* Edge4 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 3 + SQ_TILECNTX);
+
+	if(GROUP_RD == ptemp1->byGroup_ID &&
+		GROUP_LD == ptemp2->byGroup_ID)
 	{
-		SetTerrainInfo(m_terrain_id, GROUP_LU , 8 , 1);
+		SetTerrainInfo(m_startidx , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+		SetTerrainInfo(m_startidx + 1 , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
 
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_RD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
+		if(GROUP_LD == ru_top1->byGroup_ID && GROUP_LD == ru_top2->byGroup_ID)
 		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
+			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 1, 2);
 		}
-		else if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
+		else if(GROUP_RU == ru_top1->byGroup_ID || GROUP_RU == ru_top2->byGroup_ID)
 		{
-			SetTerrainInfo(m_terrain_id , GROUP_LU , 2, 1);
+			SetTerrainInfo(m_startidx - SQ_TILECNTX , m_terrain_id , GROUP_RU , 2 , 0 , true);
+			SetTerrainInfo(m_startidx + 1 - SQ_TILECNTX, m_terrain_id , GROUP_RU , 3 , 1 , true);
 		}
-
-		TERRAIN_INFO*	ptemp1 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2);
-		TERRAIN_INFO*	ptemp2 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2 + SQ_TILECNTX);
-		TERRAIN_INFO*	ptemp3 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 3);
-		TERRAIN_INFO*	ptemp4 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx - 2);
-		TERRAIN_INFO*	ptemp5 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx - SQ_TILECNTX*2);
-
-		if(GROUP_LD == ptemp1->byGroup_ID &&
-			GROUP_LU == ptemp2->byGroup_ID && 8 != ptemp3->byGroup_sequence)
+	}
+	else
+	{
+		if(GROUP_RD == ptemp1->byGroup_ID)
 		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-			SetTerrainInfo(m_terrain_id , GROUP_LU , 2 , 1);
-		}
+			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 1, 2);
+			SetTerrainInfo(m_startidx , m_terrain_id , GROUP_RD , 0 , 0 , true);
+			SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_RD , 1 , 0 , true);
+			SetTerrainInfo(m_startidx + SQ_TILECNTX, m_terrain_id , GROUP_RD , 2 , 0 , false);
+			SetTerrainInfo(m_startidx + SQ_TILECNTX, m_terrain_id , GROUP_RU , 2 , 0 , true);
+			SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RU , 3 , 1 , true);
 
-		if(GROUP_RU == ptemp3->byGroup_ID &&
-			8 == ptemp3->byGroup_sequence)
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_RU , 2 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0, 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX + 2, m_sendTerrainInfo , m_bTerrainDelete);
-
-			SetTerrainInfo(m_terrain_id , GROUP_LU , 2, 1);
-		}
-
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_LD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_RD) ||
-			m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_RD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_RD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-			SetTerrainInfo(m_terrain_id , GROUP_RD , 0 , 0);
-		}
-		if(	m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_LD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			if(GROUP_RU == ptemp5->byGroup_ID)
+			if(GROUP_LD == ru_top1->byGroup_ID && GROUP_LD == ru_top2->byGroup_ID)
 			{
-				SetTerrainInfo(m_terrain_id , GROUP_RU , 2 , 0);
+				Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 1, 2);
 			}
-			else
+			else if(GROUP_RU == ru_top1->byGroup_ID || GROUP_RU == ru_top2->byGroup_ID)
 			{
-				SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
+				SetTerrainInfo(m_startidx - SQ_TILECNTX , m_terrain_id , GROUP_LU , 2 , 1 , true);
+				SetTerrainInfo(m_startidx + 1 - SQ_TILECNTX, m_terrain_id , GROUP_LU , 3 , 0 , true);
 			}
-			
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
+		}
+		else if(GROUP_LD == ptemp2->byGroup_ID)
+		{
+			SetTerrainInfo(m_startidx , m_terrain_id , GROUP_LU , 2 , 1 , true);
+			SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_LU , 3 , 0 , true);
+			SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+			SetTerrainInfo(m_startidx + SQ_TILECNTX + 1 , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+		}
+		else
+		{
+			SetTerrainInfo(m_startidx , m_terrain_id , GROUP_LU , 8 , 1 , true);
+			SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_RD , 1 , 0 , true);
+			SetTerrainInfo(m_startidx + SQ_TILECNTX, m_terrain_id , GROUP_RU , 2 , 0 , true);
+			//SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RD , 3 , 0 , true);
+			SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RU , 3 , 1 , true);
 		}
 	}
-	else if(1 == m_cursequence)
-	{
 
-	}
-	else if(2 == m_cursequence)
+	if(GROUP_LD == Edge1->byGroup_ID && GROUP_LU == Edge3->byGroup_ID) 
 	{
-
+		if(GROUP_LU == Edge4->byGroup_ID)
+		{
+			if(GROUP_RU == Edge2->byGroup_ID)
+			{
+				SetTerrainInfo(m_startidx + 2 , m_terrain_id , GROUP_RU , 2, 0 ,true);
+				SetTerrainInfo(m_startidx + 3 , m_terrain_id , GROUP_RU , 3, 1 ,true);
+				Make_FLAT_Terrain(m_startidx + 2 + SQ_TILECNTX , 1 , 2);
+			}
+			else if(GROUP_LD == Edge2->byGroup_ID)
+			{
+				Make_FLAT_Terrain(m_startidx + 2 , 2, 2);
+			}
+		}
+		else if(GROUP_RD == Edge4->byGroup_ID)
+		{
+			if(GROUP_RU == Edge2->byGroup_ID)
+			{
+				SetTerrainInfo(m_startidx + 2 , m_terrain_id , GROUP_RU , 2, 0 ,true);
+				SetTerrainInfo(m_startidx + 3 , m_terrain_id , GROUP_RU , 3, 1 ,true);
+				SetTerrainInfo(m_startidx + 2 + SQ_TILECNTX, m_terrain_id , GROUP_RD , 0, 0 ,true);
+				SetTerrainInfo(m_startidx + 3 + SQ_TILECNTX, m_terrain_id , GROUP_RD , 1, 0 ,true);
+			}
+			else if(GROUP_LD == Edge2->byGroup_ID)
+			{
+				Make_FLAT_Terrain(m_startidx + 2 , 1 , 2);
+				SetTerrainInfo(m_startidx + 2 + SQ_TILECNTX, m_terrain_id , GROUP_RD , 0, 0 ,true);
+				SetTerrainInfo(m_startidx + 3 + SQ_TILECNTX, m_terrain_id , GROUP_RD , 1, 0 ,true);
+			}
+		}
 	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LD_3(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id, GROUP_RD , 1 , 0);
-
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_RD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-		}
-		else if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_LU , 3, 0);
-		}
-
-		TERRAIN_INFO*	ptemp1 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2);
-		TERRAIN_INFO*	ptemp2 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx + 2 + SQ_TILECNTX);
-		TERRAIN_INFO*	ptemp3 = CTileMgr::GetInstance()->GetTerrain_Info(m_oriidx - SQ_TILECNTX);
-
-
-		if(GROUP_LD == ptemp1->byGroup_ID &&
-			GROUP_LU == ptemp2->byGroup_ID)
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-			SetTerrainInfo(m_terrain_id , GROUP_LU , 3 , 0);
-		}
-
-		if(GROUP_RU == ptemp1->byGroup_ID &&
-			8 == ptemp1->byGroup_sequence)
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_RU , 3, 1);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + 2 , m_sendTerrainInfo , m_bTerrainDelete);
-
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx + SQ_TILECNTX + 2, m_sendTerrainInfo , m_bTerrainDelete);
-
-			SetTerrainInfo(m_terrain_id , GROUP_LU , 3, 0);
-		}
-
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_LD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_RD) ||
-			m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_RD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_RD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-			SetTerrainInfo(m_terrain_id , GROUP_RD , 1 , 0);
-		}
-		if(	m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_LD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-			if(GROUP_LD == ptemp3->byGroup_ID)
-			{
-				CTileMgr::GetInstance()->SetTerrain(m_oriidx - SQ_TILECNTX , m_sendTerrainInfo , m_bTerrainDelete);
-			}
-		}
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LD_4(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-		SetTerrainInfo(m_terrain_id, GROUP_RU , m_cursequence , 0);
-
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_RD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-		}
-		else if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0, 0);
-		}
-	}
-	else if(3 == m_cursequence)
-	{
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
 void CHD_Group_RU::OverlapSequence_LD_5(void)
 {
-	if(0 == m_cursequence)
-	{
-
-	}
-	else if(1 == m_cursequence)
-	{
-
-	}
-	else if(2 == m_cursequence)
-	{
-
-	}
-	else if(3 == m_cursequence)
-	{
-
-		SetTerrainInfo(m_terrain_id, GROUP_RU , m_cursequence , 1);
-
-		if(m_MyBrush->GetOverlap_GroupArea(GROUP_L , GROUP_RD) &&
-			m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0 , 0);
-		}
-		else if(m_MyBrush->GetOverlap_GroupArea(GROUP_R , GROUP_LD))
-		{
-			SetTerrainInfo(m_terrain_id , GROUP_FLAT , 0, 0);
-		}
-
-	}
-	else if(4 == m_cursequence)
-	{
-
-	}
-	else if(5 == m_cursequence)
-	{
-
-	}
-	CTileMgr::GetInstance()->SetTerrain(m_oriidx , m_sendTerrainInfo , m_bTerrainDelete);
 }
 
