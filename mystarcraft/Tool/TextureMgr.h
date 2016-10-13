@@ -21,6 +21,7 @@ public:
 		const wstring& wstrStateKey);
 public:
 	HRESULT	ReadImagePath(const wstring& wstrFilePath);
+	HRESULT SingleReadImagePath( const wstring& wstrFilePath );
 	HRESULT	InsertTexture(const wstring& wstrFilePath
 		, const wstring& wstrObjKey
 		, TEXTYPE eTextype

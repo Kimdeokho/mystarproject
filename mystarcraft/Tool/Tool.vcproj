@@ -603,6 +603,18 @@
 					</Filter>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="TileDebug"
+				>
+				<File
+					RelativePath=".\TileDebug.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TileDebug.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"

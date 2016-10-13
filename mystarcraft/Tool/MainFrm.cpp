@@ -13,6 +13,7 @@
 #include "Minimapview.h"
 #include "MyForm.h"
 #include "TerrainBrushMgr.h"
+#include "TileDebug.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -121,6 +122,7 @@ void CMainFrame::OnDestroy()
 	CTileMgr::GetInstance()->DestroyInstance();
 	CTerrainBrushMgr::GetInstance()->DestroyInstance();
 	CDevice::GetInstance()->DestroyInstance();
+	CTileDebug::GetInstance()->DestroyInstance();
 
 	CFrameWnd::OnDestroy();
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.

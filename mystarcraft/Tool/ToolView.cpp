@@ -13,7 +13,7 @@
 #include "TextureMgr.h"
 #include "MainFrm.h"
 #include "TerrainBrushMgr.h"
-
+#include "TileDebug.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -82,6 +82,9 @@ void CToolView::OnDraw(CDC* /*pDC*/)
 		CTileMgr::GetInstance()->ShowGrid();
 	CTileMgr::GetInstance()->Rohmbus_Render();
 
+	if(true == m_DebugMode)
+		CTileDebug::GetInstance()->DebugRender();
+
 	//CDevice::GetInstance()->GetSprite()->End();
 	CDevice::GetInstance()->Render_End();
 
@@ -131,12 +134,17 @@ void CToolView::OnInitialUpdate()
 	{
 		MessageBox(L"텍스쳐 불러오기 실패");
 	}
+	if(CTextureMgr::GetInstance()->SingleReadImagePath(L"../Data/SingleImgPath.txt"))
+	{
+		MessageBox(L"싱글텍스쳐 불러오기 실패");
+	}
 
 	CTileMgr::GetInstance()->InitTile();
 	CTerrainBrushMgr::GetInstance()->Initialize();
 
 	m_bGrid = false;
 	m_bLbutton = false;
+	m_DebugMode = false;
 }
 
 
@@ -197,7 +205,7 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 	switch(nChar)
 	{
-	case 71:
+	case 'G':
 		{
 			if(m_bGrid == true)
 				m_bGrid = false;
@@ -207,7 +215,20 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			Invalidate(TRUE);
 			break;
 		}
+	case 'D':
+		{
+			if(m_DebugMode == true)
+				m_DebugMode = false;
+			else
+			{
+				m_DebugMode = true;
+				CTileDebug::GetInstance()->DebugTile_PosSet();
+			}
+			break;
+		}
 	}
+
+	Invalidate(FALSE);
 }
 
 void CToolView::OnMouseMove(UINT nFlags, CPoint point)
@@ -226,6 +247,10 @@ void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 		//	MessageBox(L"지형 체크 실패");
 		//}
 	}
+
+	if(m_DebugMode == true)
+		CTileDebug::GetInstance()->DebugTile_PosSet();
+
 
 	Invalidate(FALSE);
 }

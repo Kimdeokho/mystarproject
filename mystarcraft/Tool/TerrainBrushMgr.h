@@ -10,6 +10,9 @@ public:
 	HRESULT	TerrainCheck(void);
 	HRESULT	Initialize(void);
 	HRESULT	InitBrush(const CString&	_str);
+	int		FloorCheck(void);
+
+	void	SetTerrain_ID(int id);
 	void	Release(void);
 public:
 	void	High_DirtBrush(const int idx);

@@ -98,6 +98,40 @@ void CTextureMgr::Release( void )
 	}
 	m_MapTexture.clear();
 }
+HRESULT CTextureMgr::SingleReadImagePath( const wstring& wstrFilePath )
+{
+	wifstream	LoadFile;
+
+	LoadFile.open(wstrFilePath.c_str(), ios::in);
+
+	if(!LoadFile.is_open())
+	{
+		ERR_MSG(L"../Data/SingleImgPath.txt");
+		return E_FAIL;
+	}
+
+	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
+	MyForm* pMyForm = pMainFrm->m_pMyFormView;
+	CMyProSheet* pProSheet = pMyForm->m_pProSheet;
+
+	TCHAR	szObjKey[MIN_STR] = L"";
+	TCHAR	szStateKey[MIN_STR] = L"";
+	TCHAR	szImgPath[MAX_PATH] = L"";
+
+	while(!LoadFile.eof())
+	{
+		LoadFile.getline(szObjKey, MIN_STR, L'|');
+		LoadFile.getline(szStateKey, MIN_STR, L'|');
+		LoadFile.getline(szImgPath, MAX_PATH);
+
+		InsertTexture(szImgPath, szObjKey, TEXTYPE_SINGLE
+			, szStateKey);
+
+	}
+	LoadFile.close();
+
+	return S_OK;
+}
 
 HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 {

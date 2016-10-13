@@ -31,4 +31,5 @@ public:
 	afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
 	virtual BOOL OnSetActive();
 	afx_msg void OnEnable(BOOL bEnable);
+	afx_msg void OnLbnSelchangeList1();
 };

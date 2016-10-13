@@ -5,7 +5,7 @@
 #include "Tool.h"
 #include "MyProPage.h"
 #include "TileMgr.h"
-
+#include "TerrainBrushMgr.h"
 // CMyProPage 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CMyProPage, CPropertyPage)
@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CMyProPage, CPropertyPage)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_ACTIVATE()
 	ON_WM_ENABLE()
+	ON_LBN_SELCHANGE(IDC_LIST1, &CMyProPage::OnLbnSelchangeList1)
 END_MESSAGE_MAP()
 
 
@@ -90,4 +91,13 @@ void CMyProPage::OnEnable(BOOL bEnable)
 	CPropertyPage::OnEnable(bEnable);
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}
+
+void CMyProPage::OnLbnSelchangeList1()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	int idx = m_maptileListbox.GetCurSel();
+
+	CTerrainBrushMgr::GetInstance()->SetTerrain_ID(idx);
 }

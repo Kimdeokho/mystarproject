@@ -29,6 +29,7 @@ HRESULT CTerrainBrushMgr::Initialize(void)
 	m_Brush[UP_FLOOR_1] = new CHighDirt_Brush;
 	m_Brush[DOWN_FLOOR_1] = new CLowerGround_Brush;
 
+	m_curTerrainID = TERRAIN_DIRT;
 	return S_OK;
 }
 int CTerrainBrushMgr::get_sqindex(void)
@@ -45,40 +46,22 @@ int CTerrainBrushMgr::get_sqindex(void)
 }
 HRESULT CTerrainBrushMgr::TerrainCheck(void)
 {
-	int sqidx = get_sqindex();
 
 
 	int boxidx = m_TerrainListBox->GetCurSel();
 
-	CString	str_terrainID;
-	if(boxidx >= 0)
-		m_TerrainListBox->GetText(boxidx , str_terrainID);
-	else
-		return E_FAIL;
+	//CString	str_terrainID;
 
-	if(InitBrush(str_terrainID))
-		return E_FAIL;
+	//if(boxidx >= 0)
+	//	m_TerrainListBox->GetText(boxidx , str_terrainID);
+	//else
+	//	return E_FAIL;
+
+	//if(InitBrush(str_terrainID))
+	//	return E_FAIL;
 
 
-	int iindex = 0;
-	int icase = 0;
-	/* 먼저 2행4열의 범위의 층수를 검사한다.*/
-	for(int i = 0; i < 2; ++i)
-	{
-		for(int j = 0; j < 4; ++j)
-		{
-			iindex = sqidx - 130 + (i*SQ_TILECNTX+j);
-
-			if(iindex >= 0 && iindex < SQ_TILECNTX*SQ_TILECNTY)
-			{
-				icase = CTileMgr::GetInstance()->FloorCheck(iindex , m_curTerrainID);
-				if(icase != 0)
-					break;
-			}
-		}
-		if(icase != 0)
-			break;
-	}
+	int icase = this->FloorCheck();
 
 	if(icase == -2)
 	{
@@ -103,6 +86,29 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 
 
 	return S_OK;
+}
+int CTerrainBrushMgr::FloorCheck(void)
+{
+	int sqidx = get_sqindex();
+	int iindex = 0;
+	int icase = 0;
+
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int j = 0; j < 4; ++j)
+		{
+			iindex = sqidx - 130 + (i*SQ_TILECNTX+j);
+
+			if(iindex >= 0 && iindex < SQ_TILECNTX*SQ_TILECNTY)
+			{
+				icase = CTileMgr::GetInstance()->FloorCheck(iindex , m_curTerrainID);
+				if(icase != 0)
+					return icase;
+			}
+		}
+	}
+
+	return 0;
 }
 void CTerrainBrushMgr::High_DirtBrush(const int idx)/*브러쉬 칠하기로 대체*/
 {
@@ -133,5 +139,10 @@ void CTerrainBrushMgr::Release(void)
 	}
 
 	int a = 0;
+}
+
+void CTerrainBrushMgr::SetTerrain_ID(int id)
+{
+	m_curTerrainID = id;
 }
 

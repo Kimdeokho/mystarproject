@@ -5,6 +5,7 @@
 #include "MainFrm.h"
 
 #include "ToolView.h"
+#include "TileDebug.h"
 
 IMPLEMENT_SINGLETON(CTileMgr)
 CTileMgr::CTileMgr(void)
@@ -63,6 +64,8 @@ void CTileMgr::InitTile(void)
 		}
 	}
 
+	CTileDebug::GetInstance()->SetTile(&m_sqTile);
+
 	for(int i = 0; i < RB_TILECNTY; ++i)
 	{
 		for(int j = 0; j < RB_TILECNTX; ++j)
@@ -112,16 +115,6 @@ void CTileMgr::MinimapRender(void)
 					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
 					, D3DCOLOR_ARGB(255,255,255,255));
 			}			
-
-			//if(m_sqTile[iindex]->terrainList.begin()->byTerrain_ID == TERRAIN_DIRT)
-			//{
-			//	pTexture = (*m_DirtTex[m_sqTile[iindex]->byGroup_ID])[m_sqTile[iindex]-];
-			//}
-
-			//CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
-			//CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
-			//	, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
-			//	, D3DCOLOR_ARGB(255,255,255,255));
 		}
 	}
 }
@@ -235,7 +228,7 @@ void CTileMgr::TileRender(void)
 					squence = (*iter)->byGroup_sequence;
 					pTexture = (*temp)[squence];
 				}
-				if( (*iter)->byTerrain_ID == TERRAIN_HIGHDIRT )
+				else if( (*iter)->byTerrain_ID == TERRAIN_HIGHDIRT )
 				{
 					group_id = (*iter)->byGroup_ID;
 					temp = m_HighDirtTex[group_id];
@@ -246,6 +239,17 @@ void CTileMgr::TileRender(void)
 					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
 					, D3DCOLOR_ARGB(255,255,255,255));
 			}
+
+			//int MoveOption = m_sqTile[iindex]->byOption;
+			//if(MOVE_NONE == MoveOption)
+			//{
+			//	const TEXINFO*	ptemp;
+			//	ptemp = CTextureMgr::GetInstance()->GetTexture(L"DebugTile" , L"White");
+
+			//	CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
+			//		, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+			//		, D3DCOLOR_ARGB(125,255,255,255));
+			//}
 		}
 	}
 
@@ -365,12 +369,12 @@ void CTileMgr::Release(void)
 	}
 	m_sqTile.clear();
 
-	//vector<TILE*>().swap(m_sqTile);
+	vector<TILE*>().swap(m_sqTile);
 
 
 	m_rbTile.clear();
 
-	//vector<D3DXVECTOR2>().swap(m_rbTile);
+	vector<D3DXVECTOR2>().swap(m_rbTile);
 }
 
 void CTileMgr::SetRohmbusRender(bool _bRender)
@@ -463,8 +467,6 @@ void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bd
 		}
 	}
 
-
-	//list<TERRAIN_INFO*> temp = m_sqTile[idx]->terrainList;
 	if(m_sqTile[idx]->terrainList.size() == 2)
 		m_sqTile[idx]->terrainList.sort(rendersort_compare());
 
@@ -483,7 +485,7 @@ int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 	else if(TERRAIN_DIRT == ptemp->byTerrain_ID)
 	{
 		if(TERRAIN_DIRT == _terrain_id)
-			return -1;
+			return 0;
 		else if(TERRAIN_HIGHDIRT == _terrain_id)
 			return 1;
 	}

@@ -35,6 +35,8 @@ protected:
 public:
 	bool			m_bGrid;
 	bool			m_bLbutton;
+
+	bool			m_DebugMode;
 	CMainFrame*		m_pMainFrm;
 public:
 	virtual ~CToolView();
