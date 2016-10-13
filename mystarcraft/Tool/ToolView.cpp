@@ -82,8 +82,7 @@ void CToolView::OnDraw(CDC* /*pDC*/)
 		CTileMgr::GetInstance()->ShowGrid();
 	CTileMgr::GetInstance()->Rohmbus_Render();
 
-	if(true == m_DebugMode)
-		CTileDebug::GetInstance()->DebugRender();
+	CTileDebug::GetInstance()->DebugRender();
 
 	//CDevice::GetInstance()->GetSprite()->End();
 	CDevice::GetInstance()->Render_End();
@@ -217,13 +216,13 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	case 'D':
 		{
-			if(m_DebugMode == true)
-				m_DebugMode = false;
-			else
-			{
-				m_DebugMode = true;
-				CTileDebug::GetInstance()->DebugTile_PosSet();
-			}
+			CTileDebug::GetInstance()->SetDebugGroup();
+			//CTileDebug::GetInstance()->DebugTile_PosSet();
+			break;
+		}
+	case 'M':
+		{
+			CTileDebug::GetInstance()->SetMoveOption();
 			break;
 		}
 	}
@@ -248,8 +247,7 @@ void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 		//}
 	}
 
-	if(m_DebugMode == true)
-		CTileDebug::GetInstance()->DebugTile_PosSet();
+	CTileDebug::GetInstance()->DebugTile_PosSet();
 
 
 	Invalidate(FALSE);

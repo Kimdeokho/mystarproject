@@ -15,6 +15,11 @@ CTileDebug::CTileDebug(void)
 	{
 		m_DownFloorPos[i] = -1;
 	}
+
+	D3DXMatrixIdentity(&m_matWorld);
+
+	m_bDebugGroup = false;
+	m_bMoveOp = false;
 }
 
 CTileDebug::~CTileDebug(void)
@@ -24,15 +29,14 @@ void CTileDebug::SetTile(const vector<TILE*>* ptile)
 {
 	m_psqTile = ptile;
 }
-void CTileDebug::DebugRender(void)
+void CTileDebug::DebugGroup(void)
 {
-	
+	if(m_bDebugGroup != true)
+		return;
+
 	const TEXINFO*	ptemp = CTextureMgr::GetInstance()->GetTexture(L"DebugTile" , L"White");
 
 	int icase = CTerrainBrushMgr::GetInstance()->FloorCheck();
-
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
 
 	int idx = 0;
 	if( -2 == icase)
@@ -51,10 +55,10 @@ void CTileDebug::DebugRender(void)
 			int x = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(0);
 			int y = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(1);
 
-			matWorld._41 = (*m_psqTile)[idx]->vPos.x - x;
-			matWorld._42 = (*m_psqTile)[idx]->vPos.y - y;
+			m_matWorld._41 = (*m_psqTile)[idx]->vPos.x - x;
+			m_matWorld._42 = (*m_psqTile)[idx]->vPos.y - y;
 
-			CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
+			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
 
 			CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
 				, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
@@ -70,8 +74,54 @@ void CTileDebug::DebugRender(void)
 
 	}
 }
+void CTileDebug::MoveOption_Render(void)
+{
+	if(m_bMoveOp != true)
+		return;
+
+	int iindex = 0;
+
+	for(int i = 0; i < 30; ++i)
+	{
+		for(int j = 0; j < 40; ++j)
+		{
+			int x = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(0);
+			int y = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(1);
+
+			int rowidx = i + y/SQ_TILESIZEY;
+			int colidx = j + x/SQ_TILESIZEX;
+			iindex = rowidx*SQ_TILECNTX + colidx;
+
+			if(iindex < 0 || iindex >= SQ_TILECNTX*SQ_TILECNTY)
+				continue;
+
+			m_matWorld._41 = (*m_psqTile)[iindex]->vPos.x - x;
+			m_matWorld._42 = (*m_psqTile)[iindex]->vPos.y - y;
+			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+
+			int MoveOption = (*m_psqTile)[iindex]->byOption;
+			if(MOVE_NONE == MoveOption)
+			{
+				const TEXINFO*	ptemp;
+				ptemp = CTextureMgr::GetInstance()->GetTexture(L"DebugTile" , L"White");
+
+				CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
+					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+					, D3DCOLOR_ARGB(60,255,0,0));
+			}
+		}
+	}
+}
+void CTileDebug::DebugRender(void)
+{
+	DebugGroup();
+	MoveOption_Render();
+}
 void CTileDebug::DebugTile_PosSet(void)
 {
+	if(m_bDebugGroup != true)
+		return;
+
 	int idx = CTerrainBrushMgr::GetInstance()->get_sqindex();
 
 		//1단계 내리기
@@ -89,4 +139,23 @@ void CTileDebug::DebugTile_PosSet(void)
 
 		m_DownFloorPos[8] = idx - SQ_TILECNTX - 6;
 		m_DownFloorPos[9] = idx - SQ_TILECNTX + 4;
+}
+
+void CTileDebug::SetDebugGroup()
+{
+	if(m_bDebugGroup == true)
+		m_bDebugGroup = false;
+	else
+	{
+		m_bDebugGroup = true;
+		DebugTile_PosSet();
+	}
+}
+
+void CTileDebug::SetMoveOption()
+{
+	if(m_bMoveOp == true)
+		m_bMoveOp = false;
+	else
+		m_bMoveOp = true;
 }
