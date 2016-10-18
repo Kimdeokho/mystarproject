@@ -37,6 +37,13 @@ void CLowerGround_Brush::BrushPaint()
 {
 	int idx = CTerrainBrushMgr::GetInstance()->get_sqindex();
 
+	m_pGroup[GROUP_LEDGE]->MakeTerrain_Group(idx - SQ_TILECNTX - 6);
+
+	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 2 , 1 , 2);
+	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx , 1 , 2);
+	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 3 + SQ_TILECNTX , 1 , 6);
+	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 1 + SQ_TILECNTX*2 , 1 , 2 );
+
 	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*3 - 2);
 	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*2 - 4);
 
@@ -49,12 +56,7 @@ void CLowerGround_Brush::BrushPaint()
 	m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + SQ_TILECNTX );
 	m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + 2);
 
-	m_pGroup[GROUP_LEDGE]->MakeTerrain_Group(idx - SQ_TILECNTX - 6);
 	m_pGroup[GROUP_REDGE]->MakeTerrain_Group(idx - SQ_TILECNTX + 4);
-
-	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 4 , 1 , 8);
-	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 4 + SQ_TILECNTX , 1 , 8);
-	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 2 + SQ_TILECNTX*2 , 1 , 4 );
 
 
 

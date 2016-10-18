@@ -45,7 +45,7 @@ void CTileDebug::DebugGroup(void)
 	}
 	else if( -1 == icase)
 	{
-		for(int i = 0; i < 10; ++i)
+		for(int i = 0; i < 14; ++i)
 		{
 			idx = m_DownFloorPos[i];
 
@@ -60,9 +60,23 @@ void CTileDebug::DebugGroup(void)
 
 			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
 
+			if( i < 10)
+			{
+				m_color.a = 60;
+				m_color.r = 255;
+				m_color.g = 255;
+				m_color.b = 255;
+			}
+			else
+			{
+				m_color.a = 60;
+				m_color.r = 255;
+				m_color.g = 0;
+				m_color.b = 0;
+			}
 			CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
 				, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
-				, D3DCOLOR_ARGB(125,255,255,255));
+				, D3DCOLOR_ARGB(m_color.a,m_color.r,m_color.g,m_color.b));
 		}
 	}
 	else if( 1 == icase)
@@ -139,6 +153,11 @@ void CTileDebug::DebugTile_PosSet(void)
 
 		m_DownFloorPos[8] = idx - SQ_TILECNTX - 6;
 		m_DownFloorPos[9] = idx - SQ_TILECNTX + 4;
+
+		m_DownFloorPos[10] = idx - 2;
+		m_DownFloorPos[11] = idx;
+		m_DownFloorPos[12] = idx + SQ_TILECNTX - 3;
+		m_DownFloorPos[13] = idx + SQ_TILECNTX*2 -1;
 }
 
 void CTileDebug::SetDebugGroup()

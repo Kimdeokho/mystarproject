@@ -19,15 +19,15 @@ public:
 public:
 	void	SetTerrainInfo(BYTE	byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv);
 	void	SetTerrainInfo(int idx , BYTE byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv , bool bdelete);
-	void	SetTerrain_ID(const int terrain_id);
+	void	SetTerrain_ID(const int terrain_id , const int flat_id);
 	void	UpdateTerrain(void);
 	void	Make_LU_Terrain(const int idx);
 	void	Make_RU_Terrain(const int idx);
 	void	Make_L_Terrain(const int idx , bool bdelete = true);
 	void	Make_R_Terrain(const int idx , bool bdelete = true);
-	void	Make_LD_Terrain(const int idx , bool bdelete = true);
-	void	Make_RD_Terrain(const int idx , bool bdelete = true);
-	void	Make_FLAT_Terrain(const int idx , int irow , int icol , int isequence = 0);
+	void	Make_LD_Terrain(const int idx , bool bdelete = true , bool bdelete2 = false);
+	void	Make_RD_Terrain(const int idx , bool bdelete = true , bool bdelete2 = false);
+	void	Make_FLAT_Terrain(const int idx , int irow , int icol ,bool bdelete = true);
 	void	Make_REdge(const int idx);
 	void	Make_LEdge(const int idx);
 
@@ -36,6 +36,7 @@ public:
 protected:
 	bool	m_bTerrainDelete;
 	int		m_terrain_id;
+	int		m_flat_id;
 	int		m_startidx;
 	int		m_start_bottomidx;
 	//int		m_cursequence;

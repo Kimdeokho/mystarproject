@@ -24,6 +24,8 @@ private:
 	int			m_curTerrainID;
 	CListBox*	m_TerrainListBox;
 	CMyBrush*	m_Brush[FLOOR_END];
+
+	int			m_oldIdx;
 public:
 	CTerrainBrushMgr(void);
 	~CTerrainBrushMgr(void);

@@ -5,6 +5,7 @@ CTerrain_Group::CTerrain_Group(void)
 {
 	m_start_bottomidx = 0;
 	m_bTerrainDelete = true;
+	m_flat_id = TERRAIN_HIGHDIRT;
 
 	for(int i = 0; i < 8; ++i)
 	{
@@ -97,7 +98,7 @@ void CTerrain_Group::Make_R_Terrain(const int idx , bool bdelete /*true*/)
 		}
 	}
 }
-void CTerrain_Group::Make_RD_Terrain(const int idx , bool bdelete)
+void CTerrain_Group::Make_RD_Terrain(const int idx , bool bdelete , bool bdelete2)
 {
 	for(int i = 0; i < 3; ++i)
 	{
@@ -106,11 +107,11 @@ void CTerrain_Group::Make_RD_Terrain(const int idx , bool bdelete)
 			if(i*2+j <= 3)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_RD  , i*2+j , 0 , bdelete );
 			else
-				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_RD  , i*2+j , 0 , false );
+				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_RD  , i*2+j , 0 , bdelete2 );
 		}
 	}
 }
-void CTerrain_Group::Make_LD_Terrain(const int idx , bool bdelete)
+void CTerrain_Group::Make_LD_Terrain(const int idx , bool bdelete , bool bdelete2)
 {
 	for(int i = 0; i < 3; ++i)
 	{
@@ -119,17 +120,17 @@ void CTerrain_Group::Make_LD_Terrain(const int idx , bool bdelete)
 			if(i*2+j <= 3)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_LD  , i*2+j , 0 , bdelete );
 			else
-				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_LD  , i*2+j , 0 , false );
+				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_LD  , i*2+j , 0 , bdelete2 );
 		}
 	}
 }
-void CTerrain_Group::Make_FLAT_Terrain(const int idx , int irow , int icol , int isequence)
+void CTerrain_Group::Make_FLAT_Terrain(const int idx , int irow , int icol  ,bool bdelete/*true*/)
 {
 	for(int i = 0; i < irow; ++i)
 	{
 		for(int j = 0; j < icol; ++j)
 		{
-			SetTerrainInfo(idx + (i*SQ_TILECNTX+j), m_terrain_id , GROUP_FLAT , rand()%2 , 0 ,true);
+			SetTerrainInfo(idx + (i*SQ_TILECNTX+j), m_flat_id , GROUP_FLAT , rand()%2 , 0 ,bdelete);
 		}
 	}
 }
@@ -254,7 +255,8 @@ void CTerrain_Group::RightEdge_Algorithm(void)
 	}
 }
 
-void CTerrain_Group::SetTerrain_ID(const int terrain_id)
+void CTerrain_Group::SetTerrain_ID(const int terrain_id , const int flat_id)
 {
 	m_terrain_id = terrain_id;
+	m_flat_id = flat_id;
 }

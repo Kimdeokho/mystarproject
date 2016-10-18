@@ -21,12 +21,11 @@ void CMyBrush::SetTerrain_ID(const int terrain_id)
 
 		if(TERRAIN_DIRT == terrain_id)
 		{
-			m_pGroup[i]->SetTerrain_ID(TERRAIN_HIGHDIRT);
-			m_pGroup[GROUP_FLAT]->SetTerrain_ID(TERRAIN_DIRT);
+			m_pGroup[i]->SetTerrain_ID(TERRAIN_HIGHDIRT , TERRAIN_DIRT);
 		}
 		else if(TERRAIN_HIGHDIRT == terrain_id)
 		{
-			m_pGroup[i]->SetTerrain_ID(TERRAIN_HIGHDIRT);
+			m_pGroup[i]->SetTerrain_ID(TERRAIN_HIGHDIRT , TERRAIN_HIGHDIRT);
 		}
 		//물이면 물다운, 업
 	}

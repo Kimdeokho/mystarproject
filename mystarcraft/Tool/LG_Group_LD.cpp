@@ -230,6 +230,16 @@ void CLG_Group_LD::OverlapSequence_L_5(void)
 
 void CLG_Group_LD::OverlapSequence_LU_0(void)
 {
+	const TERRAIN_INFO*	UpSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx - SQ_TILECNTX);
+
+	//if(GROUP_LD == UpSpace->byGroup_ID)
+	{
+		SetTerrainInfo(m_startidx + SQ_TILECNTX, m_flat_id , GROUP_FLAT , 0 , 0, false);
+
+		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX - 2, 1, 2 , true);
+
+		Make_L_Terrain(m_startidx);
+	}
 }
 
 void CLG_Group_LD::OverlapSequence_LU_1(void)
@@ -309,6 +319,16 @@ void CLG_Group_LD::OverlapSequence_R_5(void)
 
 void CLG_Group_LD::OverlapSequence_LD_0(void)
 {
+	const TERRAIN_INFO* DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX);
+
+	if(GROUP_LU == DownSpace->byGroup_ID)
+	{
+		Make_LD_Terrain(m_startidx , true ,false);
+	}
+	else
+	{
+		Make_LD_Terrain(m_startidx , true ,true);
+	}
 }
 
 void CLG_Group_LD::OverlapSequence_LD_1(void)

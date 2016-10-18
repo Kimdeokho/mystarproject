@@ -478,7 +478,14 @@ int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 	if(TERRAIN_HIGHDIRT == ptemp->byTerrain_ID)
 	{
 		if(TERRAIN_DIRT == _terrain_id)
+		{
+			if( (GROUP_LD == ptemp->byGroup_ID ||
+				GROUP_RD == ptemp->byGroup_ID) &&
+				2<= ptemp->byGroup_sequence)
+				return 0;
+
 			return -1;
+		}
 		else if(TERRAIN_HIGHDIRT == _terrain_id)
 			return 1;
 	}

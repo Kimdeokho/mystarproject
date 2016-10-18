@@ -25,7 +25,7 @@ typedef struct terrainInfo
 	}
 	terrainInfo()
 	{
-		byTerrain_ID = TERRAIN_DIRT;
+		byTerrain_ID = TERRAIN_HIGHDIRT;
 		byGroup_ID = GROUP_FLAT;
 		byGroup_sequence = 0;
 		bysortLV = 0;

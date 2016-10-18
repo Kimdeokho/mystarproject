@@ -249,7 +249,7 @@ void CHD_Group_RD::OverlapGroup_LD(void)
 
 void CHD_Group_RD::OverlapSequence_L_0(void)
 {
-	Make_FLAT_Terrain(m_start_bottomidx - SQ_TILECNTX , 1, 2);
+	Make_FLAT_Terrain(m_start_bottomidx - SQ_TILECNTX , 1, 2 );
 	//Make_LD_Terrain(m_start_bottomidx , true);
 
 	SetTerrainInfo(m_start_bottomidx  , m_terrain_id , GROUP_LD , 0, 0 , true);

@@ -30,6 +30,8 @@ HRESULT CTerrainBrushMgr::Initialize(void)
 	m_Brush[DOWN_FLOOR_1] = new CLowerGround_Brush;
 
 	m_curTerrainID = TERRAIN_DIRT;
+
+	m_oldIdx = -1;
 	return S_OK;
 }
 int CTerrainBrushMgr::get_sqindex(void)
@@ -93,6 +95,11 @@ int CTerrainBrushMgr::FloorCheck(void)
 	int iindex = 0;
 	int icase = 0;
 
+	//if(sqidx != m_oldIdx)
+	//	m_oldIdx = sqidx;
+	//else
+	//	return 0;
+
 	for(int i = 0; i < 2; ++i)
 	{
 		for(int j = 0; j < 4; ++j)
@@ -107,7 +114,6 @@ int CTerrainBrushMgr::FloorCheck(void)
 			}
 		}
 	}
-
 	return 0;
 }
 void CTerrainBrushMgr::High_DirtBrush(const int idx)/*브러쉬 칠하기로 대체*/

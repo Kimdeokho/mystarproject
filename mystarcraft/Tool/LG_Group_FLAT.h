@@ -54,6 +54,9 @@ public:
 	void	OverlapSequence_R_3(void);
 	void	OverlapSequence_R_4(void);
 	void	OverlapSequence_R_5(void);
+private:
+	int		m_irow;
+	int		m_icol;
 public:
 	CLG_Group_FLAT(void);
 	virtual ~CLG_Group_FLAT(void);
