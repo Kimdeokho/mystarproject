@@ -294,7 +294,7 @@ void CHD_Group_L::OverlapSequence_RU_0(void)
 	}
 	else
 	{
-		Make_FLAT_Terrain(m_start_bottomidx + SQ_TILECNTX , 1, 2, m_flat_id);
+		Make_FLAT_Terrain(m_start_bottomidx + SQ_TILECNTX , 1, 2);
 	}
 }
 
@@ -336,11 +336,11 @@ void CHD_Group_L::OverlapSequence_RD_2(void)
 			if(GROUP_LU == Up_Space->byGroup_ID)
 			{
 				SetTerrainInfo(m_startidx - SQ_TILECNTX + 1 , m_terrain_id , GROUP_LU , 3 , 0 , true);
-				Make_FLAT_Terrain(m_startidx , 3 , 2, m_flat_id);
+				Make_FLAT_Terrain(m_startidx , 3 , 2);
 			}
 			else
 			{
-				Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 4 , 2, m_flat_id);
+				Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 4 , 2);
 			}
 		}
 		else if(GROUP_RU == ptemp3->byGroup_ID)
@@ -358,13 +358,13 @@ void CHD_Group_L::OverlapSequence_RD_2(void)
 		else if(GROUP_LD == ptemp3->byGroup_ID &&
 			GROUP_RU == ptemp2->byGroup_ID)
 		{
-			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 3 , 2, m_flat_id);
+			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 3 , 2);
 			SetTerrainInfo(m_startidx + SQ_TILECNTX*2 , m_terrain_id , GROUP_LD , 0 , 0 , true);
 			SetTerrainInfo(m_startidx + SQ_TILECNTX*2 + 1, m_terrain_id , GROUP_LD , 1 , 0 , true);
 		}
 		else if(GROUP_LD == ptemp3->byGroup_ID)
 		{
-			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 1 , 2, m_flat_id);
+			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 1 , 2);
 			SetTerrainInfo(m_startidx , m_terrain_id , GROUP_LD , 0 , 0 , true);
 			SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_LD , 1 , 0 , true);
 
@@ -382,17 +382,17 @@ void CHD_Group_L::OverlapSequence_RD_2(void)
 			if(GROUP_LU == Up_Space->byGroup_ID)
 			{
 				SetTerrainInfo(m_startidx - SQ_TILECNTX + 1 , m_terrain_id , GROUP_LU , 3 , 0 , true);
-				Make_FLAT_Terrain(m_startidx  , 1, 2, m_flat_id);
+				Make_FLAT_Terrain(m_startidx  , 1, 2);
 			}
 			else
 			{
-				Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 2, 2, m_flat_id);
+				Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 2, 2);
 			}
 			Make_RD_Terrain(m_startidx + SQ_TILECNTX );
 		}
 		else
 		{
-			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 1 , 2, m_flat_id);
+			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX , 1 , 2);
 			Make_LD_Terrain(m_startidx);
 			Make_RD_Terrain(m_startidx + SQ_TILECNTX);
 
@@ -466,7 +466,7 @@ void CHD_Group_L::OverlapSequence_R_2(void)
 		Make_RU_Terrain(m_startidx - SQ_TILECNTX);
 		if(GROUP_LD == DownSpace2->byGroup_ID)
 		{
-			Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1 , 2, m_flat_id);
+			Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1 , 2);
 			SetTerrainInfo(m_startidx + SQ_TILECNTX*2 , m_terrain_id , GROUP_LD , 0, 0 ,true);
 			SetTerrainInfo(m_startidx + SQ_TILECNTX*2 + 1 , m_terrain_id , GROUP_LD , 1, 0 ,true);
 
@@ -474,7 +474,7 @@ void CHD_Group_L::OverlapSequence_R_2(void)
 		else
 		{
 			//Make_RU_Terrain(m_startidx - SQ_TILECNTX);
-			Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 2 , 2, m_flat_id);
+			Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 2 , 2);
 		}
 	}
 	else

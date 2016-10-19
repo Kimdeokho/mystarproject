@@ -41,7 +41,8 @@ void CLowerGround_Brush::BrushPaint()
 
 	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 2 , 1 , 2);
 	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx , 1 , 2);
-	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 3 + SQ_TILECNTX , 1 , 6);
+	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 3 + SQ_TILECNTX , 1 , 3);
+	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx + SQ_TILECNTX , 1 , 3);
 	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 1 + SQ_TILECNTX*2 , 1 , 2 );
 
 	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*3 - 2);
@@ -65,8 +66,22 @@ void CLowerGround_Brush::BrushPaint()
 		if( NULL == m_pGroup[i])
 			continue;
 
-		m_pGroup[i]->UpdateTerrain();
+		//m_pGroup[i]->UpdateTerrain();
 	}
+
+	m_pGroup[GROUP_LEDGE]->UpdateTerrain();
+
+	m_pGroup[GROUP_FLAT]->UpdateTerrain();
+
+	m_pGroup[GROUP_RD]->UpdateTerrain();
+
+	m_pGroup[GROUP_LD]->UpdateTerrain();
+
+	m_pGroup[GROUP_RU]->UpdateTerrain();
+
+	m_pGroup[GROUP_LU]->UpdateTerrain();
+
+	m_pGroup[GROUP_REDGE]->UpdateTerrain();
 
 	CTileMgr::GetInstance()->TileOption_Update();
 }

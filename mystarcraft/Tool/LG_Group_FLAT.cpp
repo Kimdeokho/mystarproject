@@ -275,6 +275,7 @@ void CLG_Group_FLAT::OverlapSequence_RU_3(void)
 
 void CLG_Group_FLAT::OverlapSequence_RD_0(void)
 {
+	Make_FLAT_Terrain(m_startidx, 1, 2);
 }
 
 void CLG_Group_FLAT::OverlapSequence_RD_1(void)
@@ -326,10 +327,12 @@ void CLG_Group_FLAT::OverlapSequence_R_5(void)
 
 void CLG_Group_FLAT::OverlapSequence_LD_0(void)
 {
+	Make_FLAT_Terrain(m_startidx, 1, 2);
 }
 
 void CLG_Group_FLAT::OverlapSequence_LD_1(void)
 {
+	Make_FLAT_Terrain(m_startidx, 1, 3);
 }
 
 void CLG_Group_FLAT::OverlapSequence_LD_2(void)
@@ -348,4 +351,5 @@ void CLG_Group_FLAT::OverlapSequence_LD_4(void)
 
 void CLG_Group_FLAT::OverlapSequence_LD_5(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 3);
 }

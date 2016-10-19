@@ -130,7 +130,10 @@ void CTerrain_Group::Make_FLAT_Terrain(const int idx , int irow , int icol  ,boo
 	{
 		for(int j = 0; j < icol; ++j)
 		{
-			SetTerrainInfo(idx + (i*SQ_TILECNTX+j), m_flat_id , GROUP_FLAT , rand()%2 , 0 ,bdelete);
+			//if(TERRAIN_HIGHDIRT == m_flat_id)
+				//SetTerrainInfo(idx + (i*SQ_TILECNTX+j), m_flat_id , GROUP_FLAT , rand()%2 , 1 ,bdelete);
+			//else
+				SetTerrainInfo(idx + (i*SQ_TILECNTX+j), m_flat_id , GROUP_FLAT , rand()%2 , 0 ,bdelete);
 		}
 	}
 }

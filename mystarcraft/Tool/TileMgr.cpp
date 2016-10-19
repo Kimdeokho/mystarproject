@@ -480,8 +480,10 @@ int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 		if(TERRAIN_DIRT == _terrain_id)
 		{
 			if( (GROUP_LD == ptemp->byGroup_ID ||
-				GROUP_RD == ptemp->byGroup_ID) &&
-				2<= ptemp->byGroup_sequence)
+				GROUP_RD == ptemp->byGroup_ID ||
+				GROUP_L == ptemp->byGroup_ID ||
+				GROUP_R == ptemp->byGroup_ID ) &&
+				4<= ptemp->byGroup_sequence)
 				return 0;
 
 			return -1;

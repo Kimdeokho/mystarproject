@@ -16,7 +16,7 @@ void CHD_Group_Flat::MakeTerrain_Group(const int istartidx)
 {
 	m_startidx = istartidx;
 
-	Make_FLAT_Terrain(m_startidx ,m_irow ,m_icol, m_flat_id);
+	Make_FLAT_Terrain(m_startidx ,m_irow ,m_icol);
 }
 
 void CHD_Group_Flat::SetRowCol(const int irow , int icol)
