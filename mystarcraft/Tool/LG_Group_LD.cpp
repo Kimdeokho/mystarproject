@@ -206,6 +206,8 @@ void CLG_Group_LD::OverlapGroup_LD(void)
 
 void CLG_Group_LD::OverlapSequence_L_0(void)
 {
+	Make_FLAT_Terrain(m_startidx + SQ_TILECNTX*2 , 1 , 2 );
+	Make_L_Terrain(m_startidx);
 }
 
 void CLG_Group_LD::OverlapSequence_L_1(void)
@@ -329,6 +331,8 @@ void CLG_Group_LD::OverlapSequence_R_1(void)
 
 void CLG_Group_LD::OverlapSequence_R_2(void)
 {
+	Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 2, 2);
+	Make_R_Terrain(m_startidx - SQ_TILECNTX);
 }
 
 void CLG_Group_LD::OverlapSequence_R_3(void)

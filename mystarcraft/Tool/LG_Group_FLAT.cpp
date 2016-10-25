@@ -289,7 +289,7 @@ void CLG_Group_FLAT::OverlapSequence_RD_2(void)
 
 void CLG_Group_FLAT::OverlapSequence_RD_3(void)
 {
-	//Make_FLAT_Terrain(m_startidx , 1, 2);
+	//Make_FLAT_Terrain(m_startidx , 1, 2 , false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_RD_4(void)
