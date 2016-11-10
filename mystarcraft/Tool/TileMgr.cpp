@@ -6,6 +6,7 @@
 
 #include "ToolView.h"
 #include "TileDebug.h"
+#include "Rewind.h"
 
 IMPLEMENT_SINGLETON(CTileMgr)
 CTileMgr::CTileMgr(void)
@@ -23,6 +24,7 @@ CTileMgr::~CTileMgr(void)
 
 void CTileMgr::InitTile(void)
 {
+
 	m_pToolView = ((CMainFrame*)AfxGetMainWnd())->m_pToolView;
 
 	m_sqTile.reserve(SQ_TILECNTX*SQ_TILECNTY);
@@ -56,13 +58,24 @@ void CTileMgr::InitTile(void)
 			ptile->vPos.y = (float)(SQ_TILESIZEY/2 + i*SQ_TILESIZEY);
 
 			TERRAIN_INFO* pterrain_info = new TERRAIN_INFO;
-			ptile->terrainList.push_back(pterrain_info);
-
+			pterrain_info->byTerrain_ID = TERRAIN_HIGHDIRT;
 			int group_id = pterrain_info->byGroup_ID;
 			pterrain_info->byGroup_sequence = rand()%m_DirtTex[group_id]->size();
+
+			ptile->terrainList.push_back(pterrain_info);
+
 			m_sqTile.push_back(ptile);
 		}
 	}
+	for(int i = 0; i < SQ_TILECNTY; ++i)
+	{
+		for(int j = 0; j < SQ_TILECNTX; ++j)
+		{
+			int iindex = i*SQ_TILECNTX + j;
+			CRewind::GetInstance()->InitStackTile(m_sqTile[iindex]->terrainList , iindex);
+		}
+	}
+
 
 	CTileDebug::GetInstance()->SetTile(&m_sqTile);
 
@@ -137,54 +150,50 @@ void CTileMgr::TileOption_Update(void)
 			TERRAIN_INFO* ptemp = GetTerrain_Info(iindex);
 
 			
-
-			if(ptemp->byTerrain_ID == TERRAIN_HIGHDIRT)
+			m_sqTile[iindex]->byOption = MOVE_NONE;
+			if(ptemp->byGroup_ID == GROUP_L)
 			{
-				m_sqTile[iindex]->byOption = MOVE_NONE;
-				if(ptemp->byGroup_ID == GROUP_L)
-				{
+				m_sqTile[iindex]->byFloor = 1;
+			}
+			else if(ptemp->byGroup_ID == GROUP_LU)
+			{
+				if(iindex != 3)
 					m_sqTile[iindex]->byFloor = 1;
-				}
-				else if(ptemp->byGroup_ID == GROUP_LU)
-				{
-					if(iindex != 3)
-						m_sqTile[iindex]->byFloor = 1;
-					else
-						m_sqTile[iindex]->byFloor = 2;
-				}
-				else if(ptemp->byGroup_ID == GROUP_RU)
-				{
-					if(iindex != 2)
-						m_sqTile[iindex]->byFloor = 1;
-					else
-						m_sqTile[iindex]->byFloor = 2;
-				}
-				else if(ptemp->byGroup_ID == GROUP_R)
-				{					
+				else
+					m_sqTile[iindex]->byFloor = 2;
+			}
+			else if(ptemp->byGroup_ID == GROUP_RU)
+			{
+				if(iindex != 2)
 					m_sqTile[iindex]->byFloor = 1;
-				}
-				else if(ptemp->byGroup_ID == GROUP_RD)
-				{
-					if(iindex != 0)
-						m_sqTile[iindex]->byFloor = 1;
-					else
-						m_sqTile[iindex]->byFloor = 2;
-				}
-				else if(ptemp->byGroup_ID == GROUP_LD)
-				{
-					if(iindex != 1)
-						m_sqTile[iindex]->byFloor = 1;
-					else
-						m_sqTile[iindex]->byFloor = 2;
-				}
-				else if(ptemp->byGroup_ID == GROUP_FLAT)
-				{
-					m_sqTile[iindex]->byOption = MOVE_OK;
-					if(ptemp->byGroup_sequence != 3)
-						m_sqTile[iindex]->byFloor = 2;
-					else
-						m_sqTile[iindex]->byFloor = 1;
-				}
+				else
+					m_sqTile[iindex]->byFloor = 2;
+			}
+			else if(ptemp->byGroup_ID == GROUP_R)
+			{					
+				m_sqTile[iindex]->byFloor = 1;
+			}
+			else if(ptemp->byGroup_ID == GROUP_RD)
+			{
+				if(iindex != 0)
+					m_sqTile[iindex]->byFloor = 1;
+				else
+					m_sqTile[iindex]->byFloor = 2;
+			}
+			else if(ptemp->byGroup_ID == GROUP_LD)
+			{
+				if(iindex != 1)
+					m_sqTile[iindex]->byFloor = 1;
+				else
+					m_sqTile[iindex]->byFloor = 2;
+			}
+			else if(ptemp->byGroup_ID == GROUP_FLAT)
+			{
+				m_sqTile[iindex]->byOption = MOVE_OK;
+				if(ptemp->byGroup_sequence != 3)
+					m_sqTile[iindex]->byFloor = 2;
+				else
+					m_sqTile[iindex]->byFloor = 1;
 			}
 		}
 	}
@@ -239,17 +248,6 @@ void CTileMgr::TileRender(void)
 					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
 					, D3DCOLOR_ARGB(255,255,255,255));
 			}
-
-			//int MoveOption = m_sqTile[iindex]->byOption;
-			//if(MOVE_NONE == MoveOption)
-			//{
-			//	const TEXINFO*	ptemp;
-			//	ptemp = CTextureMgr::GetInstance()->GetTexture(L"DebugTile" , L"White");
-
-			//	CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
-			//		, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
-			//		, D3DCOLOR_ARGB(125,255,255,255));
-			//}
 		}
 	}
 
@@ -274,13 +272,13 @@ void CTileMgr::TileRender(void)
 	//	, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
 	//	, D3DCOLOR_ARGB(255,255,255,255));
 
-	matfont._41 = 300;
-	matfont._42 = 440;
-	wsprintf(szTemp, L"»ç°¢ÀÎµ¦½º %d", m_sqidx);
-	CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
-	CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
-		, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
-		, D3DCOLOR_ARGB(255,255,255,255));
+	//matfont._41 = 300;
+	//matfont._42 = 440;
+	//wsprintf(szTemp, L"»ç°¢ÀÎµ¦½º %d", m_sqidx);
+	//CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
+	//CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
+	//	, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
+	//	, D3DCOLOR_ARGB(255,255,255,255));
 
 }
 void CTileMgr::Rohmbus_Render(void)
@@ -462,6 +460,7 @@ void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bd
 		if(m_sqTile[idx]->terrainList.size() == 2 && _bdelete == true)
 		{
 			ptemp = m_sqTile[idx]->terrainList.back();
+
 			Safe_Delete(ptemp);
 			m_sqTile[idx]->terrainList.pop_back();
 		}
@@ -469,6 +468,8 @@ void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bd
 
 	if(m_sqTile[idx]->terrainList.size() == 2)
 		m_sqTile[idx]->terrainList.sort(rendersort_compare());
+
+	CRewind::GetInstance()->SetTerrainData(m_sqTile[idx]->terrainList , idx);
 
 }
 int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
@@ -509,4 +510,33 @@ TERRAIN_INFO* CTileMgr::GetTerrain_Info(const int _index)
 	}
 	else
 		return NULL;
+}
+void CTileMgr::SetBeforeTile(list<TERRAIN_INFO>&	terrain_list , const int idx)
+{
+	list<TERRAIN_INFO*> ptemplist = m_sqTile[idx]->terrainList;
+
+	TERRAIN_INFO* ptemp = NULL;
+	TERRAIN_INFO terrain_info;
+
+	for(list<TERRAIN_INFO*>::iterator iter = m_sqTile[idx]->terrainList.begin(); iter != m_sqTile[idx]->terrainList.end(); ++iter)
+	{
+		Safe_Delete((*iter));
+	}
+	m_sqTile[idx]->terrainList.clear();
+
+	list<TERRAIN_INFO>::iterator iter = terrain_list.begin();
+	list<TERRAIN_INFO>::iterator iter_end = terrain_list.end();
+
+	for(; iter != iter_end; ++iter)
+	{
+		ptemp = new TERRAIN_INFO;
+		ptemp->byGroup_ID		= (*iter).byGroup_ID;
+		ptemp->byGroup_sequence = (*iter).byGroup_sequence;
+		ptemp->bysortLV			= (*iter).bysortLV;
+		ptemp->byTerrain_ID		= (*iter).byTerrain_ID;
+
+		m_sqTile[idx]->terrainList.push_back(ptemp);
+	}
+
+	m_sqTile[idx]->terrainList.sort(rendersort_compare());
 }

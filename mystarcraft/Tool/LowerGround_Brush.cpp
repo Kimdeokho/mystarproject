@@ -45,17 +45,17 @@ void CLowerGround_Brush::BrushPaint()
 	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx + SQ_TILECNTX , 1 , 3);
 	m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 1 + SQ_TILECNTX*2 , 1 , 2 );
 
-	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*3 - 2);
-	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*2 - 4);
+	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*3 - 2 , 1);
+	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*2 - 4 , 2);
 
-	m_pGroup[GROUP_LD]->MakeTerrain_Group(idx - SQ_TILECNTX*3);
-	m_pGroup[GROUP_LD]->MakeTerrain_Group(idx - SQ_TILECNTX*2 + 2);
+	m_pGroup[GROUP_LD]->MakeTerrain_Group(idx - SQ_TILECNTX*3 , 1);
+	m_pGroup[GROUP_LD]->MakeTerrain_Group(idx - SQ_TILECNTX*2 + 2 , 2);
 
-	m_pGroup[GROUP_RU]->MakeTerrain_Group(idx + SQ_TILECNTX - 2);
-	m_pGroup[GROUP_RU]->MakeTerrain_Group(idx - 4);
+	m_pGroup[GROUP_RU]->MakeTerrain_Group(idx + SQ_TILECNTX - 2 , 1);
+	m_pGroup[GROUP_RU]->MakeTerrain_Group(idx - 4 , 2);
 
-	m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + SQ_TILECNTX );
-	m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + 2);
+	m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + SQ_TILECNTX , 1);
+	m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + 2 , 2);
 
 	m_pGroup[GROUP_REDGE]->MakeTerrain_Group(idx - SQ_TILECNTX + 4);
 

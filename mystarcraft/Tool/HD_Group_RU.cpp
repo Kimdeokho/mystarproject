@@ -223,10 +223,24 @@ void CHD_Group_RU::OverlapSequence_L_1(void)
 
 void CHD_Group_RU::OverlapSequence_L_2(void)
 {
+	const TERRAIN_INFO* RightSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 2);
+
 	RightEdge_Algorithm();
-	Make_LU_Terrain(m_startidx - SQ_TILECNTX);
-	SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
-	SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+
+	if(GROUP_RD == RightSpace->byGroup_ID)
+	{
+		Make_LU_Terrain(m_startidx - SQ_TILECNTX);
+		SetTerrainInfo(m_startidx + 1 , m_terrain_id , GROUP_RD , 1 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_RU , 2 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RD , 3 , 0 , false);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RU , 3 , 1 , true);
+	}
+	else
+	{
+		Make_LU_Terrain(m_startidx - SQ_TILECNTX);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+	}
 }
 
 void CHD_Group_RU::OverlapSequence_L_3(void)
@@ -254,13 +268,24 @@ void CHD_Group_RU::OverlapSequence_LU_1(void)
 void CHD_Group_RU::OverlapSequence_LU_2(void)
 {
 	const TERRAIN_INFO* RightSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 1);
+	const TERRAIN_INFO* RightSpace2 = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + 2);
 
-	if(GROUP_RD == RightSpace->byGroup_ID)
+
+
+	if(GROUP_RD == RightSpace2->byGroup_ID)
 	{
-		SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_LU , 3 , 1 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX, m_terrain_id , GROUP_RU , 2 , 0 , true);
+		SetTerrainInfo(m_startidx + 1 + SQ_TILECNTX, m_terrain_id , GROUP_RU , 3 , 1 , true);
 	}
-	SetTerrainInfo(m_startidx + SQ_TILECNTX, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
-	SetTerrainInfo(m_startidx + SQ_TILECNTX + 1 , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+	else
+	{
+		if(GROUP_RD == RightSpace->byGroup_ID)
+		{
+			SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_LU , 3 , 1 , true);
+		}
+		SetTerrainInfo(m_startidx + SQ_TILECNTX, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1 , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+	}
 }
 
 void CHD_Group_RU::OverlapSequence_LU_3(void)

@@ -12,8 +12,9 @@ CLG_Group_LU::~CLG_Group_LU(void)
 {
 }
 
-void CLG_Group_LU::MakeTerrain_Group(const int istartidx)
+void CLG_Group_LU::MakeTerrain_Group(const int istartidx ,const int iflag)
 {
+	m_Flag = iflag;
 	m_startidx = istartidx;
 	Group_LU_Algorithm();
 }
@@ -51,6 +52,14 @@ void CLG_Group_LU::Group_LU_Algorithm()
 
 		if(TERRAIN_HIGHDIRT == m_oriTerrainInfo->byTerrain_ID)
 		{
+			if(1 == m_Flag)
+			{
+
+			}
+			else
+			{
+				Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1 , 1, false);
+			}
 			Make_LU_Terrain(m_startidx);
 		}
 
@@ -214,6 +223,7 @@ void CLG_Group_LU::OverlapGroup_LD(void)
 void CLG_Group_LU::OverlapSequence_L_0(void)
 {
 	Make_FLAT_Terrain(m_startidx , 1 , 2 , false);
+	Make_L_Terrain(m_startidx , true , false);
 }
 
 void CLG_Group_LU::OverlapSequence_L_1(void)
@@ -240,7 +250,17 @@ void CLG_Group_LU::OverlapSequence_L_5(void)
 
 void CLG_Group_LU::OverlapSequence_LU_0(void)
 {
-	Make_LU_Terrain(m_startidx);
+	const TERRAIN_INFO*	DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX + 1);
+
+	if(GROUP_RD == DownSpace->byGroup_ID)
+	{
+		Make_LU_Terrain(m_startidx);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RD , 1 , 0 , true);
+	}
+	else
+	{
+		Make_LU_Terrain(m_startidx);
+	}
 }
 
 void CLG_Group_LU::OverlapSequence_LU_1(void)
@@ -265,17 +285,21 @@ void CLG_Group_LU::OverlapSequence_RU_1(void)
 void CLG_Group_LU::OverlapSequence_RU_2(void)
 {
 	const TERRAIN_INFO*	UpSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx - SQ_TILECNTX);
+	const TERRAIN_INFO*	DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX);
 
-	if(GROUP_RD == UpSpace->byGroup_ID)
+
+	
+	if(GROUP_RD == DownSpace->byGroup_ID)
 	{
-
+		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1 , 1, false);
+		Make_LU_Terrain(m_startidx);		
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RD , 1 , 0 , true);
 	}
 	else
 	{
-		Make_FLAT_Terrain(m_startidx , 1, 2);
+		Make_LU_Terrain(m_startidx);
+		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1, 1, false);
 	}
-
-	Make_LU_Terrain(m_startidx);
 }
 
 void CLG_Group_LU::OverlapSequence_RU_3(void)
@@ -292,14 +316,13 @@ void CLG_Group_LU::OverlapSequence_RD_1(void)
 
 void CLG_Group_LU::OverlapSequence_RD_2(void)
 {
-	const TERRAIN_INFO*	UpSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx - SQ_TILECNTX*2);
-	if(GROUP_LD == UpSpace->byGroup_ID)
+	if(1 == m_Flag)
 	{
-		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1, 2 , false);
+		Make_FLAT_Terrain(m_startidx  , 2, 2 , false);
 	}
 	else
 	{
-		Make_FLAT_Terrain(m_startidx , 2, 2 , false);
+		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1, 2 , false);
 	}
 }
 
@@ -325,10 +348,12 @@ void CLG_Group_LU::OverlapSequence_R_1(void)
 
 void CLG_Group_LU::OverlapSequence_R_2(void)
 {
+	Make_FLAT_Terrain(m_startidx , 2 , 2 , false);
 }
 
 void CLG_Group_LU::OverlapSequence_R_3(void)
 {
+
 }
 
 void CLG_Group_LU::OverlapSequence_R_4(void)
@@ -341,18 +366,24 @@ void CLG_Group_LU::OverlapSequence_R_5(void)
 
 void CLG_Group_LU::OverlapSequence_LD_0(void)
 {
-	const TERRAIN_INFO*	DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX);
+	const TERRAIN_INFO*	DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX + 1);
 
 	if(GROUP_LU == DownSpace->byGroup_ID)
 	{
 		SetTerrainInfo(m_startidx + SQ_TILECNTX, TERRAIN_DIRT , GROUP_FLAT , 0 , 0, false);
 		Make_LU_Terrain(m_startidx);
 	}
+	else if(GROUP_RD == DownSpace->byGroup_ID)
+	{
+		Make_LU_Terrain(m_startidx);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_RD , 1 , 0, false);
+		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX , 1, 1, false);
+	}
 	else
 	{
 		//SetTerrainInfo(m_startidx + SQ_TILECNTX, TERRAIN_DIRT , GROUP_FLAT , 0 , 0, false);
-		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX - 1 , 1 ,2);
-		Make_L_Terrain(m_startidx);
+		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX - 1 , 1 ,2 , false);
+		Make_L_Terrain(m_startidx , true , false);
 	}
 }
 
@@ -370,7 +401,7 @@ void CLG_Group_LU::OverlapSequence_LD_3(void)
 
 void CLG_Group_LU::OverlapSequence_LD_4(void)
 {
-	//Make_FLAT_Terrain(m_startidx , 1 , 2);
+	//Make_FLAT_Terrain(m_startidx , 1 , 2 , false);
 }
 
 void CLG_Group_LU::OverlapSequence_LD_5(void)

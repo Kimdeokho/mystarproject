@@ -14,6 +14,7 @@
 #include "MyForm.h"
 #include "TerrainBrushMgr.h"
 #include "TileDebug.h"
+#include "Rewind.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -123,6 +124,7 @@ void CMainFrame::OnDestroy()
 	CTerrainBrushMgr::GetInstance()->DestroyInstance();
 	CDevice::GetInstance()->DestroyInstance();
 	CTileDebug::GetInstance()->DestroyInstance();
+	CRewind::GetInstance()->DestroyInstance();
 
 	CFrameWnd::OnDestroy();
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.

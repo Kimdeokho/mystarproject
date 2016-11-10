@@ -31,6 +31,7 @@ public:
 private:
 	const vector<TILE*>*		m_psqTile;
 	int					m_DownFloorPos[14];
+	int					m_UpFloorPos[6];
 	D3DXMATRIX			m_matWorld;
 	//int					m_UpFloorPos[GROUP_END];
 	bool				m_bDebugGroup;

@@ -213,14 +213,19 @@ void CLG_Group_FLAT::OverlapGroup_LD(void)
 
 void CLG_Group_FLAT::OverlapSequence_L_0(void)
 {
+	Make_FLAT_Terrain(m_startidx , 2 , 2 , true);
+	Make_FLAT_Terrain(m_startidx + SQ_TILECNTX*2, 1 , 2 , false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_L_1(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 3, false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_L_2(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 2, true);
+	Make_FLAT_Terrain(m_startidx + SQ_TILECNTX, 1, 2, false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_L_3(void)
@@ -229,10 +234,12 @@ void CLG_Group_FLAT::OverlapSequence_L_3(void)
 
 void CLG_Group_FLAT::OverlapSequence_L_4(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 2 , false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_L_5(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 3 , false);
 }
 
 
@@ -244,11 +251,12 @@ void CLG_Group_FLAT::OverlapSequence_LU_0(void)
 
 void CLG_Group_FLAT::OverlapSequence_LU_1(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1 , 3 , false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_LU_2(void)
 {
-	Make_FLAT_Terrain(m_startidx , 1 , 2);
+	Make_FLAT_Terrain(m_startidx - SQ_TILECNTX, 2 , 2);
 }
 
 void CLG_Group_FLAT::OverlapSequence_LU_3(void)
@@ -265,7 +273,7 @@ void CLG_Group_FLAT::OverlapSequence_RU_1(void)
 
 void CLG_Group_FLAT::OverlapSequence_RU_2(void)
 {
-	Make_FLAT_Terrain(m_startidx , 1 , 2);
+	Make_FLAT_Terrain(m_startidx - SQ_TILECNTX, 2 , 2);
 }
 
 void CLG_Group_FLAT::OverlapSequence_RU_3(void)
@@ -303,6 +311,8 @@ void CLG_Group_FLAT::OverlapSequence_RD_5(void)
 
 void CLG_Group_FLAT::OverlapSequence_R_0(void)
 {
+	Make_FLAT_Terrain(m_startidx , 2 , 2 , true);
+	Make_FLAT_Terrain(m_startidx + SQ_TILECNTX*2, 1 , 2 , false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_R_1(void)
@@ -311,6 +321,8 @@ void CLG_Group_FLAT::OverlapSequence_R_1(void)
 
 void CLG_Group_FLAT::OverlapSequence_R_2(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 2, true);
+	Make_FLAT_Terrain(m_startidx + SQ_TILECNTX, 1, 2, false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_R_3(void)
@@ -319,10 +331,12 @@ void CLG_Group_FLAT::OverlapSequence_R_3(void)
 
 void CLG_Group_FLAT::OverlapSequence_R_4(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 2 , false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_R_5(void)
 {
+	Make_FLAT_Terrain(m_startidx , 1, 3 , false);
 }
 
 void CLG_Group_FLAT::OverlapSequence_LD_0(void)

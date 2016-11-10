@@ -225,6 +225,11 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			CTileDebug::GetInstance()->SetMoveOption();
 			break;
 		}
+	case 'Z':
+		{
+			CRewind::GetInstance()->StackRewind();
+			break;
+		}
 	}
 
 	Invalidate(FALSE);

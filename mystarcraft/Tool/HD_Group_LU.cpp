@@ -403,10 +403,24 @@ void CHD_Group_LU::OverlapSequence_R_1(void)
 
 void CHD_Group_LU::OverlapSequence_R_2(void)
 {
+	const TERRAIN_INFO* LeftSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx - 2);
+
 	LeftEdge_Algorithm();
-	Make_RU_Terrain(m_startidx - SQ_TILECNTX);
-	SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
-	SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+
+	if(GROUP_LD == LeftSpace->byGroup_ID)
+	{
+		Make_RU_Terrain(m_startidx - SQ_TILECNTX);
+		SetTerrainInfo(m_startidx , m_terrain_id , GROUP_LD , 0 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_LU , 2 , 1 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_LD , 2 , 0 , false);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_LU , 3 , 0 , true);
+	}
+	else
+	{
+		Make_RU_Terrain(m_startidx - SQ_TILECNTX);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX , m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+	}
 }
 
 void CHD_Group_LU::OverlapSequence_R_3(void)

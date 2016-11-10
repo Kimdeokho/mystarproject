@@ -7,10 +7,7 @@ CTerrain_Group::CTerrain_Group(void)
 	m_bTerrainDelete = true;
 	m_flat_id = TERRAIN_HIGHDIRT;
 
-	for(int i = 0; i < 8; ++i)
-	{
-		//m_TerrainInfo[i] = NULL;
-	}
+	m_Flag = 1;
 }
 
 CTerrain_Group::~CTerrain_Group(void)
@@ -72,7 +69,7 @@ void CTerrain_Group::Make_RU_Terrain(const int idx)
 	}
 }
 
-void CTerrain_Group::Make_L_Terrain(const int idx , bool bdelete /*true*/)
+void CTerrain_Group::Make_L_Terrain(const int idx , bool bdelete , bool bdelete2)
 {
 	for(int i = 0; i < 3; ++i)
 	{
@@ -81,11 +78,11 @@ void CTerrain_Group::Make_L_Terrain(const int idx , bool bdelete /*true*/)
 			if(i*2+j <= 3)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_L  , i*2+j , 1 , bdelete );
 			else
-				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_L  , i*2+j , 0 , false );
+				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_L  , i*2+j , 0 , bdelete2 );
 		}
 	}
 }
-void CTerrain_Group::Make_R_Terrain(const int idx , bool bdelete /*true*/)
+void CTerrain_Group::Make_R_Terrain(const int idx , bool bdelete , bool bdelete2)
 {
 	for(int i = 0; i < 3; ++i)
 	{
@@ -94,7 +91,7 @@ void CTerrain_Group::Make_R_Terrain(const int idx , bool bdelete /*true*/)
 			if(i*2+j <= 3)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_R  , i*2+j , 1 , bdelete );
 			else
-				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_R  , i*2+j , 0 , false );
+				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_R  , i*2+j , 0 , bdelete2 );
 		}
 	}
 }

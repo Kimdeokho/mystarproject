@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Include.h"
+#include "Rewind.h"
 
 class CToolView;
 class CTileMgr
@@ -27,6 +28,7 @@ public:
 	int	 FloorCheck(const int _index , const int _flr);
 	void SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bdelete = true);
 	void TileOption_Update(void);
+	void SetBeforeTile(list<TERRAIN_INFO>&	terrain_list, const int idx);
 public:
 	TERRAIN_INFO* GetTerrain_Info(const int _index);
 public:

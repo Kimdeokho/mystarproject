@@ -70,8 +70,8 @@ void CTileDebug::DebugGroup(void)
 			else
 			{
 				m_color.a = 60;
-				m_color.r = 255;
-				m_color.g = 0;
+				m_color.r = 0;
+				m_color.g = 255;
 				m_color.b = 0;
 			}
 			CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
@@ -81,7 +81,30 @@ void CTileDebug::DebugGroup(void)
 	}
 	else if( 1 == icase)
 	{
+		for(int i = 0; i < 6; ++i)
+		{
+			idx = m_UpFloorPos[i];
 
+			if(idx < 0 || SQ_TILECNTX*SQ_TILECNTY <= idx)
+				continue;
+
+			int x = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(0);
+			int y = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(1);
+
+			m_matWorld._41 = (*m_psqTile)[idx]->vPos.x - x;
+			m_matWorld._42 = (*m_psqTile)[idx]->vPos.y - y;
+
+			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+
+			m_color.a = 60;
+			m_color.r = 255;
+			m_color.g = 255;
+			m_color.b = 255;
+
+			CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
+				, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+				, D3DCOLOR_ARGB(m_color.a,m_color.r,m_color.g,m_color.b));
+		}
 	}
 	else if( 2 == icase)
 	{
@@ -158,6 +181,13 @@ void CTileDebug::DebugTile_PosSet(void)
 		m_DownFloorPos[11] = idx;
 		m_DownFloorPos[12] = idx + SQ_TILECNTX - 3;
 		m_DownFloorPos[13] = idx + SQ_TILECNTX*2 -1;
+
+		m_UpFloorPos[0] = idx - 132;
+		m_UpFloorPos[1] = idx - 258;
+		m_UpFloorPos[2] = idx - 256;
+		m_UpFloorPos[3] = idx - 126;
+		m_UpFloorPos[4] = idx;
+		m_UpFloorPos[5] = idx - 2;
 }
 
 void CTileDebug::SetDebugGroup()

@@ -7,6 +7,7 @@
 #include "MyProPage.h"
 #include "HighDirt_Brush.h"
 #include "LowerGround_Brush.h"
+#include "Rewind.h"
 
 IMPLEMENT_SINGLETON(CTerrainBrushMgr);
 
@@ -52,19 +53,10 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 
 	int boxidx = m_TerrainListBox->GetCurSel();
 
-	//CString	str_terrainID;
-
-	//if(boxidx >= 0)
-	//	m_TerrainListBox->GetText(boxidx , str_terrainID);
-	//else
-	//	return E_FAIL;
-
-	//if(InitBrush(str_terrainID))
-	//	return E_FAIL;
-
 
 	int icase = this->FloorCheck();
 
+	CRewind::GetInstance()->Push_Begin();
 	if(icase == -2)
 	{
 		/*2단계 낮출때 */
@@ -85,7 +77,7 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 	{
 		/*2단계 올릴때*/
 	}
-
+	CRewind::GetInstance()->Push_end();
 
 	return S_OK;
 }
@@ -94,11 +86,6 @@ int CTerrainBrushMgr::FloorCheck(void)
 	int sqidx = get_sqindex();
 	int iindex = 0;
 	int icase = 0;
-
-	//if(sqidx != m_oldIdx)
-	//	m_oldIdx = sqidx;
-	//else
-	//	return 0;
 
 	for(int i = 0; i < 2; ++i)
 	{

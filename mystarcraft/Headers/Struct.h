@@ -50,9 +50,6 @@ typedef struct tagTile
 	tagTile()
 	{
 		vPos = D3DXVECTOR2(0,0);
-		//byTerrain_ID = TERRAIN_DIRT;
-		//byGroup_ID = GROUP_FLAT;
-		//byGroup_sequence = 0;
 		byOption = 0;
 		byFloor = 1;
 	}
@@ -71,15 +68,6 @@ typedef struct tagTile_temp
 		byFloor = 1;
 	}
 }TILE_TEMP;
-typedef struct tagUnitData
-{
-	wstring		wstrName;
-	int			iHp;
-	int			iAtt;
-	int			iDef;
-	BYTE		byJobId;
-	BYTE		byDropItem;
-}UNITDATA;
 
 typedef struct tagInfo
 {
@@ -123,16 +111,3 @@ typedef struct tagFrame
 	}
 
 }FRAME;
-
-typedef struct tagData
-{
-	int		iHp;
-	int		iMp;
-	int		iAtt;
-	int		iDef;
-
-	tagData(void ){}
-
-	tagData(int _hp, int _mp, int _att, int _def)
-		: iHp(_hp), iMp(_mp), iAtt(_att), iDef(_def) {}
-}DATA;

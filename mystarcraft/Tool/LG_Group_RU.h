@@ -5,7 +5,7 @@ class CLG_Group_RU :
 	public CTerrain_Group
 {
 public:
-	virtual void	MakeTerrain_Group(const int istartidx);
+	virtual void	MakeTerrain_Group(const int istartidx ,const int iflag);
 public:
 	void	Group_RU_Algorithm(void);
 public:
