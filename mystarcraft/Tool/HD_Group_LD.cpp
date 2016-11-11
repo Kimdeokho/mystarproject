@@ -52,11 +52,12 @@ void CHD_Group_LD::Group_LD_Algorithm()
 	}
 	else if(GROUP_FLAT == m_oriTerrainInfo->byGroup_ID)
 	{
-		if(m_oriTerrainInfo->byTerrain_ID == m_terrain_id)
-		{
+		/*Dirt -> High
+		 High -> High
+		 Water -> Dirt(Water)*/
 
-		}
-		else
+		if( (TERRAIN_DIRT == m_oriTerrainInfo->byTerrain_ID && TERRAIN_HIGHDIRT == m_terrain_id) ||
+			(TERRAIN_WATER == m_oriTerrainInfo->byTerrain_ID && TERRAIN_WATER == m_terrain_id))
 		{
 			const TERRAIN_INFO*	DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX);
 			const TERRAIN_INFO*	DLSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX - 1);
@@ -81,6 +82,13 @@ void CHD_Group_LD::Group_LD_Algorithm()
 				Make_LD_Terrain(m_startidx , false);
 			}
 		}
+		//if(m_oriTerrainInfo->byTerrain_ID == m_terrain_id)
+		//{
+
+		//}
+		//else
+		//{
+		//}
 	}
 }
 void CHD_Group_LD::Group_LD_Algorithm2(void)

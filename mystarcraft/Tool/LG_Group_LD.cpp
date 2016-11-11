@@ -14,6 +14,9 @@ CLG_Group_LD::~CLG_Group_LD(void)
 
 void CLG_Group_LD::MakeTerrain_Group(const int istartidx ,const int iflag)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_Flag = iflag;
 	m_startidx = istartidx;
 	Group_LD_Algorithm();
@@ -50,6 +53,11 @@ void CLG_Group_LD::Group_LD_Algorithm()
 	{
 		if(TERRAIN_HIGHDIRT == m_oriTerrainInfo->byTerrain_ID)
 			Make_LD_Terrain(m_startidx, true , true);
+		else if(TERRAIN_DIRT == m_oriTerrainInfo->byTerrain_ID &&
+			TERRAIN_WATER == m_terrain_id)
+		{
+			Make_LD_Terrain(m_startidx, true , true);
+		}
 		else
 			Make_FLAT_Terrain(m_startidx , 3, 2);
 	}

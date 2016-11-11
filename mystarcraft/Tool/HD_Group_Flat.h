@@ -9,6 +9,7 @@ private:
 	int		m_irow;
 public:
 	virtual void MakeTerrain_Group(const int istartidx);
+	virtual void MakeTerrain_Group(const int istartidx , const int irow , const int icol);
 public:
 	void	SetRowCol(const int irow , int icol);
 public:

@@ -11,7 +11,7 @@ CMyBrush::~CMyBrush(void)
 {
 }
 
-void CMyBrush::SetTerrain_ID(const int terrain_id)
+void CMyBrush::SetTerrain_ID(const int terrain_id ,const int icase)
 {
 
 	for(int i = 0; i < GROUP_END; ++i)
@@ -21,11 +21,21 @@ void CMyBrush::SetTerrain_ID(const int terrain_id)
 
 		if(TERRAIN_DIRT == terrain_id)
 		{
-			m_pGroup[i]->SetTerrain_ID(TERRAIN_HIGHDIRT , TERRAIN_DIRT);
+			if( -1 == icase)
+				m_pGroup[i]->SetTerrain_ID(TERRAIN_HIGHDIRT , TERRAIN_DIRT);
+			else if( 1 == icase)
+				m_pGroup[i]->SetTerrain_ID(TERRAIN_WATER , TERRAIN_DIRT);
 		}
 		else if(TERRAIN_HIGHDIRT == terrain_id)
 		{
 			m_pGroup[i]->SetTerrain_ID(TERRAIN_HIGHDIRT , TERRAIN_HIGHDIRT);
+		}
+		else if(TERRAIN_WATER == terrain_id)
+		{
+			if( -1 == icase)
+				m_pGroup[i]->SetTerrain_ID(TERRAIN_WATER , TERRAIN_WATER);
+			else if( 1 == icase)
+				m_pGroup[i]->SetTerrain_ID(TERRAIN_WATER , TERRAIN_DIRT);
 		}
 		//물이면 물다운, 업
 	}

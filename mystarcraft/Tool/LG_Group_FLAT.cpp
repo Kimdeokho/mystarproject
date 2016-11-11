@@ -15,11 +15,17 @@ CLG_Group_FLAT::~CLG_Group_FLAT(void)
 
 void CLG_Group_FLAT::MakeTerrain_Group(const int istartidx)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	Group_FLAT_Algorithm();
 }
 
 void CLG_Group_FLAT::MakeTerrain_Group(const int istartidx , const int irow , const int icol)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_startidx = istartidx;
 	m_irow = irow;
 	m_icol = icol;

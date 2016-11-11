@@ -38,12 +38,6 @@ void CHighDirt_Brush::BrushPaint()
 {
 	int idx = CTerrainBrushMgr::GetInstance()->get_sqindex();
 
-	//Overlap_GroupArea(3, 2, idx - 126 , GROUP_R);
-	//Overlap_GroupArea(3, 2, idx - 132 , GROUP_L);
-	//Overlap_GroupArea(3, 2, idx , GROUP_RD);
-	//Overlap_GroupArea(3, 2, idx - 2 , GROUP_LD);
-	//Overlap_GroupArea(2, 2, idx - 256 , GROUP_RU);
-	//Overlap_GroupArea(2, 2, idx - 258 , GROUP_LU);
 
 	m_pGroup[GROUP_L]->MakeTerrain_Group(idx - 132);
 	m_pGroup[GROUP_LU]->MakeTerrain_Group(idx - 258);
@@ -73,16 +67,26 @@ void CHighDirt_Brush::BrushPaint()
 	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx - SQ_TILECNTX*4 - 2);
 	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx -  SQ_TILECNTX*3 - 4);
 	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx -  SQ_TILECNTX*2 - 6);
-	//m_pGroup[GROUP_L]->MakeTerrain_Group(idx - 136);
+	//m_pGroup[GROUP_L]->MakeTerrain_Group(idx - SQ_TILECNTX - 8);
 
 	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx + SQ_TILECNTX*2 - 2);
 	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx + SQ_TILECNTX - 4);
 	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx  - 6);
 
-	//((CHD_Group_Flat*)m_pGroup[GROUP_FLAT])->SetRowCol(4,2);
-	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*2 - 2);
-	//((CHD_Group_Flat*)m_pGroup[GROUP_FLAT])->SetRowCol(2,2);
-	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*1 - 4);
+	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*2 - 2 , 4, 2);
+	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*1 - 4 , 2 , 2);
+
+	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx - SQ_TILECNTX*4 );
+	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx -  SQ_TILECNTX*3 + 2);
+	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx -  SQ_TILECNTX*2 + 4);
+	//m_pGroup[GROUP_R]->MakeTerrain_Group(idx - SQ_TILECNTX + 6);
+
+	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx + SQ_TILECNTX*2 );
+	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx + SQ_TILECNTX + 2);
+	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx  + 4);
+
+	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*2 , 4, 2);
+	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*1 + 2 , 2 , 2);
 	/**/
 
 	//LeftArea(idx - 132);

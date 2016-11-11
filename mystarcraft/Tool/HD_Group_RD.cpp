@@ -52,11 +52,8 @@ void CHD_Group_RD::Group_RD_Algorithm()
 	}
 	else if(GROUP_FLAT == m_oriTerrainInfo->byGroup_ID)
 	{
-		if(m_oriTerrainInfo->byTerrain_ID == m_terrain_id)
-		{
-
-		}
-		else
+		if( (TERRAIN_DIRT == m_oriTerrainInfo->byTerrain_ID && TERRAIN_HIGHDIRT == m_terrain_id) ||
+			(TERRAIN_WATER == m_oriTerrainInfo->byTerrain_ID && TERRAIN_WATER == m_terrain_id))
 		{
 			const TERRAIN_INFO*	DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX);
 			const TERRAIN_INFO*	DRSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX + 2);
@@ -81,7 +78,15 @@ void CHD_Group_RD::Group_RD_Algorithm()
 			{
 				Make_RD_Terrain(m_startidx , false);
 			}
-		}		
+		}
+
+/*		if(m_oriTerrainInfo->byTerrain_ID == m_terrain_id)
+		{
+
+		}
+		else
+		{
+		}	*/	
 	}
 }
 void CHD_Group_RD::Group_RD_Algorithm2()

@@ -20,7 +20,7 @@ public:
 public:
 	void	SetTerrainInfo(BYTE	byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv);
 	void	SetTerrainInfo(int idx , BYTE byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv , bool bdelete);
-	void	SetTerrain_ID(const int terrain_id , const int flat_id);
+	void	SetTerrain_ID(const int terrain_id , const int flat_id );
 	void	UpdateTerrain(void);
 	void	Make_LU_Terrain(const int idx);
 	void	Make_RU_Terrain(const int idx);

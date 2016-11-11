@@ -15,6 +15,9 @@ CLG_Group_REdge::~CLG_Group_REdge(void)
 
 void CLG_Group_REdge::MakeTerrain_Group(const int istartidx)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_startidx = istartidx;
 	Group_REdge_Algorithm();
 }
@@ -51,6 +54,9 @@ void CLG_Group_REdge::Group_REdge_Algorithm()
 		const TERRAIN_INFO* DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX);
 
 		if(TERRAIN_HIGHDIRT == m_oriTerrainInfo->byTerrain_ID)
+			Make_REdge(m_startidx);
+		else if(TERRAIN_DIRT == m_oriTerrainInfo->byTerrain_ID &&
+			TERRAIN_WATER == m_terrain_id)
 			Make_REdge(m_startidx);
 
 		if(GROUP_RD == DownSpace->byGroup_ID)

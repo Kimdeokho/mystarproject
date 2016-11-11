@@ -34,7 +34,8 @@ void CTileMgr::InitTile(void)
 	m_DirtTex.resize(GROUP_END);
 	m_HighDirtTex.reserve(GROUP_END);
 	m_HighDirtTex.resize(GROUP_END);
-
+	m_WaterTex.reserve(GROUP_END);
+	m_WaterTex.resize(GROUP_END);
 
 	m_DirtTex[GROUP_FLAT] = CTextureMgr::GetInstance()->GetStateTexture(L"Dirt" , L"FLAT");
 
@@ -46,6 +47,13 @@ void CTileMgr::InitTile(void)
 	m_HighDirtTex[GROUP_RD] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"RD");
 	m_HighDirtTex[GROUP_LD] = CTextureMgr::GetInstance()->GetStateTexture(L"High_dirt" , L"LD");
 
+	m_WaterTex[GROUP_FLAT] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"FLAT");
+	m_WaterTex[GROUP_L] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"L");
+	m_WaterTex[GROUP_LU] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"LU");
+	m_WaterTex[GROUP_RU] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"RU");
+	m_WaterTex[GROUP_R] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"R");
+	m_WaterTex[GROUP_RD] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"RD");
+	m_WaterTex[GROUP_LD] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"LD");
 
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
@@ -58,7 +66,7 @@ void CTileMgr::InitTile(void)
 			ptile->vPos.y = (float)(SQ_TILESIZEY/2 + i*SQ_TILESIZEY);
 
 			TERRAIN_INFO* pterrain_info = new TERRAIN_INFO;
-			pterrain_info->byTerrain_ID = TERRAIN_HIGHDIRT;
+			pterrain_info->byTerrain_ID = TERRAIN_WATER;
 			int group_id = pterrain_info->byGroup_ID;
 			pterrain_info->byGroup_sequence = rand()%m_DirtTex[group_id]->size();
 
@@ -241,6 +249,13 @@ void CTileMgr::TileRender(void)
 				{
 					group_id = (*iter)->byGroup_ID;
 					temp = m_HighDirtTex[group_id];
+					squence = (*iter)->byGroup_sequence;
+					pTexture = (*temp)[squence];
+				}
+				else if( (*iter)->byTerrain_ID == TERRAIN_WATER )
+				{
+					group_id = (*iter)->byGroup_ID;
+					temp = m_WaterTex[group_id];
 					squence = (*iter)->byGroup_sequence;
 					pTexture = (*temp)[squence];
 				}
@@ -494,9 +509,28 @@ int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 	}
 	else if(TERRAIN_DIRT == ptemp->byTerrain_ID)
 	{
-		if(TERRAIN_DIRT == _terrain_id)
+		if(TERRAIN_WATER == _terrain_id)
+		{
+			if( (GROUP_LD == ptemp->byGroup_ID ||
+				GROUP_RD == ptemp->byGroup_ID ||
+				GROUP_L == ptemp->byGroup_ID ||
+				GROUP_R == ptemp->byGroup_ID ) &&
+				4<= ptemp->byGroup_sequence)
+				return 0;
+
+			return -1;
+		}
+
+		else if(TERRAIN_DIRT == _terrain_id)
 			return 0;
 		else if(TERRAIN_HIGHDIRT == _terrain_id)
+			return 1;
+	}
+	else if(TERRAIN_WATER == ptemp->byTerrain_ID)
+	{
+		if(TERRAIN_WATER == _terrain_id)
+			return -1;
+		else if(TERRAIN_DIRT == _terrain_id)
 			return 1;
 	}
 

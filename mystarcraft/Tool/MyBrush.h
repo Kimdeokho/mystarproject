@@ -13,7 +13,7 @@ protected:
 public:
 	virtual void BrushPaint(){};
 public:
-	void SetTerrain_ID(const int terrain_id);
+	void SetTerrain_ID(const int terrain_id ,const int icase);
 public:
 	CMyBrush(void);
 	virtual ~CMyBrush(void);

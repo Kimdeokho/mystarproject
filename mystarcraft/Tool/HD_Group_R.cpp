@@ -53,9 +53,19 @@ void CHD_Group_R::Group_R_Algorithm()
 	}
 	else if(GROUP_FLAT == m_oriTerrainInfo->byGroup_ID)
 	{
-		if(TERRAIN_HIGHDIRT != m_oriTerrainInfo->byTerrain_ID)
-			Make_R_Terrain(m_startidx , false , false);
-
+		/*지형을 생성해도 되는조건
+		TERRAIN_DIRT - TERRAIN_HIGHDIRT
+		TERRAIN_DIRT - TERRAIN_WATER*/
+		if(TERRAIN_DIRT == m_oriTerrainInfo->byTerrain_ID)
+		{
+			if(TERRAIN_HIGHDIRT == m_terrain_id)
+				Make_R_Terrain(m_startidx , false , false);
+		}
+		else if(TERRAIN_WATER == m_oriTerrainInfo->byTerrain_ID)
+		{
+			if(TERRAIN_WATER == m_terrain_id)
+				Make_R_Terrain(m_startidx , false , false);
+		}
 		Group_R_Algorithm2();
 	}
 }
@@ -463,11 +473,13 @@ void CHD_Group_R::OverlapSequence_LD_2(void)
 			}
 			else
 			{
-				SetTerrainInfo(m_startidx - SQ_TILECNTX, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
-				SetTerrainInfo(m_startidx - SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
+				Make_FLAT_Terrain(m_startidx - SQ_TILECNTX ,1 , 2, true);
+				//SetTerrainInfo(m_startidx - SQ_TILECNTX, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
+				//SetTerrainInfo(m_startidx - SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
 			}
-			SetTerrainInfo(m_startidx + SQ_TILECNTX*2, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
-			SetTerrainInfo(m_startidx + SQ_TILECNTX*2 + 1, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
+			Make_FLAT_Terrain(m_startidx + SQ_TILECNTX*2 ,1 , 2, true);
+			//SetTerrainInfo(m_startidx + SQ_TILECNTX*2, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
+			//SetTerrainInfo(m_startidx + SQ_TILECNTX*2 + 1, m_terrain_id , GROUP_FLAT , 0 , 0 ,true);
 
 			SetTerrainInfo(m_startidx , m_terrain_id , GROUP_RD , 0 , 0 ,true);
 			SetTerrainInfo(m_startidx + 1, m_terrain_id , GROUP_RD , 1 , 0 ,true);
@@ -548,8 +560,9 @@ void CHD_Group_R::OverlapSequence_LD_2(void)
 		}
 		else
 		{
-			SetTerrainInfo(m_startidx - SQ_TILECNTX, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
-			SetTerrainInfo(m_startidx - SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+			Make_FLAT_Terrain(m_startidx - SQ_TILECNTX ,1 , 2, true);
+			//SetTerrainInfo(m_startidx - SQ_TILECNTX, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
+			//SetTerrainInfo(m_startidx - SQ_TILECNTX + 1, m_terrain_id , GROUP_FLAT , 0 , 0 , true);
 		}
 		Make_RD_Terrain(m_startidx);
 	}

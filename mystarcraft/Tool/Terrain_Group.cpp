@@ -255,7 +255,7 @@ void CTerrain_Group::RightEdge_Algorithm(void)
 	}
 }
 
-void CTerrain_Group::SetTerrain_ID(const int terrain_id , const int flat_id)
+void CTerrain_Group::SetTerrain_ID(const int terrain_id , const int flat_id )
 {
 	m_terrain_id = terrain_id;
 	m_flat_id = flat_id;

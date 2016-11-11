@@ -15,6 +15,7 @@ private:
 private:
 	vector<const vector<TEXINFO*>*>	m_DirtTex;
 	vector<const vector<TEXINFO*>*>	m_HighDirtTex;
+	vector<const vector<TEXINFO*>*>	m_WaterTex;
 private:
 	int						m_rbidx;
 	int						m_sqidx;

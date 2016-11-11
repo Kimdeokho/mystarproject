@@ -21,7 +21,8 @@ const int	MIN_STR = 64;
 const BYTE	TERRAIN_NONE = -1;
 const BYTE	TERRAIN_DIRT = 0;
 const BYTE	TERRAIN_HIGHDIRT = 1;
-const BYTE	TERRAIN_END = 2;
+const BYTE	TERRAIN_WATER = 2;
+const BYTE	TERRAIN_END = 3;
 
 const int   MOVE_OK = 0;
 const int   MOVE_NONE = 1;

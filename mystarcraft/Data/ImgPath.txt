@@ -6,3 +6,10 @@ Tile|None|High_dirt|R|6|..\Texture\Tile\High_dirt\R\hdr%d.png
 Tile|None|High_dirt|RD|12|..\Texture\Tile\High_dirt\RD\hdrd%d.png
 Tile|None|High_dirt|RU|9|..\Texture\Tile\High_dirt\RU\hdru%d.png
 Tile|None|Dirt|FLAT|2|..\Texture\Tile\Dirt\FLAT\dg%d.png
+Tile|None|Water|FLAT|2|..\Texture\Tile\Water\FLAT\wg%d.png
+Tile|None|Water|L|6|..\Texture\Tile\Water\L\wl%d.png
+Tile|None|Water|LU|9|..\Texture\Tile\Water\LU\wlu%d.png
+Tile|None|Water|RU|9|..\Texture\Tile\Water\RU\wru%d.png
+Tile|None|Water|RD|6|..\Texture\Tile\Water\RD\wrd%d.png
+Tile|None|Water|LD|6|..\Texture\Tile\Water\LD\wld%d.png
+Tile|None|Water|R|6|..\Texture\Tile\Water\R\wr%d.png

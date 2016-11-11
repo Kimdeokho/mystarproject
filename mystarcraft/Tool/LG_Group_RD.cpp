@@ -17,6 +17,9 @@ CLG_Group_RD::~CLG_Group_RD(void)
 
 void CLG_Group_RD::MakeTerrain_Group(const int istartidx ,const int iflag)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_Flag = iflag;
 	m_startidx = istartidx;
 	m_start_bottomidx = istartidx + SQ_TILECNTX;
@@ -55,6 +58,11 @@ void CLG_Group_RD::Group_RD_Algorithm()
 	{
 		if(TERRAIN_HIGHDIRT == m_oriTerrainInfo->byTerrain_ID)
 			Make_RD_Terrain(m_startidx , true , true);
+		else if(TERRAIN_DIRT == m_oriTerrainInfo->byTerrain_ID &&
+			TERRAIN_WATER == m_terrain_id)
+		{
+			Make_RD_Terrain(m_startidx, true , true);
+		}
 		else
 			Make_FLAT_Terrain(m_startidx, 3 , 2 );
 	}
@@ -287,8 +295,7 @@ void CLG_Group_RD::OverlapSequence_RU_0(void)
 
 	if(GROUP_RD == UpSpace->byGroup_ID)
 	{
-		SetTerrainInfo(m_startidx + SQ_TILECNTX + 1, TERRAIN_DIRT , GROUP_FLAT , 0 , 0, false);
-
+		Make_FLAT_Terrain(m_startidx + SQ_TILECNTX + 1 , 1, 1, false);
 		Make_R_Terrain(m_startidx , bdelete1 , bdelete2);
 	}
 	else if(GROUP_R == UpSpace->byGroup_ID)

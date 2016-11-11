@@ -57,6 +57,8 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 	int icase = this->FloorCheck();
 
 	CRewind::GetInstance()->Push_Begin();
+
+	//2단계 올리거나 낮출땐 체크범위가 다른것 같다.
 	if(icase == -2)
 	{
 		/*2단계 낮출때 */
@@ -64,13 +66,13 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 	if(icase == -1)
 	{
 		/*1단계 낮출때*/
-		m_Brush[DOWN_FLOOR_1]->SetTerrain_ID(m_curTerrainID);
+		m_Brush[DOWN_FLOOR_1]->SetTerrain_ID(m_curTerrainID , icase);
 		m_Brush[DOWN_FLOOR_1]->BrushPaint();
 	}
 	if(icase == 1)
 	{
 		/*1단계 올릴때*/
-		m_Brush[UP_FLOOR_1]->SetTerrain_ID(m_curTerrainID);
+		m_Brush[UP_FLOOR_1]->SetTerrain_ID(m_curTerrainID , icase);
 		m_Brush[UP_FLOOR_1]->BrushPaint();
 	}
 	if(icase == 2)
