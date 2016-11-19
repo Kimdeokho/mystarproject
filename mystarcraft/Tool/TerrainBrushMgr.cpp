@@ -7,6 +7,7 @@
 #include "MyProPage.h"
 #include "HighDirt_Brush.h"
 #include "LowerGround_Brush.h"
+#include "HillBrush.h"
 #include "Rewind.h"
 
 IMPLEMENT_SINGLETON(CTerrainBrushMgr);
@@ -29,6 +30,7 @@ HRESULT CTerrainBrushMgr::Initialize(void)
 
 	m_Brush[UP_FLOOR_1] = new CHighDirt_Brush;
 	m_Brush[DOWN_FLOOR_1] = new CLowerGround_Brush;
+	m_Brush[HILL] = new CHillBrush;
 
 	m_curTerrainID = TERRAIN_DIRT;
 
@@ -53,32 +55,52 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 
 	int boxidx = m_TerrainListBox->GetCurSel();
 
+	CString temp;
+	m_TerrainListBox->GetText(boxidx , temp);
+	InitBrush(temp);
 
 	int icase = this->FloorCheck();
 
 	CRewind::GetInstance()->Push_Begin();
 
-	//2단계 올리거나 낮출땐 체크범위가 다른것 같다.
-	if(icase == -2)
+
+	if(TERRAIN_HILL_L == m_curTerrainID)
 	{
-		/*2단계 낮출때 */
+		((CHillBrush*)m_Brush[HILL])->SetHillDir(HILL_L);
+		m_Brush[HILL]->SetTerrain_ID(m_curTerrainID , 0);
+		m_Brush[HILL]->BrushPaint();
 	}
-	if(icase == -1)
+	else if(TERRAIN_HILL_R == m_curTerrainID)
 	{
-		/*1단계 낮출때*/
-		m_Brush[DOWN_FLOOR_1]->SetTerrain_ID(m_curTerrainID , icase);
-		m_Brush[DOWN_FLOOR_1]->BrushPaint();
+		((CHillBrush*)m_Brush[HILL])->SetHillDir(HILL_R);
+		m_Brush[HILL]->SetTerrain_ID(m_curTerrainID , 0);
+		m_Brush[HILL]->BrushPaint();
 	}
-	if(icase == 1)
+	else
 	{
-		/*1단계 올릴때*/
-		m_Brush[UP_FLOOR_1]->SetTerrain_ID(m_curTerrainID , icase);
-		m_Brush[UP_FLOOR_1]->BrushPaint();
+		//2단계 올리거나 낮출땐 체크범위가 다른것 같다.
+		if(icase == -2)
+		{
+			/*2단계 낮출때 */
+		}
+		else if(icase == -1)
+		{
+			/*1단계 낮출때*/
+			m_Brush[DOWN_FLOOR_1]->SetTerrain_ID(m_curTerrainID , icase);
+			m_Brush[DOWN_FLOOR_1]->BrushPaint();
+		}
+		else if(icase == 1)
+		{
+			/*1단계 올릴때*/
+			m_Brush[UP_FLOOR_1]->SetTerrain_ID(m_curTerrainID , icase);
+			m_Brush[UP_FLOOR_1]->BrushPaint();
+		}
+		else if(icase == 2)
+		{
+			/*2단계 올릴때*/
+		}
 	}
-	if(icase == 2)
-	{
-		/*2단계 올릴때*/
-	}
+
 	CRewind::GetInstance()->Push_end();
 
 	return S_OK;
@@ -122,6 +144,18 @@ HRESULT	CTerrainBrushMgr::InitBrush(const CString&	_str)
 		m_curFloor = 2;
 		m_curTerrainID = TERRAIN_HIGHDIRT;
 	}
+	else if(!_str.Compare(L"HillL"))
+	{
+		m_curTerrainID = TERRAIN_HILL_L;
+	}
+	else if(!_str.Compare(L"HillR"))
+	{
+		m_curTerrainID = TERRAIN_HILL_R;
+	}
+	else if(!_str.Compare(L"Water"))
+	{
+		m_curTerrainID = TERRAIN_WATER;
+	}
 
 	return S_OK;
 }
@@ -132,12 +166,6 @@ void CTerrainBrushMgr::Release(void)
 	{
 		Safe_Delete(m_Brush[i]);
 	}
-
-	int a = 0;
 }
 
-void CTerrainBrushMgr::SetTerrain_ID(int id)
-{
-	m_curTerrainID = id;
-}
 

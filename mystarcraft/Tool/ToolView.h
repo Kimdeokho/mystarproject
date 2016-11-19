@@ -38,6 +38,7 @@ public:
 
 	bool			m_DebugMode;
 	CMainFrame*		m_pMainFrm;
+	int				m_OldClickIdx;
 public:
 	virtual ~CToolView();
 #ifdef _DEBUG

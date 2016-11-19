@@ -6,6 +6,7 @@
 #include "MyProPage.h"
 #include "TileMgr.h"
 #include "TerrainBrushMgr.h"
+#include "TileDebug.h"
 // CMyProPage 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CMyProPage, CPropertyPage)
@@ -82,7 +83,7 @@ BOOL CMyProPage::OnSetActive()
 
 	//다이얼로그의 활성화 여부를 판단한다
 
-	CTileMgr::GetInstance()->SetRohmbusRender(TRUE);
+	CTileMgr::GetInstance()->SetRohmbusRender(true);
 	return CPropertyPage::OnSetActive();
 }
 
@@ -98,6 +99,23 @@ void CMyProPage::OnLbnSelchangeList1()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
 	int idx = m_maptileListbox.GetCurSel();
+	CString str;
+	m_maptileListbox.GetText(idx, str);
 
-	CTerrainBrushMgr::GetInstance()->SetTerrain_ID(idx);
+	if(!str.Compare(L"HillR") || !str.Compare(L"HillL"))
+	{
+		if(!str.Compare(L"HillR"))
+			CTileDebug::GetInstance()->SetLR(HILL_R);
+		else if(!str.Compare(L"HillL"))
+			CTileDebug::GetInstance()->SetLR(HILL_L);
+
+		CTileDebug::GetInstance()->DebugSwitch(true);
+		CTileDebug::GetInstance()->SetDebugGroup(false);
+		CTileMgr::GetInstance()->SetRohmbusRender(false);
+	}
+	else
+	{
+		CTileDebug::GetInstance()->DebugSwitch(false);
+		CTileMgr::GetInstance()->SetRohmbusRender(true);
+	}
 }

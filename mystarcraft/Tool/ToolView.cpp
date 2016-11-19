@@ -14,6 +14,7 @@
 #include "MainFrm.h"
 #include "TerrainBrushMgr.h"
 #include "TileDebug.h"
+#include "MyMouse.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -140,10 +141,12 @@ void CToolView::OnInitialUpdate()
 
 	CTileMgr::GetInstance()->InitTile();
 	CTerrainBrushMgr::GetInstance()->Initialize();
+	CMyMouse::GetInstance()->Initialize();
 
 	m_bGrid = false;
 	m_bLbutton = false;
 	m_DebugMode = false;
+	m_OldClickIdx = 0;
 }
 
 
@@ -242,14 +245,21 @@ void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 
 	CScrollView::OnMouseMove(nFlags, point);
 
+	CMyMouse::GetInstance()->SetMousePt(point);
+
 	CTileMgr::GetInstance()->Rohmbus_Picking(point);
 
+	int newidx = CTerrainBrushMgr::GetInstance()->get_sqindex();
 	if(m_bLbutton == true)
 	{
-		//if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
-		//{
-		//	MessageBox(L"지형 체크 실패");
-		//}
+		if(m_OldClickIdx != newidx)
+		{
+			m_OldClickIdx = newidx;
+			if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
+			{
+				MessageBox(L"지형 체크 실패");
+			}
+		}
 	}
 
 	CTileDebug::GetInstance()->DebugTile_PosSet();
@@ -266,6 +276,7 @@ void CToolView::OnLButtonDown(UINT nFlags, CPoint point)
 
 	m_bLbutton = true;
 
+	m_OldClickIdx = CTerrainBrushMgr::GetInstance()->get_sqindex();
 	if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
 	{
 		MessageBox(L"지형 체크 실패");

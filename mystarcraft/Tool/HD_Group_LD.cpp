@@ -16,6 +16,9 @@ CHD_Group_LD::~CHD_Group_LD(void)
 }
 void CHD_Group_LD::MakeTerrain_Group(int istartidx)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_startidx = istartidx;
 	m_start_bottomidx = istartidx + SQ_TILECNTX;
 
@@ -24,6 +27,8 @@ void CHD_Group_LD::MakeTerrain_Group(int istartidx)
 }
 void CHD_Group_LD::Group_LD_Algorithm()
 {
+	Hill_Algorithm(m_startidx);
+
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
@@ -293,7 +298,15 @@ void CHD_Group_LD::OverlapSequence_L_3(void)
 
 void CHD_Group_LD::OverlapSequence_L_4(void)
 {
-	Make_LD_Terrain(m_startidx , false);
+	TERRAIN_INFO*	DownSpace = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx + SQ_TILECNTX);
+
+	if(GROUP_R == DownSpace->byGroup_ID)
+	{
+		Make_FLAT_Terrain(m_startidx , 1, 2 );
+		Make_RD_Terrain(m_startidx + SQ_TILECNTX );
+	}
+	else
+		Make_LD_Terrain(m_startidx , false);
 }
 
 void CHD_Group_LD::OverlapSequence_L_5(void)

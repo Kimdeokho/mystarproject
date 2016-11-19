@@ -19,8 +19,9 @@ CTextureMgr::~CTextureMgr(void)
 
 const TEXINFO* CTextureMgr::GetTexture( const wstring& wstrObjKey 
 									   , const wstring& wstrStateKey /*= L"" */
-									   , const int& iCnt )
+									   , const int& iCnt /*=0*/)
 {
+	/*오브젝트키와 상태키, iCnt에 해당하는 텍스쳐한장을 가져온다*/
 	map<wstring, CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
 
 	if(iter == m_MapTexture.end())
@@ -31,6 +32,7 @@ const TEXINFO* CTextureMgr::GetTexture( const wstring& wstrObjKey
 const vector<TEXINFO*>* CTextureMgr::GetStateTexture(const wstring& wstrObjKey , 
 													 const wstring& wstrStateKey)
 {
+	/*오브젝트키와 상태키에 해당하는 텍스쳐 셋을 가져온다*/
 	map<wstring , CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
 
 	if(iter == m_MapTexture.end())

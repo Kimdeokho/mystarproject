@@ -13,3 +13,5 @@ Tile|None|Water|RU|9|..\Texture\Tile\Water\RU\wru%d.png
 Tile|None|Water|RD|6|..\Texture\Tile\Water\RD\wrd%d.png
 Tile|None|Water|LD|6|..\Texture\Tile\Water\LD\wld%d.png
 Tile|None|Water|R|6|..\Texture\Tile\Water\R\wr%d.png
+Tile|None|HillL|L|36|..\Texture\Tile\HillL\L\hillL%d.png
+Tile|None|HillR|R|36|..\Texture\Tile\HillR\R\hill%d.png

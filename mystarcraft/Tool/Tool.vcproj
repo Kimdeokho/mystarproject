@@ -311,6 +311,14 @@
 				Name="Mgr"
 				>
 				<File
+					RelativePath=".\MyMouse.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyMouse.h"
+					>
+				</File>
+				<File
 					RelativePath=".\TerrainBrushMgr.cpp"
 					>
 				</File>
@@ -400,6 +408,14 @@
 				</File>
 				<File
 					RelativePath=".\HighDirt_Brush.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HillBrush.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HillBrush.h"
 					>
 				</File>
 				<File
@@ -605,6 +621,26 @@
 							>
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="Hill"
+					>
+					<File
+						RelativePath=".\Hill_L.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Hill_L.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Hill_R.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Hill_R.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

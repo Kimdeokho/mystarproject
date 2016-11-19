@@ -16,12 +16,19 @@ CHD_Group_LU::~CHD_Group_LU(void)
 }
 void CHD_Group_LU::MakeTerrain_Group(int istartidx)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_startidx = istartidx;
 
 	Group_LU_Algorithm();
 }
 void CHD_Group_LU::Group_LU_Algorithm()
 {
+	//여기서 호출
+	Hill_Algorithm(m_startidx);
+
+
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
@@ -428,7 +435,8 @@ void CHD_Group_LU::OverlapSequence_R_2(void)
 
 	LeftEdge_Algorithm();
 
-	if(GROUP_LD == LeftSpace->byGroup_ID)
+	if(GROUP_LD == LeftSpace->byGroup_ID ||
+		GROUP_L == LeftSpace->byGroup_ID)
 	{
 		Make_RU_Terrain(m_startidx - SQ_TILECNTX);
 		SetTerrainInfo(m_startidx , m_terrain_id , GROUP_LD , 0 , 0 , true);

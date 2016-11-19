@@ -44,6 +44,7 @@ enum FLOOR
 	UP_FLOOR_2,
 	DOWN_FLOOR_1,
 	DOWN_FLOOR_2,
+	HILL,
 	FLOOR_END,
 };
 
@@ -59,4 +60,10 @@ enum TERRAIN_GROUP
 	GROUP_LEDGE,
 	GROUP_REDGE,
 	GROUP_END,
+};
+
+enum HILL_DIR
+{
+	HILL_L,
+	HILL_R,
 };

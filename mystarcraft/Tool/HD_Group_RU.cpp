@@ -16,6 +16,9 @@ CHD_Group_RU::~CHD_Group_RU(void)
 }
 void CHD_Group_RU::MakeTerrain_Group(int istartidx)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_startidx = istartidx;
 
 	Group_RU_Algorithm();
@@ -24,6 +27,8 @@ void CHD_Group_RU::MakeTerrain_Group(int istartidx)
 }
 void CHD_Group_RU::Group_RU_Algorithm()
 {
+	Hill_Algorithm(m_startidx);
+
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
@@ -244,7 +249,8 @@ void CHD_Group_RU::OverlapSequence_L_2(void)
 
 	RightEdge_Algorithm();
 
-	if(GROUP_RD == RightSpace->byGroup_ID)
+	if(GROUP_RD == RightSpace->byGroup_ID ||
+		GROUP_R == RightSpace->byGroup_ID)
 	{
 		Make_LU_Terrain(m_startidx - SQ_TILECNTX);
 		SetTerrainInfo(m_startidx + 1 , m_terrain_id , GROUP_RD , 1 , 0 , true);

@@ -395,8 +395,10 @@ void CLG_Group_RU::OverlapSequence_RD_5(void)
 
 void CLG_Group_RU::OverlapSequence_R_0(void)
 {
+	if( 1 == m_Flag)
+		Make_FLAT_Terrain(m_startidx , 1 , 2 , false);
+
 	Make_R_Terrain(m_startidx , true , false);
-	//Make_FLAT_Terrain(m_startidx , 1 , 2 , false);
 }
 
 void CLG_Group_RU::OverlapSequence_R_1(void)

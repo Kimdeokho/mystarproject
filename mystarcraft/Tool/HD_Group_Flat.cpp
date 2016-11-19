@@ -14,6 +14,9 @@ CHD_Group_Flat::~CHD_Group_Flat(void)
 
 void CHD_Group_Flat::MakeTerrain_Group(const int istartidx)
 {
+	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	m_startidx = istartidx;
 
 	Make_FLAT_Terrain(m_startidx ,m_irow ,m_icol);

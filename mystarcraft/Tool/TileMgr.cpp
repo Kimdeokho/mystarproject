@@ -7,6 +7,7 @@
 #include "ToolView.h"
 #include "TileDebug.h"
 #include "Rewind.h"
+#include "MyMouse.h"
 
 IMPLEMENT_SINGLETON(CTileMgr)
 CTileMgr::CTileMgr(void)
@@ -36,6 +37,8 @@ void CTileMgr::InitTile(void)
 	m_HighDirtTex.resize(GROUP_END);
 	m_WaterTex.reserve(GROUP_END);
 	m_WaterTex.resize(GROUP_END);
+	m_HillTex.reserve(GROUP_END);
+	m_HillTex.resize(GROUP_END);
 
 	m_DirtTex[GROUP_FLAT] = CTextureMgr::GetInstance()->GetStateTexture(L"Dirt" , L"FLAT");
 
@@ -55,6 +58,9 @@ void CTileMgr::InitTile(void)
 	m_WaterTex[GROUP_RD] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"RD");
 	m_WaterTex[GROUP_LD] = CTextureMgr::GetInstance()->GetStateTexture(L"Water" , L"LD");
 
+	m_HillTex[GROUP_L] = CTextureMgr::GetInstance()->GetStateTexture(L"HillL" , L"L");
+	m_HillTex[GROUP_R] = CTextureMgr::GetInstance()->GetStateTexture(L"HillR" , L"R");
+
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
 		for(int j = 0; j < SQ_TILECNTX; ++j)
@@ -66,7 +72,7 @@ void CTileMgr::InitTile(void)
 			ptile->vPos.y = (float)(SQ_TILESIZEY/2 + i*SQ_TILESIZEY);
 
 			TERRAIN_INFO* pterrain_info = new TERRAIN_INFO;
-			pterrain_info->byTerrain_ID = TERRAIN_WATER;
+			pterrain_info->byTerrain_ID = TERRAIN_DIRT;
 			int group_id = pterrain_info->byGroup_ID;
 			pterrain_info->byGroup_sequence = rand()%m_DirtTex[group_id]->size();
 
@@ -165,14 +171,14 @@ void CTileMgr::TileOption_Update(void)
 			}
 			else if(ptemp->byGroup_ID == GROUP_LU)
 			{
-				if(iindex != 3)
+				if(ptemp->byGroup_sequence != 3)
 					m_sqTile[iindex]->byFloor = 1;
 				else
 					m_sqTile[iindex]->byFloor = 2;
 			}
 			else if(ptemp->byGroup_ID == GROUP_RU)
 			{
-				if(iindex != 2)
+				if(ptemp->byGroup_sequence != 2)
 					m_sqTile[iindex]->byFloor = 1;
 				else
 					m_sqTile[iindex]->byFloor = 2;
@@ -183,14 +189,14 @@ void CTileMgr::TileOption_Update(void)
 			}
 			else if(ptemp->byGroup_ID == GROUP_RD)
 			{
-				if(iindex != 0)
+				if(ptemp->byGroup_sequence != 0)
 					m_sqTile[iindex]->byFloor = 1;
 				else
 					m_sqTile[iindex]->byFloor = 2;
 			}
 			else if(ptemp->byGroup_ID == GROUP_LD)
 			{
-				if(iindex != 1)
+				if(ptemp->byGroup_sequence != 1)
 					m_sqTile[iindex]->byFloor = 1;
 				else
 					m_sqTile[iindex]->byFloor = 2;
@@ -198,7 +204,7 @@ void CTileMgr::TileOption_Update(void)
 			else if(ptemp->byGroup_ID == GROUP_FLAT)
 			{
 				m_sqTile[iindex]->byOption = MOVE_OK;
-				if(ptemp->byGroup_sequence != 3)
+				if(ptemp->byTerrain_ID != TERRAIN_DIRT)
 					m_sqTile[iindex]->byFloor = 2;
 				else
 					m_sqTile[iindex]->byFloor = 1;
@@ -238,25 +244,31 @@ void CTileMgr::TileRender(void)
 
 			for( ; iter != iter_end; ++iter)
 			{
+				group_id = (*iter)->byGroup_ID;
+				squence = (*iter)->byGroup_sequence;
 				if( (*iter)->byTerrain_ID == TERRAIN_DIRT )
 				{
-					group_id = (*iter)->byGroup_ID;
 					temp = m_DirtTex[group_id];
-					squence = (*iter)->byGroup_sequence;
 					pTexture = (*temp)[squence];
 				}
 				else if( (*iter)->byTerrain_ID == TERRAIN_HIGHDIRT )
 				{
-					group_id = (*iter)->byGroup_ID;
 					temp = m_HighDirtTex[group_id];
-					squence = (*iter)->byGroup_sequence;
 					pTexture = (*temp)[squence];
 				}
 				else if( (*iter)->byTerrain_ID == TERRAIN_WATER )
 				{
-					group_id = (*iter)->byGroup_ID;
 					temp = m_WaterTex[group_id];
-					squence = (*iter)->byGroup_sequence;
+					pTexture = (*temp)[squence];
+				}
+				else if( (*iter)->byTerrain_ID == TERRAIN_HILL_R )
+				{
+					temp = m_HillTex[group_id];
+					pTexture = (*temp)[squence];
+				}
+				else if( (*iter)->byTerrain_ID == TERRAIN_HILL_L )
+				{
+					temp = m_HillTex[group_id];
 					pTexture = (*temp)[squence];
 				}
 				CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
@@ -489,17 +501,17 @@ void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bd
 }
 int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 {
-	TERRAIN_INFO* ptemp = m_sqTile[_index]->terrainList.back();
+	TERRAIN_INFO* pori_terrain = m_sqTile[_index]->terrainList.back();
 
-	if(TERRAIN_HIGHDIRT == ptemp->byTerrain_ID)
+	if(TERRAIN_HIGHDIRT == pori_terrain->byTerrain_ID)
 	{
 		if(TERRAIN_DIRT == _terrain_id)
 		{
-			if( (GROUP_LD == ptemp->byGroup_ID ||
-				GROUP_RD == ptemp->byGroup_ID ||
-				GROUP_L == ptemp->byGroup_ID ||
-				GROUP_R == ptemp->byGroup_ID ) &&
-				4<= ptemp->byGroup_sequence)
+			if( (GROUP_LD == pori_terrain->byGroup_ID ||
+				GROUP_RD == pori_terrain->byGroup_ID ||
+				GROUP_L == pori_terrain->byGroup_ID ||
+				GROUP_R == pori_terrain->byGroup_ID ) &&
+				4<= pori_terrain->byGroup_sequence)
 				return 0;
 
 			return -1;
@@ -507,15 +519,15 @@ int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 		else if(TERRAIN_HIGHDIRT == _terrain_id)
 			return 1;
 	}
-	else if(TERRAIN_DIRT == ptemp->byTerrain_ID)
+	else if(TERRAIN_DIRT == pori_terrain->byTerrain_ID)
 	{
 		if(TERRAIN_WATER == _terrain_id)
 		{
-			if( (GROUP_LD == ptemp->byGroup_ID ||
-				GROUP_RD == ptemp->byGroup_ID ||
-				GROUP_L == ptemp->byGroup_ID ||
-				GROUP_R == ptemp->byGroup_ID ) &&
-				4<= ptemp->byGroup_sequence)
+			if( (GROUP_LD == pori_terrain->byGroup_ID ||
+				GROUP_RD == pori_terrain->byGroup_ID ||
+				GROUP_L == pori_terrain->byGroup_ID ||
+				GROUP_R == pori_terrain->byGroup_ID ) &&
+				4<= pori_terrain->byGroup_sequence)
 				return 0;
 
 			return -1;
@@ -526,12 +538,20 @@ int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 		else if(TERRAIN_HIGHDIRT == _terrain_id)
 			return 1;
 	}
-	else if(TERRAIN_WATER == ptemp->byTerrain_ID)
+	else if(TERRAIN_WATER == pori_terrain->byTerrain_ID)
 	{
 		if(TERRAIN_WATER == _terrain_id)
 			return -1;
 		else if(TERRAIN_DIRT == _terrain_id)
 			return 1;
+	}
+	else if(TERRAIN_HILL_L == pori_terrain->byTerrain_ID ||
+		TERRAIN_HILL_R == pori_terrain->byTerrain_ID)
+	{
+		if(TERRAIN_HIGHDIRT == _terrain_id)
+			return 1;
+		else if(TERRAIN_DIRT == _terrain_id)
+			return -1;
 	}
 
 	return 0;
@@ -573,4 +593,101 @@ void CTileMgr::SetBeforeTile(list<TERRAIN_INFO>&	terrain_list , const int idx)
 	}
 
 	m_sqTile[idx]->terrainList.sort(rendersort_compare());
+}
+int CTileMgr::GetIdx(void)
+{
+	int x = CMyMouse::GetInstance()->GetAddScroll().x;
+	int y = CMyMouse::GetInstance()->GetAddScroll().y;
+
+	return (y/SQ_TILESIZEY)*SQ_TILECNTX + x/SQ_TILESIZEX;
+}
+
+bool CTileMgr::InstallHillCheck(const int idx, const int isequence , const int idir)
+{
+	const TERRAIN_INFO* oriterrain = GetTerrain_Info(idx);
+
+	if(0 == idir)
+	{
+		if(TERRAIN_HIGHDIRT == oriterrain->byTerrain_ID)
+		{
+			if(GROUP_FLAT == oriterrain->byGroup_ID)
+			{
+				if( 2 <= isequence && isequence <= 5 ||
+					10 <= isequence && isequence <= 11)
+					return true;
+				else
+					return false;
+			}
+			else if(GROUP_LD == oriterrain->byGroup_ID)
+			{
+				if( 0 <= isequence && isequence <=1 ||
+					6 <= isequence && isequence <= 9 ||
+					12 <= isequence && isequence <= 17 ||
+					20 <= isequence && isequence <= 23 ||
+					28 <= isequence && isequence <= 29)
+					return true;
+				else
+					return false;
+			}
+		}
+		else if(TERRAIN_DIRT == oriterrain->byTerrain_ID)
+		{
+			if(GROUP_FLAT == oriterrain->byGroup_ID)
+			{
+				if( 18 <= isequence && isequence <= 19 ||
+					24 <= isequence && isequence <= 27 ||
+					30 <= isequence && isequence <= 35)
+					return true;
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+	else
+	{
+		if(TERRAIN_HIGHDIRT == oriterrain->byTerrain_ID)
+		{
+			if(GROUP_FLAT == oriterrain->byGroup_ID)
+			{
+				if( isequence <= 3 ||
+					6 == isequence ||
+					7 == isequence )
+					return true;
+				else
+					return false;
+			}
+			else if(GROUP_RD == oriterrain->byGroup_ID)
+			{
+				if( 8 <= isequence && isequence <= 21 ||
+					4 <= isequence && isequence <= 5 ||
+					24 <= isequence && isequence <= 25)
+					return true;
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		else if(TERRAIN_DIRT == oriterrain->byTerrain_ID)
+		{
+			if(GROUP_FLAT == oriterrain->byGroup_ID)
+			{
+				if(	26 <= isequence && isequence <= 35 ||
+					22 <= isequence && isequence <= 23)
+					return true;
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+
+	return false;
 }

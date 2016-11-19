@@ -10,6 +10,11 @@ typedef struct tagTerrainOption
 
 }TERRAIN_UPDATE;
 
+enum MAKE_FLAG
+{
+	AFTER,
+	JUST
+};
 class CMyBrush;
 class CTerrain_Group
 {
@@ -18,7 +23,7 @@ public:
 	virtual void	MakeTerrain_Group(const int istartidx ,const int iflag){};
 	virtual void	MakeTerrain_Group(const int istartidx , const int irow , const int icol){};
 public:
-	void	SetTerrainInfo(BYTE	byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv);
+	void    DirectSetTerrain(const int idx , BYTE byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv , bool bdelete);
 	void	SetTerrainInfo(int idx , BYTE byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv , bool bdelete);
 	void	SetTerrain_ID(const int terrain_id , const int flat_id );
 	void	UpdateTerrain(void);
@@ -26,14 +31,16 @@ public:
 	void	Make_RU_Terrain(const int idx);
 	void	Make_L_Terrain(const int idx , bool bdelete = true , bool bdelete2 = true);
 	void	Make_R_Terrain(const int idx , bool bdelete = true , bool bdelete2 = true);
-	void	Make_LD_Terrain(const int idx , bool bdelete = true , bool bdelete2 = false);
-	void	Make_RD_Terrain(const int idx , bool bdelete = true , bool bdelete2 = false);
-	void	Make_FLAT_Terrain(const int idx , int irow , int icol ,bool bdelete = true);
+	void	Make_LD_Terrain(const int idx , bool bdelete = true , bool bdelete2 = false , MAKE_FLAG eflag = AFTER);
+	void	Make_RD_Terrain(const int idx , bool bdelete = true , bool bdelete2 = false , MAKE_FLAG eflag = AFTER);
+	void	Make_FLAT_Terrain(const int idx , int irow , int icol ,bool bdelete = true );
+	void	Make_FLAT_Terrain(const int idx , int irow , int icol  ,bool bdelete , int flat_id);
 	void	Make_REdge(const int idx);
 	void	Make_LEdge(const int idx);
 
 	void	LeftEdge_Algorithm(void);
 	void	RightEdge_Algorithm(void);
+	void    Hill_Algorithm(const int idx);
 protected:
 	bool	m_bTerrainDelete;
 	int		m_terrain_id;
@@ -41,7 +48,6 @@ protected:
 	int		m_startidx;
 	int		m_start_bottomidx;
 	int		m_Flag;
-	//int		m_cursequence;
 	const TERRAIN_INFO*	m_oriTerrainInfo;
 	BYTE	m_TerrainGroup[8];
 

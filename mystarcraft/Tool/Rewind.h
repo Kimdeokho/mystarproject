@@ -12,7 +12,7 @@ struct STACK_TERRAININFO
 	int				idx;
 };
 
-#define TERRAIN_STACKSIZE 100
+#define TERRAIN_STACKSIZE 500
 #define TILE_INFO list<TERRAIN_INFO>
 class CRewind
 {

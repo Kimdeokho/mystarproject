@@ -238,7 +238,9 @@ void CLG_Group_LU::OverlapGroup_LD(void)
 
 void CLG_Group_LU::OverlapSequence_L_0(void)
 {
-	Make_FLAT_Terrain(m_startidx , 1 , 2 , false);
+	if( 1 == m_Flag)
+		Make_FLAT_Terrain(m_startidx , 1 , 2 , false);
+
 	Make_L_Terrain(m_startidx , true , false);
 }
 
