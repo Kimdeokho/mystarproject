@@ -35,6 +35,8 @@ void CLG_Group_FLAT::MakeTerrain_Group(const int istartidx , const int irow , co
 
 void CLG_Group_FLAT::Group_FLAT_Algorithm()
 {
+	Hill_Algorithm(m_startidx);
+
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)

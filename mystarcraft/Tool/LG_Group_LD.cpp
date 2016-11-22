@@ -23,6 +23,8 @@ void CLG_Group_LD::MakeTerrain_Group(const int istartidx ,const int iflag)
 }
 void CLG_Group_LD::Group_LD_Algorithm()
 {
+	Hill_Algorithm(m_startidx);
+
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)

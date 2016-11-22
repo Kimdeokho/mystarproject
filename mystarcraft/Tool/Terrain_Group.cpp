@@ -290,7 +290,7 @@ void CTerrain_Group::Hill_Algorithm(const int idx)
 
 	int a = isquence/6;
 	int b = isquence%6;
-	int hill_startidx = m_startidx - SQ_TILECNTX*a - b;
+	int hill_startidx = idx - SQ_TILECNTX*a - b;
 
 	if(TERRAIN_HILL_L == pori_terrain->byTerrain_ID)
 	{

@@ -23,6 +23,9 @@ void CLG_Group_LEdge::MakeTerrain_Group(const int istartidx)
 }
 void CLG_Group_LEdge::Group_LEdge_Algorithm()
 {
+	Hill_Algorithm(m_startidx);
+	Hill_Algorithm(m_startidx+SQ_TILECNTX);
+
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
