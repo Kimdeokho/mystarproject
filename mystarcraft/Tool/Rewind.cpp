@@ -79,6 +79,7 @@ void CRewind::SetTerrainData(const list<TERRAIN_INFO*>&	templist , const int idx
 	}
 
 
+	m_minimapIdxList.push_back(idx);
 	m_curidxStack.push_back(idx); 
 }
 
@@ -113,6 +114,9 @@ void CRewind::StackRewind(void)
 		for(; iter != iter_end; ++iter)
 		{
 			idx = (*iter);
+
+			m_minimapIdxList.push_back(idx);
+
 			if(m_TerrainRewind[idx].size() > 1)
 			{
 				m_TerrainRewind[idx].pop_back();
@@ -124,4 +128,12 @@ void CRewind::StackRewind(void)
 	m_TileIdxList.pop_back();
 
 	CTileMgr::GetInstance()->TileOption_Update();
+}
+
+list<int>* CRewind::Getidxlist(void)
+{
+	if(m_minimapIdxList.empty())
+		return NULL;
+	else
+		return &m_minimapIdxList;
 }

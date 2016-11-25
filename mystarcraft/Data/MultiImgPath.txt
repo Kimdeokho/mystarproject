@@ -1,0 +1,17 @@
+Tile|None|High_dirt|FLAT|4|..\Texture\Multi\Tile\High_dirt\FLAT\hdg%d.png
+Tile|None|High_dirt|L|6|..\Texture\Multi\Tile\High_dirt\L\hdl%d.png
+Tile|None|High_dirt|LD|12|..\Texture\Multi\Tile\High_dirt\LD\hdld%d.png
+Tile|None|High_dirt|LU|9|..\Texture\Multi\Tile\High_dirt\LU\hdlu%d.png
+Tile|None|High_dirt|R|6|..\Texture\Multi\Tile\High_dirt\R\hdr%d.png
+Tile|None|High_dirt|RD|12|..\Texture\Multi\Tile\High_dirt\RD\hdrd%d.png
+Tile|None|High_dirt|RU|9|..\Texture\Multi\Tile\High_dirt\RU\hdru%d.png
+Tile|None|Dirt|FLAT|2|..\Texture\Multi\Tile\Dirt\FLAT\dg%d.png
+Tile|None|Water|FLAT|2|..\Texture\Multi\Tile\Water\FLAT\wg%d.png
+Tile|None|Water|L|6|..\Texture\Multi\Tile\Water\L\wl%d.png
+Tile|None|Water|LU|9|..\Texture\Multi\Tile\Water\LU\wlu%d.png
+Tile|None|Water|RU|9|..\Texture\Multi\Tile\Water\RU\wru%d.png
+Tile|None|Water|RD|6|..\Texture\Multi\Tile\Water\RD\wrd%d.png
+Tile|None|Water|LD|6|..\Texture\Multi\Tile\Water\LD\wld%d.png
+Tile|None|Water|R|6|..\Texture\Multi\Tile\Water\R\wr%d.png
+Tile|None|HillL|L|36|..\Texture\Multi\Tile\HillL\L\hillL%d.png
+Tile|None|HillR|R|36|..\Texture\Multi\Tile\HillR\R\hill%d.png

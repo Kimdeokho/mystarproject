@@ -1,4 +1,5 @@
 #pragma once
+#include "afxwin.h"
 
 
 // CMyProPage2 대화 상자입니다.
@@ -20,4 +21,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnSetActive();
+
+public:
+	CListBox m_objListBox;
+	afx_msg void OnLbnSelchangeList1();
 };

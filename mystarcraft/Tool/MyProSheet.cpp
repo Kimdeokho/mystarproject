@@ -96,6 +96,7 @@ void CMyProSheet::AddString(const TCHAR* _wstr , int _order)
 		}
 	case 1:
 		{
+			m_page2.m_objListBox.AddString(_wstr);
 			break;
 		}
 	}
@@ -123,7 +124,10 @@ bool CMyProSheet::FindStr(const TCHAR* _str , int _idx)
 	}
 	else if(_idx == 1)
 	{
-
+		if( 0 > m_page2.m_objListBox.FindString(0 , _str))
+			bresult = false;
+		else
+			bresult = true;
 	}
 	return bresult;
 }

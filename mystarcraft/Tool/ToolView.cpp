@@ -15,6 +15,7 @@
 #include "TerrainBrushMgr.h"
 #include "TileDebug.h"
 #include "MyMouse.h"
+#include "Minimapview.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -85,9 +86,9 @@ void CToolView::OnDraw(CDC* /*pDC*/)
 
 	CTileDebug::GetInstance()->DebugRender();
 
-	//CDevice::GetInstance()->GetSprite()->End();
 	CDevice::GetInstance()->Render_End();
 
+	//CTileMgr::GetInstance()->CopySurface();
 
 	CDevice::GetInstance()->GetDevice()->Present(NULL, NULL, m_hWnd, NULL);
 }
@@ -105,6 +106,7 @@ void CToolView::OnInitialUpdate()
 	SetScrollSizes(MM_TEXT, CSize(SQ_TILECNTX*SQ_TILESIZEX , SQ_TILECNTY*SQ_TILESIZEY));
 
 	m_pMainFrm = (CMainFrame*)AfxGetMainWnd();
+	m_pMinimapView = m_pMainFrm->m_pMiniMapView;
 
 	RECT	rcWindow;
 	m_pMainFrm->GetWindowRect(&rcWindow);
@@ -124,17 +126,17 @@ void CToolView::OnInitialUpdate()
 		, SWP_NOZORDER);
 
 	g_hWnd = m_hWnd;
+
 	if(FAILED(CDevice::GetInstance()->InitDevice()))
 	{
 		AfxMessageBox(L"디바이스 초기화 실패");
-		return;
 	}
 
-	if(CTextureMgr::GetInstance()->ReadImagePath(L"../Data/ImgPath.txt"))
+	if(CTextureMgr::GetInstance()->Read_MultiImagePath(L"../Data/MultiImgPath.txt"))
 	{
 		MessageBox(L"텍스쳐 불러오기 실패");
 	}
-	if(CTextureMgr::GetInstance()->SingleReadImagePath(L"../Data/SingleImgPath.txt"))
+	if(CTextureMgr::GetInstance()->Read_SingleImagePath(L"../Data/SingleImgPath.txt"))
 	{
 		MessageBox(L"싱글텍스쳐 불러오기 실패");
 	}
@@ -142,6 +144,9 @@ void CToolView::OnInitialUpdate()
 	CTileMgr::GetInstance()->InitTile();
 	CTerrainBrushMgr::GetInstance()->Initialize();
 	CMyMouse::GetInstance()->Initialize();
+
+	CTileMgr::GetInstance()->Initminimap(m_pMinimapView->m_hWnd);
+
 
 	m_bGrid = false;
 	m_bLbutton = false;
@@ -236,6 +241,7 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 
 	Invalidate(FALSE);
+	m_pMinimapView->Invalidate(FALSE);
 }
 
 void CToolView::OnMouseMove(UINT nFlags, CPoint point)
@@ -266,6 +272,7 @@ void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 
 
 	Invalidate(FALSE);
+	m_pMinimapView->Invalidate(FALSE);
 }
 
 void CToolView::OnLButtonDown(UINT nFlags, CPoint point)
@@ -283,6 +290,7 @@ void CToolView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 
 	Invalidate(FALSE);
+	m_pMinimapView->Invalidate(FALSE);
 }
 
 void CToolView::OnLButtonUp(UINT nFlags, CPoint point)

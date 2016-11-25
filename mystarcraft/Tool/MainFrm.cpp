@@ -108,6 +108,11 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	m_MainSplitter.SetColumnInfo(0,300,10);
 	//return CFrameWnd::OnCreateClient(lpcs, pContext);
 
+
+
+
+
+
 	return TRUE;
 }
 

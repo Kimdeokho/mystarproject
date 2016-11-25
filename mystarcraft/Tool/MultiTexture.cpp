@@ -55,7 +55,7 @@ HRESULT CMultiTexture::InsertTexture( const wstring& wstrFilePath
 			, D3DPOOL_MANAGED
 			, D3DX_DEFAULT
 			, D3DX_DEFAULT
-			, D3DCOLOR_XRGB(255,255,255)/*투명이 되는 D3DCOLOR 의 값*/
+			, D3DCOLOR_XRGB(0,0,0)/*투명이 되는 D3DCOLOR 의 값*/
 			, &pTexInfo->ImgInfo
 			, NULL
 			, &pTexInfo->pTexture)))

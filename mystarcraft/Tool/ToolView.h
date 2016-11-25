@@ -8,6 +8,7 @@
 
 class CToolDoc;
 class CMainFrame;
+class CMinimapview;
 class CToolView : public CScrollView
 {
 protected: // serialization에서만 만들어집니다.
@@ -33,11 +34,13 @@ protected:
 
 // 구현입니다.
 public:
+	CMainFrame*		m_pMainFrm;
+	CMinimapview*	m_pMinimapView;
+
 	bool			m_bGrid;
 	bool			m_bLbutton;
 
 	bool			m_DebugMode;
-	CMainFrame*		m_pMainFrm;
 	int				m_OldClickIdx;
 public:
 	virtual ~CToolView();

@@ -100,7 +100,7 @@ void CTextureMgr::Release( void )
 	}
 	m_MapTexture.clear();
 }
-HRESULT CTextureMgr::SingleReadImagePath( const wstring& wstrFilePath )
+HRESULT CTextureMgr::Read_SingleImagePath( const wstring& wstrFilePath )
 {
 	wifstream	LoadFile;
 
@@ -135,7 +135,7 @@ HRESULT CTextureMgr::SingleReadImagePath( const wstring& wstrFilePath )
 	return S_OK;
 }
 
-HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
+HRESULT CTextureMgr::Read_MultiImagePath( const wstring& wstrFilePath )
 {
 	wifstream	LoadFile;
 
@@ -151,7 +151,7 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 	MyForm* pMyForm = pMainFrm->m_pMyFormView;
 	CMyProSheet* pProSheet = pMyForm->m_pProSheet;
 
-	TCHAR	szKind[MIN_STR] = L""; //종족인지 타일인지
+	TCHAR	szKind[MIN_STR] = L""; //종류
 	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물인지
 	TCHAR	szObjKey[MIN_STR] = L"";
 	TCHAR	szStateKey[MIN_STR] = L"";
@@ -169,15 +169,15 @@ HRESULT CTextureMgr::ReadImagePath( const wstring& wstrFilePath )
 
 		int		iCount = _ttoi(szCount);
 
-		InsertTexture(szImgPath, szObjKey, TEXTYPE_MULTI
-			, szStateKey, iCount);
 
 		if(!_tcscmp(szKind , _T("Tile")))
 		{
+			InsertTexture(szImgPath, szObjKey, TEXTYPE_MULTI
+				, szStateKey, iCount);
+
 			if(!pProSheet->FindStr(szObjKey, 0))
 				pProSheet->AddString(szObjKey,0);
 		}
-
 	}
 
 	pProSheet->SetCursel(0,0);

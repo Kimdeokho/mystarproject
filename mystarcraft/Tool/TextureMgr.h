@@ -20,8 +20,8 @@ public:
 	const vector<TEXINFO*>* GetStateTexture(const wstring& wstrObjKey , 
 		const wstring& wstrStateKey);
 public:
-	HRESULT	ReadImagePath(const wstring& wstrFilePath);
-	HRESULT SingleReadImagePath( const wstring& wstrFilePath );
+	HRESULT	Read_MultiImagePath(const wstring& wstrFilePath);
+	HRESULT Read_SingleImagePath( const wstring& wstrFilePath );
 	HRESULT	InsertTexture(const wstring& wstrFilePath
 		, const wstring& wstrObjKey
 		, TEXTYPE eTextype

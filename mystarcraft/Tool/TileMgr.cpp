@@ -13,9 +13,11 @@ IMPLEMENT_SINGLETON(CTileMgr)
 CTileMgr::CTileMgr(void)
 {
 	m_pToolView = NULL;
+	m_textureMap = NULL;
 	m_rbRender = false;
 	m_rbidx = -1;
 	m_sqidx = -1;
+	m_oldidx = -1;
 }
 
 CTileMgr::~CTileMgr(void)
@@ -25,6 +27,13 @@ CTileMgr::~CTileMgr(void)
 
 void CTileMgr::InitTile(void)
 {
+	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
+
+	D3DXCreateTexture(pdevice , 1280,720 , D3DX_DEFAULT , D3DUSAGE_RENDERTARGET
+		, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_textureMap);
+
+	D3DXCreateTexture(pdevice , 1280,720 , D3DX_DEFAULT , D3DUSAGE_RENDERTARGET
+		, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_newtextureMap);
 
 	m_pToolView = ((CMainFrame*)AfxGetMainWnd())->m_pToolView;
 
@@ -108,42 +117,79 @@ void CTileMgr::InitTile(void)
 		}
 	}
 }
+void CTileMgr::Initminimap(HWND h)
+{
+	int iindex = 0;
+
+	CDevice::GetInstance()->Render_Begin();
+
+
+	for(int i = 0; i < SQ_TILECNTY; ++i)
+	{
+		for(int j = 0; j < SQ_TILECNTX; ++j)
+		{
+			iindex = i*SQ_TILECNTX + j;
+
+			if(iindex < 0 || iindex >= SQ_TILECNTX*SQ_TILECNTY)
+				continue;
+
+			MinimapDraw(iindex);
+		}
+	}
+
+	CDevice::GetInstance()->Render_End();
+
+	//CopySurface(m_textureMap);
+	CopySurface(m_newtextureMap);
+}
+void CTileMgr::SetMinimapupdate()
+{
+	int iindex = 0;
+
+	list<int>* templist = CRewind::GetInstance()->Getidxlist();
+
+
+	if(NULL != templist)
+	{
+		CDevice::GetInstance()->Render_Begin();
+
+		list<int>::iterator iter = templist->begin();
+		list<int>::iterator iter_end = templist->end();
+
+		for(; iter != iter_end; ++iter)
+		{
+			iindex = *iter;
+			if(m_oldidx == iindex)			
+				continue;
+			else
+			{
+				m_oldidx = iindex;
+				if(iindex < 0 || iindex >= SQ_TILECNTX*SQ_TILECNTY)
+					continue;
+
+				MinimapDraw(iindex);
+			}
+		}
+		CDevice::GetInstance()->Render_End();
+		CopySurface(m_newtextureMap);
+		templist->clear();
+	}
+
+}
 void CTileMgr::MinimapRender(void)
 {
 	D3DXMATRIX	matWorld;
 	D3DXMatrixIdentity(&matWorld);
-	TEXINFO*	pTexture = NULL;
-	int iindex = 0;
-	list<TERRAIN_INFO*>::iterator iter;
 
-	for(int i = 0; i < SQ_TILECNTX; ++i)
-	{
-		for(int j = 0; j < SQ_TILECNTY; ++j)
-		{
-			iindex = i*SQ_TILECNTX + j;
-			matWorld._41 = m_sqTile[iindex]->vPos.x;
-			matWorld._42 = m_sqTile[iindex]->vPos.y;
+	CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
 
-			iter = m_sqTile[iindex]->terrainList.begin();
-			BYTE	group_id = 0;
-			BYTE	squence_id = 0;
+	//CDevice::GetInstance()->GetSprite()->Draw(m_textureMap
+	//	, NULL, &D3DXVECTOR3(0, 0, 0.f), NULL
+	//	, D3DCOLOR_ARGB(255,255,255,255));
 
-			CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
-
-			for( ; iter != m_sqTile[iindex]->terrainList.end(); ++iter)
-			{
-				group_id = (*iter)->byGroup_ID;
-				squence_id = (*iter)->byGroup_sequence;
-				if( (*iter)->byGroup_ID == TERRAIN_DIRT )
-				{
-					pTexture = (*m_DirtTex[group_id])[squence_id];
-				}
-				CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
-					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
-					, D3DCOLOR_ARGB(255,255,255,255));
-			}			
-		}
-	}
+	CDevice::GetInstance()->GetSprite()->Draw(m_newtextureMap
+		, NULL, &D3DXVECTOR3(0, 0, 0.f), NULL
+		, D3DCOLOR_ARGB(255,255,255,255));
 }
 void CTileMgr::TileOption_Update(void)
 {
@@ -212,6 +258,27 @@ void CTileMgr::TileOption_Update(void)
 		}
 	}
 }
+void CTileMgr::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
+{
+	LPDIRECT3DSURFACE9 pBackBuffer , pSurface;
+	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
+
+
+	//pdevice->GetBackBuffer(0,0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
+	pdevice->GetRenderTarget(0 , &pBackBuffer);
+
+	ptexturemap->GetSurfaceLevel(0, &pSurface);
+
+	RECT rc;
+	rc.left = 0;
+	rc.right= 1280;
+	rc.top = 0;
+	rc.bottom = 720;
+
+	pdevice->StretchRect(pBackBuffer , NULL, pSurface ,NULL , D3DTEXF_NONE);
+
+	pBackBuffer->Release();
+}
 void CTileMgr::TileRender(void)
 {
 	int iindex = 0;
@@ -221,7 +288,7 @@ void CTileMgr::TileRender(void)
 
 	int scrollX = m_pToolView->GetScrollPos(0);
 	int scrollY = m_pToolView->GetScrollPos(1);
-	for(int i = 0; i < 30; ++i)
+	for(int i = 0; i < 23; ++i)
 	{
 		for(int j = 0; j < 40; ++j)
 		{
@@ -283,6 +350,7 @@ void CTileMgr::TileRender(void)
 
 	RECT	rc = {0};
 	TCHAR	szTemp[MIN_STR] = L"";
+
 	//wsprintf(szTemp, L"½ºÅ©·ÑX %d", m_pToolView->GetScrollPos(0));
 	//matfont._41 = 300;
 	//matfont._42 = 400;
@@ -306,6 +374,12 @@ void CTileMgr::TileRender(void)
 	//CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
 	//	, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
 	//	, D3DCOLOR_ARGB(255,255,255,255));
+
+
+
+
+	
+
 
 }
 void CTileMgr::Rohmbus_Render(void)
@@ -690,4 +764,60 @@ bool CTileMgr::InstallHillCheck(const int idx, const int isequence , const int i
 	}
 
 	return false;
+}
+
+void CTileMgr::MinimapDraw(const int iindex)
+{
+	D3DXMATRIX	matWorld;
+	D3DXMatrixIdentity(&matWorld);
+	TEXINFO*	pTexture = NULL;
+
+
+	list<TERRAIN_INFO*>::iterator iter = m_sqTile[iindex]->terrainList.begin();
+	list<TERRAIN_INFO*>::iterator iter_end = m_sqTile[iindex]->terrainList.end();
+	int group_id = 0;
+	int squence = 0;
+	const vector<TEXINFO*>* temp;
+
+	float fratioX = 0.31f;
+	float fratioY = 0.175f;
+	matWorld._41 = m_sqTile[iindex]->vPos.x*fratioX;
+	matWorld._42 = m_sqTile[iindex]->vPos.y*fratioY;
+	matWorld._11 = fratioX;
+	matWorld._22 = fratioY;
+	CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
+
+	for( ; iter != iter_end; ++iter)
+	{
+		group_id = (*iter)->byGroup_ID;
+		squence = (*iter)->byGroup_sequence;
+		if( (*iter)->byTerrain_ID == TERRAIN_DIRT )
+		{
+			temp = m_DirtTex[group_id];
+			pTexture = (*temp)[squence];
+		}
+		else if( (*iter)->byTerrain_ID == TERRAIN_HIGHDIRT )
+		{
+			temp = m_HighDirtTex[group_id];
+			pTexture = (*temp)[squence];
+		}
+		else if( (*iter)->byTerrain_ID == TERRAIN_WATER )
+		{
+			temp = m_WaterTex[group_id];
+			pTexture = (*temp)[squence];
+		}
+		else if( (*iter)->byTerrain_ID == TERRAIN_HILL_R )
+		{
+			temp = m_HillTex[group_id];
+			pTexture = (*temp)[squence];
+		}
+		else if( (*iter)->byTerrain_ID == TERRAIN_HILL_L )
+		{
+			temp = m_HillTex[group_id];
+			pTexture = (*temp)[squence];
+		}
+		CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
+			, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+			, D3DCOLOR_ARGB(255,255,255,255));
+	}
 }

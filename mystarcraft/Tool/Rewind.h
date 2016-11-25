@@ -19,14 +19,17 @@ class CRewind
 	DECLARE_SINGLETON(CRewind)
 private:
 	list<int>					m_curidxStack;
+	list<int>					m_minimapIdxList;
 	list<list<int>>				m_TileIdxList;
 	vector<list<TILE_INFO>>		m_TerrainRewind;
+
 public:
 	void	InitStackTile(list<TERRAIN_INFO*> temp ,const int idx);
 	void	SetTerrainData(const list<TERRAIN_INFO*>&	templist , const int idx);
 	void	Push_Begin(void);
 	void	Push_end(void);
 	void    StackRewind(void);
+	list<int>*	Getidxlist(void);
 public:
 	CRewind(void);
 	~CRewind(void);

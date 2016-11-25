@@ -23,10 +23,12 @@ CMyProPage2::~CMyProPage2()
 void CMyProPage2::DoDataExchange(CDataExchange* pDX)
 {
 	CPropertyPage::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LIST1, m_objListBox);
 }
 
 
 BEGIN_MESSAGE_MAP(CMyProPage2, CPropertyPage)
+	ON_LBN_SELCHANGE(IDC_LIST1, &CMyProPage2::OnLbnSelchangeList1)
 END_MESSAGE_MAP()
 
 
@@ -38,4 +40,9 @@ BOOL CMyProPage2::OnSetActive()
 
 	CTileMgr::GetInstance()->SetRohmbusRender(false);
 	return CPropertyPage::OnSetActive();
+}
+
+void CMyProPage2::OnLbnSelchangeList1()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

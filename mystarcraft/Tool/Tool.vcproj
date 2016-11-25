@@ -187,10 +187,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\Rewind.cpp"
-				>
-			</File>
 			<Filter
 				Name="Device"
 				>
@@ -655,16 +651,24 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Rewind"
+				>
+				<File
+					RelativePath=".\Rewind.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Rewind.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\Rewind.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="리소스 파일"

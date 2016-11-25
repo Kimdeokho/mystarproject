@@ -11,6 +11,10 @@ private:
 	vector<TILE*>			m_sqTile;
 	vector<D3DXVECTOR2>		m_rbTile;
 	CToolView*				m_pToolView;
+
+
+	LPDIRECT3DTEXTURE9		m_textureMap;
+	LPDIRECT3DTEXTURE9		m_newtextureMap;
 private:
 	vector<const vector<TEXINFO*>*>	m_DirtTex;
 	vector<const vector<TEXINFO*>*>	m_HighDirtTex;
@@ -20,7 +24,10 @@ private:
 	int						m_rbidx;
 	int						m_sqidx;
 	bool					m_rbRender;
+
+	int						m_oldidx;
 public:
+	void MinimapDraw(const int iindex);
 	void ShowGrid(void);
 	void SetRohmbusRender(bool _bRender);
 	void SetBeforeTile(list<TERRAIN_INFO>&	terrain_list, const int idx);
@@ -32,6 +39,9 @@ public:
 	void SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bdelete = true);
 	void TileOption_Update(void);	
 	bool InstallHillCheck(const int idx, const int isequence, const int idir);
+	void CopySurface(LPDIRECT3DTEXTURE9 ptexturemap);
+	void Initminimap(HWND h);
+	void SetMinimapupdate(void);
 public:
 	TERRAIN_INFO* GetTerrain_Info(const int _index);
 public:

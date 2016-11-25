@@ -36,14 +36,14 @@ void CMinimapview::OnDraw(CDC* pDC)
 		, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
 
 	CDevice::GetInstance()->Render_Begin();
-	//CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
 
 	CTileMgr::GetInstance()->MinimapRender();
-	//CDevice::GetInstance()->GetSprite()->End();
+
 	CDevice::GetInstance()->Render_End();
 
 	CDevice::GetInstance()->GetDevice()->Present(NULL, NULL, m_hWnd, NULL);
 
+	CTileMgr::GetInstance()->SetMinimapupdate();
 }
 
 
@@ -65,3 +65,9 @@ void CMinimapview::Dump(CDumpContext& dc) const
 
 
 // CMinimapview 메시지 처리기입니다.
+
+void CMinimapview::OnInitialUpdate()
+{
+	CView::OnInitialUpdate();
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+}

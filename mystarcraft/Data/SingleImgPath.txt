@@ -1,1 +1,1 @@
-DebugTile|White|..\Texture\Tile\DebugTile\white.png
+DebugTile|White|..\Texture\Single\DebugTile\white.png
