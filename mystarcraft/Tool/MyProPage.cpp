@@ -84,6 +84,9 @@ BOOL CMyProPage::OnSetActive()
 	//다이얼로그의 활성화 여부를 판단한다
 
 	CTileMgr::GetInstance()->SetRohmbusRender(true);
+	CTileDebug::GetInstance()->SetDebugGroup(DBG_GAS , false);
+	CTileDebug::GetInstance()->SetDebugGroup(DBG_MINERAL , false);
+
 	return CPropertyPage::OnSetActive();
 }
 
@@ -102,6 +105,8 @@ void CMyProPage::OnLbnSelchangeList1()
 	CString str;
 	m_maptileListbox.GetText(idx, str);
 
+	CTerrainBrushMgr::GetInstance()->InitBrush(str);
+
 	if(!str.Compare(L"HillR") || !str.Compare(L"HillL"))
 	{
 		if(!str.Compare(L"HillR"))
@@ -109,13 +114,13 @@ void CMyProPage::OnLbnSelchangeList1()
 		else if(!str.Compare(L"HillL"))
 			CTileDebug::GetInstance()->SetLR(HILL_L);
 
-		CTileDebug::GetInstance()->DebugSwitch(true);
-		CTileDebug::GetInstance()->SetDebugGroup(false);
+		CTileDebug::GetInstance()->SetDebugGroup(DBG_HILL , true);
+		CTileDebug::GetInstance()->SetDebugGroup(DBG_GROUP , false);
 		CTileMgr::GetInstance()->SetRohmbusRender(false);
 	}
 	else
 	{
-		CTileDebug::GetInstance()->DebugSwitch(false);
+		CTileDebug::GetInstance()->SetDebugGroup(DBG_HILL , false);
 		CTileMgr::GetInstance()->SetRohmbusRender(true);
 	}
 }

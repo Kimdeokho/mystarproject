@@ -16,7 +16,7 @@ public:
 public:
 	void	High_DirtBrush(const int idx);
 public:
-	int		get_sqindex(void);
+	int		getrb_to_sqindex(void);
 private:
 	int			m_TerrainMask[8];
 	int			m_curFloor;

@@ -9,6 +9,7 @@
 class CToolDoc;
 class CMainFrame;
 class CMinimapview;
+class CMyProSheet;
 class CToolView : public CScrollView
 {
 protected: // serialization에서만 만들어집니다.
@@ -36,12 +37,16 @@ protected:
 public:
 	CMainFrame*		m_pMainFrm;
 	CMinimapview*	m_pMinimapView;
+	CMyProSheet*	m_pProSheet;
 
 	bool			m_bGrid;
 	bool			m_bLbutton;
+	bool			m_bRbutton;
 
 	bool			m_DebugMode;
 	int				m_OldClickIdx;
+public:
+	void Clickinstall(void);
 public:
 	virtual ~CToolView();
 #ifdef _DEBUG
@@ -60,6 +65,8 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // ToolView.cpp의 디버그 버전

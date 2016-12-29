@@ -60,6 +60,10 @@ void MyForm::OnInitialUpdate()
 
 	m_pProSheet->MoveWindow(0,0,300,500,false);
 	m_pProSheet->SetActivePage(0);
+	m_pProSheet->SetActivePage(1);
+
+	m_pProSheet->SetActivePage(0);
+
 }
 
 void MyForm::OnDestroy()
@@ -67,6 +71,12 @@ void MyForm::OnDestroy()
 	CFormView::OnDestroy();
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-	delete m_pProSheet;
-	m_pProSheet = NULL;
+	if(m_pProSheet != NULL)
+	{
+		/*new 로 할당된 다이얼로그를 delete 만으로 삭제하려고 했을 경우 
+		내부에 포함된 핸들은 제거되지 않고 다이얼로그가 파괴되므로*/
+		m_pProSheet->DestroyWindow();
+		delete m_pProSheet;
+		m_pProSheet = NULL;
+	}
 }

@@ -56,6 +56,8 @@ protected:
 public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnDestroy();
+protected:
+	virtual void PostNcDestroy();
 };
 
 

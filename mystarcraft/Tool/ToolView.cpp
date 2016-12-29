@@ -16,6 +16,11 @@
 #include "TileDebug.h"
 #include "MyMouse.h"
 #include "Minimapview.h"
+#include "MyProSheet.h"
+#include "MyForm.h"
+#include "Mineral.h"
+#include "GasResource.h"
+#include "ObjMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +42,8 @@ BEGIN_MESSAGE_MAP(CToolView, CScrollView)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
 
 // CToolView 생성/소멸
@@ -80,15 +87,18 @@ void CToolView::OnDraw(CDC* /*pDC*/)
 	//CDevice::GetInstance()->GetSprite()->Begin(D3DXSPRITE_ALPHABLEND);;
 
 	CTileMgr::GetInstance()->TileRender();
+
+	CObjMgr::GetInstance()->Render();
+
 	if(m_bGrid == true)
 		CTileMgr::GetInstance()->ShowGrid();
+
 	CTileMgr::GetInstance()->Rohmbus_Render();
 
 	CTileDebug::GetInstance()->DebugRender();
 
 	CDevice::GetInstance()->Render_End();
 
-	//CTileMgr::GetInstance()->CopySurface();
 
 	CDevice::GetInstance()->GetDevice()->Present(NULL, NULL, m_hWnd, NULL);
 }
@@ -107,6 +117,7 @@ void CToolView::OnInitialUpdate()
 
 	m_pMainFrm = (CMainFrame*)AfxGetMainWnd();
 	m_pMinimapView = m_pMainFrm->m_pMiniMapView;
+	m_pProSheet = m_pMainFrm->m_pMyFormView->m_pProSheet;
 
 	RECT	rcWindow;
 	m_pMainFrm->GetWindowRect(&rcWindow);
@@ -128,18 +139,16 @@ void CToolView::OnInitialUpdate()
 	g_hWnd = m_hWnd;
 
 	if(FAILED(CDevice::GetInstance()->InitDevice()))
-	{
 		AfxMessageBox(L"디바이스 초기화 실패");
-	}
 
 	if(CTextureMgr::GetInstance()->Read_MultiImagePath(L"../Data/MultiImgPath.txt"))
-	{
 		MessageBox(L"텍스쳐 불러오기 실패");
-	}
+
+	if(CTextureMgr::GetInstance()->Read_GeneralPath(L"../Data/GeneralImgPath.txt"))
+		MessageBox(L"일반 텍스쳐 불러오기 실패");
+
 	if(CTextureMgr::GetInstance()->Read_SingleImagePath(L"../Data/SingleImgPath.txt"))
-	{
 		MessageBox(L"싱글텍스쳐 불러오기 실패");
-	}
 
 	CTileMgr::GetInstance()->InitTile();
 	CTerrainBrushMgr::GetInstance()->Initialize();
@@ -224,13 +233,13 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	case 'D':
 		{
-			CTileDebug::GetInstance()->SetDebugGroup();
+			CTileDebug::GetInstance()->SwitchDebug(DBG_GROUP);
 			//CTileDebug::GetInstance()->DebugTile_PosSet();
 			break;
 		}
 	case 'M':
 		{
-			CTileDebug::GetInstance()->SetMoveOption();
+			CTileDebug::GetInstance()->SwitchDebug(DBG_MOVE);
 			break;
 		}
 	case 'Z':
@@ -243,7 +252,56 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	Invalidate(FALSE);
 	m_pMinimapView->Invalidate(FALSE);
 }
+void CToolView::Clickinstall(void)
+{
+	if(m_pProSheet->GetActiveIndex() == 0)
+	{
+		if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
+			MessageBox(L"지형 체크 실패");
+	}
+	else if(m_pProSheet->GetActiveIndex() == 1)
+	{
+		CString str;
+		int idx;
 
+		CListBox* pBox = &(m_pProSheet->m_page2.m_objListBox);				
+		idx = pBox->GetCurSel();
+		pBox->GetText(idx , str);
+
+		if(!str.Compare(L"Mineral"))
+		{
+			if(CTileDebug::GetInstance()->Whether_install_Mineral())
+			{
+				CTileDebug::GetInstance()->Set_TileOption(RESOURCE_MINERAL);
+
+				float fposX = CTileDebug::GetInstance()->GetMineralPos().x;
+				float fposY = CTileDebug::GetInstance()->GetMineralPos().y;
+				CObj* pobj = new CMineral();
+
+				pobj->SetPos(fposX , 
+					fposY , STATIC_OBJ);
+				pobj->InitRect();
+				CObjMgr::GetInstance()->AddObject(pobj , OBJ_MINERAL);
+			}
+		}
+		else if(!str.Compare(L"Gas"))
+		{
+			if(CTileDebug::GetInstance()->Whether_install_Gas())
+			{
+				CTileDebug::GetInstance()->Set_TileOption(RESOURCE_GAS);
+
+				float fposX = CTileDebug::GetInstance()->GetGasPos().x;
+				float fposY = CTileDebug::GetInstance()->GetGasPos().y;
+				CObj* pobj = new CGasResource();
+
+				pobj->SetPos(fposX , 
+					fposY , STATIC_OBJ);
+				pobj->InitRect();
+				CObjMgr::GetInstance()->AddObject(pobj , OBJ_GAS);
+			}
+		}
+	}
+}
 void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -255,18 +313,17 @@ void CToolView::OnMouseMove(UINT nFlags, CPoint point)
 
 	CTileMgr::GetInstance()->Rohmbus_Picking(point);
 
-	int newidx = CTerrainBrushMgr::GetInstance()->get_sqindex();
+	int newidx = CTerrainBrushMgr::GetInstance()->getrb_to_sqindex();
 	if(m_bLbutton == true)
 	{
 		if(m_OldClickIdx != newidx)
 		{
 			m_OldClickIdx = newidx;
-			if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
-			{
-				MessageBox(L"지형 체크 실패");
-			}
+			Clickinstall();
 		}
 	}
+	if(m_bRbutton == true)
+		CObjMgr::GetInstance()->DeleteObj(point);
 
 	CTileDebug::GetInstance()->DebugTile_PosSet();
 
@@ -283,11 +340,9 @@ void CToolView::OnLButtonDown(UINT nFlags, CPoint point)
 
 	m_bLbutton = true;
 
-	m_OldClickIdx = CTerrainBrushMgr::GetInstance()->get_sqindex();
-	if(CTerrainBrushMgr::GetInstance()->TerrainCheck())
-	{
-		MessageBox(L"지형 체크 실패");
-	}
+	m_OldClickIdx = CTerrainBrushMgr::GetInstance()->getrb_to_sqindex();
+
+	Clickinstall();
 
 	Invalidate(FALSE);
 	m_pMinimapView->Invalidate(FALSE);
@@ -299,4 +354,25 @@ void CToolView::OnLButtonUp(UINT nFlags, CPoint point)
 
 	CScrollView::OnLButtonUp(nFlags, point);
 	m_bLbutton = false;
+}
+
+void CToolView::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CScrollView::OnRButtonDown(nFlags, point);
+
+	m_bRbutton = true;
+	CObjMgr::GetInstance()->DeleteObj(point);
+
+	Invalidate(FALSE);
+}
+
+void CToolView::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CScrollView::OnRButtonUp(nFlags, point);
+
+	m_bRbutton = false;
 }

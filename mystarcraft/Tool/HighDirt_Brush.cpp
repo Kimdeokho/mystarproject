@@ -36,7 +36,7 @@ CHighDirt_Brush::~CHighDirt_Brush(void)
 }
 void CHighDirt_Brush::BrushPaint()
 {
-	int idx = CTerrainBrushMgr::GetInstance()->get_sqindex();
+	int idx = CTerrainBrushMgr::GetInstance()->getrb_to_sqindex();
 
 
 	m_pGroup[GROUP_L]->MakeTerrain_Group(idx - 132);

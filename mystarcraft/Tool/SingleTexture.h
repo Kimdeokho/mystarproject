@@ -5,11 +5,10 @@ class CSingleTexture :
 	public CTexture
 {
 private:
-	TEXINFO*		m_pTexInfo;
+	map<wstring, TEXINFO*>		m_mapTexInfo;
 
 public:
-	virtual TEXINFO* GetTexture(const wstring& wstrStateKey = L""
-		, const int& iCnt = 0);
+	virtual TEXINFO* GetSingleTexture(const wstring& wstrStateKey);
 
 public:
 	virtual HRESULT InsertTexture( const wstring& wstrFilePath 

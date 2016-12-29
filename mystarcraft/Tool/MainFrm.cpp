@@ -16,6 +16,7 @@
 #include "TileDebug.h"
 #include "Rewind.h"
 #include "MyMouse.h"
+#include "ObjMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,7 +49,14 @@ CMainFrame::CMainFrame()
 
 CMainFrame::~CMainFrame()
 {
-
+	CTextureMgr::GetInstance()->DestroyInstance();
+	CTileMgr::GetInstance()->DestroyInstance();
+	CTerrainBrushMgr::GetInstance()->DestroyInstance();
+	CDevice::GetInstance()->DestroyInstance();
+	CTileDebug::GetInstance()->DestroyInstance();
+	CRewind::GetInstance()->DestroyInstance();
+	CMyMouse::GetInstance()->DestroyInstance();
+	CObjMgr::GetInstance()->DestroyInstance();
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -125,14 +133,12 @@ void CMainFrame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CMainFrame::OnDestroy()
 {
-	CTextureMgr::GetInstance()->DestroyInstance();
-	CTileMgr::GetInstance()->DestroyInstance();
-	CTerrainBrushMgr::GetInstance()->DestroyInstance();
-	CDevice::GetInstance()->DestroyInstance();
-	CTileDebug::GetInstance()->DestroyInstance();
-	CRewind::GetInstance()->DestroyInstance();
-	CMyMouse::GetInstance()->DestroyInstance();
-
 	CFrameWnd::OnDestroy();
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}
+
+void CMainFrame::PostNcDestroy()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	CFrameWnd::PostNcDestroy();
 }

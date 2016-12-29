@@ -38,12 +38,6 @@ typedef struct terrainInfo
 typedef struct tagTile
 {
 	D3DXVECTOR2		vPos;
-
-	//BYTE			byTerrain_ID; //어느 지형
-	//BYTE			byGroup_ID; //지형의 어느그룹
-	//BYTE			byGroup_sequence; //그룹의 몇번째
-
-
 	BYTE			byOption;
 	BYTE			byFloor; /*0층이 지하*/
 	list<TERRAIN_INFO*>	terrainList;

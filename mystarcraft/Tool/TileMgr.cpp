@@ -142,6 +142,10 @@ void CTileMgr::Initminimap(HWND h)
 	//CopySurface(m_textureMap);
 	CopySurface(m_newtextureMap);
 }
+void CTileMgr::SetTileOption(const int idx , TILE_OPTION eoption)
+{
+	m_sqTile[idx]->byOption = eoption;
+}
 void CTileMgr::SetMinimapupdate()
 {
 	int iindex = 0;
@@ -209,8 +213,11 @@ void CTileMgr::TileOption_Update(void)
 
 			TERRAIN_INFO* ptemp = GetTerrain_Info(iindex);
 
-			
+			if(RESOURCE_MINERAL == m_sqTile[iindex]->byOption)
+				continue;
+
 			m_sqTile[iindex]->byOption = MOVE_NONE;
+
 			if(ptemp->byGroup_ID == GROUP_L)
 			{
 				m_sqTile[iindex]->byFloor = 1;
@@ -247,7 +254,7 @@ void CTileMgr::TileOption_Update(void)
 				else
 					m_sqTile[iindex]->byFloor = 2;
 			}
-			else if(ptemp->byGroup_ID == GROUP_FLAT)
+			else if(ptemp->byGroup_ID == GROUP_FLAT && ptemp->byTerrain_ID != TERRAIN_WATER)
 			{
 				m_sqTile[iindex]->byOption = MOVE_OK;
 				if(ptemp->byTerrain_ID != TERRAIN_DIRT)
@@ -639,6 +646,15 @@ TERRAIN_INFO* CTileMgr::GetTerrain_Info(const int _index)
 	else
 		return NULL;
 }
+int	CTileMgr::GetTileOption(const int _index)
+{
+	if( 0 <= _index && _index < SQ_TILECNTX * SQ_TILECNTY)
+	{
+		return m_sqTile[_index]->byOption;
+	}
+	else
+		return -1;
+}
 void CTileMgr::SetBeforeTile(list<TERRAIN_INFO>&	terrain_list , const int idx)
 {
 	list<TERRAIN_INFO*> ptemplist = m_sqTile[idx]->terrainList;
@@ -668,14 +684,22 @@ void CTileMgr::SetBeforeTile(list<TERRAIN_INFO>&	terrain_list , const int idx)
 
 	m_sqTile[idx]->terrainList.sort(rendersort_compare());
 }
-int CTileMgr::GetIdx(void)
+int CTileMgr::GetsqIdx(void)
 {
 	int x = CMyMouse::GetInstance()->GetAddScroll().x;
 	int y = CMyMouse::GetInstance()->GetAddScroll().y;
 
 	return (y/SQ_TILESIZEY)*SQ_TILECNTX + x/SQ_TILESIZEX;
 }
+bool CTileMgr::InstallResourceCheck(const int idx)
+{
+	TILE_OPTION eoption = (TILE_OPTION)GetTileOption(idx);
 
+	if(MOVE_OK == eoption)
+		return true;
+	else
+		return false;
+}
 bool CTileMgr::InstallHillCheck(const int idx, const int isequence , const int idir)
 {
 	const TERRAIN_INFO* oriterrain = GetTerrain_Info(idx);

@@ -8,6 +8,7 @@ public:
 	map<wstring, vector<TEXINFO*>>		m_MapMulti;
 
 public:
+	map<wstring , vector<TEXINFO*>>* GetMultiTextureSet(const wstring& wstrKey);
 	virtual TEXINFO* GetTexture( const wstring& wstrStateKey = L"" 
 		, const int& iCnt = 0 );
 	int GetTextureSize( const wstring& wstrStateKey );

@@ -26,28 +26,37 @@ private:
 	bool					m_rbRender;
 
 	int						m_oldidx;
-public:
-	void MinimapDraw(const int iindex);
-	void ShowGrid(void);
-	void SetRohmbusRender(bool _bRender);
-	void SetBeforeTile(list<TERRAIN_INFO>&	terrain_list, const int idx);
-	void Rohmbus_Picking(const CPoint&	_pt);
-	void Rohmbus_Render(void);
-	int	 GetRbIdx(void);
-	int	 GetIdx(void);
-	int	 FloorCheck(const int _index , const int _flr);
-	void SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bdelete = true);
-	void TileOption_Update(void);	
-	bool InstallHillCheck(const int idx, const int isequence, const int idir);
-	void CopySurface(LPDIRECT3DTEXTURE9 ptexturemap);
-	void Initminimap(HWND h);
-	void SetMinimapupdate(void);
-public:
-	TERRAIN_INFO* GetTerrain_Info(const int _index);
+
+
 public:
 	void InitTile(void);
+	void Initminimap(HWND h);
+public:	
 	void TileRender(void);
 	void MinimapRender(void);
+	void Rohmbus_Render(void);
+	void ShowGrid(void);
+	void MinimapDraw(const int iindex);
+public:
+	void SetRohmbusRender(bool _bRender);
+	void SetBeforeTile(list<TERRAIN_INFO>&	terrain_list, const int idx);
+	void SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bdelete = true);
+	void SetMinimapupdate(void);
+	void SetTileOption(const int idx , TILE_OPTION eoption);
+public:
+	int	 FloorCheck(const int _index , const int _flr);
+	bool InstallHillCheck(const int idx, const int isequence, const int idir);
+	bool InstallResourceCheck(const int idx);
+public:
+	int	 GetRbIdx(void);
+	int	 GetsqIdx(void);
+	TERRAIN_INFO* GetTerrain_Info(const int _index);
+	int			  GetTileOption(const int _index);
+public:	
+	void Rohmbus_Picking(const CPoint&	_pt);		
+	void TileOption_Update(void);		
+	void CopySurface(LPDIRECT3DTEXTURE9 ptexturemap);		
+public:
 	void Release(void);
 public:
 	CTileMgr(void);

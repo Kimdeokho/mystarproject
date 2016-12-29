@@ -37,7 +37,7 @@ HRESULT CTerrainBrushMgr::Initialize(void)
 	m_oldIdx = -1;
 	return S_OK;
 }
-int CTerrainBrushMgr::get_sqindex(void)
+int CTerrainBrushMgr::getrb_to_sqindex(void)
 {
 	int rbidx = CTileMgr::GetInstance()->GetRbIdx();
 
@@ -107,7 +107,7 @@ HRESULT CTerrainBrushMgr::TerrainCheck(void)
 }
 int CTerrainBrushMgr::FloorCheck(void)
 {
-	int sqidx = get_sqindex();
+	int sqidx = getrb_to_sqindex();
 	int iindex = 0;
 	int icase = 0;
 

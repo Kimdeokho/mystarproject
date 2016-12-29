@@ -279,6 +279,14 @@
 				Name="Texture"
 				>
 				<File
+					RelativePath=".\GeneralTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GeneralTexture.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MultiTexture.cpp"
 					>
 				</File>
@@ -312,6 +320,14 @@
 				</File>
 				<File
 					RelativePath=".\MyMouse.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ObjMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ObjMgr.h"
 					>
 				</File>
 				<File
@@ -374,24 +390,52 @@
 					RelativePath=".\MyProSheet.h"
 					>
 				</File>
+				<Filter
+					Name="Page"
+					>
+					<File
+						RelativePath=".\MyProPage.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MyProPage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\MyProPage2.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MyProPage2.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
-				Name="Page"
+				Name="Object"
 				>
 				<File
-					RelativePath=".\MyProPage.cpp"
+					RelativePath=".\GasResource.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\MyProPage.h"
+					RelativePath=".\GasResource.h"
 					>
 				</File>
 				<File
-					RelativePath=".\MyProPage2.cpp"
+					RelativePath=".\Mineral.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\MyProPage2.h"
+					RelativePath=".\Mineral.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Obj.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Obj.h"
 					>
 				</File>
 			</Filter>

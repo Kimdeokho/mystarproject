@@ -24,7 +24,7 @@ void CHillBrush::BrushPaint()
 	//오른쪽 언덕일떄 왼쪽언덕일때 분기문 작성
 
 
-	int idx = CTileMgr::GetInstance()->GetIdx();
+	int idx = CTileMgr::GetInstance()->GetsqIdx();
 
 	int isquence;
 	for(int i = -3; i < 3; ++i)

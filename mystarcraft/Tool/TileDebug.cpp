@@ -14,21 +14,21 @@ CTileDebug::CTileDebug(void)
 	m_psqTile = NULL;
 
 	for(int i = 0; i < GROUP_END; ++i)
-	{
 		m_DownFloorPos[i] = -1;
-	}
 
 	for(int i = 0; i < 6; ++i)
-	{
 		for(int j = 0; j < 6; ++j)
 			m_HillPos[i][j] = -1;
-	}
+
+	for(int i = 0; i < 2; ++i)
+		for(int j = 0; j < 4; ++j)
+			m_GasPos[i][j] = -1;
 
 	D3DXMatrixIdentity(&m_matWorld);
 
-	m_bDebugGroup = false;
-	m_bMoveOp = false;
-	m_hillDebug = false;
+	for(int i = 0; i < DBG_END; ++i)
+		m_debug_set[i] = false;
+
 	m_eDir = HILL_L;
 }
 
@@ -39,9 +39,232 @@ void CTileDebug::SetTile(const vector<TILE*>* ptile)
 {
 	m_psqTile = ptile;
 }
+bool CTileDebug::Whether_install_Mineral()
+{
+	InitMineralPos();
+	for(int i = 0; i < 1; ++i)
+	{
+		for(int j = 0; j < 2; ++j)
+		{
+			if(!CTileMgr::GetInstance()->InstallResourceCheck(m_MineralPos[i][j]))
+				return false;
+		}
+	}
+	return true;
+}
+bool CTileDebug::Whether_install_Gas()
+{
+	InitGasPos();
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int j = 0; j < 4; ++j)
+		{
+			if(!CTileMgr::GetInstance()->InstallResourceCheck(m_GasPos[i][j]))
+				return false;
+		}
+	}
+	return true;
+}
+const D3DXVECTOR2& CTileDebug::GetGasPos(void)
+{
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	int scrollX = CMyMouse::GetInstance()->GetScrollPt().x;
+	int scrollY = CMyMouse::GetInstance()->GetScrollPt().y;
+
+	m_vResourcePos.x = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
+	m_vResourcePos.y = (*m_psqTile)[sqidx]->vPos.y - scrollY - SQ_TILESIZEY/2;;
+
+	return m_vResourcePos;
+}
+const D3DXVECTOR2& CTileDebug::GetMineralPos(void)
+{
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	int scrollX = CMyMouse::GetInstance()->GetScrollPt().x;
+	int scrollY = CMyMouse::GetInstance()->GetScrollPt().y;
+
+	m_vResourcePos.x = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
+	m_vResourcePos.y = (*m_psqTile)[sqidx]->vPos.y - scrollY;
+
+	return m_vResourcePos;
+}
+void CTileDebug::Set_TileOption(TILE_OPTION eOption)
+{
+	switch(eOption)
+	{
+	case RESOURCE_MINERAL:
+		{
+			CTileMgr::GetInstance()->SetTileOption(m_MineralPos[0][0] , eOption);
+			CTileMgr::GetInstance()->SetTileOption(m_MineralPos[0][1] , eOption);
+			break;
+		}
+	case RESOURCE_GAS:
+		{
+			for(int i = 0; i < 2; ++i)
+				for(int j = 0; j < 4; ++j)
+					CTileMgr::GetInstance()->SetTileOption(m_GasPos[i][j] , eOption);
+			break;
+		}
+	}
+}
+void CTileDebug::InitMineralPos()
+{
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	if(sqidx < 0 || sqidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
+	for(int i = 0; i < 1; ++i)
+	{
+		for(int j = -1; j < 1; ++j)
+		{
+			m_MineralPos[i][j+1] = sqidx + (i*SQ_TILECNTX+j);
+		}
+	}
+}
+void CTileDebug::InitGasPos()
+{
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	if(sqidx < 0 || sqidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
+	for(int i = -1; i < 1; ++i)
+	{
+		for(int j = -2; j < 2; ++j)
+		{
+			m_GasPos[i+1][j+2] = sqidx + (i*SQ_TILECNTX+j);
+		}
+	}
+}
+void CTileDebug::DebugMineralRender(void)
+{
+	if(!m_debug_set[DBG_MINERAL])
+		return;
+
+	D3DXMatrixIdentity(&m_matWorld);
+
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	if(sqidx < 0 || sqidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
+	InitMineralPos();
+
+	int maskidx = 0;
+
+	int scrollX = CMyMouse::GetInstance()->GetScrollPt().x;
+	int scrollY = CMyMouse::GetInstance()->GetScrollPt().y;
+
+	const vector<TEXINFO*>* vtemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Mineral");
+	const TEXINFO*	whiteTile = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+
+
+	m_matWorld._41 = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
+	m_matWorld._42 = (*m_psqTile)[sqidx]->vPos.y - scrollY;
+	CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+
+	CDevice::GetInstance()->GetSprite()->Draw((*vtemp)[0]->pTexture
+		, NULL, &D3DXVECTOR3(32, 48, 0.f), NULL
+		, D3DCOLOR_ARGB(255, 255 , 255 , 255));
+
+	for(int i = 0; i < 1; ++i)
+	{
+		for(int j = 0; j < 2; ++j)
+		{
+			if(m_MineralPos[i][j] < 0 || m_MineralPos[i][j] > SQ_TILECNTX*SQ_TILECNTY)
+				continue;
+
+			m_color.a = 65;
+			m_color.b = 0;
+			if(Whether_install_Mineral())
+			{
+				m_color.g = 255;
+				m_color.r = 0;
+			}
+			else
+			{
+				m_color.r = 255;
+				m_color.g = 0;
+			}
+			maskidx = m_MineralPos[i][j];
+			m_matWorld._41 = (*m_psqTile)[maskidx]->vPos.x - scrollX;
+			m_matWorld._42 = (*m_psqTile)[maskidx]->vPos.y - scrollY;
+			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+			CDevice::GetInstance()->GetSprite()->Draw(whiteTile->pTexture
+				, NULL, &D3DXVECTOR3(16.f, 16.f, 0.f), NULL
+				, D3DCOLOR_ARGB(m_color.a, m_color.r , m_color.g , m_color.b));
+		}
+	}
+}
+void CTileDebug::DebugGasRender(void)
+{
+	if(!m_debug_set[DBG_GAS])
+		return;
+
+	D3DXMatrixIdentity(&m_matWorld);
+
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	if(sqidx < 0 || sqidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
+
+	int maskidx = 0;
+	for(int i = -1; i < 1; ++i)
+	{
+		for(int j = -2; j < 2; ++j)
+		{
+			m_GasPos[i+1][j+2] = sqidx + (i*SQ_TILECNTX+j);
+		}
+	}
+
+
+	int scrollX = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(0);
+	int scrollY = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(1);
+
+	const vector<TEXINFO*>* vtemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Gas");
+	const TEXINFO*	whiteTile = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+
+	POINT pt = CMyMouse::GetInstance()->GetMousePt();
+
+	m_matWorld._41 = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
+	m_matWorld._42 = (*m_psqTile)[sqidx]->vPos.y - scrollY - SQ_TILESIZEY/2;
+	CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+	
+	CDevice::GetInstance()->GetSprite()->Draw((*vtemp)[0]->pTexture
+		, NULL, &D3DXVECTOR3(64, 32, 0.f), NULL
+		, D3DCOLOR_ARGB(255, 255 , 255 , 255));
+
+
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int j = 0; j < 4; ++j)
+		{
+			if(m_GasPos[i][j] < 0 || m_GasPos[i][j] > SQ_TILECNTX*SQ_TILECNTY)
+				continue;
+
+			m_color.a = 65;
+			m_color.b = 0;
+			if(true == CTileMgr::GetInstance()->InstallResourceCheck(m_GasPos[i][j]))
+			{
+				m_color.g = 255;
+				m_color.r = 0;
+			}
+			else
+			{
+				m_color.r = 255;
+				m_color.g = 0;
+			}
+			maskidx = m_GasPos[i][j];
+			m_matWorld._41 = (*m_psqTile)[maskidx]->vPos.x - scrollX;
+			m_matWorld._42 = (*m_psqTile)[maskidx]->vPos.y - scrollY;
+			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+				CDevice::GetInstance()->GetSprite()->Draw(whiteTile->pTexture
+				, NULL, &D3DXVECTOR3(16.f, 16.f, 0.f), NULL
+				, D3DCOLOR_ARGB(m_color.a, m_color.r , m_color.g , m_color.b));
+		}
+	}
+
+}
 void CTileDebug::DebugHillRender(void)
 {
-	if(m_hillDebug != true)
+	if(!m_debug_set[DBG_HILL])
 		return;
 
 	const TEXINFO* ptemp = NULL;
@@ -50,16 +273,19 @@ void CTileDebug::DebugHillRender(void)
 	int x = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(0);
 	int y = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(1);
 
-	const TEXINFO*	whiteTile = CTextureMgr::GetInstance()->GetTexture(L"DebugTile" , L"White");
+	const vector<TEXINFO*>* vectexL = CTextureMgr::GetInstance()->GetStateTexture(L"HillL" , L"L");
+	const vector<TEXINFO*>* vectexR = CTextureMgr::GetInstance()->GetStateTexture(L"HillR" , L"R");
+
+	const TEXINFO*	whiteTile = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 
 	for(int i = 0; i < 6; ++i)
 	{
 		for(int j = 0; j < 6; ++j)
 		{
 			if(HILL_L == m_eDir)
-				ptemp = CTextureMgr::GetInstance()->GetTexture(L"HillL" , L"L", i*6+j);
+				ptemp = (*vectexL)[i*6+j];
 			else
-				ptemp = CTextureMgr::GetInstance()->GetTexture(L"HillR" , L"R", i*6+j);
+				ptemp = (*vectexR)[i*6+j];
 
 			idx = m_HillPos[i][j];
 
@@ -96,10 +322,10 @@ void CTileDebug::DebugHillRender(void)
 }
 void CTileDebug::DebugGroup(void)
 {
-	if(m_bDebugGroup != true)
+	if(!m_debug_set[DBG_GROUP])
 		return;
 
-	const TEXINFO*	ptemp = CTextureMgr::GetInstance()->GetTexture(L"DebugTile" , L"White");
+	const TEXINFO*	ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 
 	int icase = CTerrainBrushMgr::GetInstance()->FloorCheck();
 
@@ -175,7 +401,7 @@ void CTileDebug::DebugGroup(void)
 }
 void CTileDebug::MoveOption_Render(void)
 {
-	if(m_bMoveOp != true)
+	if(m_debug_set[DBG_MOVE] != true)
 		return;
 
 	int iindex = 0;
@@ -199,10 +425,12 @@ void CTileDebug::MoveOption_Render(void)
 			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
 
 			int MoveOption = (*m_psqTile)[iindex]->byOption;
-			if(MOVE_NONE == MoveOption)
+			if(MOVE_NONE == MoveOption || 
+				RESOURCE_MINERAL == MoveOption ||
+				RESOURCE_GAS == MoveOption)
 			{
 				const TEXINFO*	ptemp;
-				ptemp = CTextureMgr::GetInstance()->GetTexture(L"DebugTile" , L"White");
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 
 				CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
 					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
@@ -216,12 +444,14 @@ void CTileDebug::DebugRender(void)
 	DebugGroup();
 	MoveOption_Render();
 	DebugHillRender();
+	DebugGasRender();
+	DebugMineralRender();
 }
 void CTileDebug::DebugTile_PosSet(void)
 {
-	int idx = CTerrainBrushMgr::GetInstance()->get_sqindex();
+	int idx = CTerrainBrushMgr::GetInstance()->getrb_to_sqindex();
 
-	if(m_bDebugGroup == true)
+	if(m_debug_set[DBG_GROUP] == true)
 	{
 		//1단계 내리기
 		m_DownFloorPos[0] = idx - SQ_TILECNTX*3 - 2;
@@ -251,9 +481,9 @@ void CTileDebug::DebugTile_PosSet(void)
 		m_UpFloorPos[4] = idx;
 		m_UpFloorPos[5] = idx - 2;
 	}
-	if(m_hillDebug == true)
+	if(m_debug_set[DBG_HILL] == true)
 	{
-		idx = CTileMgr::GetInstance()->GetIdx();
+		idx = CTileMgr::GetInstance()->GetsqIdx();
 
 		for(int i = -3; i < 3; ++i)
 		{
@@ -264,32 +494,26 @@ void CTileDebug::DebugTile_PosSet(void)
 		}
 	}
 }
-void CTileDebug::SetDebugGroup(bool _bdebug)
+void CTileDebug::SetDebug_Allinit()
 {
-	m_bDebugGroup = _bdebug;
+	for(int i = 0; i < DBG_END; ++i)
+		m_debug_set[i] = false;
 }
-void CTileDebug::SetDebugGroup()
+void CTileDebug::SetDebugGroup(DEBUG_OPTION eop , bool _bdebug)
 {
-	if(m_bDebugGroup == true)
-		m_bDebugGroup = false;
+	m_debug_set[eop] = _bdebug;
+}
+void CTileDebug::SwitchDebug(DEBUG_OPTION eop)
+{
+	if(m_debug_set[eop] == true)
+		m_debug_set[eop] = false;
 	else
 	{
-		m_bDebugGroup = true;
+		m_debug_set[eop] = true;
 		DebugTile_PosSet();
 	}
-}
-void CTileDebug::DebugSwitch(bool bdebug)
-{
-	m_hillDebug = bdebug;
 }
 void CTileDebug::SetLR(HILL_DIR _edir)
 {
 	m_eDir = _edir;
-}
-void CTileDebug::SetMoveOption()
-{
-	if(m_bMoveOp == true)
-		m_bMoveOp = false;
-	else
-		m_bMoveOp = true;
 }

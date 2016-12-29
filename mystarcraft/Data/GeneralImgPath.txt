@@ -1,0 +1,2 @@
+Object|Resource|Gas|1|..\Texture\General\Resource\Gas\vespingas%d.png
+Object|Resource|Mineral|1|..\Texture\General\Resource\Mineral\mineral%d.png

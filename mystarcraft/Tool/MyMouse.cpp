@@ -33,3 +33,11 @@ void CMyMouse::SetMousePt(const CPoint& _pt)
 {
 	m_Curpt = _pt;
 }
+
+const CPoint& CMyMouse::GetScrollPt(void)
+{
+	m_ptScroll.x = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(0);
+	m_ptScroll.y = ((CMainFrame*)AfxGetMainWnd())->m_pToolView->GetScrollPos(1);
+
+	return m_ptScroll;
+}

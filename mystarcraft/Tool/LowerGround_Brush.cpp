@@ -35,7 +35,7 @@ CLowerGround_Brush::~CLowerGround_Brush(void)
 
 void CLowerGround_Brush::BrushPaint()
 {
-	int idx = CTerrainBrushMgr::GetInstance()->get_sqindex();
+	int idx = CTerrainBrushMgr::GetInstance()->getrb_to_sqindex();
 
 	m_pGroup[GROUP_LEDGE]->MakeTerrain_Group(idx - SQ_TILECNTX - 6);
 
