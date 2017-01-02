@@ -8,9 +8,10 @@ class CTileMgr
 public:
 	DECLARE_SINGLETON(CTileMgr)
 private:
-	vector<TILE*>			m_sqTile;
-	vector<D3DXVECTOR2>		m_rbTile;
-	CToolView*				m_pToolView;
+	vector<TILE*>				m_sqTile;
+	vector<list<TERRAIN_INFO*>>	m_terrainInfo_List;
+	vector<D3DXVECTOR2>			m_rbTile;
+	CToolView*					m_pToolView;
 
 
 	LPDIRECT3DTEXTURE9		m_textureMap;
@@ -30,7 +31,7 @@ private:
 
 public:
 	void InitTile(void);
-	void Initminimap(HWND h);
+	void Initminimap(void);
 public:	
 	void TileRender(void);
 	void MinimapRender(void);
@@ -56,6 +57,9 @@ public:
 	void Rohmbus_Picking(const CPoint&	_pt);		
 	void TileOption_Update(void);		
 	void CopySurface(LPDIRECT3DTEXTURE9 ptexturemap);		
+public:
+	void SaveTile(HANDLE h);
+	void LoadTile(HANDLE h);
 public:
 	void Release(void);
 public:

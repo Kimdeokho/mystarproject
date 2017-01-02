@@ -1,1 +1,2 @@
 DebugTile|White|..\Texture\Single\DebugTile\white.png
+ETC|Startbase|..\Texture\Single\ETC\startbase.png

@@ -40,7 +40,7 @@ typedef struct tagTile
 	D3DXVECTOR2		vPos;
 	BYTE			byOption;
 	BYTE			byFloor; /*0ÃşÀÌ ÁöÇÏ*/
-	list<TERRAIN_INFO*>	terrainList;
+	//list<TERRAIN_INFO*>	terrainList;
 	tagTile()
 	{
 		vPos = D3DXVECTOR2(0,0);

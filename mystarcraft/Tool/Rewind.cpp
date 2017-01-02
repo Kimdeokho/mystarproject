@@ -19,9 +19,9 @@ void CRewind::InitStackTile(list<TERRAIN_INFO*> temp ,const int idx)
 {
 	list<TERRAIN_INFO>	stacklist;
 
+	TERRAIN_INFO terrain;
 	for(list<TERRAIN_INFO*>::iterator iter = temp.begin(); iter != temp.end(); ++iter)
 	{
-		TERRAIN_INFO terrain;
 		terrain.byGroup_ID = (*iter)->byGroup_ID;
 		terrain.byGroup_sequence = (*iter)->byGroup_sequence;
 		terrain.bysortLV = (*iter)->bysortLV;
@@ -41,31 +41,16 @@ void CRewind::SetTerrainData(const list<TERRAIN_INFO*>&	templist , const int idx
 	if( 2 == templist.size())
 	{
 		ptemp = templist.front();
-		terrain_info.byGroup_ID = ptemp->byGroup_ID;
-		terrain_info.byGroup_sequence = ptemp->byGroup_sequence;
-		terrain_info.bysortLV = ptemp->bysortLV;
-		terrain_info.byTerrain_ID = ptemp->byTerrain_ID;
-
-		tile_list.push_back(terrain_info);
+		tile_list.push_back(*ptemp);
 
 		ptemp = templist.back();
-		terrain_info.byGroup_ID = ptemp->byGroup_ID;
-		terrain_info.byGroup_sequence = ptemp->byGroup_sequence;
-		terrain_info.bysortLV = ptemp->bysortLV;
-		terrain_info.byTerrain_ID = ptemp->byTerrain_ID;
-
-		tile_list.push_back(terrain_info);
+		tile_list.push_back(*ptemp);
 
 	}
 	else
 	{
 		ptemp = templist.back();
-		terrain_info.byGroup_ID = ptemp->byGroup_ID;
-		terrain_info.byGroup_sequence = ptemp->byGroup_sequence;
-		terrain_info.bysortLV = ptemp->bysortLV;
-		terrain_info.byTerrain_ID = ptemp->byTerrain_ID;
-
-		tile_list.push_back(terrain_info);
+		tile_list.push_back(*ptemp);
 	}
 
 	if(m_TerrainRewind[idx].size() <= TERRAIN_STACKSIZE)

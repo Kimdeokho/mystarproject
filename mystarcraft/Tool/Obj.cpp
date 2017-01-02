@@ -6,6 +6,11 @@
 CObj::CObj(void)
 {
 	D3DXMatrixIdentity(&m_matWorld);
+
+	m_collRc.bottom = m_collRc.right = m_collRc.left = m_collRc.top = 0;
+
+	for(int i = 0; i < 5; ++i)
+		m_vRectPoint[i] = D3DXVECTOR2(0.f,0.f);
 }
 
 CObj::~CObj(void)
@@ -14,7 +19,6 @@ CObj::~CObj(void)
 
 void CObj::Initialize(void)
 {
-
 }
 void CObj::Render(void)
 {

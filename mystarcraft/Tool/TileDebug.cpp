@@ -24,6 +24,10 @@ CTileDebug::CTileDebug(void)
 		for(int j = 0; j < 4; ++j)
 			m_GasPos[i][j] = -1;
 
+	for(int i = 0; i < 3; ++i)
+		for(int j = 0; j < 4; ++j)
+			m_StartbasePos[i][j] = -1;
+
 	D3DXMatrixIdentity(&m_matWorld);
 
 	for(int i = 0; i < DBG_END; ++i)
@@ -65,27 +69,40 @@ bool CTileDebug::Whether_install_Gas()
 	}
 	return true;
 }
-const D3DXVECTOR2& CTileDebug::GetGasPos(void)
+bool CTileDebug::Whether_install_StartBase()
 {
-	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
-	int scrollX = CMyMouse::GetInstance()->GetScrollPt().x;
-	int scrollY = CMyMouse::GetInstance()->GetScrollPt().y;
-
-	m_vResourcePos.x = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
-	m_vResourcePos.y = (*m_psqTile)[sqidx]->vPos.y - scrollY - SQ_TILESIZEY/2;;
-
-	return m_vResourcePos;
+	InitStartBasePos();
+	for(int i = 0; i < 3; ++i)
+	{
+		for(int j = 0; j < 4; ++j)
+		{
+			if(!CTileMgr::GetInstance()->InstallResourceCheck(m_StartbasePos[i][j]))
+				return false;
+		}
+	}
+	return true;
 }
-const D3DXVECTOR2& CTileDebug::GetMineralPos(void)
+const D3DXVECTOR2& CTileDebug::Get_evenColPos(void)
 {
 	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
 	int scrollX = CMyMouse::GetInstance()->GetScrollPt().x;
 	int scrollY = CMyMouse::GetInstance()->GetScrollPt().y;
 
-	m_vResourcePos.x = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
-	m_vResourcePos.y = (*m_psqTile)[sqidx]->vPos.y - scrollY;
+	m_vInstallPos.x = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
+	m_vInstallPos.y = (*m_psqTile)[sqidx]->vPos.y - scrollY - SQ_TILESIZEY/2;
 
-	return m_vResourcePos;
+	return m_vInstallPos;
+}
+const D3DXVECTOR2& CTileDebug::Get_oddColPos(void)
+{
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	int scrollX = CMyMouse::GetInstance()->GetScrollPt().x;
+	int scrollY = CMyMouse::GetInstance()->GetScrollPt().y;
+
+	m_vInstallPos.x = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
+	m_vInstallPos.y = (*m_psqTile)[sqidx]->vPos.y - scrollY;
+
+	return m_vInstallPos;
 }
 void CTileDebug::Set_TileOption(TILE_OPTION eOption)
 {
@@ -102,6 +119,14 @@ void CTileDebug::Set_TileOption(TILE_OPTION eOption)
 			for(int i = 0; i < 2; ++i)
 				for(int j = 0; j < 4; ++j)
 					CTileMgr::GetInstance()->SetTileOption(m_GasPos[i][j] , eOption);
+			break;
+		}
+	case OP_STARTBASE:
+		{
+			for(int i = 0; i < 3; ++i)
+				for(int j = 0; j < 4; ++j)
+					CTileMgr::GetInstance()->SetTileOption(m_StartbasePos[i][j] , MOVE_NONE);
+
 			break;
 		}
 	}
@@ -134,7 +159,73 @@ void CTileDebug::InitGasPos()
 		}
 	}
 }
-void CTileDebug::DebugMineralRender(void)
+void CTileDebug::InitStartBasePos()
+{
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	if(sqidx < 0 || sqidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
+	for(int i = -1; i < 2; ++i)
+		for(int j = -2; j < 2; ++j)
+			m_StartbasePos[i+1][j+2] = sqidx + (i*SQ_TILECNTX+j);
+}
+void CTileDebug::Preview_StartBase(void)
+{
+	if(!m_debug_set[DBG_STARTBASE])
+		return;
+
+	int sqidx = CTileMgr::GetInstance()->GetsqIdx();
+	if(sqidx < 0 || sqidx > SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
+	D3DXMatrixIdentity(&m_matWorld);
+
+	InitStartBasePos();
+
+	int maskidx = 0;
+
+	int scrollX = CMyMouse::GetInstance()->GetScrollPt().x;
+	int scrollY = CMyMouse::GetInstance()->GetScrollPt().y;
+
+	const TEXINFO*  pTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"ETC" , L"Startbase");
+	const TEXINFO*	whiteTile = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+
+	m_matWorld._41 = (*m_psqTile)[sqidx]->vPos.x - scrollX - SQ_TILESIZEX/2;
+	m_matWorld._42 = (*m_psqTile)[sqidx]->vPos.y - scrollY;
+	CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+
+	CDevice::GetInstance()->GetSprite()->Draw(pTexture->pTexture
+		, NULL, &D3DXVECTOR3(64, 48, 0.f), NULL
+		, D3DCOLOR_ARGB(255, 255 , 255 , 255));
+
+	for(int i = 0; i < 3; ++i)
+		for(int j = 0; j < 4; ++j)
+		{
+			if(m_StartbasePos[i][j] < 0 || m_StartbasePos[i][j] > SQ_TILECNTX*SQ_TILECNTY)
+				continue;
+
+			m_color.a = 65;
+			m_color.b = 0;
+			if(Whether_install_StartBase())
+			{
+				m_color.g = 255;
+				m_color.r = 0;
+			}
+			else
+			{
+				m_color.r = 255;
+				m_color.g = 0;
+			}
+			maskidx = m_StartbasePos[i][j];
+			m_matWorld._41 = (*m_psqTile)[maskidx]->vPos.x - scrollX;
+			m_matWorld._42 = (*m_psqTile)[maskidx]->vPos.y - scrollY;
+			CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+			CDevice::GetInstance()->GetSprite()->Draw(whiteTile->pTexture
+				, NULL, &D3DXVECTOR3(16.f, 16.f, 0.f), NULL
+				, D3DCOLOR_ARGB(m_color.a, m_color.r , m_color.g , m_color.b));
+		}
+}
+void CTileDebug::Preview_Mineral(void)
 {
 	if(!m_debug_set[DBG_MINERAL])
 		return;
@@ -193,7 +284,7 @@ void CTileDebug::DebugMineralRender(void)
 		}
 	}
 }
-void CTileDebug::DebugGasRender(void)
+void CTileDebug::Preview_Gas(void)
 {
 	if(!m_debug_set[DBG_GAS])
 		return;
@@ -262,7 +353,7 @@ void CTileDebug::DebugGasRender(void)
 	}
 
 }
-void CTileDebug::DebugHillRender(void)
+void CTileDebug::Preview_Hill(void)
 {
 	if(!m_debug_set[DBG_HILL])
 		return;
@@ -443,9 +534,10 @@ void CTileDebug::DebugRender(void)
 {
 	DebugGroup();
 	MoveOption_Render();
-	DebugHillRender();
-	DebugGasRender();
-	DebugMineralRender();
+	Preview_Hill();
+	Preview_Gas();
+	Preview_Mineral();
+	Preview_StartBase();
 }
 void CTileDebug::DebugTile_PosSet(void)
 {
@@ -517,3 +609,5 @@ void CTileDebug::SetLR(HILL_DIR _edir)
 {
 	m_eDir = _edir;
 }
+
+

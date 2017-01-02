@@ -39,6 +39,7 @@ void CTileMgr::InitTile(void)
 
 	m_sqTile.reserve(SQ_TILECNTX*SQ_TILECNTY);
 	m_rbTile.reserve(RB_TILECNTX*RB_TILECNTY);
+	m_terrainInfo_List.reserve(SQ_TILECNTX*SQ_TILECNTY);
 
 	m_DirtTex.reserve(GROUP_END);
 	m_DirtTex.resize(GROUP_END);
@@ -85,7 +86,9 @@ void CTileMgr::InitTile(void)
 			int group_id = pterrain_info->byGroup_ID;
 			pterrain_info->byGroup_sequence = rand()%m_DirtTex[group_id]->size();
 
-			ptile->terrainList.push_back(pterrain_info);
+			m_terrainInfo_List.push_back(list<TERRAIN_INFO*>());
+			m_terrainInfo_List[iindex].push_back(pterrain_info);
+
 
 			m_sqTile.push_back(ptile);
 		}
@@ -95,7 +98,7 @@ void CTileMgr::InitTile(void)
 		for(int j = 0; j < SQ_TILECNTX; ++j)
 		{
 			int iindex = i*SQ_TILECNTX + j;
-			CRewind::GetInstance()->InitStackTile(m_sqTile[iindex]->terrainList , iindex);
+			CRewind::GetInstance()->InitStackTile(m_terrainInfo_List[iindex] , iindex);
 		}
 	}
 
@@ -117,7 +120,7 @@ void CTileMgr::InitTile(void)
 		}
 	}
 }
-void CTileMgr::Initminimap(HWND h)
+void CTileMgr::Initminimap(void)
 {
 	int iindex = 0;
 
@@ -129,17 +132,11 @@ void CTileMgr::Initminimap(HWND h)
 		for(int j = 0; j < SQ_TILECNTX; ++j)
 		{
 			iindex = i*SQ_TILECNTX + j;
-
-			if(iindex < 0 || iindex >= SQ_TILECNTX*SQ_TILECNTY)
-				continue;
-
 			MinimapDraw(iindex);
 		}
 	}
 
 	CDevice::GetInstance()->Render_End();
-
-	//CopySurface(m_textureMap);
 	CopySurface(m_newtextureMap);
 }
 void CTileMgr::SetTileOption(const int idx , TILE_OPTION eoption)
@@ -306,8 +303,8 @@ void CTileMgr::TileRender(void)
 			if(iindex < 0 || iindex >= SQ_TILECNTX*SQ_TILECNTY)
 				continue;
 
-			list<TERRAIN_INFO*>::iterator iter = m_sqTile[iindex]->terrainList.begin();
-			list<TERRAIN_INFO*>::iterator iter_end = m_sqTile[iindex]->terrainList.end();
+			list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[iindex].begin();
+			list<TERRAIN_INFO*>::iterator iter_end = m_terrainInfo_List[iindex].end();
 			int group_id = 0;
 			int squence = 0;
 			const vector<TEXINFO*>* temp;
@@ -463,24 +460,26 @@ void CTileMgr::Release(void)
 
 	for(size_t i = 0; i < m_sqTile.size(); ++i)
 	{
-		list<TERRAIN_INFO*>::iterator iter = m_sqTile[i]->terrainList.begin();
-		list<TERRAIN_INFO*>::iterator iter_end = m_sqTile[i]->terrainList.end();
+		list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[i].begin();
+		list<TERRAIN_INFO*>::iterator iter_end = m_terrainInfo_List[i].end();
 		for( ; iter != iter_end; ++iter)
 		{
 			Safe_Delete((*iter));
 			//iter = m_sqTile[i]->terrainList.erase(iter);
 		}
-		m_sqTile[i]->terrainList.clear();
+		m_terrainInfo_List[i].clear();
 		Safe_Delete(m_sqTile[i]);
 	}
 	m_sqTile.clear();
+	m_terrainInfo_List.clear();
 
 	vector<TILE*>().swap(m_sqTile);
+	vector<list<TERRAIN_INFO*>>().swap(m_terrainInfo_List);
 
 
-	m_rbTile.clear();
 
-	vector<D3DXVECTOR2>().swap(m_rbTile);
+	//m_rbTile.clear();
+	//vector<D3DXVECTOR2>().swap(m_rbTile);
 }
 
 void CTileMgr::SetRohmbusRender(bool _bRender)
@@ -538,9 +537,9 @@ void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bd
 
 	if(pterrain_info.bysortLV == 1)
 	{		
-		if(m_sqTile[idx]->terrainList.size() == 2)
+		if(m_terrainInfo_List[idx].size() == 2)
 		{
-			ptemp = m_sqTile[idx]->terrainList.back();
+			ptemp = m_terrainInfo_List[idx].back();
 			ptemp->byGroup_ID = pterrain_info.byGroup_ID;
 			ptemp->byGroup_sequence = pterrain_info.byGroup_sequence;
 			ptemp->bysortLV = pterrain_info.bysortLV;
@@ -554,35 +553,35 @@ void CTileMgr::SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bd
 			ptemp->bysortLV = pterrain_info.bysortLV;
 			ptemp->byTerrain_ID = pterrain_info.byTerrain_ID;
 
-			m_sqTile[idx]->terrainList.push_back(ptemp);
+			m_terrainInfo_List[idx].push_back(ptemp);
 		}
 	}
 	else
 	{
-		ptemp = m_sqTile[idx]->terrainList.front();
+		ptemp = m_terrainInfo_List[idx].front();
 		ptemp->byGroup_ID = pterrain_info.byGroup_ID;
 		ptemp->byGroup_sequence = pterrain_info.byGroup_sequence;
 		ptemp->bysortLV = pterrain_info.bysortLV;
 		ptemp->byTerrain_ID = pterrain_info.byTerrain_ID;
 
-		if(m_sqTile[idx]->terrainList.size() == 2 && _bdelete == true)
+		if(m_terrainInfo_List[idx].size() == 2 && _bdelete == true)
 		{
-			ptemp = m_sqTile[idx]->terrainList.back();
+			ptemp = m_terrainInfo_List[idx].back();
 
 			Safe_Delete(ptemp);
-			m_sqTile[idx]->terrainList.pop_back();
+			m_terrainInfo_List[idx].pop_back();
 		}
 	}
 
-	if(m_sqTile[idx]->terrainList.size() == 2)
-		m_sqTile[idx]->terrainList.sort(rendersort_compare());
+	if(m_terrainInfo_List[idx].size() == 2)
+		m_terrainInfo_List[idx].sort(rendersort_compare());
 
-	CRewind::GetInstance()->SetTerrainData(m_sqTile[idx]->terrainList , idx);
+	CRewind::GetInstance()->SetTerrainData(m_terrainInfo_List[idx] , idx);
 
 }
 int CTileMgr::FloorCheck(const int _index , const int _terrain_id)
 {
-	TERRAIN_INFO* pori_terrain = m_sqTile[_index]->terrainList.back();
+	TERRAIN_INFO* pori_terrain = m_terrainInfo_List[_index].back();
 
 	if(TERRAIN_HIGHDIRT == pori_terrain->byTerrain_ID)
 	{
@@ -641,7 +640,7 @@ TERRAIN_INFO* CTileMgr::GetTerrain_Info(const int _index)
 {
 	if( 0 <= _index && _index < SQ_TILECNTX * SQ_TILECNTY)
 	{
-		return m_sqTile[_index]->terrainList.back();
+		return m_terrainInfo_List[_index].back();
 	}
 	else
 		return NULL;
@@ -657,16 +656,16 @@ int	CTileMgr::GetTileOption(const int _index)
 }
 void CTileMgr::SetBeforeTile(list<TERRAIN_INFO>&	terrain_list , const int idx)
 {
-	list<TERRAIN_INFO*> ptemplist = m_sqTile[idx]->terrainList;
+	list<TERRAIN_INFO*> ptemplist = m_terrainInfo_List[idx];
 
 	TERRAIN_INFO* ptemp = NULL;
 	TERRAIN_INFO terrain_info;
 
-	for(list<TERRAIN_INFO*>::iterator iter = m_sqTile[idx]->terrainList.begin(); iter != m_sqTile[idx]->terrainList.end(); ++iter)
+	for(list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[idx].begin(); iter != m_terrainInfo_List[idx].end(); ++iter)
 	{
 		Safe_Delete((*iter));
 	}
-	m_sqTile[idx]->terrainList.clear();
+	m_terrainInfo_List[idx].clear();
 
 	list<TERRAIN_INFO>::iterator iter = terrain_list.begin();
 	list<TERRAIN_INFO>::iterator iter_end = terrain_list.end();
@@ -679,10 +678,10 @@ void CTileMgr::SetBeforeTile(list<TERRAIN_INFO>&	terrain_list , const int idx)
 		ptemp->bysortLV			= (*iter).bysortLV;
 		ptemp->byTerrain_ID		= (*iter).byTerrain_ID;
 
-		m_sqTile[idx]->terrainList.push_back(ptemp);
+		m_terrainInfo_List[idx].push_back(ptemp);
 	}
 
-	m_sqTile[idx]->terrainList.sort(rendersort_compare());
+	m_terrainInfo_List[idx].sort(rendersort_compare());
 }
 int CTileMgr::GetsqIdx(void)
 {
@@ -797,8 +796,8 @@ void CTileMgr::MinimapDraw(const int iindex)
 	TEXINFO*	pTexture = NULL;
 
 
-	list<TERRAIN_INFO*>::iterator iter = m_sqTile[iindex]->terrainList.begin();
-	list<TERRAIN_INFO*>::iterator iter_end = m_sqTile[iindex]->terrainList.end();
+	list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[iindex].begin();
+	list<TERRAIN_INFO*>::iterator iter_end = m_terrainInfo_List[iindex].end();
 	int group_id = 0;
 	int squence = 0;
 	const vector<TEXINFO*>* temp;
@@ -844,4 +843,83 @@ void CTileMgr::MinimapDraw(const int iindex)
 			, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
 			, D3DCOLOR_ARGB(255,255,255,255));
 	}
+}
+void CTileMgr::SaveTile(HANDLE h)
+{
+	//WriteFile(hFile , wr , sizeof(WCHAR)*10 , &dwbyte , NULL);
+
+	DWORD dwbyte;
+
+	int	mapsize = 0;
+	int sortsize = 0;
+
+	mapsize = SQ_TILECNTX*SQ_TILECNTY;
+	WriteFile(h , &mapsize , sizeof(int) , &dwbyte , NULL);
+
+	for(int i = 0; i < SQ_TILECNTX*SQ_TILECNTY; ++i)
+		WriteFile(h,  m_sqTile[i], sizeof(TILE) , &dwbyte , NULL);
+
+	for(int i = 0; i < SQ_TILECNTX*SQ_TILECNTY; ++i)
+	{
+		list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[i].begin();
+		list<TERRAIN_INFO*>::iterator iter_end = m_terrainInfo_List[i].end();
+
+		sortsize = (int)(m_terrainInfo_List[i].size());
+		WriteFile(h,  &sortsize, sizeof(int) , &dwbyte , NULL);
+
+		for( ; iter != iter_end; ++iter)
+			WriteFile(h, *iter , sizeof(TERRAIN_INFO) , &dwbyte , NULL);
+	}
+}
+void CTileMgr::LoadTile(HANDLE h)
+{
+	for(size_t i = 0; i < m_sqTile.size(); ++i)
+	{
+		list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[i].begin();
+		list<TERRAIN_INFO*>::iterator iter_end = m_terrainInfo_List[i].end();
+		for( ; iter != iter_end; ++iter)
+			Safe_Delete((*iter));
+
+		m_terrainInfo_List[i].clear();
+	}
+	//m_terrainInfo_List.clear();
+	//vector<list<TERRAIN_INFO*>>().swap(m_terrainInfo_List);
+
+	DWORD dwbyte;
+	int	mapsize = 0;
+	int sortsize = -1;
+
+	ReadFile(h , &mapsize, sizeof(int) , &dwbyte , NULL);
+	//m_sqTile.reserve(mapsize);
+	//m_terrainInfo_List.reserve(mapsize);
+
+	TILE tempTile;
+	TERRAIN_INFO* tempterrain = NULL;
+
+	for(int i = 0; i < mapsize; ++i)
+	{
+		//tempTile = new TILE;
+		ReadFile(h , &tempTile, sizeof(TILE) , &dwbyte , NULL);
+		//m_sqTile.push_back(tempTile);
+		m_sqTile[i]->byFloor = tempTile.byFloor;
+		m_sqTile[i]->byOption = tempTile.byOption;
+	}
+
+	for(int i = 0; i < mapsize; ++i)
+	{		
+		ReadFile(h , &sortsize , sizeof(int) , &dwbyte , NULL);
+
+		//list<TERRAIN_INFO*> templist;
+		for(int j = 0; j < sortsize; ++j)
+		{
+			tempterrain = new TERRAIN_INFO;
+			ReadFile(h , tempterrain , sizeof(TERRAIN_INFO) , &dwbyte , NULL);
+			m_terrainInfo_List[i].push_back(tempterrain);
+			//templist.push_back(tempterrain);
+		}
+		//m_terrainInfo_List.push_back(templist);
+
+		CRewind::GetInstance()->InitStackTile(m_terrainInfo_List[i] , i);
+	}
+	Initminimap();
 }

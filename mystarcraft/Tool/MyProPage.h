@@ -32,4 +32,6 @@ public:
 	virtual BOOL OnSetActive();
 	afx_msg void OnEnable(BOOL bEnable);
 	afx_msg void OnLbnSelchangeList1();
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedLoadBtn();
 };

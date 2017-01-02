@@ -29,6 +29,29 @@ const TEXINFO* CTextureMgr::GetSingleTexture( const wstring& wstrObjKey
 
 	return ((CSingleTexture*)iter->second)->GetSingleTexture(wstrTexKey);
 }
+const map<wstring , vector<TEXINFO*>>* CTextureMgr::GetMultiTextureSet(const wstring& wstrObjKey, const wstring& wstrKey)
+{
+	/* 종류와 유닛인지 건물인지 이런거 따지는 매개변수도 넣어야함*/
+
+	map<wstring , CTexture*>::iterator iter = m_MapTexture.find(wstrObjKey);
+
+	if(iter != m_MapTexture.end())
+		return ((CMultiTexture*)iter->second)->GetMultiTextureSet(wstrKey);
+	else
+		return NULL;
+}
+
+const vector<TEXINFO*>* CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
+{
+	map<wstring , CTexture*>::iterator iter = m_MapTexture.find(wstrObjKey);
+
+	if(iter != m_MapTexture.end())
+		return ((CGeneralTexture*)iter->second)->GetTexture();
+	else
+		return NULL;
+}
+
+
 const vector<TEXINFO*>* CTextureMgr::GetStateTexture(const wstring& wstrObjKey , 
 													 const wstring& wstrStateKey)
 {
@@ -42,6 +65,7 @@ const vector<TEXINFO*>* CTextureMgr::GetStateTexture(const wstring& wstrObjKey ,
 
 	return ((CMultiTexture*)(iter->second))->GetStateTexture(wstrStateKey);
 }
+
 int CTextureMgr::GetTexCnt( const wstring& wstrObjKey , const wstring& wstrStateKey /*= L""*/ )
 {
 	map<wstring, CTexture*>::iterator	iter = m_MapTexture.find(wstrObjKey);
@@ -95,7 +119,8 @@ HRESULT CTextureMgr::InsertTexture( const wstring& wstrFilePath
 			return E_FAIL;
 		}
 
-		m_MapTexture.insert(make_pair(wstrObjKey, pTexture));
+		/*이 맵컨테이너를 여러개 만들어서 find할때 부담을 덜어주자*/
+		m_MapTexture.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
 	}
 	else
 	{
@@ -146,11 +171,11 @@ HRESULT CTextureMgr::Read_GeneralPath( const wstring& wstrFilePath )
 		int		iCount = _ttoi(szCount);
 
 
+		InsertTexture(szImgPath, szTexKey, TEXTYPE_GENERAL
+			, szTexKey, iCount);
+
 		if(!_tcscmp(szSystem , _T("Resource")))
 		{
-			InsertTexture(szImgPath, szTexKey, TEXTYPE_GENERAL
-				, szTexKey, iCount);
-
 			if(!pProSheet->FindStr(szTexKey, 1))
 				pProSheet->AddString(szTexKey,1);
 		}
@@ -190,6 +215,11 @@ HRESULT CTextureMgr::Read_SingleImagePath( const wstring& wstrFilePath )
 		InsertTexture(szImgPath, szObjKey, TEXTYPE_SINGLE
 			, szTextureKey);
 
+		if(!_tcscmp(szTextureKey , _T("Startbase")))
+		{
+			if(!pProSheet->FindStr(szTextureKey, 1))
+				pProSheet->AddString(szTextureKey,1);
+		}
 	}
 	LoadFile.close();
 
@@ -246,28 +276,5 @@ HRESULT CTextureMgr::Read_MultiImagePath( const wstring& wstrFilePath )
 
 	return S_OK;
 }
-
-const map<wstring , vector<TEXINFO*>>* CTextureMgr::GetMultiTextureSet(const wstring& wstrObjKey, const wstring& wstrKey)
-{
-	/* 종류와 유닛인지 건물인지 이런거 따지는 매개변수도 넣어야함*/
-
-	map<wstring , CTexture*>::iterator iter = m_MapTexture.find(wstrObjKey);
-
-	if(iter != m_MapTexture.end())
-		return ((CMultiTexture*)iter->second)->GetMultiTextureSet(wstrKey);
-	else
-		return NULL;
-}
-
-const vector<TEXINFO*>* CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
-{
-	map<wstring , CTexture*>::iterator iter = m_MapTexture.find(wstrObjKey);
-
-	if(iter != m_MapTexture.end())
-		return ((CGeneralTexture*)iter->second)->GetTexture();
-	else
-		return NULL;
-}
-
 
 

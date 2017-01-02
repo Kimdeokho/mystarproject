@@ -62,4 +62,8 @@ void CMyProPage2::OnLbnSelchangeList1()
 	{
 		CTileDebug::GetInstance()->SetDebugGroup(DBG_MINERAL , true);
 	}
+	else if(!str.Compare(L"Startbase"))
+	{
+		CTileDebug::GetInstance()->SetDebugGroup(DBG_STARTBASE , true);
+	}
 }

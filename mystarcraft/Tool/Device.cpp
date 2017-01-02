@@ -91,8 +91,8 @@ void CDevice::Release( void )
 
 void CDevice::SetParameters( D3DPRESENT_PARAMETERS& d3dpp )
 {
-	d3dpp.BackBufferWidth = WINSIZE_X;
-	d3dpp.BackBufferHeight = WINSIZE_Y;
+	d3dpp.BackBufferWidth = TOOLSIZE_X;
+	d3dpp.BackBufferHeight = TOOLSIZE_Y;
 	d3dpp.BackBufferCount = 1;
 	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
 

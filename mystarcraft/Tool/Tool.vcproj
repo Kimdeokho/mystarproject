@@ -438,6 +438,14 @@
 					RelativePath=".\Obj.h"
 					>
 				</File>
+				<File
+					RelativePath=".\StartBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\StartBase.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Brush"

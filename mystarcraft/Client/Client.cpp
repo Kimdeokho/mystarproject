@@ -124,7 +124,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    HWND hWnd;
-   RECT	rc = {0,0,WINSIZE_X, WINSIZE_Y};
+   RECT	rc = {0,0,CLINETSIZE_X, CLINETSIZE_Y};
 
    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 

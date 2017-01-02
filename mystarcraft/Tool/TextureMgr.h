@@ -14,8 +14,8 @@ private:
 public:
 	const map<wstring , vector<TEXINFO*>>* GetMultiTextureSet(const wstring& wstrObjKey, const wstring& wstrKey);
 	const vector<TEXINFO*>* GetGeneralTexture(const wstring& wstrObjKey);
-	const TEXINFO* GetSingleTexture(const wstring& wstrTexKey
-		, const wstring& wstrStateKey = L"");
+	const TEXINFO* GetSingleTexture(const wstring& wstrObjKey
+		, const wstring& wstrStateKey);
 	int GetTexCnt(const wstring& wstrObjKey
 		, const wstring& wstrStateKey = L"");
 	const vector<TEXINFO*>* GetStateTexture(const wstring& wstrObjKey , 

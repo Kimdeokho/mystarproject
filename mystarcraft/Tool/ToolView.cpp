@@ -20,6 +20,7 @@
 #include "MyForm.h"
 #include "Mineral.h"
 #include "GasResource.h"
+#include "StartBase.h"
 #include "ObjMgr.h"
 
 #ifdef _DEBUG
@@ -133,7 +134,7 @@ void CToolView::OnInitialUpdate()
 	float	fColFrm = float(rcWindow.bottom - rcMainView.bottom);
 
 	m_pMainFrm->SetWindowPos(NULL
-		, 100, 100, int(WINSIZE_X + fRowFrm), int(WINSIZE_Y + fColFrm)
+		, 100, 100, int(TOOLSIZE_X + fRowFrm), int(TOOLSIZE_Y + fColFrm)
 		, SWP_NOZORDER);
 
 	g_hWnd = m_hWnd;
@@ -154,7 +155,7 @@ void CToolView::OnInitialUpdate()
 	CTerrainBrushMgr::GetInstance()->Initialize();
 	CMyMouse::GetInstance()->Initialize();
 
-	CTileMgr::GetInstance()->Initminimap(m_pMinimapView->m_hWnd);
+	CTileMgr::GetInstance()->Initminimap();
 
 
 	m_bGrid = false;
@@ -268,18 +269,20 @@ void CToolView::Clickinstall(void)
 		idx = pBox->GetCurSel();
 		pBox->GetText(idx , str);
 
+		float fposX = 0;
+		float fposY = 0;
+
 		if(!str.Compare(L"Mineral"))
 		{
 			if(CTileDebug::GetInstance()->Whether_install_Mineral())
 			{
-				CTileDebug::GetInstance()->Set_TileOption(RESOURCE_MINERAL);
+				fposX = CTileDebug::GetInstance()->Get_oddColPos().x;
+				fposY = CTileDebug::GetInstance()->Get_oddColPos().y;
 
-				float fposX = CTileDebug::GetInstance()->GetMineralPos().x;
-				float fposY = CTileDebug::GetInstance()->GetMineralPos().y;
+				CTileDebug::GetInstance()->Set_TileOption(RESOURCE_MINERAL);
 				CObj* pobj = new CMineral();
 
-				pobj->SetPos(fposX , 
-					fposY , STATIC_OBJ);
+				pobj->SetPos(fposX , fposY , STATIC_OBJ);
 				pobj->InitRect();
 				CObjMgr::GetInstance()->AddObject(pobj , OBJ_MINERAL);
 			}
@@ -288,16 +291,31 @@ void CToolView::Clickinstall(void)
 		{
 			if(CTileDebug::GetInstance()->Whether_install_Gas())
 			{
-				CTileDebug::GetInstance()->Set_TileOption(RESOURCE_GAS);
+				fposX = CTileDebug::GetInstance()->Get_evenColPos().x;
+				fposY = CTileDebug::GetInstance()->Get_evenColPos().y;
 
-				float fposX = CTileDebug::GetInstance()->GetGasPos().x;
-				float fposY = CTileDebug::GetInstance()->GetGasPos().y;
+				CTileDebug::GetInstance()->Set_TileOption(RESOURCE_GAS);
 				CObj* pobj = new CGasResource();
 
-				pobj->SetPos(fposX , 
-					fposY , STATIC_OBJ);
+				pobj->SetPos(fposX , fposY , STATIC_OBJ);
 				pobj->InitRect();
 				CObjMgr::GetInstance()->AddObject(pobj , OBJ_GAS);
+			}
+		}
+		else if(!str.Compare(L"Startbase"))
+		{
+			if(CTileDebug::GetInstance()->Whether_install_StartBase())
+			{
+				fposX = CTileDebug::GetInstance()->Get_oddColPos().x;
+				fposY = CTileDebug::GetInstance()->Get_oddColPos().y;
+
+				CTileDebug::GetInstance()->Set_TileOption(OP_STARTBASE);
+
+				CObj* pobj = new CStartBase();
+
+				pobj->SetPos(fposX , fposY);
+				pobj->InitRect();
+				CObjMgr::GetInstance()->AddObject(pobj , OBJ_STARTBASE);
 			}
 		}
 	}
