@@ -7,7 +7,7 @@
 #include "TileMgr.h"
 CStartBase::CStartBase(void)
 {
-	m_TexName = L"Startbase";
+	m_ObjName = L"Startbase";
 }
 
 CStartBase::~CStartBase(void)
@@ -15,24 +15,21 @@ CStartBase::~CStartBase(void)
 }
 void CStartBase::InitRect(void)
 {
-	m_collRc.left = long(m_vPos.x - 64);
-	m_collRc.right = long(m_vPos.x + 64);
-	m_collRc.top = (long)m_vPos.y - 48;
-	m_collRc.bottom = long(m_vPos.y + 48);
+	m_vertex.left = 64;
+	m_vertex.right = 64;
+	m_vertex.bottom = 48;
+	m_vertex.top = 48;
 
-	m_vRectPoint[0] = D3DXVECTOR2( float(m_collRc.left) , float(m_collRc.top) );
-	m_vRectPoint[1] = D3DXVECTOR2( float(m_collRc.right) , float(m_collRc.top) );
-	m_vRectPoint[2] = D3DXVECTOR2( float(m_collRc.right) , float(m_collRc.bottom) );
-	m_vRectPoint[3] = D3DXVECTOR2( float(m_collRc.left) , float(m_collRc.bottom) );
-	m_vRectPoint[4] = m_vRectPoint[0];
+	CObj::InitCollRC();
 }
 void CStartBase::Initialize(void)
 {
+	InitRect();
 }
 
 void CStartBase::Render(void)
 {
-	const TEXINFO* vtemp = CTextureMgr::GetInstance()->GetSingleTexture(L"ETC", m_TexName);
+	const TEXINFO* vtemp = CTextureMgr::GetInstance()->GetSingleTexture(L"ETC", m_ObjName);
 
 	m_matWorld._41 = m_vPos.x - CMyMouse::GetInstance()->GetScrollPt().x;
 	m_matWorld._42 = m_vPos.y - CMyMouse::GetInstance()->GetScrollPt().y;

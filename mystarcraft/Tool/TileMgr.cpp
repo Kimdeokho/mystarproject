@@ -891,7 +891,7 @@ void CTileMgr::LoadTile(HANDLE h)
 
 	ReadFile(h , &mapsize, sizeof(int) , &dwbyte , NULL);
 	//m_sqTile.reserve(mapsize);
-	//m_terrainInfo_List.reserve(mapsize);
+	m_terrainInfo_List.reserve(mapsize);
 
 	TILE tempTile;
 	TERRAIN_INFO* tempterrain = NULL;

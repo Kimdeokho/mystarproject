@@ -8,7 +8,7 @@
 
 CMineral::CMineral(void)
 {
-	m_TexName = L"Mineral";
+	m_ObjName = L"Mineral";
 }
 CMineral::~CMineral(void)
 {
@@ -16,17 +16,17 @@ CMineral::~CMineral(void)
 
 void CMineral::InitRect(void)
 {
-	m_collRc.left = long(m_vPos.x - 32);
-	m_collRc.right = long(m_vPos.x + 32);
-	m_collRc.top = (long)m_vPos.y - 16;
-	m_collRc.bottom = long(m_vPos.y + 16);
+	m_vertex.left = 32;
+	m_vertex.right = 32;
+	m_vertex.bottom = 16;
+	m_vertex.top = 16;
 
-	m_vRectPoint[0] = D3DXVECTOR2( float(m_collRc.left) , float(m_collRc.top) );
-	m_vRectPoint[1] = D3DXVECTOR2( float(m_collRc.right) , float(m_collRc.top) );
-	m_vRectPoint[2] = D3DXVECTOR2( float(m_collRc.right) , float(m_collRc.bottom) );
-	m_vRectPoint[3] = D3DXVECTOR2( float(m_collRc.left) , float(m_collRc.bottom) );
-	m_vRectPoint[4] = m_vRectPoint[0];
+	CObj::InitCollRC();
 
+}
+void CMineral::Initialize()
+{
+	InitRect();
 }
 void CMineral::Restore_TIleOption(void)
 {
@@ -41,7 +41,7 @@ void CMineral::Restore_TIleOption(void)
 void CMineral::Render(void)
 {
 
-	const vector<TEXINFO*>* vtemp = CTextureMgr::GetInstance()->GetGeneralTexture(m_TexName);
+	const vector<TEXINFO*>* vtemp = CTextureMgr::GetInstance()->GetGeneralTexture(m_ObjName);
 
 	m_matWorld._41 = m_vPos.x - CMyMouse::GetInstance()->GetScrollPt().x;
 	m_matWorld._42 = m_vPos.y - CMyMouse::GetInstance()->GetScrollPt().y;

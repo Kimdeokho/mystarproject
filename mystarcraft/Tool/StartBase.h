@@ -8,7 +8,8 @@ public:
 	virtual void Initialize(void);
 	virtual void Render(void);
 	virtual void Restore_TIleOption(void);
-	virtual void InitRect(void);
+public:
+	void InitRect(void);
 public:
 	CStartBase(void);
 	~CStartBase(void);

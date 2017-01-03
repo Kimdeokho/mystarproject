@@ -37,11 +37,20 @@ void CObj::SetPos(const float x , const float y , OBJ_POS_KIND ekind)
 
 void CObj::DrawRect(void)
 {
+	InitCollRC();
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 
+	D3DXVECTOR2 vtemp[5];
+
+	for(int i = 0; i < 5; ++i)
+	{
+		vtemp[i].x = m_vRectPoint[i].x;// - CMyMouse::GetInstance()->GetScrollPt().x;
+		vtemp[i].y = m_vRectPoint[i].y;// - CMyMouse::GetInstance()->GetScrollPt().y;
+	}
+
 	CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
-	CDevice::GetInstance()->GetLine()->Draw(m_vRectPoint , 5 , D3DCOLOR_ARGB(255, 0 , 255, 0));
+	CDevice::GetInstance()->GetLine()->Draw(vtemp , 5 , D3DCOLOR_ARGB(255, 0 , 255, 0));
 
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
@@ -54,6 +63,29 @@ const RECT& CObj::GetRect(void)
 
 BOOL CObj::PtCollCheck(const CPoint& _pt)
 {
+	InitCollRC();
 	BOOL bvalue = PtInRect(&m_collRc , _pt);
 	return bvalue;
+}
+void CObj::InitCollRC(void)
+{
+	float X = m_vPos.x - CMyMouse::GetInstance()->GetScrollPt().x;
+	float Y = m_vPos.y - CMyMouse::GetInstance()->GetScrollPt().y;
+
+	m_collRc.left = long(X - m_vertex.left);
+	m_collRc.right = long(X + m_vertex.right);
+	m_collRc.top = long(Y - m_vertex.top);
+	m_collRc.bottom = long(Y + m_vertex.bottom);
+
+	m_vRectPoint[0] = D3DXVECTOR2( float(m_collRc.left) , float(m_collRc.top) );
+	m_vRectPoint[1] = D3DXVECTOR2( float(m_collRc.right) , float(m_collRc.top) );
+	m_vRectPoint[2] = D3DXVECTOR2( float(m_collRc.right) , float(m_collRc.bottom) );
+	m_vRectPoint[3] = D3DXVECTOR2( float(m_collRc.left) , float(m_collRc.bottom) );
+	m_vRectPoint[4] = m_vRectPoint[0];
+}
+void CObj::SaveInfo(HANDLE h)
+{
+	DWORD dwbyte;
+	WriteFile(h , &m_vPos , sizeof(D3DXVECTOR2) , &dwbyte , NULL);
+	WriteFile(h , m_ObjName , sizeof(WCHAR)*MIN_STR , &dwbyte , NULL);
 }

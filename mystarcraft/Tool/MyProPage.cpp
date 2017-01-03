@@ -7,6 +7,11 @@
 #include "TileMgr.h"
 #include "TerrainBrushMgr.h"
 #include "TileDebug.h"
+#include "ObjMgr.h"
+
+#include "MainFrm.h"
+#include "ToolView.h"
+
 // CMyProPage 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CMyProPage, CPropertyPage)
@@ -187,6 +192,7 @@ void CMyProPage::OnBnClickedButton1()
 			, FILE_ATTRIBUTE_NORMAL, NULL);
 
 		CTileMgr::GetInstance()->SaveTile(hFile);
+		CObjMgr::GetInstance()->SaveObj(hFile);
 
 		CloseHandle(hFile);
 	}
@@ -202,8 +208,14 @@ void CMyProPage::OnBnClickedLoadBtn()
 		OFN_NOCHANGEDIR, name_filter, NULL);
 
 	// 다이얼로그를 띄운다.
+	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
+
+
 	if(load_dlg.DoModal() == IDOK)
 	{
+		pMainFrm->m_pToolView->SetScrollPos(0 , 0);
+		pMainFrm->m_pToolView->SetScrollPos(1 , 0);
+
 		/*여기에 파일 데이터 입력*/
 		CString FilePath = load_dlg.GetPathName();
 
@@ -212,6 +224,8 @@ void CMyProPage::OnBnClickedLoadBtn()
 			, FILE_ATTRIBUTE_NORMAL, NULL);
 
 		CTileMgr::GetInstance()->LoadTile(hFile);
+		CObjMgr::GetInstance()->LoadObj(hFile);
+
 		CloseHandle(hFile);
 	}
 }

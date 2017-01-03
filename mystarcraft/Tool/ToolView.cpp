@@ -283,7 +283,7 @@ void CToolView::Clickinstall(void)
 				CObj* pobj = new CMineral();
 
 				pobj->SetPos(fposX , fposY , STATIC_OBJ);
-				pobj->InitRect();
+				pobj->Initialize();
 				CObjMgr::GetInstance()->AddObject(pobj , OBJ_MINERAL);
 			}
 		}
@@ -298,7 +298,7 @@ void CToolView::Clickinstall(void)
 				CObj* pobj = new CGasResource();
 
 				pobj->SetPos(fposX , fposY , STATIC_OBJ);
-				pobj->InitRect();
+				pobj->Initialize();
 				CObjMgr::GetInstance()->AddObject(pobj , OBJ_GAS);
 			}
 		}
@@ -314,7 +314,7 @@ void CToolView::Clickinstall(void)
 				CObj* pobj = new CStartBase();
 
 				pobj->SetPos(fposX , fposY);
-				pobj->InitRect();
+				pobj->Initialize();
 				CObjMgr::GetInstance()->AddObject(pobj , OBJ_STARTBASE);
 			}
 		}

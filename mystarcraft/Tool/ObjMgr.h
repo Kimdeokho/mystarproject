@@ -12,6 +12,9 @@ public:
 	HRESULT AddObject(CObj* pObj , OBJID	eId);
 	void	DeleteObj(const CPoint& _pt);
 public:
+	void	SaveObj(HANDLE h);
+	void	LoadObj(HANDLE h);
+public:
 	void Render(void);
 	void Release(void);
 public:

@@ -19,7 +19,7 @@ const int RB_TILESIZEX = 128;
 const int RB_TILESIZEY = 64;
 
 
-const int	MIN_STR = 64;
+const int	MIN_STR = 32;
 
 const BYTE	TERRAIN_NONE = -1;
 const BYTE	TERRAIN_DIRT = 0;
