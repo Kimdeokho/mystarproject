@@ -33,12 +33,30 @@ void CStartBase::Render(void)
 
 	m_matWorld._41 = m_vPos.x - CMyMouse::GetInstance()->GetScrollPt().x;
 	m_matWorld._42 = m_vPos.y - CMyMouse::GetInstance()->GetScrollPt().y;
+	m_matWorld._11 = 1;
+	m_matWorld._22 = 1;
+
 	CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
 
 	CDevice::GetInstance()->GetSprite()->Draw( vtemp->pTexture ,
 		NULL , &D3DXVECTOR3(64.f, 48.f, 0.f) , NULL
 		, D3DCOLOR_ARGB(255,255,255,255));
 
+}
+void CStartBase::MinmapRender(const float fratioX , const float fratioY)
+{
+	const TEXINFO* vtemp = CTextureMgr::GetInstance()->GetSingleTexture(L"ETC", m_ObjName);
+
+	m_matWorld._41 = m_vPos.x*fratioX;
+	m_matWorld._42 = m_vPos.y*fratioY;
+	m_matWorld._11 = fratioX;
+	m_matWorld._22 = fratioY;
+
+	CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+
+	CDevice::GetInstance()->GetSprite()->Draw( vtemp->pTexture ,
+		NULL , &D3DXVECTOR3(64.f, 48.f, 0.f) , NULL
+		, D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CStartBase::Restore_TIleOption(void)

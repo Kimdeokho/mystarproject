@@ -8,6 +8,7 @@ public:
 	virtual void Initialize(void);
 	virtual void Render(void)PURE;
 	virtual void Restore_TIleOption(void){};
+	virtual void MinmapRender(const float fratioX , const float fratioY);
 public:
 	void CObj::InitCollRC(void);
 public:

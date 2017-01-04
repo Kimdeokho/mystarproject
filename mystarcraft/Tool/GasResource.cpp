@@ -46,6 +46,8 @@ void CGasResource::Render(void)
 
 	m_matWorld._41 = m_vPos.x - CMyMouse::GetInstance()->GetScrollPt().x;
 	m_matWorld._42 = m_vPos.y - CMyMouse::GetInstance()->GetScrollPt().y;
+	m_matWorld._11 = 1;
+	m_matWorld._22 = 1;
 	CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
 
 	CDevice::GetInstance()->GetSprite()->Draw( (*vtemp)[0]->pTexture ,
@@ -53,4 +55,21 @@ void CGasResource::Render(void)
 		, D3DCOLOR_ARGB(255,255,255,255));
 
 	CObj::DrawRect();
+}
+
+void CGasResource::MinmapRender(const float fratioX , const float fratioY)
+{
+	const vector<TEXINFO*>* vtemp = CTextureMgr::GetInstance()->GetGeneralTexture(m_ObjName);
+
+	m_matWorld._41 = m_vPos.x*fratioX;
+	m_matWorld._42 = m_vPos.y*fratioY;
+	m_matWorld._11 = fratioX;
+	m_matWorld._22 = fratioY;
+
+	CDevice::GetInstance()->GetSprite()->SetTransform(&m_matWorld);
+
+	CDevice::GetInstance()->GetSprite()->Draw( (*vtemp)[0]->pTexture ,
+		NULL , &D3DXVECTOR3(64.f, 32.f, 0.f) , NULL
+		, D3DCOLOR_ARGB(255,255,255,255));
+
 }

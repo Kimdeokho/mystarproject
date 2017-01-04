@@ -22,11 +22,11 @@ private:
 	vector<const vector<TEXINFO*>*>	m_WaterTex;
 	vector<const vector<TEXINFO*>*>	m_HillTex;
 private:
+	bool					m_rbRender;
 	int						m_rbidx;
 	int						m_sqidx;
-	bool					m_rbRender;
-
 	int						m_oldidx;
+	D3DXVECTOR2				m_minimaRatio;
 
 
 public:

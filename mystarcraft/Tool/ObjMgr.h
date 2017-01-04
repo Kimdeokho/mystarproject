@@ -16,6 +16,7 @@ public:
 	void	LoadObj(HANDLE h);
 public:
 	void Render(void);
+	void MinimapRender(const float fratioX , const float fratioY);
 	void Release(void);
 public:
 	CObjMgr(void);

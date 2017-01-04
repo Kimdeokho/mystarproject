@@ -89,3 +89,8 @@ void CObj::SaveInfo(HANDLE h)
 	WriteFile(h , &m_vPos , sizeof(D3DXVECTOR2) , &dwbyte , NULL);
 	WriteFile(h , m_ObjName , sizeof(WCHAR)*MIN_STR , &dwbyte , NULL);
 }
+
+void CObj::MinmapRender(const float fratioX , const float fratioY)
+{
+
+}

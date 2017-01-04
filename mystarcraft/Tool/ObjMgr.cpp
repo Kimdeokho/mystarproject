@@ -54,12 +54,20 @@ void CObjMgr::Render(void)
 		list<CObj*>::iterator iter_end = m_ObjList[i].end();
 
 		for( ; iter != iter_end; ++iter)
-		{
 			(*iter)->Render();
-		}
 	}
 }
+void CObjMgr::MinimapRender(const float fratioX , const float fratioY)
+{
+	for(int i = 0; i < OBJ_END; ++i)
+	{
+		list<CObj*>::iterator iter = m_ObjList[i].begin();
+		list<CObj*>::iterator iter_end = m_ObjList[i].end();
 
+		for( ; iter != iter_end; ++iter)
+			(*iter)->MinmapRender(fratioX , fratioY);
+	}
+}
 void CObjMgr::Release(void)
 {
 	for(int i = 0; i < OBJ_END; ++i)

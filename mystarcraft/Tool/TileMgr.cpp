@@ -8,6 +8,7 @@
 #include "TileDebug.h"
 #include "Rewind.h"
 #include "MyMouse.h"
+#include "ObjMgr.h"
 
 IMPLEMENT_SINGLETON(CTileMgr)
 CTileMgr::CTileMgr(void)
@@ -27,6 +28,9 @@ CTileMgr::~CTileMgr(void)
 
 void CTileMgr::InitTile(void)
 {
+	m_minimaRatio.x = 0.31f;
+	m_minimaRatio.y = 0.175f;
+
 	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
 
 	D3DXCreateTexture(pdevice , 1280,720 , D3DX_DEFAULT , D3DUSAGE_RENDERTARGET
@@ -135,6 +139,7 @@ void CTileMgr::Initminimap(void)
 			MinimapDraw(iindex);
 		}
 	}
+	CObjMgr::GetInstance()->MinimapRender(m_minimaRatio.x , m_minimaRatio.y);
 
 	CDevice::GetInstance()->Render_End();
 	CopySurface(m_newtextureMap);
@@ -150,10 +155,10 @@ void CTileMgr::SetMinimapupdate()
 	list<int>* templist = CRewind::GetInstance()->Getidxlist();
 
 
+	CDevice::GetInstance()->Render_Begin();
+
 	if(NULL != templist)
 	{
-		CDevice::GetInstance()->Render_Begin();
-
 		list<int>::iterator iter = templist->begin();
 		list<int>::iterator iter_end = templist->end();
 
@@ -170,12 +175,14 @@ void CTileMgr::SetMinimapupdate()
 
 				MinimapDraw(iindex);
 			}
-		}
-		CDevice::GetInstance()->Render_End();
-		CopySurface(m_newtextureMap);
+		}	
 		templist->clear();
 	}
+	CObjMgr::GetInstance()->MinimapRender(m_minimaRatio.x , m_minimaRatio.y);
 
+	CDevice::GetInstance()->Render_End();
+
+	CopySurface(m_newtextureMap);
 }
 void CTileMgr::MinimapRender(void)
 {
@@ -802,12 +809,10 @@ void CTileMgr::MinimapDraw(const int iindex)
 	int squence = 0;
 	const vector<TEXINFO*>* temp;
 
-	float fratioX = 0.31f;
-	float fratioY = 0.175f;
-	matWorld._41 = m_sqTile[iindex]->vPos.x*fratioX;
-	matWorld._42 = m_sqTile[iindex]->vPos.y*fratioY;
-	matWorld._11 = fratioX;
-	matWorld._22 = fratioY;
+	matWorld._41 = m_sqTile[iindex]->vPos.x*m_minimaRatio.x;
+	matWorld._42 = m_sqTile[iindex]->vPos.y*m_minimaRatio.y;
+	matWorld._11 = m_minimaRatio.x;
+	matWorld._22 = m_minimaRatio.y;
 	CDevice::GetInstance()->GetSprite()->SetTransform(&matWorld);
 
 	for( ; iter != iter_end; ++iter)
