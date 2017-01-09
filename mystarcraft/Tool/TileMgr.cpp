@@ -19,6 +19,8 @@ CTileMgr::CTileMgr(void)
 	m_rbidx = -1;
 	m_sqidx = -1;
 	m_oldidx = -1;
+	m_minimappt.x = 0;
+	m_minimappt.y = 0;
 }
 
 CTileMgr::~CTileMgr(void)
@@ -28,8 +30,8 @@ CTileMgr::~CTileMgr(void)
 
 void CTileMgr::InitTile(void)
 {
-	m_minimaRatio.x = 0.31f;
-	m_minimaRatio.y = 0.175f;
+	m_minimaRatio.x = 0.3125f;
+	m_minimaRatio.y = 0.1757f;
 
 	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
 
@@ -183,6 +185,8 @@ void CTileMgr::SetMinimapupdate()
 	CDevice::GetInstance()->Render_End();
 
 	CopySurface(m_newtextureMap);
+
+	MinimapSquare();
 }
 void CTileMgr::MinimapRender(void)
 {
@@ -198,6 +202,7 @@ void CTileMgr::MinimapRender(void)
 	CDevice::GetInstance()->GetSprite()->Draw(m_newtextureMap
 		, NULL, &D3DXVECTOR3(0, 0, 0.f), NULL
 		, D3DCOLOR_ARGB(255,255,255,255));
+
 }
 void CTileMgr::TileOption_Update(void)
 {
@@ -207,7 +212,7 @@ void CTileMgr::TileOption_Update(void)
 	int iindex = 0;
 	for(int i = 0; i < 30; ++i)
 	{
-		for(int j = 0; j < 40; ++j)
+		for(int j = 0; j < 45; ++j)
 		{
 			int rowidx = i + scrollY/SQ_TILESIZEY;
 			int colidx = j + scrollX/SQ_TILESIZEX;
@@ -221,6 +226,50 @@ void CTileMgr::TileOption_Update(void)
 				continue;
 
 			m_sqTile[iindex]->byOption = MOVE_NONE;
+
+			if(TERRAIN_HILL_R == ptemp->byTerrain_ID)
+			{
+				m_sqTile[iindex]->byOption = MOVE_OK;
+				if(4 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 5)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(10 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 13)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(17 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 19)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(24 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 27)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(30 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 33)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+			}
+			else if(TERRAIN_HILL_L == ptemp->byTerrain_ID)
+			{
+				m_sqTile[iindex]->byOption = MOVE_OK;
+				if(0 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 1)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(6 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 7)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(12 == ptemp->byGroup_sequence)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(16 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 17)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(22 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 23)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(26 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 29)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+				else if(32 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 35)
+					m_sqTile[iindex]->byOption = MOVE_NONE;
+			}
 
 			if(ptemp->byGroup_ID == GROUP_L)
 			{
@@ -299,9 +348,9 @@ void CTileMgr::TileRender(void)
 
 	int scrollX = m_pToolView->GetScrollPos(0);
 	int scrollY = m_pToolView->GetScrollPos(1);
-	for(int i = 0; i < 23; ++i)
+	for(int i = 0; i < 24; ++i)
 	{
-		for(int j = 0; j < 40; ++j)
+		for(int j = 0; j < 41; ++j)
 		{
 			int rowidx = i + scrollY/SQ_TILESIZEY;
 			int colidx = j + scrollX/SQ_TILESIZEX;
@@ -927,4 +976,43 @@ void CTileMgr::LoadTile(HANDLE h)
 		CRewind::GetInstance()->InitStackTile(m_terrainInfo_List[i] , i);
 	}
 	Initminimap();
+}
+
+void CTileMgr::SetMinimapPoint(const CPoint& pt)
+{
+	m_minimappt.x = pt.x*16;
+	m_minimappt.y = pt.y*16;
+}
+
+void CTileMgr::MinimapSquare()
+{
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+
+	float ScrollX = (float)(m_pToolView->GetScrollPos(0));
+	float ScrollY = (float)(m_pToolView->GetScrollPos(1));
+
+	D3DXVECTOR2	vPoint[5];
+	vPoint[0].x = ScrollX;
+	vPoint[1].x = ScrollX + TOOLSIZE_X;
+	vPoint[2].x = ScrollX + TOOLSIZE_X;
+	vPoint[3].x = ScrollX;
+
+	vPoint[0].y = ScrollY;
+	vPoint[1].y = ScrollY;
+	vPoint[2].y = ScrollY + TOOLSIZE_Y;
+	vPoint[3].y = ScrollY + TOOLSIZE_Y;
+
+	for(int i = 0; i < 4; ++i)
+	{
+		vPoint[i].x *= m_minimaRatio.x;
+		vPoint[i].y *= m_minimaRatio.y;
+	}
+	vPoint[4] = vPoint[0];
+
+	CDevice::GetInstance()->GetLine()->SetWidth(5.0f);
+	CDevice::GetInstance()->GetLine()->Draw(vPoint , 5 , D3DCOLOR_ARGB(255,255,255,255));
+
+	CDevice::GetInstance()->Render_Begin();
+	CDevice::GetInstance()->Render_End();
 }

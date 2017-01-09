@@ -106,14 +106,14 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	m_SubSplitter.CreateStatic(&m_MainSplitter , 2,1);
 
 	m_MainSplitter.CreateView(0,1 , RUNTIME_CLASS(CToolView), CSize(1280,720) , pContext);
-	m_SubSplitter.CreateView(0,0 , RUNTIME_CLASS(CMinimapview) , CSize(300,300) , pContext);
-	m_SubSplitter.CreateView(1,0 , RUNTIME_CLASS(MyForm) , CSize(300,500) , pContext);
+	m_SubSplitter.CreateView(0,0 , RUNTIME_CLASS(CMinimapview) , CSize(256,256) , pContext);
+	m_SubSplitter.CreateView(1,0 , RUNTIME_CLASS(MyForm) , CSize(256,500) , pContext);
 
 	m_pToolView = (CToolView*)m_MainSplitter.GetPane(0,1);
 	m_pMiniMapView = (CMinimapview*)m_SubSplitter.GetPane(0,0);
 	m_pMyFormView = (MyForm*)m_SubSplitter.GetPane(1,0);
 
-	m_MainSplitter.SetColumnInfo(0,300,10);
+	m_MainSplitter.SetColumnInfo(0,256,10);
 	//return CFrameWnd::OnCreateClient(lpcs, pContext);
 
 

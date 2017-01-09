@@ -211,7 +211,6 @@ void CMyProPage::OnBnClickedLoadBtn()
 	// 다이얼로그를 띄운다.
 	CMainFrame* pMainFrm = (CMainFrame*)AfxGetMainWnd();
 
-
 	if(load_dlg.DoModal() == IDOK)
 	{
 		pMainFrm->m_pToolView->SetScrollPos(0 , 0);

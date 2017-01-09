@@ -45,8 +45,8 @@ void CObj::DrawRect(void)
 
 	for(int i = 0; i < 5; ++i)
 	{
-		vtemp[i].x = m_vRectPoint[i].x;// - CMyMouse::GetInstance()->GetScrollPt().x;
-		vtemp[i].y = m_vRectPoint[i].y;// - CMyMouse::GetInstance()->GetScrollPt().y;
+		vtemp[i].x = m_vRectPoint[i].x;
+		vtemp[i].y = m_vRectPoint[i].y;
 	}
 
 	CDevice::GetInstance()->GetLine()->SetWidth(1.0f);

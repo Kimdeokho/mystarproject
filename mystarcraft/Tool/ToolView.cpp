@@ -394,3 +394,11 @@ void CToolView::OnRButtonUp(UINT nFlags, CPoint point)
 
 	m_bRbutton = false;
 }
+
+BOOL CToolView::OnScroll(UINT nScrollCode, UINT nPos, BOOL bDoScroll)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+	m_pMinimapView->Invalidate(FALSE);
+	return CScrollView::OnScroll(nScrollCode, nPos, bDoScroll);
+}

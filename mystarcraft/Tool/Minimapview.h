@@ -3,6 +3,8 @@
 
 // CMinimapview ∫‰¿‘¥œ¥Ÿ.
 
+class CMainFrame;
+class CToolView;
 class CMinimapview : public CView
 {
 	DECLARE_DYNCREATE(CMinimapview)
@@ -23,7 +25,16 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
+	CMainFrame*	m_pMainfrm;
+	CToolView*	m_pToolView;
+public:
+	bool		m_bLbtnClick;
+public:
 	virtual void OnInitialUpdate();
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };
 
 

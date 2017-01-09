@@ -27,8 +27,7 @@ private:
 	int						m_sqidx;
 	int						m_oldidx;
 	D3DXVECTOR2				m_minimaRatio;
-
-
+	CPoint					m_minimappt;
 public:
 	void InitTile(void);
 	void Initminimap(void);
@@ -38,12 +37,14 @@ public:
 	void Rohmbus_Render(void);
 	void ShowGrid(void);
 	void MinimapDraw(const int iindex);
+	void MinimapSquare();
 public:
 	void SetRohmbusRender(bool _bRender);
 	void SetBeforeTile(list<TERRAIN_INFO>&	terrain_list, const int idx);
 	void SetTerrain(const int idx , TERRAIN_INFO& pterrain_info , bool _bdelete = true);
 	void SetMinimapupdate(void);
 	void SetTileOption(const int idx , TILE_OPTION eoption);
+	void SetMinimapPoint(const CPoint& pt);
 public:
 	int	 FloorCheck(const int _index , const int _flr);
 	bool InstallHillCheck(const int idx, const int isequence, const int idir);
