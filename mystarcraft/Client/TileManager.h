@@ -13,6 +13,8 @@ private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;
 	LPDIRECT3DTEXTURE9			m_MapTexture[7][6];
+	LPDIRECT3DTEXTURE9			m_fogTexture;
+	LPDIRECT3DTEXTURE9			m_fogMaskTexture;
 private:
 	D3DXMATRIX					m_matWorld;
 	D3DXVECTOR3					m_vTileCenter;
@@ -24,6 +26,8 @@ private:
 	const vector<TEXINFO*>*	m_HillTex[GROUP_END];
 public:
 	void Initialize(void);
+public:
+	void FogRender(void);
 public:
 	void ReadyTileTexture(void);
 	void ReadyMainMap(void);

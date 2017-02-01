@@ -8,6 +8,7 @@
 #include "TextureMgr.h"
 #include "TileManager.h"
 #include "ObjMgr.h"
+#include "MouseMgr.h"
 
 
 CMaingame::CMaingame(void)

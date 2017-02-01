@@ -4,6 +4,7 @@
 #include "ScrollMgr.h"
 #include "Device.h"
 #include "TimeMgr.h"
+#include "MouseMgr.h"
 
 IMPLEMENT_SINGLETON(CTileManager)
 
@@ -12,6 +13,9 @@ CTileManager::CTileManager(void)
 	for(int i = 0; i < 7; ++i)
 		for(int j = 0; j < 6; ++j)
 			m_MapTexture[i][j] = NULL;
+
+	m_fogTexture = NULL;
+	m_fogMaskTexture = NULL;
 }
 
 CTileManager::~CTileManager(void)
@@ -32,11 +36,20 @@ void CTileManager::Initialize(void)
 		}
 
 
-	m_vTileCenter = D3DXVECTOR3(16.f,16.f,0.f);
-	m_TileColor = D3DCOLOR_ARGB(255,255,255,255);	
+		//D3DXCreateTexture(pdevice , 800, 600, D3DX_DEFAULT, D3DUSAGE_RENDERTARGET
+		//	,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_fogTexture); 
 
-	ReadyTileTexture();
-	m_pSprite = CDevice::GetInstance()->GetSprite();
+		//D3DXCreateTexture(pdevice , 100, 100, D3DX_DEFAULT, D3DUSAGE_RENDERTARGET
+		//	,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_fogMaskTexture); 
+
+		m_fogTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Fog" , L"blackfog4096")->pTexture;
+		m_fogMaskTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Fog" , L"fogmask640")->pTexture;
+
+		m_vTileCenter = D3DXVECTOR3(16.f,16.f,0.f);
+		m_TileColor = D3DCOLOR_ARGB(255,255,255,255);	
+
+		ReadyTileTexture();
+		m_pSprite = CDevice::GetInstance()->GetSprite();
 }
 
 void CTileManager::ReadyTileTexture(void)
@@ -66,7 +79,7 @@ void CTileManager::ReadyTileTexture(void)
 
 void CTileManager::RenderTile(void)
 {
-	float fspeed = 500.f;
+	float fspeed = 1500.f;
 	if(GetAsyncKeyState(VK_LEFT))
 	{
 		CScrollMgr::m_fScrollX -= GETTIME*fspeed;
@@ -84,12 +97,24 @@ void CTileManager::RenderTile(void)
 		CScrollMgr::m_fScrollY += GETTIME*fspeed;
 	}
 
-	D3DXMatrixIdentity(&m_matWorld);
+	if(0 > CScrollMgr::m_fScrollX)
+		CScrollMgr::m_fScrollX = 0;
+	else if(3296 < CScrollMgr::m_fScrollX)
+		CScrollMgr::m_fScrollX = 3296;
+
+	if(0 > CScrollMgr::m_fScrollY)
+		CScrollMgr::m_fScrollY = 0;
+	else if(3496 < CScrollMgr::m_fScrollY)
+		CScrollMgr::m_fScrollY = 3496;
+
+	m_matWorld._41 = 0;
+	m_matWorld._42 = 0;
 
 
 	int iX = (int)CScrollMgr::m_fScrollX / BACKBUFFER_SIZEX;
 	int iY = (int)CScrollMgr::m_fScrollY / BACKBUFFER_SIZEY;
 	for(int i = 0; i < 2; ++i)
+	{
 		for(int j = 0; j < 2; ++j)
 		{
 			m_matWorld._41 = BACKBUFFER_SIZEX*(j+iX) - CScrollMgr::m_fScrollX;
@@ -99,11 +124,17 @@ void CTileManager::RenderTile(void)
 			m_pSprite->Draw(m_MapTexture[i+iY][j+iX] , NULL , &D3DXVECTOR3(0,0,0), NULL
 				, D3DCOLOR_ARGB(255,255,255,255));
 		}
+	}
+
+	FogRender();
+
+	m_matWorld._41 = - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = - CScrollMgr::m_fScrollY;
+	m_pSprite->SetTransform(&m_matWorld);
+	m_pSprite->Draw(m_fogTexture, NULL , &D3DXVECTOR3(0, 0 , 0) , NULL
+		, D3DCOLOR_ARGB(255,255,255,255));
+
 }
-
-
-
-
 void CTileManager::ReadyMainMap(void)
 {
 
@@ -115,14 +146,15 @@ void CTileManager::ReadyMainMap(void)
 	BYTE byGroup_ID = 0;
 	BYTE byGroup_sequence = 0;
 
-	
+
+	//m_MapTexture[0][0].GetSurfaceLevel()
 
 	int idx = 0;
 	int istartidx = 0;
 	int rowidx = 0;
 	int colidx = 0;
 
-	
+
 
 	for(int Y = 0; Y < 7; ++Y)
 	{
@@ -176,11 +208,82 @@ void CTileManager::ReadyMainMap(void)
 			}
 		}
 	}
-	
-	
+
 	//CopySurface(m_MapTexture[rowidx][colidx]);
 }
+void CTileManager::FogRender(void)
+{
+	//static float ftime = 0;
 
+	//ftime += GETTIME;
+
+	//if(ftime > 0.05f)
+	//{
+	//	ftime = 0;	
+	//}
+	//else
+	//	return;
+
+	int X = CMouseMgr::GetMousePt().x + (int)CScrollMgr::m_fScrollX - (BACKBUFFER_SIZEX>>1);
+	int Y = CMouseMgr::GetMousePt().y + (int)CScrollMgr::m_fScrollY - (BACKBUFFER_SIZEY>>1);
+
+	static int oldIdx = 0;
+	int curidx = Y/SQ_TILESIZEY * SQ_TILECNTX + X/SQ_TILESIZEX;
+
+	if(curidx != oldIdx)
+		oldIdx = curidx;
+	else
+		return;
+
+	if(X < 0 || 4096 <= X || 0 > Y || 4096 <= Y)
+		return;
+
+
+	LPDIRECT3DSURFACE9 pSurface , pSurfacemask;
+	D3DSURFACE_DESC surfaceDesc , pmaskDesc;
+	D3DLOCKED_RECT plockedRect , pmaskrect;
+
+	m_fogTexture->GetSurfaceLevel(0, &pSurface);
+	m_fogMaskTexture->GetSurfaceLevel(0, &pSurfacemask);
+
+	pSurface->GetDesc(&surfaceDesc);
+	pSurfacemask->GetDesc(&pmaskDesc);
+
+	pSurface->LockRect(&plockedRect , 0 , 0);
+	pSurfacemask->LockRect(&pmaskrect , 0 , 0 );
+
+	DWORD* imgData = (DWORD*)plockedRect.pBits;
+	DWORD* imgData2 = (DWORD*)pmaskrect.pBits;
+
+	int fogindex = 0;
+	int maskindex = 0;
+
+	for(unsigned int i = 0; i < pmaskDesc.Height; ++i)
+	{
+		for(unsigned int j = 0; j < pmaskDesc.Width; ++j)
+		{
+			//if(i%2 == 0 || j%2 == 0)
+			//	continue;
+
+			fogindex = (i+Y) * 4096 +(j+ X);
+			maskindex = i * 640 + j;
+
+			if(fogindex >= 4096*4096)
+				break;
+
+			if(imgData2[maskindex] != imgData[fogindex])
+				imgData[fogindex] = (DWORD)0x00ffff00;//D3DCOLOR_ARGB(255,255,255,255);
+
+			//if(bswitch == true)
+			//imgData[index] = (DWORD)0xffff0000;
+			//else
+			//imgData[index] = (DWORD)0xff00ff00;
+		}
+	}
+
+	pSurface->UnlockRect();
+	pSurfacemask->UnlockRect();
+}
 void CTileManager::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
 {
 	LPDIRECT3DSURFACE9 pBackBuffer , pSurface;

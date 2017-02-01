@@ -264,6 +264,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MouseMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MouseMgr.h"
+					>
+				</File>
+				<File
 					RelativePath=".\ObjMgr.cpp"
 					>
 				</File>
