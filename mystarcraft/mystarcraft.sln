@@ -8,10 +8,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Headers", "Headers", "{FB49
 		Headers\Define.h = Headers\Define.h
 		Headers\Enum.h = Headers\Enum.h
 		Headers\Function.h = Headers\Function.h
-		Data\GeneralImgPath.txt = Data\GeneralImgPath.txt
+		Data\imgpath\GeneralImgPath.txt = Data\imgpath\GeneralImgPath.txt
 		Headers\Include.h = Headers\Include.h
-		Data\MultiImgPath.txt = Data\MultiImgPath.txt
-		Data\SingleImgPath.txt = Data\SingleImgPath.txt
+		Data\imgpath\LodingImgPath.txt = Data\imgpath\LodingImgPath.txt
+		Data\imgpath\MultiImgPath.txt = Data\imgpath\MultiImgPath.txt
+		Data\imgpath\SingleImgPath.txt = Data\imgpath\SingleImgPath.txt
 		Headers\Struct.h = Headers\Struct.h
 		Headers\value.h = Headers\value.h
 	EndProjectSection

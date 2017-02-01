@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "Client.h"
 #include "Include.h"
+#include "Maingame.h"
 
 #define MAX_LOADSTRING 100
 
@@ -60,6 +61,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	StartDebug();
 
+	CMaingame	maingame;
+
+	maingame.Initialize();
 	while (msg.message != WM_QUIT)
 	{
 		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -69,6 +73,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		}
 		else
 		{
+			maingame.Update();
+			maingame.Render();
 		}
 	}
 

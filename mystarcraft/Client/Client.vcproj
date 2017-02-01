@@ -196,10 +196,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\TimeMgr.cpp"
-				>
-			</File>
 			<Filter
 				Name="Maingame"
 				>
@@ -215,6 +211,14 @@
 			<Filter
 				Name="Texture"
 				>
+				<File
+					RelativePath=".\GeneralTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GeneralTexture.h"
+					>
+				</File>
 				<File
 					RelativePath=".\MultiTexture.cpp"
 					>
@@ -252,11 +256,127 @@
 					>
 				</File>
 				<File
+					RelativePath=".\FontMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FontMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ObjMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ObjMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SceneMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SceneMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ScrollMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ScrollMgr.h"
+					>
+				</File>
+				<File
 					RelativePath=".\TextureMgr.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\TextureMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TileManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TileManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TimeMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TimeMgr.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Scene"
+				>
+				<File
+					RelativePath=".\Scene_Logo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Logo.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Stage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Stage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SceneObj.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SceneObj.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Loding"
+				>
+				<File
+					RelativePath=".\Loding.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Loding.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Obj"
+				>
+				<File
+					RelativePath=".\GasResource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GasResource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Mineral.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Mineral.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Obj.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Obj.h"
 					>
 				</File>
 			</Filter>
@@ -280,10 +400,6 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeMgr.h"
 				>
 			</File>
 		</Filter>

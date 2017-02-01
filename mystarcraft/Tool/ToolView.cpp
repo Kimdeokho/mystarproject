@@ -142,13 +142,13 @@ void CToolView::OnInitialUpdate()
 	if(FAILED(CDevice::GetInstance()->InitDevice()))
 		AfxMessageBox(L"디바이스 초기화 실패");
 
-	if(CTextureMgr::GetInstance()->Read_MultiImagePath(L"../Data/MultiImgPath.txt"))
+	if(CTextureMgr::GetInstance()->Read_MultiImagePath(L"../Data/imgpath/MultiImgPath.txt"))
 		MessageBox(L"텍스쳐 불러오기 실패");
 
-	if(CTextureMgr::GetInstance()->Read_GeneralPath(L"../Data/GeneralImgPath.txt"))
+	if(CTextureMgr::GetInstance()->Read_GeneralPath(L"../Data/imgpath/GeneralImgPath.txt"))
 		MessageBox(L"일반 텍스쳐 불러오기 실패");
 
-	if(CTextureMgr::GetInstance()->Read_SingleImagePath(L"../Data/SingleImgPath.txt"))
+	if(CTextureMgr::GetInstance()->Read_SingleImagePath(L"../Data/imgpath/SingleImgPath.txt"))
 		MessageBox(L"싱글텍스쳐 불러오기 실패");
 
 	CTileMgr::GetInstance()->InitTile();

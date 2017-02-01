@@ -86,6 +86,7 @@ void CDevice::Release( void )
 {
 	m_pSprite->Release();
 	m_pDevice->Release();
+	m_pFont->Release();
 	m_p3D->Release();
 }
 

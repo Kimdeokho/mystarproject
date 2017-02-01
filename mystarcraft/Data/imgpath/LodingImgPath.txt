@@ -1,0 +1,2 @@
+Scene|Loding640|..\Texture\Single\Scene\Loding640.png
+Scene|Loding800|..\Texture\Single\Scene\Loding800.png

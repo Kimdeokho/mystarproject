@@ -1,18 +1,16 @@
 #pragma once
 #include "texture.h"
 
-class CSingleTexture :
+class CGeneralTexture :
 	public CTexture
 {
 private:
-	map<wstring , TEXINFO*>	m_mapTex;
+	vector<TEXINFO*>	m_vecTex;
 public:
 	virtual HRESULT InsertTexture(const wstring& wstrFilePath , const wstring& wstrStateKey = L"", const int& iCnt = 0);
 
 	virtual void Release(void);
 public:
-	const TEXINFO* GetSingleTexture(const wstring& wstrStateKey);
-public:
-	CSingleTexture(void);
-	~CSingleTexture(void);
+	CGeneralTexture(void);
+	~CGeneralTexture(void);
 };

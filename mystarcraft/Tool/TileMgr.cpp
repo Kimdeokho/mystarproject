@@ -943,6 +943,8 @@ void CTileMgr::LoadTile(HANDLE h)
 	int	mapsize = 0;
 	int sortsize = -1;
 
+	//맵사이즈 -> 타일옵션 -> 터레인정보 순으로 로드한다.
+
 	ReadFile(h , &mapsize, sizeof(int) , &dwbyte , NULL);
 	//m_sqTile.reserve(mapsize);
 	m_terrainInfo_List.reserve(mapsize);

@@ -4,21 +4,17 @@
 class CMultiTexture :
 	public CTexture
 {
+private:
+	map<wstring , vector<TEXINFO*>>	m_multiTex;
 public:
-	map<wstring, vector<TEXINFO*>>		m_MapMulti;
+	virtual HRESULT InsertTexture(const wstring& wstrFilePath
+		, const wstring& wstrStateKey = L""
+		, const int& iCnt = 0);
 
+	virtual void Release(void);
 public:
-	virtual TEXINFO* GetTexture( const wstring& wstrStateKey = L"" 
-		, const int& iCnt = 0 );
-	int GetTextureSize( const wstring& wstrStateKey );
-	const vector<TEXINFO*>*	GetStateTexture(const wstring& wstrstatekey);
-public:
-	virtual HRESULT InsertTexture( const wstring& wstrFilePath 
-		, const wstring& wstrStateKey = L"" 
-		, const int& iCnt = 0 );
-	virtual void Release( void );
-
+	const vector<TEXINFO*>* GetTextureSet(const wstring& wstrStateKey);
 public:
 	CMultiTexture(void);
-	virtual ~CMultiTexture(void);
+	~CMultiTexture(void);
 };

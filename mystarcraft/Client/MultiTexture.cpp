@@ -11,26 +11,12 @@ CMultiTexture::~CMultiTexture(void)
 	Release();
 }
 
-TEXINFO* CMultiTexture::GetTexture( const wstring& wstrStateKey /*= L"" */
-								   , const int& iCnt /*= 0 */ )
+HRESULT CMultiTexture::InsertTexture(const wstring& wstrFilePath , const wstring& wstrStateKey /*= L"" */, const int& iCnt /*= 0*/)
 {
-	map<wstring, vector<TEXINFO*>>::iterator iter = m_MapMulti.find(wstrStateKey);
-
-	if(iter == m_MapMulti.end())
-		return NULL;
-
-	return iter->second[iCnt];
-}
-
-HRESULT CMultiTexture::InsertTexture( const wstring& wstrFilePath 
-									 , const wstring& wstrStateKey /*= L"" */
-									 , const int& iCnt /*= 0 */ )
-{
-
 	TCHAR		szFullPath[MAX_PATH] = L"";
 	vector<TEXINFO*>		vecTexture;
-
 	vecTexture.reserve(iCnt);
+
 	for(int i = 0; i < iCnt; ++i)
 	{
 		/*L"../Texture/Tile/Tile%d.png"*/
@@ -56,7 +42,7 @@ HRESULT CMultiTexture::InsertTexture( const wstring& wstrFilePath
 			, D3DPOOL_MANAGED
 			, D3DX_DEFAULT
 			, D3DX_DEFAULT
-			, D3DCOLOR_XRGB(0,0,0)/*투명이 되는 D3DCOLOR 의 값*/
+			, D3DCOLOR_XRGB(0,255,0)/*투명이 되는 D3DCOLOR 의 값*/
 			, &pTexInfo->ImgInfo
 			, NULL
 			, &pTexInfo->pTexture)))
@@ -67,15 +53,14 @@ HRESULT CMultiTexture::InsertTexture( const wstring& wstrFilePath
 		vecTexture.push_back(pTexInfo);
 	}
 
-	m_MapMulti.insert(make_pair(wstrStateKey, vecTexture));
-
+	m_multiTex.insert(map<wstring , vector<TEXINFO*>>::value_type(wstrStateKey , vecTexture));
 	return S_OK;
 }
 
-void CMultiTexture::Release( void )
+void CMultiTexture::Release(void)
 {
-	for(map<wstring, vector<TEXINFO*>>::iterator iter = m_MapMulti.begin();
-		iter != m_MapMulti.end(); ++iter)
+	for(map<wstring, vector<TEXINFO*>>::iterator iter = m_multiTex.begin();
+		iter != m_multiTex.end(); ++iter)
 	{
 		for(size_t i = 0; i < iter->second.size(); ++i)
 		{
@@ -84,25 +69,15 @@ void CMultiTexture::Release( void )
 		}
 		iter->second.clear();
 	}
-	m_MapMulti.clear();
+	m_multiTex.clear();
 }
 
-int CMultiTexture::GetTextureSize( const wstring& wstrStateKey )
+const vector<TEXINFO*>* CMultiTexture::GetTextureSet(const wstring& wstrStateKey)
 {
-	map<wstring, vector<TEXINFO*>>::iterator iter = m_MapMulti.find(wstrStateKey);
+	map<wstring , vector<TEXINFO*>>::iterator iter = m_multiTex.find(wstrStateKey);
 
-	if(m_MapMulti.end() == iter)
-		return -1;
-
-	return iter->second.size();
-}
-
-const vector<TEXINFO*>* CMultiTexture::GetStateTexture(const wstring& wstrstatekey)
-{
-	map<wstring, vector<TEXINFO*>>::iterator iter = m_MapMulti.find(wstrstatekey);
-
-	if(m_MapMulti.end() == iter)
+	if(m_multiTex.end() != iter)
+		return &(iter->second);
+	else
 		return NULL;
-
-	return &iter->second;
 }

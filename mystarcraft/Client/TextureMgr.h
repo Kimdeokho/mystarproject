@@ -9,27 +9,41 @@ public:
 	DECLARE_SINGLETON(CTextureMgr)
 
 private:
-	map<wstring, CTexture*>		m_MapTexture;
+	map<wstring, CTexture*>		m_TileTexture;
+
+	map<wstring, CTexture*>		m_GeneralTex;
+	map<wstring, CTexture*>		m_SinglelTex;
 
 public:
-	const TEXINFO* GetTexture(const wstring& wstrObjKey
-		, const wstring& wstrStateKey = L""
-		, const int& iCnt = 0);
-	int GetTexCnt(const wstring& wstrObjKey
-		, const wstring& wstrStateKey = L"");
-	const vector<TEXINFO*>* GetStateTexture(const wstring& wstrObjKey , 
-		const wstring& wstrStateKey);
 public:
-	HRESULT	ReadImagePath(const wstring& wstrFilePath);
-	HRESULT	InsertTexture(const wstring& wstrFilePath
+	HRESULT	Read_MultiImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
+	HRESULT Read_GeneralImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
+	HRESULT Read_SingleImagePath(const wstring& wstrFilePath,TCHAR*	szPath );
+	HRESULT Read_LodingImgPath(const wstring& wstrFilePath);
+	bool	Read_Texture(TCHAR*	szPath);
+public:
+	HRESULT	Insert_TileMultiTex(const wstring& wstrFilePath
 		, const wstring& wstrObjKey
-		, TEXTYPE eTextype
-		, const wstring& wstrStateKey = L""
-		, const int& iCnt = 0);
+		, const wstring& wstrStateKey
+		, const int& iCnt);
 
+	HRESULT	Insert_GeneralTex(const wstring& wstrFilePath
+		, const wstring& wstrObjKey
+		, const wstring& wstrStateKey
+		, const int& iCnt);
+
+	HRESULT	Insert_SingleTex(const wstring& wstrFilePath
+		, const wstring& wstrObjKey
+		, const wstring& wstrStateKey);
+public:
+	const vector<TEXINFO*>*	GetTileTexture_vecset(const wstring& wstrObjey,
+		const wstring& wstrStatekey);
+	const TEXINFO*	GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);
+public:
 	void Release(void);
 
-public:
+private:
 	CTextureMgr(void);
+public:
 	~CTextureMgr(void);
 };

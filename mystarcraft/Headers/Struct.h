@@ -51,17 +51,25 @@ typedef struct tagTile
 
 }TILE;
 
-typedef struct tagTile_temp
+template<typename T>
+struct MYRECT
 {
-	BYTE			byOption;
-	BYTE			byFloor; /*0층이 지하*/
-
-	tagTile_temp()
-	{
-		byOption = 0;
-		byFloor = 1;
-	}
-}TILE_TEMP;
+	T left;
+	T right;
+	T top;
+	T bottom;
+};
+//typedef struct tagTile_temp
+//{
+//	BYTE			byOption;
+//	BYTE			byFloor; /*0층이 지하*/
+//
+//	tagTile_temp()
+//	{
+//		byOption = 0;
+//		byFloor = 1;
+//	}
+//}TILE_TEMP;
 
 typedef struct tagInfo
 {

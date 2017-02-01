@@ -9,6 +9,8 @@ CDevice::CDevice(void)
 : m_p3D(NULL)
 , m_pDevice(NULL)
 , m_pSprite(NULL)
+, m_pFont(NULL)
+, m_pLine(NULL)
 {
 
 }
@@ -35,9 +37,9 @@ HRESULT CDevice::InitDevice( void )
 	DWORD	vp;
 
 	if(devicecaps.DevCaps &	D3DDEVCAPS_HWTRANSFORMANDLIGHT)
-		vp = D3DCREATE_HARDWARE_VERTEXPROCESSING;
+		vp = D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
 	else
-		vp = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+		vp = D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
 
 	D3DPRESENT_PARAMETERS		d3dpp;
 	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS));
@@ -57,20 +59,44 @@ HRESULT CDevice::InitDevice( void )
 		return E_FAIL;
 	}
 
+	D3DXFONT_DESCW		FontInfo;
+	ZeroMemory(&FontInfo, sizeof(D3DXFONT_DESCW));
+
+	FontInfo.Height = 0;
+	FontInfo.Width = 0;
+	FontInfo.Weight = FW_HEAVY;
+	FontInfo.CharSet = HANGUL_CHARSET;
+	lstrcpy(FontInfo.FaceName, L"±¼¸²");
+
+	if(FAILED(D3DXCreateFontIndirect(m_pDevice, &FontInfo
+		, &m_pFont)))
+	{
+		ERR_MSG(L"Font Init false");
+		return E_FAIL;
+	}
+
+	if(FAILED(D3DXCreateLine(m_pDevice, &m_pLine)))
+	{
+		ERR_MSG(L"Line Init false");
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 void CDevice::Release( void )
 {
 	m_pSprite->Release();
+	m_pFont->Release();
 	m_pDevice->Release();
+	
 	m_p3D->Release();
 }
 
 void CDevice::SetParameters( D3DPRESENT_PARAMETERS& d3dpp )
 {
-	d3dpp.BackBufferWidth = CLINETSIZE_X;
-	d3dpp.BackBufferHeight = CLINETSIZE_Y;
+	d3dpp.BackBufferWidth = BACKBUFFER_SIZEX;
+	d3dpp.BackBufferHeight = BACKBUFFER_SIZEY;
 	d3dpp.BackBufferCount = 1;
 	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
 
@@ -95,19 +121,31 @@ LPDIRECT3DDEVICE9 CDevice::GetDevice( void )
 
 void CDevice::Render_Begin( void )
 {
-	m_pDevice->Clear(0, NULL
-		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
-		, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
+	//m_pDevice->Clear(0, NULL
+	//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
+	//	, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
 	m_pDevice->BeginScene();
+	m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
 }
 
-void CDevice::Render_End( HWND hWnd )
+void CDevice::Render_End( void )
 {
+	m_pSprite->End();
 	m_pDevice->EndScene();
-	m_pDevice->Present(NULL, NULL, hWnd, NULL);
+	//m_pDevice->Present(NULL, NULL, NULL, NULL);
 }
 
 LPD3DXSPRITE CDevice::GetSprite( void )
 {
 	return m_pSprite;
+}
+
+LPD3DXFONT CDevice::GetFont(void)
+{
+	return m_pFont;
+}
+
+LPD3DXLINE CDevice::GetLine(void)
+{
+	return m_pLine;
 }
