@@ -264,6 +264,18 @@ const TEXINFO* CTextureMgr::GetSingleTexture(const wstring& wstrObjKey , const w
 	else
 		return NULL;
 }
+const vector<TEXINFO*>* CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
+{
+	map<wstring , CTexture*>::iterator iter = m_GeneralTex.find(wstrObjKey);
+	if(iter != m_GeneralTex.end())
+	{
+		CTexture* pTexture = iter->second;
+
+		return ((CGeneralTexture*)pTexture)->GetGeneralTexture();
+	}
+	else
+		return NULL;
+}
 bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 {
 	if(Read_SingleImagePath(L"../Data/imgpath/SingleImgPath.txt" , szPath) )
@@ -281,5 +293,7 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 	//종족별 멀티텍스쳐는 게임 시작전에 따로 부르기
 
 }
+
+
 
 

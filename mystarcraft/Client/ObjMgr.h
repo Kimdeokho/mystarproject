@@ -15,6 +15,9 @@ public:
 	void AddObject(CObj* pObj , OBJID eid);
 public:
 	void LoadObj(HANDLE hFile);
+public:
+	void Update(void);
+	void Render(void);
 private:
 	CObjMgr(void);
 public:

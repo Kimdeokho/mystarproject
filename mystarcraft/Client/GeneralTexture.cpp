@@ -61,3 +61,8 @@ void CGeneralTexture::Release(void)
 	}
 	m_vecTex.clear();
 }
+
+const vector<TEXINFO*>* CGeneralTexture::GetGeneralTexture(void)
+{
+	return &m_vecTex;
+}

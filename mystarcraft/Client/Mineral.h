@@ -4,6 +4,7 @@
 class CMineral :
 	public CObj
 {
+private:
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

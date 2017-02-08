@@ -9,6 +9,7 @@ CScene_Stage::CScene_Stage(void)
 
 CScene_Stage::~CScene_Stage(void)
 {
+	Release();
 }
 
 HRESULT CScene_Stage::Initialize(void)
@@ -27,10 +28,10 @@ void CScene_Stage::Update(void)
 void CScene_Stage::Render(void)
 {
 	CTileManager::GetInstance()->RenderTile();
+	CObjMgr::GetInstance()->Render();
 }
 void CScene_Stage::Release(void)
 {
-
 }
 
 void CScene_Stage::LoadData(void)

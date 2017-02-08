@@ -22,6 +22,16 @@ struct DelObject
 		}
 	}
 };
+class RenderObject
+{
+public:
+	template<typename T>
+	void operator()(T& Temp)
+	{
+		if(NULL != Temp)
+			Temp->Render();
+	}
+};
 
 struct rendersort_compare
 {

@@ -6,6 +6,8 @@
 #include "TimeMgr.h"
 #include "MouseMgr.h"
 
+#include "FontMgr.h"
+
 IMPLEMENT_SINGLETON(CTileManager)
 
 CTileManager::CTileManager(void)
@@ -50,6 +52,30 @@ void CTileManager::Initialize(void)
 
 		ReadyTileTexture();
 		m_pSprite = CDevice::GetInstance()->GetSprite();
+
+
+
+
+
+
+
+
+
+		m_fogTexture->GetSurfaceLevel(0, &pSurfacefog);
+		m_fogMaskTexture->GetSurfaceLevel(0, &pSurfacemask);
+
+		pSurfacefog->GetDesc(&fogDesc);
+		pSurfacemask->GetDesc(&pmaskDesc);
+
+		pSurfacefog->LockRect(&plockedRect , 0 , 0);
+		pSurfacemask->LockRect(&pmaskrect , 0 , 0 );
+
+
+		fogimgData = (DWORD*)plockedRect.pBits;
+		maskimgData = (DWORD*)pmaskrect.pBits;
+
+		pSurfacefog->UnlockRect();
+		pSurfacemask->UnlockRect();
 }
 
 void CTileManager::ReadyTileTexture(void)
@@ -126,7 +152,29 @@ void CTileManager::RenderTile(void)
 		}
 	}
 
-	FogRender();
+
+	//static float ftime = 0;
+	//ftime += GETTIME;
+	//if(ftime > 3.0f)
+	//{
+	//	ftime = 0.f;
+
+	//	if(!m_SightOffList.empty())
+	//	{
+	//		list<D3DXVECTOR2>::iterator iter = m_SightOffList.begin();
+	//		list<D3DXVECTOR2>::iterator iter_end = m_SightOffList.end();
+	//		for(;  iter != iter_end; ++iter)
+	//			SightOffRender((*iter));
+
+	//		m_SightOffList.clear();
+	//	}
+	//	SightOnRender(m_vcurPos);
+	//}
+
+	//FogRender();
+
+
+
 
 	m_matWorld._41 = - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = - CScrollMgr::m_fScrollY;
@@ -134,6 +182,205 @@ void CTileManager::RenderTile(void)
 	m_pSprite->Draw(m_fogTexture, NULL , &D3DXVECTOR3(0, 0 , 0) , NULL
 		, D3DCOLOR_ARGB(255,255,255,255));
 
+}
+void CTileManager::FogRender(void)
+{
+	static float ftime = 0;
+	static int oldIdx = -1;
+
+	ftime += GETTIME;
+
+
+	m_vcurPos.x = CMouseMgr::GetMousePt().x /*À¯´ÖÀÇÁÂÇ¥*/ + CScrollMgr::m_fScrollX - 320;
+	m_vcurPos.y = CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY - 320;
+
+	
+
+	m_icuridx = (int)m_vcurPos.y/SQ_TILESIZEY * SQ_TILECNTX + (int)m_vcurPos.x/SQ_TILESIZEX; 
+
+	//if(ftime > 0.15f)
+	//	ftime = 0;	
+	//else
+	//	return;
+
+	if(m_icuridx != oldIdx)
+		oldIdx = m_icuridx;
+	else
+		return;
+
+
+	SightOnRender(m_vcurPos);
+
+
+}
+void CTileManager::SightOffRender(D3DXVECTOR2 vPos)
+{
+
+	int fogindex = 0;
+	int maskindex = 0;
+
+	int iHeight = pmaskDesc.Height;
+	int iWidth  = pmaskDesc.Width;
+
+	for(int i = 0; i < iHeight; ++i)
+	{
+		for(int j = 0; j < iWidth; ++j)
+		{
+			fogindex = (i + (int)vPos.y) * 4096 + (j + (int)vPos.x);
+			maskindex = i * iWidth + j;
+
+			if(vPos.x + j < 0)
+				continue;
+			if(vPos.y + i < 0)
+				continue;
+			if(fogindex < 0 || fogindex >= 4096*4096)
+				continue;
+
+			if( maskimgData[maskindex] != D3DCOLOR_ARGB(255,0,0,0))
+				fogimgData[fogindex] = D3DCOLOR_ARGB(150,0,0,0);
+		}
+	}
+
+}
+void CTileManager::SightOnRender(D3DXVECTOR2 vPos)
+{
+	RECT prect;
+	prect.left = CScrollMgr::m_fScrollX;
+	prect.right = CScrollMgr::m_fScrollX + 1300;
+	prect.bottom = CScrollMgr::m_fScrollY + 1000;
+	prect.top = CScrollMgr::m_fScrollY;
+
+	if(prect.bottom > 4096)
+		prect.bottom = 4096;
+
+	pSurfacefog->LockRect(&plockedRect , &prect , 0);
+	pSurfacemask->LockRect(&pmaskrect , 0 , 0 );
+
+	fogimgData = (DWORD*)plockedRect.pBits;
+	maskimgData = (DWORD*)pmaskrect.pBits;
+
+	int iHeight = pmaskDesc.Height;
+	int iWidth  = pmaskDesc.Width;
+
+	int fogindex = 0;
+	int maskindex = 0;
+
+	for(int k = 0; k < 100; ++k)
+	for(int i = 0; i < iHeight; ++i)
+	{
+		for( int j = 0; j < iWidth; ++j)
+		{
+			fogindex = (i + (int)vPos.y - prect.top) * 4096 + (j + (int)vPos.x - prect.left);
+			maskindex = i * iWidth + j;
+
+			//if( 0 == i && j == 0)
+				//m_SightOffList.push_back(vPos);
+
+			if(vPos.x + j - prect.left < 0 || vPos.x + j >= 4096)
+				continue;
+			if(vPos.y + i - prect.top < 0 || vPos.y + i >= 4096)
+				continue;
+			if(fogindex < 0 || fogindex >= 4096*4096)
+				continue;
+
+			if(fogimgData[fogindex] == D3DCOLOR_ARGB(0,0,0,0))
+				continue;
+
+
+			if(maskimgData[maskindex] == D3DCOLOR_ARGB(255,255,255,255))
+				fogimgData[fogindex] = D3DCOLOR_ARGB(0,0,0,0);
+
+			else if(maskimgData[maskindex] == D3DCOLOR_ARGB(255,50,50,50))
+			{
+				if(fogimgData[fogindex] == D3DCOLOR_ARGB(100,0,0,0))
+					fogimgData[fogindex] = D3DCOLOR_ARGB(100,0,0,0);
+				else if(fogimgData[fogindex] == D3DCOLOR_ARGB(80,0,0,0))
+					fogimgData[fogindex] = D3DCOLOR_ARGB(80,0,0,0);
+				else if(fogimgData[fogindex] == D3DCOLOR_ARGB(40,0,0,0))
+					fogimgData[fogindex] = D3DCOLOR_ARGB(40,0,0,0);
+				else
+					fogimgData[fogindex] = D3DCOLOR_ARGB(150,0,0,0);
+			}
+
+			else if(maskimgData[maskindex] == D3DCOLOR_ARGB(255,100,100,100))
+			{
+				if(fogimgData[fogindex] == D3DCOLOR_ARGB(80,0,0,0))
+					fogimgData[fogindex] = D3DCOLOR_ARGB(80,0,0,0);
+				else if(fogimgData[fogindex] == D3DCOLOR_ARGB(40,0,0,0))
+					fogimgData[fogindex] = D3DCOLOR_ARGB(40,0,0,0);
+				else
+					fogimgData[fogindex] = D3DCOLOR_ARGB(100,0,0,0);
+			}
+
+			else if(maskimgData[maskindex] == D3DCOLOR_ARGB(255,150,150,150))
+			{
+				if(fogimgData[fogindex] == D3DCOLOR_ARGB(40,0,0,0))
+					fogimgData[fogindex] = D3DCOLOR_ARGB(40,0,0,0);
+				else
+					fogimgData[fogindex] = D3DCOLOR_ARGB(80,0,0,0);
+				
+			}
+
+			else if(maskimgData[maskindex] == D3DCOLOR_ARGB(255,200,200,200))
+				fogimgData[fogindex] = D3DCOLOR_ARGB(40,0,0,0);
+		}
+	}
+
+	pSurfacefog->UnlockRect();
+	pSurfacemask->UnlockRect();
+}
+
+void CTileManager::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
+{
+	LPDIRECT3DSURFACE9 pBackBuffer , pSurface;
+	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
+
+	pdevice->GetRenderTarget(0 , &pBackBuffer);
+
+	ptexturemap->GetSurfaceLevel(0, &pSurface);
+
+	pdevice->StretchRect(pBackBuffer , NULL, pSurface ,NULL , D3DTEXF_NONE);
+
+	pBackBuffer->Release();
+}
+
+void CTileManager::LoadTileData(HANDLE hFile)
+{
+	DWORD dwbyte;
+	int mapsize = 0;
+	int sortsize = -1;
+
+	ReadFile(hFile , &mapsize, sizeof(int), &dwbyte, NULL);
+	m_mapsize = mapsize;
+
+	m_sqTile.reserve(mapsize);
+	m_terrainInfo_List.reserve(mapsize);
+
+	TILE* tempTile = NULL;
+	TERRAIN_INFO* tempterrain = NULL;
+
+	for(int i = 0; i < mapsize; ++i)
+	{
+		tempTile = new TILE();
+		ReadFile(hFile, tempTile, sizeof(TILE), &dwbyte, NULL);
+
+		m_sqTile.push_back(tempTile);
+	}
+
+	for(int i = 0; i < mapsize; ++i)
+	{
+		ReadFile(hFile, &sortsize , sizeof(int), &dwbyte, NULL);
+
+		m_terrainInfo_List.push_back(list<TERRAIN_INFO*>());
+		for(int j = 0; j < sortsize; ++j)
+		{
+			tempterrain = new TERRAIN_INFO;
+			ReadFile(hFile, tempterrain, sizeof(TERRAIN_INFO), &dwbyte, NULL);
+			m_terrainInfo_List[i].push_back(tempterrain);
+		}
+	}
+
+	ReadyMainMap();
 }
 void CTileManager::ReadyMainMap(void)
 {
@@ -211,132 +458,6 @@ void CTileManager::ReadyMainMap(void)
 
 	//CopySurface(m_MapTexture[rowidx][colidx]);
 }
-void CTileManager::FogRender(void)
-{
-	//static float ftime = 0;
-
-	//ftime += GETTIME;
-
-	//if(ftime > 0.05f)
-	//{
-	//	ftime = 0;	
-	//}
-	//else
-	//	return;
-
-	int X = CMouseMgr::GetMousePt().x + (int)CScrollMgr::m_fScrollX - (BACKBUFFER_SIZEX>>1);
-	int Y = CMouseMgr::GetMousePt().y + (int)CScrollMgr::m_fScrollY - (BACKBUFFER_SIZEY>>1);
-
-	static int oldIdx = 0;
-	int curidx = Y/SQ_TILESIZEY * SQ_TILECNTX + X/SQ_TILESIZEX;
-
-	if(curidx != oldIdx)
-		oldIdx = curidx;
-	else
-		return;
-
-	if(X < 0 || 4096 <= X || 0 > Y || 4096 <= Y)
-		return;
-
-
-	LPDIRECT3DSURFACE9 pSurface , pSurfacemask;
-	D3DSURFACE_DESC surfaceDesc , pmaskDesc;
-	D3DLOCKED_RECT plockedRect , pmaskrect;
-
-	m_fogTexture->GetSurfaceLevel(0, &pSurface);
-	m_fogMaskTexture->GetSurfaceLevel(0, &pSurfacemask);
-
-	pSurface->GetDesc(&surfaceDesc);
-	pSurfacemask->GetDesc(&pmaskDesc);
-
-	pSurface->LockRect(&plockedRect , 0 , 0);
-	pSurfacemask->LockRect(&pmaskrect , 0 , 0 );
-
-	DWORD* imgData = (DWORD*)plockedRect.pBits;
-	DWORD* imgData2 = (DWORD*)pmaskrect.pBits;
-
-	int fogindex = 0;
-	int maskindex = 0;
-
-	for(unsigned int i = 0; i < pmaskDesc.Height; ++i)
-	{
-		for(unsigned int j = 0; j < pmaskDesc.Width; ++j)
-		{
-			//if(i%2 == 0 || j%2 == 0)
-			//	continue;
-
-			fogindex = (i+Y) * 4096 +(j+ X);
-			maskindex = i * 640 + j;
-
-			if(fogindex >= 4096*4096)
-				break;
-
-			if(imgData2[maskindex] != imgData[fogindex])
-				imgData[fogindex] = (DWORD)0x00ffff00;//D3DCOLOR_ARGB(255,255,255,255);
-
-			//if(bswitch == true)
-			//imgData[index] = (DWORD)0xffff0000;
-			//else
-			//imgData[index] = (DWORD)0xff00ff00;
-		}
-	}
-
-	pSurface->UnlockRect();
-	pSurfacemask->UnlockRect();
-}
-void CTileManager::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
-{
-	LPDIRECT3DSURFACE9 pBackBuffer , pSurface;
-	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
-
-	pdevice->GetRenderTarget(0 , &pBackBuffer);
-
-	ptexturemap->GetSurfaceLevel(0, &pSurface);
-
-	pdevice->StretchRect(pBackBuffer , NULL, pSurface ,NULL , D3DTEXF_NONE);
-
-	pBackBuffer->Release();
-}
-
-void CTileManager::LoadTileData(HANDLE hFile)
-{
-	DWORD dwbyte;
-	int mapsize = 0;
-	int sortsize = -1;
-
-	ReadFile(hFile , &mapsize, sizeof(int), &dwbyte, NULL);
-	m_mapsize = mapsize;
-
-	m_sqTile.reserve(mapsize);
-	m_terrainInfo_List.reserve(mapsize);
-
-	TILE* tempTile = NULL;
-	TERRAIN_INFO* tempterrain = NULL;
-
-	for(int i = 0; i < mapsize; ++i)
-	{
-		tempTile = new TILE();
-		ReadFile(hFile, tempTile, sizeof(TILE), &dwbyte, NULL);
-
-		m_sqTile.push_back(tempTile);
-	}
-
-	for(int i = 0; i < mapsize; ++i)
-	{
-		ReadFile(hFile, &sortsize , sizeof(int), &dwbyte, NULL);
-
-		m_terrainInfo_List.push_back(list<TERRAIN_INFO*>());
-		for(int j = 0; j < sortsize; ++j)
-		{
-			tempterrain = new TERRAIN_INFO;
-			ReadFile(hFile, tempterrain, sizeof(TERRAIN_INFO), &dwbyte, NULL);
-			m_terrainInfo_List[i].push_back(tempterrain);
-		}
-	}
-
-	ReadyMainMap();
-}
-
 void CTileManager::Release(void)
 {
 	for(size_t i = 0; i < m_sqTile.size(); ++i)
@@ -354,4 +475,9 @@ void CTileManager::Release(void)
 
 	vector<TILE*>().swap(m_sqTile);
 	vector<list<TERRAIN_INFO*>>().swap(m_terrainInfo_List);
+
+	pSurfacemask->Release();
+	pSurfacefog->Release();
 }
+
+

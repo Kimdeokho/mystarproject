@@ -14,7 +14,16 @@ CObjMgr::~CObjMgr(void)
 {
 	Release();
 }
+void CObjMgr::Update(void)
+{
 
+}
+
+void CObjMgr::Render(void)
+{
+	for(int i = 0; i < OBJ_END; ++i)
+		for_each( m_ObjList[i].begin() , m_ObjList[i].end() , RenderObject() );
+}
 void CObjMgr::LoadObj(HANDLE hFile)
 {
 	DWORD dwbyte;
@@ -70,3 +79,4 @@ void CObjMgr::Release()
 		m_ObjList[i].clear();
 	}
 }
+

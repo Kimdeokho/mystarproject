@@ -11,6 +11,8 @@ public:
 
 	virtual void Release(void);
 public:
+	const vector<TEXINFO*>* GetGeneralTexture(void);
+public:
 	CGeneralTexture(void);
 	~CGeneralTexture(void);
 };

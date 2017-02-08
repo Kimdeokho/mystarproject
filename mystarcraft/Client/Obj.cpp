@@ -5,6 +5,7 @@ CObj::CObj(void)
 {
 	D3DXMatrixIdentity(&m_matWorld);
 	m_ePosKind = STATIC_OBJ;
+	m_pSprite = NULL;
 }
 
 CObj::~CObj(void)
@@ -36,5 +37,5 @@ void CObj::SetPos(const float x , const float y, OBJ_POS_KIND ekind /*= STATIC_O
 	m_vPos.x = x;
 	m_vPos.y = y;
 	m_matWorld._41 = x;
-	m_matWorld._42 = x;
+	m_matWorld._42 = y;
 }

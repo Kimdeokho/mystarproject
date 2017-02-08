@@ -24,10 +24,32 @@ private:
 	const vector<TEXINFO*>*	m_HighDirtTex[GROUP_END];
 	const vector<TEXINFO*>*	m_WaterTex[GROUP_END];
 	const vector<TEXINFO*>*	m_HillTex[GROUP_END];
+
+
+
+
+
+	list<D3DXVECTOR2>					m_SightOffList;
+	int									m_icuridx;
+	D3DXVECTOR2							m_vcurPos;
+
+
+
+
+
+
+	LPDIRECT3DSURFACE9 pSurfacefog , pSurfacemask;
+	D3DSURFACE_DESC fogDesc , pmaskDesc;
+	D3DLOCKED_RECT plockedRect , pmaskrect;
+	DWORD* fogimgData;
+	DWORD* maskimgData;
+
 public:
 	void Initialize(void);
 public:
 	void FogRender(void);
+	void SightOffRender(D3DXVECTOR2 vPos);
+	void SightOnRender(D3DXVECTOR2 vPos);
 public:
 	void ReadyTileTexture(void);
 	void ReadyMainMap(void);
