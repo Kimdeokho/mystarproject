@@ -496,6 +496,8 @@ void CTileDebug::MoveOption_Render(void)
 		return;
 
 	int iindex = 0;
+	const TEXINFO*	ptemp;
+	ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 
 	for(int i = 0; i < 30; ++i)
 	{
@@ -526,6 +528,21 @@ void CTileDebug::MoveOption_Render(void)
 				CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
 					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
 					, D3DCOLOR_ARGB(60,255,0,0));
+			}
+
+
+			int ifloor = (*m_psqTile)[iindex]->byFloor;
+			if(1 == ifloor)
+			{
+				CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
+					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+					, D3DCOLOR_ARGB(60,0,0,255));
+			}
+			else if(2 == ifloor)
+			{
+				CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
+					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
+					, D3DCOLOR_ARGB(60,0,255,0));
 			}
 		}
 	}

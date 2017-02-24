@@ -9,6 +9,7 @@ public:
 private:
 	vector<TILE*>				m_sqTile;
 	vector<list<TERRAIN_INFO*>>	m_terrainInfo_List;
+	vector<unsigned short>		m_fogTile;
 private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;

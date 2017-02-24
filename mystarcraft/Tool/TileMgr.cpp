@@ -271,50 +271,57 @@ void CTileMgr::TileOption_Update(void)
 					m_sqTile[iindex]->byOption = MOVE_NONE;
 			}
 
-			if(ptemp->byGroup_ID == GROUP_L)
-			{
+			if(ptemp->byTerrain_ID == TERRAIN_WATER)
 				m_sqTile[iindex]->byFloor = 1;
-			}
-			else if(ptemp->byGroup_ID == GROUP_LU)
+			else
 			{
-				if(ptemp->byGroup_sequence != 3)
+				if(ptemp->byGroup_ID == GROUP_L)
+				{
 					m_sqTile[iindex]->byFloor = 1;
-				else
-					m_sqTile[iindex]->byFloor = 2;
-			}
-			else if(ptemp->byGroup_ID == GROUP_RU)
-			{
-				if(ptemp->byGroup_sequence != 2)
+				}
+				else if(ptemp->byGroup_ID == GROUP_LU)
+				{
+					if(ptemp->byGroup_sequence != 3)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
+				}
+				else if(ptemp->byGroup_ID == GROUP_RU)
+				{
+					if(ptemp->byGroup_sequence != 2)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
+				}
+				else if(ptemp->byGroup_ID == GROUP_R)
+				{					
 					m_sqTile[iindex]->byFloor = 1;
-				else
-					m_sqTile[iindex]->byFloor = 2;
+				}
+				else if(ptemp->byGroup_ID == GROUP_RD)
+				{
+					if(ptemp->byGroup_sequence != 0)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
+				}
+				else if(ptemp->byGroup_ID == GROUP_LD)
+				{
+					if(ptemp->byGroup_sequence != 1)
+						m_sqTile[iindex]->byFloor = 1;
+					else
+						m_sqTile[iindex]->byFloor = 2;
+				}
+				else if(ptemp->byGroup_ID == GROUP_FLAT)
+				{
+					m_sqTile[iindex]->byOption = MOVE_OK;
+					if(ptemp->byTerrain_ID != TERRAIN_DIRT)
+						m_sqTile[iindex]->byFloor = 2;
+					else
+						m_sqTile[iindex]->byFloor = 1;
+				}
 			}
-			else if(ptemp->byGroup_ID == GROUP_R)
-			{					
-				m_sqTile[iindex]->byFloor = 1;
-			}
-			else if(ptemp->byGroup_ID == GROUP_RD)
-			{
-				if(ptemp->byGroup_sequence != 0)
-					m_sqTile[iindex]->byFloor = 1;
-				else
-					m_sqTile[iindex]->byFloor = 2;
-			}
-			else if(ptemp->byGroup_ID == GROUP_LD)
-			{
-				if(ptemp->byGroup_sequence != 1)
-					m_sqTile[iindex]->byFloor = 1;
-				else
-					m_sqTile[iindex]->byFloor = 2;
-			}
-			else if(ptemp->byGroup_ID == GROUP_FLAT && ptemp->byTerrain_ID != TERRAIN_WATER)
-			{
-				m_sqTile[iindex]->byOption = MOVE_OK;
-				if(ptemp->byTerrain_ID != TERRAIN_DIRT)
-					m_sqTile[iindex]->byFloor = 2;
-				else
-					m_sqTile[iindex]->byFloor = 1;
-			}
+
+
 		}
 	}
 }

@@ -235,7 +235,6 @@ void CToolView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case 'D':
 		{
 			CTileDebug::GetInstance()->SwitchDebug(DBG_GROUP);
-			//CTileDebug::GetInstance()->DebugTile_PosSet();
 			break;
 		}
 	case 'M':
