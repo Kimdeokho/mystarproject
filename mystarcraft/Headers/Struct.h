@@ -50,7 +50,16 @@ typedef struct tagTile
 	~tagTile(){}
 
 }TILE;
-
+typedef struct foginfo
+{
+	unsigned short fog_sequence;
+	D3DCOLOR	   fog_color;
+	foginfo()
+	{
+		fog_sequence = 0x0001;
+		fog_color = D3DCOLOR_ARGB(255,255,255,255);
+	}
+}FOG_INFO;
 template<typename T>
 struct MYRECT
 {

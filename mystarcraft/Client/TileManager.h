@@ -7,9 +7,11 @@ class CTileManager
 public:
 	DECLARE_SINGLETON(CTileManager)
 private:
-	vector<TILE*>				m_sqTile;
+	//vector<TILE*>				m_sqTile;
+	TILE*						m_sqTile[SQ_TILECNTY*SQ_TILECNTX];
 	vector<list<TERRAIN_INFO*>>	m_terrainInfo_List;
-	vector<unsigned short>		m_fogTile;
+	//vector<FOG_INFO*>			m_fogTile;
+	FOG_INFO*					m_fogTile[SQ_TILECNTY*SQ_TILECNTX];
 private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;
@@ -48,9 +50,13 @@ private:
 public:
 	void Initialize(void);
 public:
+	void SetFogSquence(int idx , unsigned short sequence);
+public:
+	bool CheckFogFloor(int myidx , int destidx);
+public:
 	void FogRender(void);
 	void SightOffRender(D3DXVECTOR2 vPos);
-	void SightOnRender(D3DXVECTOR2 vPos);
+	void SightOnRender(const D3DXVECTOR2& vPos, int irange , int imyfloor = 1);
 public:
 	void ReadyTileTexture(void);
 	void ReadyMainMap(void);

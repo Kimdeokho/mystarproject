@@ -39,7 +39,7 @@ public:
 	const vector<TEXINFO*>*	GetTileTexture_vecset(const wstring& wstrObjey,
 		const wstring& wstrStatekey);
 	const TEXINFO*			GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);
-	const vector<TEXINFO*>*	GetGeneralTexture(const wstring& wstrObjKey);
+	TEXINFO**	GetGeneralTexture(const wstring& wstrObjKey);
 public:
 	void Release(void);
 

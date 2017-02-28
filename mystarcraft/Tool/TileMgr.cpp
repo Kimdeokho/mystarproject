@@ -434,13 +434,13 @@ void CTileMgr::TileRender(void)
 	//	, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
 	//	, D3DCOLOR_ARGB(255,255,255,255));
 
-	//matfont._41 = 300;
-	//matfont._42 = 440;
-	//wsprintf(szTemp, L"»ç°¢ÀÎµ¦½º %d", m_sqidx);
-	//CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
-	//CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
-	//	, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
-	//	, D3DCOLOR_ARGB(255,255,255,255));
+	matfont._41 = 300;
+	matfont._42 = 440;
+	wsprintf(szTemp, L"»ç°¢ÀÎµ¦½º %d", m_sqidx);
+	CDevice::GetInstance()->GetSprite()->SetTransform(&matfont);
+	CDevice::GetInstance()->GetFont()->DrawTextW(CDevice::GetInstance()->GetSprite()
+		, szTemp, lstrlen(szTemp), &rc, DT_NOCLIP
+		, D3DCOLOR_ARGB(255,255,255,255));
 
 
 

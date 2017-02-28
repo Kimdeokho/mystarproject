@@ -13,7 +13,10 @@ CGeneralTexture::~CGeneralTexture(void)
 HRESULT CGeneralTexture::InsertTexture(const wstring& wstrFilePath , const wstring& wstrStateKey /*= L"" */, const int& iCnt /*= 0*/)
 {
 	TCHAR		szFullPath[MAX_PATH] = L"";
-	m_vecTex.reserve(iCnt);
+	//m_vecTex.reserve(iCnt);
+
+	m_vecTex = new TEXINFO*[iCnt];
+	m_isize = iCnt;
 
 	for(int i = 0; i < iCnt; ++i)
 	{
@@ -46,7 +49,8 @@ HRESULT CGeneralTexture::InsertTexture(const wstring& wstrFilePath , const wstri
 		{
 			return E_FAIL;
 		}
-		m_vecTex.push_back(pTexInfo);
+		m_vecTex[i] = pTexInfo;
+		//m_vecTex.push_back(pTexInfo);
 	}
 
 	return S_OK;
@@ -54,15 +58,20 @@ HRESULT CGeneralTexture::InsertTexture(const wstring& wstrFilePath , const wstri
 
 void CGeneralTexture::Release(void)
 {
-	for(size_t i = 0; i < m_vecTex.size(); ++i)
+	for(int i = 0; i < m_isize; ++i)
 	{
 		m_vecTex[i]->pTexture->Release();
 		Safe_Delete(m_vecTex[i]);
 	}
-	m_vecTex.clear();
+	delete[] m_vecTex;
+	//m_vecTex.clear();
 }
 
-const vector<TEXINFO*>* CGeneralTexture::GetGeneralTexture(void)
+//const vector<TEXINFO*>* CGeneralTexture::GetGeneralTexture(void)
+//{
+//	return &m_vecTex;
+//}
+TEXINFO** CGeneralTexture::GetGeneralTexture(void)
 {
-	return &m_vecTex;
+	return m_vecTex;
 }

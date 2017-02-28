@@ -6,7 +6,8 @@ class CObj
 {
 protected:
 	LPD3DXSPRITE			m_pSprite;
-	const vector<TEXINFO*>*	m_pGeneralTexture;
+	//const vector<TEXINFO*>*	m_pGeneralTexture;
+	TEXINFO**				m_pGeneralTexture;
 protected:
 	D3DXMATRIX		m_matWorld;
 	OBJ_POS_KIND	m_ePosKind; /*static일 경우 행렬을 한번만 초기화 하려고*/

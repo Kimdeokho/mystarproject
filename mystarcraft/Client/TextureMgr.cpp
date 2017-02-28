@@ -264,7 +264,7 @@ const TEXINFO* CTextureMgr::GetSingleTexture(const wstring& wstrObjKey , const w
 	else
 		return NULL;
 }
-const vector<TEXINFO*>* CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
+TEXINFO** CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
 {
 	map<wstring , CTexture*>::iterator iter = m_GeneralTex.find(wstrObjKey);
 	if(iter != m_GeneralTex.end())
