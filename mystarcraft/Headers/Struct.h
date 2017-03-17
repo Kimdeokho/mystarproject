@@ -52,14 +52,31 @@ typedef struct tagTile
 }TILE;
 typedef struct foginfo
 {
-	unsigned short fog_sequence;
-	D3DCOLOR	   fog_color;
+	unsigned short		   fog_sequence;
+	D3DCOLOR			   fog_color;
+	bool				   bLight;
+	FOGSIGHT_OPTION		   eSight;
 	foginfo()
-	{
-		fog_sequence = 0x0001;
+	{		
+		fog_sequence		 = 1;
 		fog_color = D3DCOLOR_ARGB(255,255,255,255);
+		bLight = false;
+		eSight = FOG_BLACK;
 	}
 }FOG_INFO;
+typedef struct creepinfo
+{
+	unsigned short		   creep_bit;
+	short				   creep_sequence;
+	bool				   bcreep_install;
+	
+	creepinfo()
+	{		
+		creep_sequence = 0;
+		creep_bit		 = 0x0000;
+		bcreep_install	 = false;
+	}
+}CREEP_INFO;
 template<typename T>
 struct MYRECT
 {

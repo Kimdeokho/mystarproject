@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeyMgr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MyMath.cpp"
 				>
 			</File>
@@ -400,6 +404,10 @@
 			>
 			<File
 				RelativePath=".\Client.h"
+				>
+			</File>
+			<File
+				RelativePath=".\KeyMgr.h"
 				>
 			</File>
 			<File

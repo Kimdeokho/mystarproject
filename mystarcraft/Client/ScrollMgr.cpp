@@ -9,5 +9,5 @@ CScrollMgr::CScrollMgr(void)
 CScrollMgr::~CScrollMgr(void)
 {
 }
-float CScrollMgr::m_fScrollX(0);
-float CScrollMgr::m_fScrollY(0);
+float CScrollMgr::m_fScrollX(1000);
+float CScrollMgr::m_fScrollY(1000);

@@ -7,11 +7,14 @@ class CTileManager
 public:
 	DECLARE_SINGLETON(CTileManager)
 private:
-	//vector<TILE*>				m_sqTile;
 	TILE*						m_sqTile[SQ_TILECNTY*SQ_TILECNTX];
 	vector<list<TERRAIN_INFO*>>	m_terrainInfo_List;
-	//vector<FOG_INFO*>			m_fogTile;
 	FOG_INFO*					m_fogTile[SQ_TILECNTY*SQ_TILECNTX];
+	CREEP_INFO*					m_creepTile[SQ_TILECNTY*SQ_TILECNTX];
+
+	//실험용 (유닛마다 갖고있을 컨테이너)
+	list<int>					m_LightOff_List;
+	list<int>					m_CreepOff_List;
 private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;
@@ -31,8 +34,6 @@ private:
 
 
 
-
-	list<D3DXVECTOR2>					m_SightOffList;
 	int									m_icuridx;
 	D3DXVECTOR2							m_vcurPos;
 
@@ -47,16 +48,31 @@ private:
 	DWORD* fogimgData;
 	DWORD* maskimgData;
 
+
+	float m_fTimeTest;
 public:
 	void Initialize(void);
 public:
+	bool GetFogLight(const int& idx);
+	BYTE GetTileOption(const int& idx);
+	bool GetCreepInstall(const int& idx);
+public:
 	void SetFogSquence(int idx , unsigned short sequence);
+	void SetFogLight(int idx, float fdistance , float fradius);
+	void SetFogColor(const int& idx , D3DCOLOR color);
+	void SetCreepInstall(const int& idx , bool binstall);
 public:
 	bool CheckFogFloor(int myidx , int destidx);
+	bool CheckCreepFloor(int myidx , int destidx);
 public:
-	void FogRender(void);
-	void SightOffRender(D3DXVECTOR2 vPos);
-	void SightOnRender(const D3DXVECTOR2& vPos, int irange , int imyfloor = 1);
+	void FogAlgorithm(void);
+	void CreepAlgorithm(void);
+public:	
+	void SightOffRender(const int& idx);
+	void SightOnRender(const D3DXVECTOR2& vPos, int irange);
+	void Creep_increase(const D3DXVECTOR2& vPos/*유닛의 위치*/ , int irange);
+	void Creep_decrease(void);
+	void Creep_Autotile(const int& idx);
 public:
 	void ReadyTileTexture(void);
 	void ReadyMainMap(void);
@@ -64,6 +80,8 @@ public:
 	void CopySurface(LPDIRECT3DTEXTURE9 psurface);
 public:
 	void RenderTile(void);
+	void RenderFog(void);
+	void RenderCreep(void);
 public:
 	void Release(void);
 public:

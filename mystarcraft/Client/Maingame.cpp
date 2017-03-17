@@ -9,7 +9,7 @@
 #include "TileManager.h"
 #include "ObjMgr.h"
 #include "MouseMgr.h"
-
+#include "KeyMgr.h"
 
 CMaingame::CMaingame(void)
 {
@@ -33,6 +33,7 @@ HRESULT CMaingame::Initialize(void)
 
 	m_pFont = CFontMgr::GetInstance();
 	m_pDevice = CDevice::GetInstance();
+	CKeyMgr::GetInstance();
 
 	CSceneMgr::GetInstance()->SetScene(SCENE_LOGO);
 	return S_OK;
@@ -88,4 +89,5 @@ void CMaingame::Release(void)
 	CTextureMgr::DestroyInstance();
 	CTileManager::DestroyInstance();
 	CObjMgr::DestroyInstance();
+	CKeyMgr::DestroyInstance();
 }
