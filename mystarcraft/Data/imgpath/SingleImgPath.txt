@@ -1,8 +1,6 @@
 DebugTile|White|..\Texture\Single\DebugTile\white.png
 ETC|Startbase|..\Texture\Single\ETC\startbase.png
-Fog|blackfog800|..\Texture\Single\Fog\blackfog800.png
 Fog|fogmask300|..\Texture\Single\Fog\fogmask300.png
-Fog|blackfog4096|..\Texture\Single\Fog\blackfog4096.png
 Fog|fogmask100|..\Texture\Single\Fog\fogmask100.png
 Fog|fogmask640|..\Texture\Single\Fog\fogmask640.png
 Fog|blackfog|..\Texture\Single\Fog\blackfog.png

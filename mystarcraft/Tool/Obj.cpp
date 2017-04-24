@@ -94,3 +94,8 @@ void CObj::MinmapRender(const float fratioX , const float fratioY)
 {
 
 }
+
+float CObj::GetY(void)
+{
+	return m_vPos.y;
+}

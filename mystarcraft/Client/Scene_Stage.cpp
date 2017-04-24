@@ -3,6 +3,10 @@
 
 #include "TileManager.h"
 #include "ObjMgr.h"
+#include "KeyMgr.h"
+#include "FontMgr.h"
+#include "LineMgr.h"
+#include "ObjPoolMgr.h"
 CScene_Stage::CScene_Stage(void)
 {
 }
@@ -15,6 +19,7 @@ CScene_Stage::~CScene_Stage(void)
 HRESULT CScene_Stage::Initialize(void)
 {
 	CTileManager::GetInstance()->Initialize();
+	CObjPoolMgr::GetInstance()->Initialize();
 
 	LoadData();	
 
@@ -23,15 +28,24 @@ HRESULT CScene_Stage::Initialize(void)
 
 void CScene_Stage::Update(void)
 {
+	CKeyMgr::GetInstance()->Update();
+	CObjMgr::GetInstance()->Update();
 
+	CFontMgr::GetInstance()->Setnumber_combine_Font(L"OBJ NUM%d" , CObjPoolMgr::m_Obj_Cnt , 400, 300);
 }
 void CScene_Stage::Render(void)
 {
 	CTileManager::GetInstance()->RenderTile();
 	CObjMgr::GetInstance()->Render();
+
+	CTileManager::GetInstance()->RenderFog();
+
+	CFontMgr::GetInstance()->FontRender();
+	CLineMgr::GetInstance()->LineRender();
 }
 void CScene_Stage::Release(void)
 {
+	CObjPoolMgr::DestroyInstance();
 }
 
 void CScene_Stage::LoadData(void)

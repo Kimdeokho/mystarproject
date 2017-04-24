@@ -81,6 +81,7 @@ void CObjMgr::Release(void)
 		}
 		m_ObjList[i].clear();
 	}
+
 }
 void CObjMgr::SaveObj(HANDLE h)
 {

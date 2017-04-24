@@ -5,6 +5,9 @@
 #include "Mineral.h"
 #include "GasResource.h"
 
+#include "Zerg_Building.h"
+#include "ObjPoolMgr.h"
+
 IMPLEMENT_SINGLETON(CObjMgr)
 CObjMgr::CObjMgr(void)
 {
@@ -17,12 +20,88 @@ CObjMgr::~CObjMgr(void)
 void CObjMgr::Update(void)
 {
 
+	float fy = 0.f;
+	SORT_ID sortid = SORT_END;
+
+	for(int i = 0; i < OBJ_END; ++i)
+	{
+		list<CObj*>::iterator iter = m_ObjList[i].begin();
+		list<CObj*>::iterator iter_end = m_ObjList[i].end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Update();
+
+			fy = (*iter)->GetY();
+			sortid = (*iter)->GetsortID();
+
+			if(true == (*iter)->Be_in_camera() )
+				m_rendersort[ sortid ].insert( make_pair( fy , (*iter) ) );
+		}
+	}
+	
+
+	for(int i = 0; i < ZB_END; ++i)
+	{
+		list<CObj*>::iterator iter = m_ZBuilding_List[i].begin();
+		list<CObj*>::iterator iter_end = m_ZBuilding_List[i].end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Update();
+
+			fy = (*iter)->GetY();
+			sortid = (*iter)->GetsortID();
+
+			if(true == (*iter)->Be_in_camera() )
+				m_rendersort[ sortid ].insert( make_pair( fy , (*iter) ) );
+		}
+	}
+
+	for(int i = 0; i < ZU_END; ++i)
+	{
+		list<CObj*>::iterator iter = m_ZUnit_List[i].begin();
+		list<CObj*>::iterator iter_end = m_ZUnit_List[i].end();
+
+		for( ; iter != iter_end; )
+		{
+			(*iter)->Update();
+
+			if(true == (*iter)->GetDestroy() )
+			{
+				CObjPoolMgr::GetInstance()->destroy((*iter) , (ZERG_UNIT_ID)i);
+				iter = m_ZUnit_List[i].erase(iter);
+				continue;
+			}
+			else
+			{
+				fy = (*iter)->GetY();
+				sortid = (*iter)->GetsortID();
+
+				if(true == (*iter)->Be_in_camera() )
+					m_rendersort[ sortid ].insert( make_pair( fy , (*iter) ) );
+
+				++iter;
+			}
+		}
+	}
 }
 
 void CObjMgr::Render(void)
 {
-	for(int i = 0; i < OBJ_END; ++i)
-		for_each( m_ObjList[i].begin() , m_ObjList[i].end() , RenderObject() );
+	for(int i = 0; i < SORT_END; ++i)
+	{
+		if(true == m_rendersort[i].empty())
+			continue;
+
+		multimap<float,CObj*>::iterator iter = m_rendersort[i].begin();
+		multimap<float,CObj*>::iterator iter_end = m_rendersort[i].end();
+
+		for( ; iter != iter_end; ++iter)
+			iter->second->Render();
+
+		m_rendersort[i].clear();
+	}
 }
 void CObjMgr::LoadObj(HANDLE hFile)
 {
@@ -65,7 +144,19 @@ void CObjMgr::AddObject(CObj* pObj , OBJID eid)
 {
 	m_ObjList[eid].push_back(pObj);
 }
-
+void CObjMgr::AddObject(CObj* pObj , ZERG_BUILDING_ID eid)
+{
+	m_ZBuilding_List[eid].push_back(pObj);
+}
+void CObjMgr::AddObject(CObj* pObj , ZERG_UNIT_ID eid)
+{
+	m_ZUnit_List[eid].push_back(pObj);
+}
+void CObjMgr::DestroyObj(ZERG_BUILDING_ID eid)
+{
+	CObj* pObj = m_ZBuilding_List[eid].back();
+	((CZerg_Building*)pObj)->SetDestroy();
+}
 void CObjMgr::Release()
 {	
 	for(int i = 0; i < OBJ_END; ++i)
@@ -77,6 +168,40 @@ void CObjMgr::Release()
 			Safe_Delete(*iter);
 
 		m_ObjList[i].clear();
+	}
+
+	//for(int i = 0; i < ZB_END; ++i)
+	//{
+	//	list<CObj*>::iterator iter = m_ZBuilding_List[i].begin();
+	//	list<CObj*>::iterator iter_end = m_ZBuilding_List[i].end();
+
+	//	for( ; iter != iter_end; ++iter)
+	//	{
+	//		CObjPoolMgr::GetInstance()->destroy((*iter) , (ZERG_BUILDING_ID)i);
+	//	}
+	//	m_ZBuilding_List[i].clear();
+	//}
+
+	//for(int i = 0; i < ZU_END; ++i)
+	//{
+	//	list<CObj*>::iterator iter = m_ZUnit_List[i].begin();
+	//	list<CObj*>::iterator iter_end = m_ZUnit_List[i].end();
+
+	//	for( ; iter != iter_end; ++iter)
+	//	{
+	//		CObjPoolMgr::GetInstance()->destroy((*iter) , (ZERG_UNIT_ID)i);
+	//	}
+	//	m_ZUnit_List[i].clear();
+	//}
+
+
+
+	for(int i = 0; i < SORT_END; ++i)
+	{
+		if(true == m_rendersort[i].empty())
+			continue;
+
+		m_rendersort[i].clear();
 	}
 }
 

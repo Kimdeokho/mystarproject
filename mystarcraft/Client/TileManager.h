@@ -13,14 +13,15 @@ private:
 	CREEP_INFO*					m_creepTile[SQ_TILECNTY*SQ_TILECNTX];
 
 	//실험용 (유닛마다 갖고있을 컨테이너)
-	list<int>					m_LightOff_List;
+	//list<int>					m_LightOff_List;
 	list<int>					m_CreepOff_List;
+
 private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;
 	LPDIRECT3DTEXTURE9			m_MapTexture[7][6];
-	LPDIRECT3DTEXTURE9			m_fogTexture;
-	LPDIRECT3DTEXTURE9			m_fogMaskTexture;
+	//LPDIRECT3DTEXTURE9			m_fogTexture;
+	//LPDIRECT3DTEXTURE9			m_fogMaskTexture;
 private:
 	D3DXMATRIX					m_matWorld;
 	D3DXVECTOR3					m_vTileCenter;
@@ -53,25 +54,31 @@ private:
 public:
 	void Initialize(void);
 public:
-	bool GetFogLight(const int& idx);
-	BYTE GetTileOption(const int& idx);
-	bool GetCreepInstall(const int& idx);
+	bool	GetFogLight(const int& idx);
+	BYTE	GetTileOption(const int& idx);
+	bool	GetCreepInstall(const int& idx);
+	bool	GetFogSearch(const int& idx);
+	TILE**	GetSqTile(void);
+	CREEP_INFO**	GetCreepTile(void);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
 	void SetFogLight(int idx, float fdistance , float fradius);
 	void SetFogColor(const int& idx , D3DCOLOR color);
 	void SetCreepInstall(const int& idx , bool binstall);
+
+	void SetFogoverlap_cnt(const int& idx  , const int& cnt);
+	void SetFogSearch(const int& idx,bool bsearch);
 public:
 	bool CheckFogFloor(int myidx , int destidx);
 	bool CheckCreepFloor(int myidx , int destidx);
 public:
-	void FogAlgorithm(void);
 	void CreepAlgorithm(void);
 public:	
 	void SightOffRender(const int& idx);
-	void SightOnRender(const D3DXVECTOR2& vPos, int irange);
+	void SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , UNIT_TYPE etype);
+
 	void Creep_increase(const D3DXVECTOR2& vPos/*유닛의 위치*/ , int irange);
-	void Creep_decrease(void);
+	void Creep_decrease_autotile(const int& idx);
 	void Creep_Autotile(const int& idx);
 public:
 	void ReadyTileTexture(void);

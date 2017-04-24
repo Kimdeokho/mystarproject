@@ -10,6 +10,7 @@ CMouseMgr::~CMouseMgr(void)
 {
 }
 POINT CMouseMgr::m_mousept;
+D3DXVECTOR2 CMouseMgr::m_vmousept;
 //POINT CMouseMgr::GetMousePt(void)
 //{
 //	GetCursorPos(&m_mousept);

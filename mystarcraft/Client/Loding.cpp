@@ -73,7 +73,10 @@ void CLoding::Load_BaiscTexture(void)
 void CLoding::Logo_LodingRender(void)
 {
 	//if(true == m_bLodingRender)
-	CFontMgr::GetInstance()->FontRender(m_szPath , 400.f,500.f , D3DCOLOR_ARGB(255,255,255,255));
+	//CFontMgr::GetInstance()->FontRender(m_szPath , 400.f,500.f , D3DCOLOR_ARGB(255,255,255,255));
+
+	CFontMgr::GetInstance()->SetFontInfo(m_szPath , 400.f , 500.f ,D3DCOLOR_ARGB(255,255,255,255));
+	CFontMgr::GetInstance()->FontRender();
 }
 
 bool CLoding::GetLoadingComplete(void)

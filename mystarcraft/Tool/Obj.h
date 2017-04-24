@@ -17,6 +17,7 @@ public:
 	void SetPos(const float x , const float y, OBJ_POS_KIND ekind = STATIC_OBJ);
 public:
 	const RECT& GetRect(void);
+	float	GetY(void);
 public:
 	void	SaveInfo(HANDLE h);
 public:

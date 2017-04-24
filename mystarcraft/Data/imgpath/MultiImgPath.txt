@@ -15,3 +15,4 @@ Tile|None|Water|LD|6|..\Texture\Multi\Tile\Water\LD\wld%d.png
 Tile|None|Water|R|6|..\Texture\Multi\Tile\Water\R\wr%d.png
 Tile|None|HillL|L|36|..\Texture\Multi\Tile\HillL\L\hillL%d.png
 Tile|None|HillR|R|36|..\Texture\Multi\Tile\HillR\R\hill%d.png
+ZERG|UNIT|DRONE|MOVE|54|..\Texture\Multi\Zerg\Unit\drone\move\drone_move%d.png

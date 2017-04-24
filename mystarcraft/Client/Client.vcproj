@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Headers"
+				AdditionalIncludeDirectories="../Headers;&quot;C:\Boost\include\boost-1_63&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,6 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\Boost\library\boost\lib\i386"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -116,6 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="../Headers;&quot;C:\Boost\include\boost-1_63&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -134,7 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="C:\Boost\library\boost\lib\i386"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -177,11 +181,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\KeyMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MyMath.cpp"
+				RelativePath=".\LineMgr.cpp"
 				>
 			</File>
 			<File
@@ -251,10 +251,26 @@
 					RelativePath=".\Texture.h"
 					>
 				</File>
+				<File
+					RelativePath=".\UnitMultiTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UnitMultiTexture.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Mgr"
 				>
+				<File
+					RelativePath=".\Area_Mgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Area_Mgr.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Device.cpp"
 					>
@@ -272,6 +288,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KeyMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\KeyMgr.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MouseMgr.cpp"
 					>
 				</File>
@@ -280,11 +304,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MyMath.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyMath.h"
+					>
+				</File>
+				<File
 					RelativePath=".\ObjMgr.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\ObjMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ObjPoolMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ObjPoolMgr.h"
 					>
 				</File>
 				<File
@@ -395,6 +435,62 @@
 					RelativePath=".\Obj.h"
 					>
 				</File>
+				<Filter
+					Name="Terran"
+					>
+					<Filter
+						Name="Building"
+						>
+					</Filter>
+					<Filter
+						Name="Unit"
+						>
+					</Filter>
+				</Filter>
+				<Filter
+					Name="Zerg"
+					>
+					<Filter
+						Name="Building"
+						>
+						<File
+							RelativePath=".\Hatchery.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Hatchery.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Zerg_Building.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Zerg_Building.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Unit"
+						>
+						<File
+							RelativePath=".\Drone.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Drone.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Unit.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Unit.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -407,11 +503,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\KeyMgr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MyMath.h"
+				RelativePath=".\LineMgr.h"
 				>
 			</File>
 			<File

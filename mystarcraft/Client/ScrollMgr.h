@@ -9,6 +9,8 @@ public:
 public:
 	static float	m_fScrollX;
 	static float	m_fScrollY;
+public:
+	bool inside_camera(const float& fx , const float& fy);
 private:
 	CScrollMgr(void);
 public:

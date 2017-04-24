@@ -55,12 +55,18 @@ typedef struct foginfo
 	unsigned short		   fog_sequence;
 	D3DCOLOR			   fog_color;
 	bool				   bLight;
+	bool				   bsearch;
+	int					   overlap_cnt;
+	int					   obj_id;	 
 	FOGSIGHT_OPTION		   eSight;
 	foginfo()
-	{		
+	{
+		obj_id				 = -1;
+		overlap_cnt			 = 0;
 		fog_sequence		 = 1;
 		fog_color = D3DCOLOR_ARGB(255,255,255,255);
 		bLight = false;
+		bsearch = false;
 		eSight = FOG_BLACK;
 	}
 }FOG_INFO;
@@ -85,17 +91,20 @@ struct MYRECT
 	T top;
 	T bottom;
 };
-//typedef struct tagTile_temp
-//{
-//	BYTE			byOption;
-//	BYTE			byFloor; /*0ÃþÀÌ ÁöÇÏ*/
-//
-//	tagTile_temp()
-//	{
-//		byOption = 0;
-//		byFloor = 1;
-//	}
-//}TILE_TEMP;
+
+typedef struct fontinfo
+{
+	float fX;
+	float fY;
+	D3DCOLOR font_color;
+	TCHAR font[260];
+	fontinfo()
+	{
+		fX = 0.f;
+		fY = 0.f;
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	}
+}FONT_INFO;
 
 typedef struct tagInfo
 {

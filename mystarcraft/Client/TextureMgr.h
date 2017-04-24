@@ -14,6 +14,7 @@ private:
 	map<wstring, CTexture*>		m_GeneralTex;
 	map<wstring, CTexture*>		m_SinglelTex;
 
+	map<wstring, CTexture*>		m_ZergTex;
 public:
 public:
 	HRESULT	Read_MultiImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
@@ -27,6 +28,11 @@ public:
 		, const wstring& wstrStateKey
 		, const int& iCnt);
 
+	HRESULT Insert_ZUnitMultiTex( const wstring& wstrFilePath 
+		, const wstring& wstrObjKey 
+		, const wstring& wstrStateKey /*= L"" */
+		, const int& iCnt /*= 0*/ );
+
 	HRESULT	Insert_GeneralTex(const wstring& wstrFilePath
 		, const wstring& wstrObjKey
 		, const wstring& wstrStateKey
@@ -36,10 +42,10 @@ public:
 		, const wstring& wstrObjKey
 		, const wstring& wstrStateKey);
 public:
-	const vector<TEXINFO*>*	GetTileTexture_vecset(const wstring& wstrObjey,
-		const wstring& wstrStatekey);
+	const vector<TEXINFO*>*	GetTileTexture_vecset(const wstring& wstrObjkey,	const wstring& wstrStatekey);
+	const vector<TEXINFO*>* GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
 	const TEXINFO*			GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);
-	TEXINFO**	GetGeneralTexture(const wstring& wstrObjKey);
+	TEXINFO**				GetGeneralTexture(const wstring& wstrObjKey);
 public:
 	void Release(void);
 

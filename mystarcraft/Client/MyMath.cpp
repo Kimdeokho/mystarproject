@@ -14,10 +14,17 @@ CMyMath::~CMyMath(void)
 
 int CMyMath::Pos_to_index(const float& x , const float& y)
 {
-	return int(y/SQ_TILESIZEY)*SQ_TILECNTX + int(x/SQ_TILESIZEX);
+	return int(y/32)*128 + int(x/32);
 }
-
-void CMyMath::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList)
+int CMyMath::Pos_to_index64(const float& x , const float& y)
+{
+	return int(y/64)*64 + int(x/64);
+}
+int CMyMath::Pos_to_index512(const float& x , const float& y)
+{
+	return int(y/512)*8 + int(x/512);
+}
+void CMyMath::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , UNIT_TYPE etype)
 {
 	int iWidth = int(vDest.x - vStart.x);
 	int iHeight = int(vDest.y - vStart.y);
@@ -47,7 +54,7 @@ void CMyMath::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest,
 
 	float X = 0;
 	float Y = 0;
-	int   iendidx = 0;
+	//int   iendidx = 0;
 
 	if(iWidth >= iHeight)
 	{
@@ -65,25 +72,26 @@ void CMyMath::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest,
 			}
 
 
+			//시작지점에서 i지점까지 퍼진 X거리이다.
 			X = (vStart.x + i * SQ_TILESIZEX * isignX - vStart.x)*(vStart.x + i * SQ_TILESIZEX * isignX - vStart.x);
 			Y = (vStart.y + icnt * isignY - vStart.y)*(vStart.y + icnt * isignY - vStart.y);
 
 
 
 
-			if(X + Y <= fRadius*fRadius )
+			if(X + Y <= fRadius*fRadius ) //범위안에 있으면
 			{
 				idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
 
-				if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))
+				if(TYPE_AIR == etype)
 				{
-					iendidx = idx;
-
-					if(false == CTileManager::GetInstance()->GetFogLight(idx))
-						light_IdxList.push_back(idx);
-
-
-					if(fRadius*fRadius - 160*160 <= X + Y)
+					if(false == fogsearch[idx])
+					{						
+						fogsearch[idx] = true;
+						CTileManager::GetInstance()->SetFogoverlap_cnt(idx , 1);
+						light_IdxList.push_back(idx);						
+					}
+					if(fRadius*fRadius - 192*192 <= X + Y)
 					{
 						CTileManager::GetInstance()->SetFogSquence(idx , 1);
 						CTileManager::GetInstance()->SetFogLight(idx , X + Y , float(fRadius*fRadius));
@@ -93,10 +101,31 @@ void CMyMath::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest,
 						CTileManager::GetInstance()->SetFogSquence(idx , 0);
 						CTileManager::GetInstance()->SetFogLight(idx , 0 , 1);
 					}
-
 				}
-				else
-					break;
+				else if(TYPE_GROUND == etype)
+				{
+					if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))//공중일 경우 신경안쓴다.
+					{					
+						if(false == fogsearch[idx])
+						{						
+							fogsearch[idx] = true;
+							CTileManager::GetInstance()->SetFogoverlap_cnt(idx , 1);
+							light_IdxList.push_back(idx);						
+						}
+						if(fRadius*fRadius - 192*192 <= X + Y)
+						{
+							CTileManager::GetInstance()->SetFogSquence(idx , 1);
+							CTileManager::GetInstance()->SetFogLight(idx , X + Y , float(fRadius*fRadius));
+						}
+						else
+						{
+							CTileManager::GetInstance()->SetFogSquence(idx , 0);
+							CTileManager::GetInstance()->SetFogLight(idx , 0 , 1);
+						}
+					}
+					else
+						break;
+				}
 			}
 			else
 				break;
@@ -125,14 +154,15 @@ void CMyMath::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest,
 			{
 				idx = CMyMath::Pos_to_index(vStart.x + icnt * isignX , vStart.y + i*SQ_TILESIZEY*isignY);
 
-				if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))
+				if(TYPE_AIR == etype)
 				{
-					iendidx = idx;
-
-					if(false == CTileManager::GetInstance()->GetFogLight(idx))
-						light_IdxList.push_back(idx);
-
-					if(fRadius*fRadius - 160*160 <= X + Y)
+					if(false == fogsearch[idx])
+					{						
+						fogsearch[idx] = true;
+						CTileManager::GetInstance()->SetFogoverlap_cnt(idx , 1);
+						light_IdxList.push_back(idx);						
+					}
+					if(fRadius*fRadius - 192*192 <= X + Y)
 					{
 						CTileManager::GetInstance()->SetFogSquence(idx , 1);
 						CTileManager::GetInstance()->SetFogLight(idx , X + Y , float(fRadius*fRadius));
@@ -143,14 +173,37 @@ void CMyMath::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest,
 						CTileManager::GetInstance()->SetFogLight(idx , 0 , 1);
 					}
 				}
-				else
-					break;
+				else if(TYPE_GROUND == etype)
+				{
+					if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))//공중일 경우 신경안쓴다.
+					{					
+						if(false == fogsearch[idx])
+						{						
+							fogsearch[idx] = true;
+							CTileManager::GetInstance()->SetFogoverlap_cnt(idx , 1);
+							light_IdxList.push_back(idx);						
+						}
+						if(fRadius*fRadius - 192*192 <= X + Y)
+						{
+							CTileManager::GetInstance()->SetFogSquence(idx , 1);
+							CTileManager::GetInstance()->SetFogLight(idx , X + Y , float(fRadius*fRadius));
+						}
+						else
+						{
+							CTileManager::GetInstance()->SetFogSquence(idx , 0);
+							CTileManager::GetInstance()->SetFogLight(idx , 0 , 1);
+						}
+					}
+					else
+						break;
+				}
 			}
 			else
 				break;
 		}
 	}
 }
+
 void CMyMath::Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int& fRadius ,const int& loopcnt,list<int>& creep_IdxList)
 {
 	int iWidth = int(vDest.x - vStart.x);
@@ -208,10 +261,10 @@ void CMyMath::Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDes
 			idx = CMyMath::Pos_to_index(vStart.x + loopcnt * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
 
 			if(true == CTileManager::GetInstance()->CheckCreepFloor(myidx , idx) &&
-				MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx))
+				MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx) &&
+				false == CTileManager::GetInstance()->GetCreepInstall(idx))
 			{
 				creep_IdxList.push_back(idx);
-				//CTileManager::GetInstance()->SetCreepInstall(idx , true);
 			}
 		}		
 	}
@@ -237,11 +290,25 @@ void CMyMath::Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDes
 			idx = CMyMath::Pos_to_index(vStart.x + icnt * isignX , vStart.y + loopcnt*SQ_TILESIZEY*isignY);
 
 			if(true == CTileManager::GetInstance()->CheckCreepFloor(myidx , idx) &&
-				MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx))
+				MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx) &&
+				false == CTileManager::GetInstance()->GetCreepInstall(idx))
 			{
 				creep_IdxList.push_back(idx);
-				//CTileManager::GetInstance()->SetCreepInstall(idx , true);
 			}
 		};		
 	}
 }
+
+float  CMyMath::dgree_to_radian(const float& dgree)
+{
+	return dgree*PI/180;
+}
+float CMyMath::radian_to_dgree(const float& rad)
+{
+	return (180*rad)/PI;
+}
+float CMyMath::scala_to_dgree(const float& scala)
+{
+	return 180*(acos(scala))/PI;
+}
+

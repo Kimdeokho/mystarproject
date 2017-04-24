@@ -4,7 +4,7 @@
 #include "MultiTexture.h"
 #include "GeneralTexture.h"
 #include "SingleTexture.h"
-
+#include "UnitMultiTexture.h"
 IMPLEMENT_SINGLETON(CTextureMgr)
 
 CTextureMgr::CTextureMgr(void)
@@ -30,6 +30,27 @@ HRESULT CTextureMgr::Insert_TileMultiTex( const wstring& wstrFilePath
 		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
 		
 		m_TileTexture.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
+	}
+	else
+		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
+
+	return S_OK;
+}
+HRESULT CTextureMgr::Insert_ZUnitMultiTex( const wstring& wstrFilePath 
+										 , const wstring& wstrObjKey 
+										 , const wstring& wstrStateKey /*= L"" */
+										 , const int& iCnt /*= 0*/ )
+{
+	map<wstring, CTexture*>::iterator	iter = m_ZergTex.find(wstrObjKey);
+
+	if(iter == m_ZergTex.end()) //키값을 못찾았다면
+	{
+		CTexture*	pTexture = NULL;
+		pTexture = new CUnitMultiTexture;
+
+		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
+
+		m_ZergTex.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
 	}
 	else
 		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
@@ -96,6 +117,13 @@ void CTextureMgr::Release( void )
 		::Safe_Delete(iter->second);
 	}
 	m_GeneralTex.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_ZergTex.begin();
+		iter != m_ZergTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_ZergTex.clear();
 }
 HRESULT CTextureMgr::Read_MultiImgPath(const wstring& wstrFilePath ,TCHAR*	szPath)
 {
@@ -127,8 +155,10 @@ HRESULT CTextureMgr::Read_MultiImgPath(const wstring& wstrFilePath ,TCHAR*	szPat
 
 		int		iCount = _ttoi(szCount);
 
-		//if(!_tcscmp(szKind , L"Tile"))
-		Insert_TileMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		if(!_tcscmp(szKind , L"Tile"))
+			Insert_TileMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		else if(!_tcscmp(szKind , L"ZERG"))
+			Insert_ZUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
 
 		lstrcpy(szPath , szImgPath);
 	}
@@ -252,6 +282,20 @@ const vector<TEXINFO*>* CTextureMgr::GetTileTexture_vecset(const wstring& wstrOb
 	else
 		return NULL;
 }
+const vector<TEXINFO*>* CTextureMgr::GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+{
+	map<wstring , CTexture*>::iterator iter = m_ZergTex.find(wstrobjkey);
+
+	if(m_ZergTex.end() != iter)
+	{
+		/*키 값을 찾았다.*/
+		CTexture* pTexture = iter->second;
+
+		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey , diridx);
+	}
+	else
+		return NULL;
+}
 const TEXINFO* CTextureMgr::GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey)
 {
 	map<wstring , CTexture*>::iterator iter = m_SinglelTex.find(wstrObjKey);
@@ -293,7 +337,4 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 	//종족별 멀티텍스쳐는 게임 시작전에 따로 부르기
 
 }
-
-
-
 

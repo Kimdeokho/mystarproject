@@ -10,6 +10,17 @@ enum OBJID
 	OBJ_STARTBASE,
 	OBJ_END,
 };
+enum ZERG_BUILDING_ID
+{
+	ZB_HACHERY,
+	ZB_END,
+};
+enum ZERG_UNIT_ID
+{
+	ZU_DRONE,
+	ZU_END,
+};
+
 enum OBJ_POS_KIND
 {
 	STATIC_OBJ,
@@ -77,4 +88,17 @@ enum FOGSIGHT_OPTION
 	FOG_BLACK, /*안가본곳*/
 	FOG_GREY, /*한번 가봤던곳*/
 	FOG_ALPHA /*현재 보고 있는곳*/
+};
+enum SORT_ID
+{
+	SORT_GROUND,
+	SORT_AIR,
+	SORT_UI,
+	SORT_END,
+};
+
+enum UNIT_TYPE
+{
+	TYPE_GROUND,
+	TYPE_AIR,
 };

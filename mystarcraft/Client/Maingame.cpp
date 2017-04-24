@@ -10,6 +10,8 @@
 #include "ObjMgr.h"
 #include "MouseMgr.h"
 #include "KeyMgr.h"
+#include "Area_Mgr.h"
+#include "LineMgr.h"
 
 CMaingame::CMaingame(void)
 {
@@ -23,13 +25,18 @@ CMaingame::~CMaingame(void)
 
 HRESULT CMaingame::Initialize(void)
 {
+	//AllocConsole();
+	//freopen( "CONOUT$",  "wt", stdout);
+
+
 	m_fTime = 0.f;
 	m_iFPS = 0;
-	lstrcpy(m_szFPS , L"");
+	lstrcpy(m_szFPS , L"hello world");
 	CDevice::GetInstance()->InitDevice();
 	
 	CTimeMgr::GetInstance()->InitTime();
 	CFontMgr::GetInstance()->Initialize();
+	CLineMgr::GetInstance()->Initialize();
 
 	m_pFont = CFontMgr::GetInstance();
 	m_pDevice = CDevice::GetInstance();
@@ -45,10 +52,6 @@ void CMaingame::Update(void)
 
 	CSceneMgr::GetInstance()->Update();
 
-	//for(int i = 1; i < 20000; ++i)
-	//{
-	//	int a = 10+i;
-	//}
 }
 
 void CMaingame::Render(void)
@@ -90,4 +93,8 @@ void CMaingame::Release(void)
 	CTileManager::DestroyInstance();
 	CObjMgr::DestroyInstance();
 	CKeyMgr::DestroyInstance();
+	CArea_Mgr::DestroyInstance();
+	CLineMgr::DestroyInstance();
+
+	//FreeConsole();
 }
