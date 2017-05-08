@@ -123,7 +123,7 @@ void CZerg_Building::Creep_Initialize(bool bcomplete)
 				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
 				continue;
 
-			CMyMath::Bresenham_Creep( m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt1 , m_creep_list);
+			CTileManager::GetInstance()->Bresenham_Creep( m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt1 , m_creep_list);
 		}
 
 
@@ -137,7 +137,7 @@ void CZerg_Building::Creep_Initialize(bool bcomplete)
 				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
 				continue;
 
-			CMyMath::Bresenham_Creep( m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt1, m_creep_list);
+			CTileManager::GetInstance()->Bresenham_Creep( m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt1, m_creep_list);
 		}
 
 
@@ -153,7 +153,7 @@ void CZerg_Building::Creep_Initialize(bool bcomplete)
 				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
 				continue;
 
-			CMyMath::Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt2, m_creep_list);
+			CTileManager::GetInstance()->Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt2, m_creep_list);
 		}
 
 
@@ -167,7 +167,7 @@ void CZerg_Building::Creep_Initialize(bool bcomplete)
 				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
 				continue;
 
-			CMyMath::Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt2, m_creep_list);
+			CTileManager::GetInstance()->Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,m_loopcnt2, m_creep_list);
 		}
 	}
 

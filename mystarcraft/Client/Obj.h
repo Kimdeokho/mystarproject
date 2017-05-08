@@ -25,8 +25,12 @@ protected:
 	int				m_oldidx512;
 	int				m_curidx512;
 
-	int				m_obj_id;
-	enum SORT_ID	m_sortID;
+	static int		m_obj_id;
+
+public:
+	/*ENUM*/
+	SORT_ID				m_sortID;
+	OBJ_TYPE			m_eType;
 public:
 	bool			m_bdestroy;
 public:
@@ -34,16 +38,20 @@ public:
 	virtual void Initialize(void);
 	virtual void InitialRect(void);
 	virtual void Update(void);
-	virtual void Render(void);	
+	virtual void Render(void);
+	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Release(void);
 public:
 	void SetPos(const float x , const float y, OBJ_POS_KIND ekind = STATIC_OBJ);
-	void SetObj_ID(const int& id);
 	void SetDestroy(bool bdestroy);
 public:
-	float GetY(void);
-	SORT_ID	GetsortID(void);
-	bool  GetDestroy(void);
+	float					GetY(void);
+	SORT_ID					GetsortID(void);
+	OBJ_TYPE				GetType(void);
+	bool					GetDestroy(void);
+	const MYRECT<float>&	GetMyRect(void);
+	const D3DXVECTOR2&		GetPos(void);
+	int						GetObjID(void);
 public:
 	void idx_update(void);
 public:

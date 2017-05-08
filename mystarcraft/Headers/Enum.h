@@ -97,8 +97,21 @@ enum SORT_ID
 	SORT_END,
 };
 
-enum UNIT_TYPE
+enum OBJ_TYPE
 {
 	TYPE_GROUND,
 	TYPE_AIR,
+};
+
+enum ASTAR_DIR
+{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
+	LEFT_UP,
+	RIGHT_UP,
+	LEFT_DOWN,
+	RIGHT_DOWN,
+	ASTAR_DIR_END,
 };

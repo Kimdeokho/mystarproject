@@ -72,14 +72,17 @@ public:
 	bool CheckFogFloor(int myidx , int destidx);
 	bool CheckCreepFloor(int myidx , int destidx);
 public:
-	void CreepAlgorithm(void);
+	//void CreepAlgorithm(void);
 public:	
 	void SightOffRender(const int& idx);
-	void SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , UNIT_TYPE etype);
+	void SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , OBJ_TYPE etype);
 
-	void Creep_increase(const D3DXVECTOR2& vPos/*À¯´ÖÀÇ À§Ä¡*/ , int irange);
+	//void Creep_increase(const D3DXVECTOR2& vPos/*À¯´ÖÀÇ À§Ä¡*/ , int irange);
 	void Creep_decrease_autotile(const int& idx);
 	void Creep_Autotile(const int& idx);
+public:
+	void Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , OBJ_TYPE etype);
+	void Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int& fRadius ,const int& loopcnt,list<int>& creep_IdxList);
 public:
 	void ReadyTileTexture(void);
 	void ReadyMainMap(void);

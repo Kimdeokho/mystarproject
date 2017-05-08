@@ -14,6 +14,7 @@ private:
 	int					m_iFPS;
 	CFontMgr*			m_pFont;
 	CDevice*			m_pDevice;
+
 public:
 	HRESULT Initialize(void);
 	void Update(void);

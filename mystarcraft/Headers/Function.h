@@ -32,7 +32,6 @@ public:
 			Temp->Render();
 	}
 };
-
 struct rendersort_compare
 {
 	bool operator()(const TERRAIN_INFO* lhs , const TERRAIN_INFO* rhs)
@@ -48,6 +47,18 @@ inline bool	sort_compare(const TERRAIN_INFO* lhs , const TERRAIN_INFO* rhs)
 	return lhs->bysortLV < rhs->bysortLV;
 };
 
+
+template<typename T>
+bool MyPtInrect(const D3DXVECTOR2& vpos ,const MYRECT<T>* rect)
+{
+	if(vpos.x >= rect->left &&
+		vpos.x <= rect->right &&
+		vpos.y <= rect->bottom &&
+		vpos.y >= rect->top)
+		return true;
+
+	return false;
+}
 template<typename T>
 bool MyIntersectrect(MYRECT<T>* outrect , const MYRECT<T>* A ,const MYRECT<T>* B)
 {
@@ -58,11 +69,11 @@ bool MyIntersectrect(MYRECT<T>* outrect , const MYRECT<T>* A ,const MYRECT<T>* B
 	minY = MyMin(A->bottom , B->bottom );
 	maxY = MyMax(A->top , B->top);
 
-	if(maxX > minX &&
+	if(maxX < minX &&
 		maxY < minY )
 	{
-		outrect->left = minX;
-		outrect->right = maxX;
+		outrect->left = maxX;
+		outrect->right = minX;
 		outrect->top = maxY;
 		outrect->bottom = minY;
 		return true;

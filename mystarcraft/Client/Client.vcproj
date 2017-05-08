@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib"
+				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib ../Debug/LowLib.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\Boost\library\boost\lib\i386"
 				GenerateDebugInformation="true"
@@ -272,6 +272,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Astar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Astar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Device.cpp"
 					>
 				</File>
@@ -301,6 +309,14 @@
 				</File>
 				<File
 					RelativePath=".\MouseMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyHeapSort.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyHeapSort.h"
 					>
 				</File>
 				<File

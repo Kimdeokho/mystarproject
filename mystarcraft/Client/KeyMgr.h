@@ -14,10 +14,10 @@ private:
 	bool	m_bCombine;
 
 	bool	m_bDbClick_ready;
-	bool	m_bKeyUp;
-	float   m_dbClick_Timer;
+	bool	m_bKeyUp[MAX_KEY];
+	float   m_dbClick_Timer[MAX_KEY];
 
-	int		m_clickCnt;
+	int		m_clickCnt[MAX_KEY];
 
 	D3DXVECTOR2	m_downpt;
 	D3DXVECTOR2 m_curpt;

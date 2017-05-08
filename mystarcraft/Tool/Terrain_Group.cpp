@@ -15,6 +15,11 @@ CTerrain_Group::~CTerrain_Group(void)
 }
 void CTerrain_Group::SetTerrainInfo(int idx , BYTE byterrain_id ,BYTE bygroup_id ,BYTE bysequence , BYTE bysortlv , bool bdelete)
 {
+	if(idx >= SQ_TILECNTX*SQ_TILECNTY || 
+		idx < 0)
+		return;
+
+
 	TERRAIN_UPDATE	temp;
 
 	temp.idx = idx;
@@ -44,6 +49,11 @@ void CTerrain_Group::Make_LU_Terrain(const int idx)
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(i*2+j != 3)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_LU  , i*2+j , 1 , true );
 			else
@@ -57,6 +67,11 @@ void CTerrain_Group::Make_RU_Terrain(const int idx)
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(i*2+j != 2)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_RU  , i*2+j , 1 , true );
 			else
@@ -71,6 +86,11 @@ void CTerrain_Group::Make_L_Terrain(const int idx , bool bdelete , bool bdelete2
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(i*2+j <= 3)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_L  , i*2+j , 1 , bdelete );
 			else
@@ -84,6 +104,11 @@ void CTerrain_Group::Make_R_Terrain(const int idx , bool bdelete , bool bdelete2
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(i*2+j <= 3)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) ,m_terrain_id, GROUP_R  , i*2+j , 1 , bdelete );
 			else
@@ -97,6 +122,11 @@ void CTerrain_Group::Make_RD_Terrain(const int idx , bool bdelete , bool bdelete
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(AFTER == eflag)
 			{
 				if(i*2+j <= 3)
@@ -120,6 +150,11 @@ void CTerrain_Group::Make_LD_Terrain(const int idx , bool bdelete , bool bdelete
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(AFTER == eflag)
 			{
 				if(i*2+j <= 3)
@@ -143,6 +178,10 @@ void CTerrain_Group::Make_FLAT_Terrain(const int idx , int irow , int icol  ,boo
 	{
 		for(int j = 0; j < icol; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
 			SetTerrainInfo(idx + (i*SQ_TILECNTX+j), m_flat_id , GROUP_FLAT , rand()%2 , 0 ,bdelete);
 		}
 	}
@@ -153,6 +192,11 @@ void CTerrain_Group::Make_FLAT_Terrain(const int idx , int irow , int icol  ,boo
 	{
 		for(int j = 0; j < icol; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			DirectSetTerrain(idx + (i*SQ_TILECNTX+j) , flat_id , GROUP_FLAT , rand()%2 , 0 , bdelete);
 		}
 	}
@@ -163,6 +207,11 @@ void CTerrain_Group::Make_REdge(const int idx)
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(i*2+j <= 1)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) , m_terrain_id , GROUP_LD , i*2+j , 0, true);
 			else if(i*2+j == 2)
@@ -181,6 +230,11 @@ void CTerrain_Group::Make_LEdge(const int idx)
 	{
 		for(int j = 0; j < 2; ++j)
 		{
+			m_idx = idx + (i*SQ_TILECNTX+j);
+			if(m_idx < 0 || 
+				m_idx >= SQ_TILECNTX*SQ_TILECNTY )
+				continue;
+
 			if(i*2+j <= 1)
 				SetTerrainInfo(idx + (i*SQ_TILECNTX+j) , m_terrain_id , GROUP_RD , i*2+j , 0, true);
 			else if(i*2+j == 2)

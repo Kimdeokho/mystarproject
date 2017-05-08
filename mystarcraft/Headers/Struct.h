@@ -1,11 +1,5 @@
 #pragma once
 
-struct tagtest
-{
-	int a;
-	int b;
-	int c;
-};
 typedef struct tagTexture
 {
 	LPDIRECT3DTEXTURE9		pTexture;
@@ -55,9 +49,9 @@ typedef struct foginfo
 	unsigned short		   fog_sequence;
 	D3DCOLOR			   fog_color;
 	bool				   bLight;
-	bool				   bsearch;
+	bool				   bsearch; // 지워도 될듯
 	int					   overlap_cnt;
-	int					   obj_id;	 
+	int					   obj_id;  // 지워도 될듯	 
 	FOGSIGHT_OPTION		   eSight;
 	foginfo()
 	{
@@ -83,6 +77,7 @@ typedef struct creepinfo
 		bcreep_install	 = false;
 	}
 }CREEP_INFO;
+
 template<typename T>
 struct MYRECT
 {
@@ -124,10 +119,22 @@ typedef struct tagImgPath
 
 typedef struct tagAstarNode
 {
-	float			fCost; //거리비용
-	int				iIndex;//노드의 인덱스
+	int				iCost; //거리비용
+	int				G;//현재노드와 시작점의 거리
+	int				H;//현재 노드와 도착점의 거리
+	int				index;//노드의 인덱스
 	tagAstarNode*	pParent;//부모의 노드
-}NODE;
+	D3DXVECTOR2		vPos;
+
+	tagAstarNode()
+	{
+		G = 0;
+		H = 0;
+		iCost = 0;
+		index   = 0;
+		pParent = NULL;
+	}
+}PATH_NODE;
 
 typedef struct tagFrame
 {

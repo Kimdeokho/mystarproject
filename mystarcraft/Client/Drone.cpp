@@ -1,15 +1,19 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Drone.h"
 
 #include "TextureMgr.h"
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
+#include "Astar.h"
+#include "MouseMgr.h"
+
 CDrone::CDrone(void)
 {
 }
 
 CDrone::~CDrone(void)
 {
+	Release();
 }
 
 void CDrone::Initialize(void)
@@ -26,15 +30,22 @@ void CDrone::Initialize(void)
 	m_sortID = SORT_GROUND;
 	m_eType = TYPE_GROUND;
 	m_iSightrange = 19;
+
+	m_rect.left = m_vPos.x - 11.5f;
+	m_rect.right = m_vPos.x + 11.5f;
+	m_rect.top = m_vPos.y - 11.5f;
+	m_rect.bottom = m_vPos.y + 11.5f;
+
+	PathFinder_Initialize();
 }
 
 void CDrone::Update(void)
 {
 	CObj::idx_update();
-	CUnit::FogUpdate();
+	//CUnit::FogUpdate();
 	CUnit::Dir_calculation();
+	CUnit::PathFinder_Update();
 
-	static int diridx = 0;
 	static float ftime = 0.f;
 	static int frame = 0;
 
@@ -43,14 +54,11 @@ void CDrone::Update(void)
 	if(ftime >= 0.2f)
 	{
 		ftime = 0.f;
-		diridx += 1;
 		frame += 1;
 	}
 
 	if(frame > 5)
 		frame = 0;
-	if(diridx > 16)
-		diridx = 0;
 
 	//m_vPos.x += GETTIME*50;
 	
@@ -71,9 +79,20 @@ void CDrone::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 	m_pSprite->SetTransform(&m_matWorld);
 	m_pSprite->Draw(m_curtex , NULL , &m_vTextureCenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
+
+
+
+	m_Astar->Path_Render();
+}
+void CDrone::Inputkey_reaction(const int& nkey)
+{
+	if(VK_RBUTTON == nkey)
+	{
+		Pathfind_start();
+	}
 }
 
 void CDrone::Release(void)
 {
-
+	
 }

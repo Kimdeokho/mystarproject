@@ -15,7 +15,7 @@ private:
 	TCHAR				m_szfont[MAX_PATH];
 
 	list<FONT_INFO*>	m_render_fontlist;
-	boost::object_pool<FONT_INFO>	m_fontpool;
+	//boost::object_pool<FONT_INFO>	m_fontpool;
 public:
 	void	Initialize(void);
 	void    Setnumber_combine_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0));

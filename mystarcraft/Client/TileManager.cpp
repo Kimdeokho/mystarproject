@@ -139,7 +139,30 @@ void CTileManager::RenderTile(void)
 
 
 
+	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
+	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
+	int idx;
+	for(int i = 0; i < 20; ++i)
+	{
+		for(int j = 0; j < 26; ++j)
+		{
+			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
+			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
+				continue;
 
+			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
+			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+
+			if(MOVE_OK == m_sqTile[idx]->byOption)
+				continue;
+
+
+			m_pSprite->SetTransform(&m_matWorld);
+			m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
+				,D3DCOLOR_ARGB(255,0,0,0));
+		}
+	}
 
 
 	//CreepAlgorithm();
@@ -382,376 +405,6 @@ void CTileManager::RenderCreep(void)
 	}
 
 }
-
-//void CTileManager::FogAlgorithm(const D3DXVECTOR2& vPos , const int& irange/*여기에도 매개변수가 필요*/)
-//{
-	//static int oldIdx = -1;
-
-	////이게 한 유닛의 시야알고리즘
-
-	//m_vcurPos.x = CMouseMgr::GetMousePt().x /*유닛의좌표*/ + CScrollMgr::m_fScrollX;
-	//m_vcurPos.y = CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY;
-
-
-
-	//m_icuridx = CMyMath::Pos_to_index(m_vcurPos.x , m_vcurPos.y); 
-
-	//static bool fog_offswitch = false;
-
-	//if(true == fog_offswitch)
-	//	m_fTimeTest += GETTIME;
-
-
-	//if(m_fTimeTest > 3.0f)
-	//{
-	//	if(!m_LightOff_List.empty())
-	//	{
-	//		list<int>::iterator iter = m_LightOff_List.begin();
-	//		list<int>::iterator iter_end = m_LightOff_List.end();
-
-	//		for( ; iter != iter_end; ++iter)
-	//			SightOffRender(*iter);
-
-	//		m_LightOff_List.clear();
-	//	}
-	//	m_fTimeTest = 0.f;
-	//	fog_offswitch = false;
-
-	//	SightOnRender(m_vcurPos , 19);
-	//}
-
-
-	//if(m_icuridx != oldIdx)
-	//{
-	//	oldIdx = m_icuridx;
-	//	fog_offswitch = true;
-	//}
-	//else
-	//	return;
-
-
-
-	//SightOnRender(m_vcurPos , 19);
-
-//}
-void CTileManager::CreepAlgorithm(void)
-{
-	m_vcurPos.x = CMouseMgr::GetMousePt().x /*유닛의좌표*/ + CScrollMgr::m_fScrollX;
-	m_vcurPos.y = CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY;
-
-
-	Creep_increase(m_vcurPos , 13);
-}
-void CTileManager::Creep_increase(const D3DXVECTOR2& vPos/*유닛의 위치*/ , int irange)
-{
-	int fradius = irange/2*32;
-	int istartX = int( vPos.x - fradius )/SQ_TILESIZEX;
-	int istartY = int( vPos.y - fradius )/SQ_TILESIZEY;
-
-	int startIdx = CMyMath::Pos_to_index(vPos.x , vPos.y);	
-	int destidx = 0;
-
-	//if(false == GetFogLight(startIdx)) 크립으로 대신한다
-	//m_LightOff_List.push_back(startIdx);
-
-	CTileManager::GetInstance()->SetCreepInstall(startIdx , true);
-
-
-	if(istartY < 0)
-		istartY = 0;
-	if(istartY + irange - 1 >= SQ_TILECNTY)
-		istartY = SQ_TILECNTY - irange;
-
-	if(istartX < 0)
-		istartX = 0;
-	if(istartX + irange - 1 >= SQ_TILECNTX)
-		istartX = SQ_TILECNTX - irange;
-
-
-	int offset = irange >> 1;
-
-	enum LINE_DIR{LINE_LDIR , LINE_RDIR , LINE_END};
-	enum UPDOWN_DIR{LINE_UP , LINE_DOWN , UPDOWN_END};
-	static int top_line[LINE_END] = {offset, offset};
-	static int bot_line[LINE_END] = {offset, offset};
-	static int left_line[UPDOWN_END] = {offset, offset};
-	static int right_line[UPDOWN_END] = {offset, offset};
-
-	static float timer = 0.f;
-	static int tickcnt = 0;
-
-	static int loopcnt1 = 1;
-	static int loopcnt2 = 1;
-	static bool bswitch = true;
-
-	timer += GETTIME;
-
-	while(bswitch)//초기화 단계에서 한번만 실행 
-	{
-		--top_line[LINE_LDIR];
-		++top_line[LINE_RDIR];
-
-		--bot_line[LINE_LDIR];
-		++bot_line[LINE_RDIR];
-
-		--left_line[LINE_UP];
-		++left_line[LINE_DOWN];
-
-		--right_line[LINE_UP];
-		++right_line[LINE_DOWN];
-
-		++tickcnt;
-
-		if(tickcnt > offset)
-		{
-			//++loopcnt1;
-			tickcnt = 0;			
-		}
-
-
-		if( irange - 1 <= left_line[LINE_DOWN] )
-		{
-			left_line[LINE_DOWN] = offset;
-			right_line[LINE_DOWN] = offset;
-			++loopcnt2;
-		}
-		if( left_line[LINE_UP] < 1 )
-		{
-			left_line[LINE_UP] = offset;
-			right_line[LINE_UP] = offset;
-		}
-
-
-		if(irange  <= top_line[LINE_RDIR])
-		{
-			top_line[LINE_RDIR] = offset;
-			bot_line[LINE_RDIR] = offset;
-			++loopcnt1;
-		}
-		if(top_line[LINE_LDIR] < 0)
-		{
-			top_line[LINE_LDIR] = offset;
-			bot_line[LINE_LDIR] = offset;
-		}
-
-		if(loopcnt1 >= (irange >> 1) + 1)
-		{
-			bswitch = false;
-			break;
-		}
-		
-
-		for(int k = 0; k < LINE_END; ++k)
-		{
-			destidx = istartY*SQ_TILECNTX + (istartX + top_line[k]);
-
-			if(istartX + top_line[k] >= SQ_TILECNTX || istartX + top_line[k] < 0)
-				continue;
-			if(destidx < 0 || destidx>= SQ_TILECNTY*SQ_TILECNTX || 
-				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
-				continue;
-
-			CMyMath::Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,loopcnt1 , m_CreepOff_List);
-		}
-
-
-		for(int k = 0; k < LINE_END; ++k)
-		{
-			destidx = (istartY + irange - 1)*SQ_TILECNTX + (istartX + bot_line[k]);
-
-			if(istartX + bot_line[k] >= SQ_TILECNTX || istartX + bot_line[k] < 0)
-				continue;
-			if(destidx < 0 || destidx>= SQ_TILECNTY*SQ_TILECNTX || 
-				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
-				continue;
-
-			CMyMath::Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,loopcnt1, m_CreepOff_List);
-		}
-
-
-		//============================================================================================================================================
-
-		for(int k = 0; k < UPDOWN_END; ++k)
-		{
-			destidx = (istartY + left_line[k])*SQ_TILECNTX + istartX;
-
-			if(istartX < 0 || istartX >= SQ_TILECNTX)
-				continue;
-			if(destidx < 0 || destidx>= SQ_TILECNTY*SQ_TILECNTX || 
-				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
-				continue;
-
-			CMyMath::Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,loopcnt2, m_CreepOff_List);
-		}
-
-
-		for(int k = 0; k < UPDOWN_END; ++k)
-		{
-			destidx = (istartY + right_line[k])*SQ_TILECNTX + (istartX + irange - 1);
-
-			if(istartX + irange - 1 < 0 || istartX + irange - 1 >= SQ_TILECNTX)
-				continue;
-			if(destidx < 0 || destidx >= SQ_TILECNTY*SQ_TILECNTX || 
-				startIdx < 0 || startIdx >= SQ_TILECNTY*SQ_TILECNTX)
-				continue;
-
-			CMyMath::Bresenham_Creep(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius ,loopcnt2, m_CreepOff_List);
-		}
-	}
-
-	static bool once = true;
-	if(once)
-	{
-		for(int i = 0; i < 81; ++i) //초기화 단계에서 한번만 실행 
-		{
-			int idx = m_CreepOff_List.front();
-			m_CreepOff_List.pop_front();
-
-			if(false == GetCreepInstall(idx))
-			{
-				SetCreepInstall(idx , true);
-				Creep_Autotile(idx);
-			}
-		}
-		once = false;
-	}
-
-	if(timer >= 0.5f) //업데이트단계
-	{
-		timer = 0.f;
-		if(!m_CreepOff_List.empty())
-		{
-			while(true)
-			{
-				int idx = m_CreepOff_List.front();
-
-				m_CreepOff_List.pop_front();
-
-				if(false == GetCreepInstall(idx))
-				{
-					SetCreepInstall(idx , true);
-					Creep_Autotile(idx);
-					break;
-				}
-			}
-
-			int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
-			int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
-			int curidx = 0;
-			CREEP_INFO*	pCreep_temp = NULL;
-
-			for(int i = 0; i < irange + 2; ++i)
-			{
-				for(int j = 0; j < irange + 3; ++j)
-				{
-					curidx = (istartY+i) * SQ_TILECNTX + (istartX + j);
-
-					if(curidx < 0 || curidx>= SQ_TILECNTY*SQ_TILECNTX)
-						continue;
-
-
-					pCreep_temp = m_creepTile[curidx];
-
-					if( 0x3332 == pCreep_temp->creep_bit ||
-						0x3323 == pCreep_temp->creep_bit ||
-						0x3233 == pCreep_temp->creep_bit ||
-						0x2333 == pCreep_temp->creep_bit ||
-						0x3220 == pCreep_temp->creep_bit ||
-						0x2302 == pCreep_temp->creep_bit ||
-						0x2032 == pCreep_temp->creep_bit ||
-						0x0223 == pCreep_temp->creep_bit ||
-						0x3311 == pCreep_temp->creep_bit ||
-						0x1313 == pCreep_temp->creep_bit ||
-						0x1133 == pCreep_temp->creep_bit ||
-						0x3131 == pCreep_temp->creep_bit ||
-						0x3322 == pCreep_temp->creep_bit ||
-						0x2233 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = -1;
-					}
-					else if( 0x0000 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 0;
-					}
-					else if( 0x2200 ==  pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 1;
-					}
-					else if( 0x3210 ==  pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 2;
-					}
-					else if( 0x2301 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 3;
-					}
-					else if( 0x2100 == pCreep_temp->creep_bit )
-					{
-						pCreep_temp->creep_sequence = 4;
-					}
-					else if( 0x1200 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 6;
-					}
-					else if( 0x3110 == pCreep_temp->creep_bit ||
-						0x2010 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 7;
-					}
-					else if( 0x1301 == pCreep_temp->creep_bit ||
-						0x0201 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 8;
-					}
-					else if( 0x3120 == pCreep_temp->creep_bit || 
-						0x2020 == pCreep_temp->creep_bit ||
-						0x2031 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 9;
-					}
-					else if( 0x1302 == pCreep_temp->creep_bit || 
-						0x0202 == pCreep_temp->creep_bit ||
-						0x0213 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 10;
-					}
-					else if( 0x1032 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 11;
-					}
-					else if( 0x0123 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 12;
-					}
-					else if( 0x0021 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 13;
-					}
-					else if( 0x0012 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 15;
-					}
-					else if( 0x1020 == pCreep_temp->creep_bit ||
-						0x1031 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 16;
-					}
-					else if( 0x0102 == pCreep_temp->creep_bit ||
-						0x0113 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 17;
-					}
-					else if( 0x0022 == pCreep_temp->creep_bit)
-					{
-						pCreep_temp->creep_sequence = 18;
-					}
-					else
-						pCreep_temp->creep_sequence = 0;
-				}
-			}
-		}
-	}
-}
 void CTileManager::Creep_Autotile(const int& idx)
 {
 	int UP_idx = 0;
@@ -910,7 +563,7 @@ void CTileManager::SightOffRender(const int& idx)
 		m_fogTile[idx]->fog_sequence = 1;
 	}
 }
-void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , UNIT_TYPE etype)
+void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , OBJ_TYPE etype)
 {
 	//range는 가급적 홀수
 
@@ -965,25 +618,25 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& 
 	for(int j = LUvtx_idx; j <= RUvtx_idx; ++j) //윗줄 
 	{
 		destidx = j;
-		CMyMath::Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
 	}
 
 	for(int j = LDvtx_idx; j <= RDvtx_idx; ++j) //아랫줄 
 	{
 		destidx = j;
-		CMyMath::Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
 	}
 
 	for(int i = LUvtx_idx + SQ_TILECNTX; i < LDvtx_idx; i += SQ_TILECNTX) //왼쪽 열
 	{
 		destidx = i;
-		CMyMath::Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
 	}
 
 	for(int i = RUvtx_idx + SQ_TILECNTX; i < RDvtx_idx; i += SQ_TILECNTX) //오른쪽 열
 	{
 		destidx = i;
-		CMyMath::Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
 	}
 }
 
@@ -1243,4 +896,277 @@ void CTileManager::SetFogSearch(const int& idx, bool bsearch)
 bool CTileManager::GetFogSearch(const int& idx)
 {
 	return m_fogTile[idx]->bsearch;
+}
+void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , OBJ_TYPE etype)
+{
+	int iWidth = int(vDest.x - vStart.x);
+	int iHeight = int(vDest.y - vStart.y);
+
+	int e = 0;
+	int icnt = 0;
+	int idx = 0;
+	int iAdd = 32;
+
+	int loopcnt = 0;
+	int isignX = 1;
+	int isignY = 1;
+
+	int myidx = CMyMath::Pos_to_index(vStart.x , vStart.y);
+
+	if(iHeight < 0)
+	{
+		iHeight = -iHeight;
+		isignY *= -1;
+	}
+
+	if(iWidth < 0)
+	{
+		iWidth = -iWidth;
+		isignX *= -1;
+	}
+
+	float X = 0;
+	float Y = 0;
+	//int   iendidx = 0;
+
+	if(iWidth >= iHeight)
+	{
+		loopcnt = iWidth/SQ_TILESIZEX;
+
+		e = iWidth;
+		for(int i = 1; i < loopcnt + 1; ++i)
+		{
+			e += iHeight*2;
+
+			if(e >= iWidth*2)
+			{
+				icnt += iAdd;
+				e -= iWidth*2;
+			}
+
+
+			//시작지점에서 i지점까지 퍼진 X거리이다.
+			X = (vStart.x + i * SQ_TILESIZEX * isignX - vStart.x)*(vStart.x + i * SQ_TILESIZEX * isignX - vStart.x);
+			Y = (vStart.y + icnt * isignY - vStart.y)*(vStart.y + icnt * isignY - vStart.y);
+
+
+
+
+			if(X + Y <= fRadius*fRadius ) //범위안에 있으면
+			{
+				idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
+
+				if(TYPE_AIR == etype)
+				{
+					if(false == fogsearch[idx])
+					{						
+						fogsearch[idx] = true;
+						SetFogoverlap_cnt(idx , 1);
+						light_IdxList.push_back(idx);						
+					}
+					if(fRadius*fRadius - 192*192 <= X + Y)
+					{
+						SetFogSquence(idx , 1);
+						SetFogLight(idx , X + Y , float(fRadius*fRadius));
+					}
+					else
+					{
+						SetFogSquence(idx , 0);
+						SetFogLight(idx , 0 , 1);
+					}
+				}
+				else if(TYPE_GROUND == etype)
+				{
+					if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))//공중일 경우 신경안쓴다.
+					{					
+						if(false == fogsearch[idx])
+						{						
+							fogsearch[idx] = true;
+							SetFogoverlap_cnt(idx , 1);
+							light_IdxList.push_back(idx);						
+						}
+						if(fRadius*fRadius - 192*192 <= X + Y)
+						{
+							SetFogSquence(idx , 1);
+							SetFogLight(idx , X + Y , float(fRadius*fRadius));
+						}
+						else
+						{
+							SetFogSquence(idx , 0);
+							SetFogLight(idx , 0 , 1);
+						}
+					}
+					else
+						break;
+				}
+			}
+			else
+				break;
+		}
+	}
+	else
+	{
+		loopcnt = iHeight/SQ_TILESIZEY;
+
+		e = iHeight;
+		for(int i = 1; i < loopcnt + 1; ++i)
+		{
+			e += iWidth*2;
+
+			if( e >= iHeight*2)
+			{
+				icnt += iAdd;
+				e -= iHeight*2;
+			}
+
+			X = (vStart.x + icnt * isignX - vStart.x)*(vStart.x + icnt * isignX - vStart.x);
+			Y = (vStart.y + i*SQ_TILESIZEY*isignY - vStart.y)*(vStart.y + i*SQ_TILESIZEY*isignY - vStart.y);
+
+
+			if(X + Y <= fRadius*fRadius )
+			{
+				idx = CMyMath::Pos_to_index(vStart.x + icnt * isignX , vStart.y + i*SQ_TILESIZEY*isignY);
+
+				if(TYPE_AIR == etype)
+				{
+					if(false == fogsearch[idx])
+					{						
+						fogsearch[idx] = true;
+						SetFogoverlap_cnt(idx , 1);
+						light_IdxList.push_back(idx);						
+					}
+					if(fRadius*fRadius - 192*192 <= X + Y)
+					{
+						SetFogSquence(idx , 1);
+						SetFogLight(idx , X + Y , float(fRadius*fRadius));
+					}
+					else
+					{
+						SetFogSquence(idx , 0);
+						SetFogLight(idx , 0 , 1);
+					}
+				}
+				else if(TYPE_GROUND == etype)
+				{
+					if(true == CheckFogFloor(myidx , idx))//공중일 경우 신경안쓴다.
+					{					
+						if(false == fogsearch[idx])
+						{						
+							fogsearch[idx] = true;
+							SetFogoverlap_cnt(idx , 1);
+							light_IdxList.push_back(idx);						
+						}
+						if(fRadius*fRadius - 192*192 <= X + Y)
+						{
+							SetFogSquence(idx , 1);
+							SetFogLight(idx , X + Y , float(fRadius*fRadius));
+						}
+						else
+						{
+							SetFogSquence(idx , 0);
+							SetFogLight(idx , 0 , 1);
+						}
+					}
+					else
+						break;
+				}
+			}
+			else
+				break;
+		}
+	}
+}
+void CTileManager::Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int& fRadius ,const int& loopcnt,list<int>& creep_IdxList)
+{
+	int iWidth = int(vDest.x - vStart.x);
+	int iHeight = int(vDest.y - vStart.y);
+
+	int e = 0;
+	int icnt = 0;
+	int idx = 0;
+	int iAdd = 32;
+
+	int isignX = 1;
+	int isignY = 1;
+
+	int myidx = CMyMath::Pos_to_index(vStart.x , vStart.y);
+
+	if(iHeight < 0)
+	{
+		iHeight = -iHeight;
+		isignY = -1;
+	}
+
+	if(iWidth < 0)
+	{
+		iWidth = -iWidth;
+		isignX = -1;
+	}
+
+	float X = 0;
+	float Y = 0;
+	int   iendidx = 0;
+
+	if(iWidth >= iHeight)
+	{
+		e = iWidth;
+		for(int i = 0; i < loopcnt; ++i)
+		{
+			e += iHeight*2;
+
+			if(e >= iWidth*2)
+			{
+				icnt += iAdd;
+				e -= iWidth*2;
+			}
+		}
+
+
+		X = (vStart.x + loopcnt * SQ_TILESIZEX * isignX - vStart.x)*(vStart.x + loopcnt * SQ_TILESIZEX * isignX - vStart.x);
+		Y = (vStart.y + icnt * isignY - vStart.y)*(vStart.y + icnt * isignY - vStart.y);
+
+
+
+
+		if(X + Y <= fRadius*fRadius + 32*32)
+		{
+			idx = CMyMath::Pos_to_index(vStart.x + loopcnt * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
+
+			if(true == CTileManager::GetInstance()->CheckCreepFloor(myidx , idx) &&
+				MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx) &&
+				false == CTileManager::GetInstance()->GetCreepInstall(idx))
+			{
+				creep_IdxList.push_back(idx);
+			}
+		}		
+	}
+	else
+	{
+		e = iHeight;
+		for(int i = 0; i < loopcnt; ++i)
+		{
+			e += iWidth*2;
+
+			if( e >= iHeight*2)
+			{
+				icnt += iAdd;
+				e -= iHeight*2;
+			}
+		}
+		X = (vStart.x + icnt * isignX - vStart.x)*(vStart.x + icnt * isignX - vStart.x);
+		Y = (vStart.y + loopcnt*SQ_TILESIZEY*isignY - vStart.y)*(vStart.y + loopcnt*SQ_TILESIZEY*isignY - vStart.y);
+
+
+		if(X + Y <= fRadius*fRadius + 32*32)
+		{
+			idx = CMyMath::Pos_to_index(vStart.x + icnt * isignX , vStart.y + loopcnt*SQ_TILESIZEY*isignY);
+
+			if(true == CTileManager::GetInstance()->CheckCreepFloor(myidx , idx) &&
+				MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx) &&
+				false == CTileManager::GetInstance()->GetCreepInstall(idx))
+			{
+				creep_IdxList.push_back(idx);
+			}
+		};		
+	}
 }

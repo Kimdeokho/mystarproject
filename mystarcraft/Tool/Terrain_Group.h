@@ -52,6 +52,8 @@ protected:
 	BYTE	m_TerrainGroup[8];
 
 	list<TERRAIN_UPDATE>	m_TerrainUpdateList;
+
+	int						m_idx;
 public:
 	CTerrain_Group(void);
 	virtual ~CTerrain_Group(void);

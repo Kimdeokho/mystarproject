@@ -9,22 +9,23 @@
 #include "Hatchery.h"
 #include "LineMgr.h"
 #include "ObjPoolMgr.h"
+#include "Drone.h"
 
 IMPLEMENT_SINGLETON(CKeyMgr)
 CKeyMgr::CKeyMgr(void)
 {
 	memset(m_KeyPress , 0 , sizeof(bool)*MAX_KEY);
 	memset(m_DbClick_ready , 0 , sizeof(bool)*MAX_KEY);
+	memset(m_clickCnt , 0 , sizeof(m_clickCnt));
+	memset(m_bKeyUp , 0 , MAX_KEY);
+	memset(m_dbClick_Timer , 0 , sizeof(m_dbClick_Timer));
 
 	m_bCombine = false;
 	m_bDbClick_ready = false;
-	m_bKeyUp = false;
-
-	m_dbClick_Timer = 0.f;
-	m_clickCnt = 0;
+	
 
 	memset(&m_downpt , 0 , sizeof(POINT));
-	memset(&m_curpt , 0 , sizeof(POINT));
+	memset(&m_curpt , 0 , sizeof(POINT));	
 }
 
 CKeyMgr::~CKeyMgr(void)
@@ -40,12 +41,6 @@ void CKeyMgr::TurboKeyDown(const int& nkey)
 	{
 		m_KeyPress[nkey] = true;
 		//여기에 nkey를 현재선택된 오브젝트에 보내서 메세지 반응하게한다.
-
-		pObj = CObjPoolMgr::GetInstance()->construct(ZU_DRONE);
-		pObj->SetObj_ID(CObjPoolMgr::m_Obj_Cnt);
-		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
-		pObj->Initialize();
-		CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
 	}
 	else
 	{
@@ -97,21 +92,20 @@ void CKeyMgr::MouseKeyDown(const int& nkey)
 
 			m_KeyPress[nkey] = true;
 			m_DbClick_ready[nkey] = true;
-			m_bKeyUp = true;
-			++m_clickCnt;
 
-			pObj = CObjPoolMgr::GetInstance()->construct(ZU_DRONE);
-			pObj->SetObj_ID(CObjPoolMgr::m_Obj_Cnt);
-			pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
-			pObj->Initialize();
-			CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
-			//CObj* pObj = new CHatchery();
-			//pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
-			//pObj->Initialize();
-			//CObjMgr::GetInstance()->AddObject(pObj , ZB_HACHERY);
+			m_bKeyUp[nkey] = true;
 
+			++m_clickCnt[nkey];
 
-			
+			if(VK_LBUTTON == nkey)
+			{
+				pObj = new CDrone;
+				pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+				pObj->Initialize();
+				CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+			}
+
+			CObjMgr::GetInstance()->Intputkey_reaction(nkey);			
 		}
 		else
 		{
@@ -129,37 +123,36 @@ void CKeyMgr::MouseKeyDown(const int& nkey)
 }
 void CKeyMgr::MouseKeyUp(const int& nkey)
 {
-	if(true == m_bKeyUp && false == m_KeyPress[nkey])
+	if(true == m_bKeyUp[nkey] && false == m_KeyPress[nkey])
 	{
-		m_bKeyUp = false;
+		m_bKeyUp[nkey] = false;
 		CLineMgr::GetInstance()->SetRenderSwitch(false);
-		//m_curpt = CMouseMgr::GetMousePt();
 	}
 }
 void CKeyMgr::DbClick(const int& nkey)
 {
 	if(true == m_DbClick_ready[nkey]) // m_clickcnt == 1로도 대응가능
 	{
-		m_dbClick_Timer += GETTIME;
+		m_dbClick_Timer[nkey] += GETTIME;
 
-		if(m_dbClick_Timer > 0.5f)
+		if(m_dbClick_Timer[nkey] > 0.5f)
 		{
 			m_DbClick_ready[nkey] = false;
-			m_dbClick_Timer = 0.f;
+			m_dbClick_Timer[nkey] = 0.f;
 
-			m_clickCnt = 0;
+			m_clickCnt[nkey] = 0;
 		}
 		else
 		{
 			if(GetAsyncKeyState(nkey) & 0x8000)
 			{
-				if(2 == m_clickCnt)
+				if(2 == m_clickCnt[nkey])
 				{
 					//더블클릭 완료
-					m_dbClick_Timer = 0.f;
+					m_dbClick_Timer[nkey] = 0.f;
 					m_DbClick_ready[nkey] = false;
 
-					m_clickCnt = 0;
+					m_clickCnt[nkey] = 0;
 				}
 			}
 		}
@@ -190,6 +183,9 @@ void CKeyMgr::Update(void)
 
 	MouseKeyDown(VK_LBUTTON);
 	MouseKeyUp(VK_LBUTTON);
+
+	MouseKeyDown(VK_RBUTTON);
+	MouseKeyUp(VK_RBUTTON);
 
 	DbClick(VK_LBUTTON);
 
