@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Include.h"
-class CMyMath
+class CTool_MyMath
 {
 public:
 	static int		   Pos_to_index(const float& x , const float& y, const int& tilesize = 32);
@@ -11,8 +11,8 @@ public:
 	static float radian_to_dgree(const float& rad);
 	static float scala_to_dgree(const float& scala);
 	static int	 idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt);
-	static int	 pos_distance(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vdest);
+	static int	 pos_idstance(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vdest);
 public:
-	CMyMath(void);
-	~CMyMath(void);
+	CTool_MyMath(void);
+	~CTool_MyMath(void);
 };

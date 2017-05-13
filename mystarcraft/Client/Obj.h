@@ -51,6 +51,7 @@ public:
 	bool					GetDestroy(void);
 	const MYRECT<float>&	GetMyRect(void);
 	const D3DXVECTOR2&		GetPos(void);
+	D3DXVECTOR2&			GetReferencePos(void);
 	int						GetObjID(void);
 public:
 	void idx_update(void);

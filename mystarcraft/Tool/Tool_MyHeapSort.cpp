@@ -1,7 +1,7 @@
 #include "StdAfx.h"
-#include "MyHeapSort.h"
+#include "Tool_MyHeapSort.h"
 
-CMyHeapSort::CMyHeapSort(void)
+CTool_MyHeapSort::CTool_MyHeapSort(void)
 {
 	m_cursize = 0;
 	m_capacity = MAXHEAP_SIZE;
@@ -10,18 +10,18 @@ CMyHeapSort::CMyHeapSort(void)
 		m_nodelist[i] = NULL;
 }
 
-CMyHeapSort::~CMyHeapSort(void)
+CTool_MyHeapSort::~CTool_MyHeapSort(void)
 {
 	Release();
 }
-void CMyHeapSort::swap_node(const int& idx1 , const int& idx2)
+void CTool_MyHeapSort::swap_node(const int& idx1 , const int& idx2)
 {
 	PATH_NODE* temp = NULL;
 	temp = m_nodelist[idx1];
 	m_nodelist[idx1] = m_nodelist[idx2];
 	m_nodelist[idx2] = temp;
 }
-void CMyHeapSort::push_node(PATH_NODE* pnode)
+void CTool_MyHeapSort::push_node(PATH_NODE* pnode)
 {
 	m_nodelist[m_cursize] = pnode;
 
@@ -45,7 +45,7 @@ void CMyHeapSort::push_node(PATH_NODE* pnode)
 
 	++m_cursize;
 }
-PATH_NODE* CMyHeapSort::pop_node(void)
+PATH_NODE* CTool_MyHeapSort::pop_node(void)
 {
 	if( 0 == m_cursize)
 		return NULL;
@@ -92,12 +92,12 @@ PATH_NODE* CMyHeapSort::pop_node(void)
 	--m_cursize;
 	return ptemp;
 }
-int CMyHeapSort::getsize(void)
+int CTool_MyHeapSort::getsize(void)
 {
 	return m_cursize;
 }
 
-void CMyHeapSort::Release(PATH_NODE** openidx , boost::pool<>* _pool)
+void CTool_MyHeapSort::Release(PATH_NODE** openidx , boost::pool<>* _pool)
 {
 	for(int i = 0; i < m_cursize; ++i)
 	{
@@ -109,7 +109,7 @@ void CMyHeapSort::Release(PATH_NODE** openidx , boost::pool<>* _pool)
 	}
 	m_cursize = 0;
 }
-void CMyHeapSort::Release(void)
+void CTool_MyHeapSort::Release(void)
 {
 	for(int i = 0; i < m_cursize; ++i)
 	{

@@ -17,8 +17,8 @@ CHD_Group_L::~CHD_Group_L(void)
 
 void CHD_Group_L::MakeTerrain_Group(int istartidx)
 {
-	if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
-		return;
+	//if(istartidx < 0 || istartidx > SQ_TILECNTX*SQ_TILECNTY)
+	//	return;
 
 	m_startidx = istartidx;
 	m_start_bottomidx = istartidx + SQ_TILECNTX;
@@ -30,6 +30,7 @@ void CHD_Group_L::Group_L_Algorithm()
 	Hill_Algorithm(m_startidx);
 
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
+
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
 	{

@@ -142,4 +142,9 @@ int CObj::GetObjID(void)
 	return m_obj_id;
 }
 
+D3DXVECTOR2& CObj::GetReferencePos(void)
+{
+	return m_vPos;
+}
+
 int CObj::m_obj_id;

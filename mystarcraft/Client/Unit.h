@@ -19,6 +19,7 @@ protected:
 protected:
 	CAstar*				m_Astar;
 	vector<D3DXVECTOR2>*				m_terrain_path;
+	vector<D3DXVECTOR2>*				m_dummy_path;
 	const vector<D3DXVECTOR2>*				m_unit_path;
 	D3DXVECTOR2					m_vGoalPos;
 	D3DXVECTOR2					m_vwaypointPos;

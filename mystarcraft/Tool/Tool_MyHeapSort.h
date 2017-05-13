@@ -4,7 +4,7 @@
 
 const int MAXHEAP_SIZE = 2000;
 
-class CMyHeapSort
+class CTool_MyHeapSort
 {
 private:
 	PATH_NODE*	m_nodelist[MAXHEAP_SIZE];
@@ -19,7 +19,7 @@ public:
 	void Release(void);
 	void Release(PATH_NODE** openidx , boost::pool<>* _pool);
 public:
-	CMyHeapSort();
-	~CMyHeapSort();
+	CTool_MyHeapSort();
+	~CTool_MyHeapSort();
 
 };

@@ -339,6 +339,9 @@ void CTerrain_Group::SetTerrain_ID(const int terrain_id , const int flat_id )
 }
 void CTerrain_Group::Hill_Algorithm(const int idx)
 {
+	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
+		return;
+
 	const TERRAIN_INFO* pori_terrain = CTileMgr::GetInstance()->GetTerrain_Info(idx);
 	int isquence = pori_terrain->byGroup_sequence;
 

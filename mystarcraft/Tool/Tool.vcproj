@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Headers"
+				AdditionalIncludeDirectories="../Headers;&quot;C:\Boost\include\boost-1_63&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -70,6 +70,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="d3dx9.lib d3d9.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\Boost\library\boost\lib\i386"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -354,6 +355,30 @@
 				</File>
 				<File
 					RelativePath=".\TileMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool_Astar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool_Astar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool_MyHeapSort.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool_MyHeapSort.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool_MyMath.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Tool_MyMath.h"
 					>
 				</File>
 			</Filter>

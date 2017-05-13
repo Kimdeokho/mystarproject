@@ -26,8 +26,8 @@ CMaingame::~CMaingame(void)
 
 HRESULT CMaingame::Initialize(void)
 {
-	AllocConsole();
-	freopen( "CONOUT$",  "wt", stdout);
+	//AllocConsole();
+	//freopen( "CONOUT$",  "wt", stdout);
 
 	m_fTime = 0.f;
 	m_iFPS = 0;
@@ -96,5 +96,5 @@ void CMaingame::Release(void)
 	CArea_Mgr::DestroyInstance();
 	CLineMgr::DestroyInstance();
 
-	FreeConsole();
+	//FreeConsole();
 }

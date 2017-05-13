@@ -11,27 +11,42 @@
 #include "Device.h"
 #include "TextureMgr.h"
 #include "ScrollMgr.h"
+#include "Obj.h"
+
 //IMPLEMENT_SINGLETON(CAstar);
 CAstar::CAstar(void)
 {
 	memset(m_terrain_idxopenlist , 0 , sizeof(m_terrain_idxopenlist));
 	m_terrain_path.reserve(256);
+	m_dummy_path.reserve(256);
 	m_unit_path.reserve(256);
-	m_curloopcnt = 0;
+
 	m_terrain_openlist = new CMyHeapSort;
 	m_openlist = new CMyHeapSort;
 	m_PathPool = new boost::pool<>(sizeof(PATH_NODE));
-	m_default_loop = 400;
+
 	m_releasecnt = 0;
 	m_bPathUpdatestart = false;
 	m_brelease_start = false;
 	m_bdummy = false;
+	m_brealpath = false;
+	m_pObj = NULL;
 
 	m_accumulate = 0;
 
 	m_dummynode = NULL;
 
 	m_fAstarTime = 0.f;
+	m_fdummytime = 0.f;
+
+	m_eight_weight[UP] = 32;
+	m_eight_weight[DOWN] = 32;
+	m_eight_weight[LEFT] = 32;
+	m_eight_weight[RIGHT] = 32;
+	m_eight_weight[LEFT_UP] = 45;
+	m_eight_weight[RIGHT_UP] = 45;
+	m_eight_weight[LEFT_DOWN] = 45;
+	m_eight_weight[RIGHT_DOWN] = 45;
 }
 CAstar::~CAstar(void)
 {
@@ -42,14 +57,24 @@ CAstar::~CAstar(void)
 
 }
 //for_each()
-void CAstar::Initialize(void)
+void CAstar::Initialize(CObj* pobj)
 {
+	m_pObj = pobj;
+	m_ObjPos = m_pObj->GetReferencePos();
 }
-bool CAstar::Shortest_distance_check(const int& idx)
+bool CAstar::Shortest_distance_check(const int& idx , PATH_NODE* pnode , const int& g)
 {
 	/*주위에 오픈리스트가 있을때 어느쪽이 시작점과 더 가까운지 검사한다.*/
 	if(Check_TerrainOpenList(idx))
 	{
+
+		if(m_terrain_idxopenlist[idx]->G > pnode->G + g)
+		{
+			m_terrain_idxopenlist[idx]->G = pnode->G + g;
+			m_terrain_idxopenlist[idx]->iCost = m_terrain_idxopenlist[idx]->G + m_terrain_idxopenlist[idx]->H;
+			m_terrain_idxopenlist[idx]->pParent = pnode;			
+		}
+
 		return false;
 	}
 	else
@@ -57,19 +82,19 @@ bool CAstar::Shortest_distance_check(const int& idx)
 }
 void CAstar::Make_TerrainNode(const int& idx , PATH_NODE* parent_node ,const int& g)
 {
-	//PATH_NODE*	pnewnode = new PATH_NODE;
 	PATH_NODE*	pnewnode = (PATH_NODE*)m_PathPool->malloc();
 
 	pnewnode->pParent = parent_node;
 	pnewnode->index = idx;
-	//pnewnode->G = CMyMath::idx_distance(idx , m_startidx , m_tilecnt) * 32;
-	//pnewnode->G = CMyMath::pos_idstance(m_vStart_pos , m_vNode_pos);
-	pnewnode->H = CMyMath::pos_idstance(m_vNode_pos , m_vGoal_pos);
-	pnewnode->iCost = pnewnode->H; //pnewnode->G + pnewnode->H  + g;
+
+	pnewnode->G = parent_node->G + g;
+	pnewnode->H = CMyMath::idx_distance(idx , m_goalidx , m_tilecnt);
+	pnewnode->iCost = pnewnode->G + pnewnode->H;
 	pnewnode->vPos = m_vNode_pos;
 
 	m_terrain_openlist->push_node(pnewnode);
-	m_terrain_idxopenlist[pnewnode->index] = true;
+;
+	m_terrain_idxopenlist[pnewnode->index] = pnewnode;
 }
 void CAstar::Make_UnitNode(const int& idx , PATH_NODE* parent_node ,const int& g)
 {
@@ -81,7 +106,7 @@ void CAstar::Make_UnitNode(const int& idx , PATH_NODE* parent_node ,const int& g
 	pnewnode->G = parent_node->G + g;
 	pnewnode->H = CMyMath::idx_distance(idx  , m_goalidx , m_tilecnt/*간격도 넣어야할듯*/);	
 	pnewnode->vPos = m_vNode_pos;
-	pnewnode->iCost = CMyMath::pos_idstance(m_vNode_pos , m_vGoal_pos);//pnewnode->G + pnewnode->H;
+	pnewnode->iCost = CMyMath::pos_distance(m_vNode_pos , m_vGoal_pos);//pnewnode->G + pnewnode->H;
 
 
 	m_openlist->push_node(pnewnode);
@@ -147,18 +172,19 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		return;
 
 	m_tilecnt = 128;
-
 	PATH_NODE* pnode = NULL;
 
-	m_curloopcnt = 0;
+	m_fAstarTime = 0;
 
-	if(GETTIME > 0.016f)
-		return;
+	float tilesize = 32;
 
-	while(m_curloopcnt <= 10)
+	m_fdummytime += GETTIME;
+	while( m_fAstarTime <= 0.02f /*m_curloopcnt <= 10*/)
 	{
+		m_fAstarTime += GETTIME;
+		
 		++m_accumulate;
-		++m_curloopcnt;
+
 
 		pnode = m_terrain_openlist->pop_node();
 
@@ -166,6 +192,19 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 			m_dummynode = pnode;
 
 
+		//if(m_fdummytime >= 1 && m_bdummy)
+		//{
+		//	m_bdummy = false;
+		//	m_bPathUpdatestart = false;
+		//	while(NULL != pnode)
+		//	{
+		//		m_dummy_path.push_back(pnode->vPos);
+		//		pnode = pnode->pParent;
+		//	}
+		//	m_brealpath = false;
+		//	m_pathidx = int(m_dummy_path.size() - 1);
+		//	break; //여기 걸리면 그뒤로 A스타 그만해야함..
+		//}
 
 		if(NULL == pnode)
 		{
@@ -175,76 +214,43 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 			pnode = m_dummynode;
 			while(NULL != pnode)
 			{
-				m_terrain_path.push_back(pnode->vPos);//생각해보니 마지막 노드만 push 하면 된다.
+				m_terrain_path.push_back(pnode->vPos);
 				pnode = pnode->pParent;
 			}
+			m_brealpath = true;
 			break; //여기 걸리면 그뒤로 A스타 그만해야함..
 		}
 
-		if(m_dummynode->H >= pnode->H)
+		if(m_dummynode->H > pnode->H)
 			m_dummynode = pnode;
 
-		//if(NULL != pnode->pParent)
-		//{
-		//	memset(m_eight_weight , 0 , sizeof(m_eight_weight));
 
-		//	int idxgap = 0;
-		//	idxgap = pnode->index - pnode->pParent->index;
-		//	
-		//	int dis = 32*32;//CMyMath::pos_idstance(pnode->vPos , m_vGoal_pos)/2;
-		//	if(1 == idxgap)
-		//		m_eight_weight[RIGHT] = -dis;
-		//	else if( -1 == idxgap)
-		//		m_eight_weight[LEFT] = -dis;
-		//	else if( SQ_TILECNTX == idxgap)
-		//		m_eight_weight[UP] = -dis;
-		//	else if( -SQ_TILECNTX == idxgap)
-		//		m_eight_weight[DOWN] = -dis;
-		//	else if( -(SQ_TILECNTX + 1) == idxgap)
-		//		m_eight_weight[RIGHT_DOWN] = -dis;
-		//	else if( -(SQ_TILECNTX - 1) == idxgap)
-		//		m_eight_weight[LEFT_DOWN] = -dis;
-		//	else if( SQ_TILECNTX + 1 == idxgap)
-		//		m_eight_weight[LEFT_UP] = -dis;
-		//	else if( SQ_TILECNTX - 1 == idxgap)
-		//		m_eight_weight[RIGHT_UP] = -dis;
-		//}
-
-		m_terrain_idxopenlist[pnode->index] = false;
-		m_terrain_closelist.insert(make_pair(pnode->index , pnode));
 
 		if(pnode->index == m_goalidx)
 		{
+			m_bdummy = false;
 			m_brelease_start = true;
 			m_bPathUpdatestart = false;
 
 			while(NULL != pnode)
 			{
-				m_terrain_path.push_back(pnode->vPos);//생각해보니 마지막 노드만 push 하면 된다.
+				m_terrain_path.push_back(pnode->vPos);
 				pnode = pnode->pParent;
 			}
+			m_brealpath = true;
+			m_pathidx = int(m_terrain_path.size() - 1);
 			break;
 		}
-
-		if(m_accumulate > 3000)
-		{
-			m_bPathUpdatestart = false;
-			pnode = m_dummynode;
-			while(NULL != pnode)
-			{
-				m_terrain_path.push_back(pnode->vPos);//생각해보니 마지막 노드만 push 하면 된다.
-				pnode = pnode->pParent;
-			}
-			break;
-		}
+		m_terrain_idxopenlist[pnode->index] = NULL;
+		m_terrain_closelist.insert(make_pair(pnode->index , pnode));
 
 		Init_eightidx(pnode->index);
 		//업
 		if(Check_TileOption(m_eight_idx[UP]) &&
 			Check_TerrainCloseList(m_eight_idx[UP]))
 		{
-			InitPos(0 , -32 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[UP]))
+			InitPos(0 , -tilesize , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[UP] , pnode , m_eight_weight[UP]))
 			{
 				Make_TerrainNode(m_eight_idx[UP] , pnode , m_eight_weight[UP]/*대각은 45*/);
 			}
@@ -253,8 +259,8 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		if(Check_TileOption(m_eight_idx[DOWN]) &&
 			Check_TerrainCloseList(m_eight_idx[DOWN]))
 		{
-			InitPos(0 , 32 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[DOWN]))
+			InitPos(0 , tilesize , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[DOWN] , pnode , m_eight_weight[DOWN]))
 			{
 				Make_TerrainNode(m_eight_idx[DOWN] , pnode , m_eight_weight[DOWN]);
 			}
@@ -263,8 +269,8 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		if(Check_TileOption(m_eight_idx[LEFT]) &&
 			Check_TerrainCloseList(m_eight_idx[LEFT]))
 		{
-			InitPos(-32 , 0 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[LEFT]))
+			InitPos(-tilesize , 0 , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[LEFT] , pnode , m_eight_weight[LEFT]))
 			{
 				Make_TerrainNode(m_eight_idx[LEFT] , pnode , m_eight_weight[LEFT]);
 			}
@@ -273,8 +279,8 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		if(Check_TileOption(m_eight_idx[RIGHT]) &&
 			Check_TerrainCloseList(m_eight_idx[RIGHT]))
 		{
-			InitPos(32 , 0 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[RIGHT]))
+			InitPos(tilesize , 0 , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[RIGHT] , pnode , m_eight_weight[RIGHT]))
 			{
 				Make_TerrainNode(m_eight_idx[RIGHT] , pnode , m_eight_weight[RIGHT]);
 			}
@@ -283,8 +289,8 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		if(Check_TileOption(m_eight_idx[LEFT_UP]) &&
 			Check_TerrainCloseList(m_eight_idx[LEFT_UP]))
 		{
-			InitPos(-32 , -32 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[LEFT_UP]))
+			InitPos(-tilesize , -tilesize , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[LEFT_UP] , pnode , m_eight_weight[LEFT_UP]))
 			{
 				Make_TerrainNode(m_eight_idx[LEFT_UP] , pnode , m_eight_weight[LEFT_UP]);
 			}
@@ -293,8 +299,8 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		if(Check_TileOption(m_eight_idx[RIGHT_UP]) &&
 			Check_TerrainCloseList(m_eight_idx[RIGHT_UP]))
 		{
-			InitPos(32 , -32 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[RIGHT_UP]))
+			InitPos(tilesize , -tilesize , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[RIGHT_UP] , pnode , m_eight_weight[RIGHT_UP]))
 			{
 				Make_TerrainNode(m_eight_idx[RIGHT_UP] , pnode , m_eight_weight[RIGHT_UP]);
 			}
@@ -303,8 +309,8 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		if(Check_TileOption(m_eight_idx[LEFT_DOWN]) &&
 			Check_TerrainCloseList(m_eight_idx[LEFT_DOWN]))
 		{
-			InitPos(-32 , 32 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[LEFT_DOWN]))
+			InitPos(-tilesize , tilesize , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[LEFT_DOWN] , pnode , m_eight_weight[LEFT_DOWN]))
 			{
 				Make_TerrainNode(m_eight_idx[LEFT_DOWN] , pnode , m_eight_weight[LEFT_DOWN]);
 			}
@@ -313,18 +319,20 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 		if(Check_TileOption(m_eight_idx[RIGHT_DOWN]) &&
 			Check_TerrainCloseList(m_eight_idx[RIGHT_DOWN]))
 		{
-			InitPos(32 , 32 , pnode->vPos);
-			if(Shortest_distance_check(m_eight_idx[RIGHT_DOWN]))
+			InitPos(tilesize , tilesize , pnode->vPos);
+			if(Shortest_distance_check(m_eight_idx[RIGHT_DOWN] , pnode , m_eight_weight[RIGHT_DOWN]))
 			{
 				Make_TerrainNode(m_eight_idx[RIGHT_DOWN] , pnode , m_eight_weight[RIGHT_DOWN]);		
 			}
 		}
 	}
-
-	printf("%d\n" , m_accumulate);
+	
+	//printf("%d\n" , m_accumulate);
+	//printf("%f\n" , m_fdummytime);
 }
 void CAstar::Path_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos, bool bdummypath)
 {
+	m_fdummytime = 0.f;
 	m_fAstarTime = 0.f;
 
 	m_vStart_pos = startpos;
@@ -342,17 +350,17 @@ void CAstar::Path_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECT
 	m_startindex = CMyMath::Pos_to_index(startpos.x , startpos.y ,32);
 	m_goalidx = CMyMath::Pos_to_index(goalpos.x , goalpos.y ,32);
 
-	//PATH_NODE* pnode = new PATH_NODE;
 	PATH_NODE* pnode = (PATH_NODE*)m_PathPool->malloc();
 	pnode->G = 0;
-	pnode->H = CMyMath::pos_idstance(m_vStart_pos , m_vGoal_pos);
+	pnode->H = CMyMath::idx_distance(m_startindex , m_goalidx , m_tilecnt);
 	pnode->iCost = pnode->H;
 	pnode->pParent = NULL;
 	pnode->index = m_startindex;
 	pnode->vPos = startpos;
 
 	m_terrain_openlist->push_node(pnode);
-	m_terrain_idxopenlist[pnode->index] = true;
+	//m_terrain_openlist.insert(make_pair(pnode->iCost , pnode));
+	m_terrain_idxopenlist[pnode->index] = pnode;
 }
 void CAstar::Path_calculation(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const MYRECT<float>& rect , const int& objid)
 {
@@ -506,7 +514,12 @@ bool CAstar::Check_OpenList(const int& idx)
 
 bool CAstar::Check_TerrainOpenList(const int& idx)
 {
-	if(true == m_terrain_idxopenlist[idx])
+	//if(true == m_terrain_idxopenlist[idx])
+	//	return true;
+	//else
+	//	return false;
+
+	if(NULL != m_terrain_idxopenlist[idx])
 		return true;
 	else
 		return false;
@@ -529,6 +542,21 @@ vector<D3DXVECTOR2>* CAstar::GetTerrain_Path(void)
 {
 	return &m_terrain_path;
 }
+vector<D3DXVECTOR2>* CAstar::Getdummy_Path(void)
+{
+	return &m_dummy_path;
+}
+PATH_NODE*	CAstar::GetNode(const int& idx)
+{
+	if(!m_terrain_closelist.empty())
+	{
+		boost::unordered_map<int , PATH_NODE*>::iterator iter = m_terrain_closelist.find(idx);
+		if(m_terrain_closelist.end() != iter)
+			return iter->second;
+	}
+
+	return NULL;
+}
 const vector<D3DXVECTOR2>* CAstar::GetUnit_Path(void)
 {
 	return &m_unit_path;
@@ -546,11 +574,10 @@ void CAstar::Release_TerrainCloseList(void)
 	if(!m_brelease_start)
 		return;
 
-
-
 	if(!m_terrain_closelist.empty())
 	{
 		m_releasecnt = 0;
+
 		boost::unordered_map<int , PATH_NODE*>::iterator iter = m_terrain_closelist.begin();
 		boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_terrain_closelist.end();
 		for( ; iter != iter_end;)
@@ -581,19 +608,19 @@ void CAstar::Release_TerrainPath(void)
 		boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_terrain_closelist.end();
 		for( ; iter != iter_end; ++iter)
 		{
-			//Safe_Delete(iter->second);
 			m_PathPool->free(iter->second);
 			iter->second = NULL;
 		}
 		m_terrain_closelist.clear();
 	}
 
-
 	m_terrain_openlist->Release(m_terrain_idxopenlist , m_PathPool);
 
 	if(!m_terrain_path.empty())
 		m_terrain_path.clear();
 
+	if(!m_dummy_path.empty())
+		m_dummy_path.clear();
 }
 void CAstar::Release_UnitPath(void)
 {
@@ -644,5 +671,48 @@ void CAstar::Path_Render(void)
 		//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
 	}
 	
-	
+
+	if(!m_dummy_path.empty())
+	{
+		for(size_t i = 0; i < m_dummy_path.size(); ++i)
+		{
+			tempmat._41 = m_dummy_path[i].x - CScrollMgr::m_fScrollX;
+			tempmat._42 = m_dummy_path[i].y - CScrollMgr::m_fScrollY;
+			CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+
+			if(0 == i)
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
+			else if( i == m_dummy_path.size() - 1)
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
+			else
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
+		}
+	}
+}
+void CAstar::MoveUpdate(void)
+{
+	if(m_brealpath)
+	{
+		if(!m_terrain_path.empty())
+		{
+			D3DXVECTOR2 curpos;
+			D3DXVECTOR2 nextpos;
+			D3DXVECTOR2 vnormal;
+			if( 0 != m_pathidx)
+			{
+				curpos = (m_terrain_path)[m_pathidx];
+				nextpos = (m_terrain_path)[m_pathidx-1];
+
+				D3DXVec2Normalize(&vnormal , &(nextpos - curpos));
+
+				m_pObj->GetReferencePos() += vnormal*GETTIME*500;
+
+				if(CMyMath::pos_distance(m_pObj->GetPos() , nextpos) < 30*30)
+				{
+					--m_pathidx;
+				}
+			}
+		}
+
+	}
 }

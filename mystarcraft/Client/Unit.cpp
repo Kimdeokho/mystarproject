@@ -144,8 +144,11 @@ void CUnit::Dir_calculation(void)
 void CUnit::PathFinder_Initialize(void)
 {
 	m_Astar = m_Astar = new CAstar;
+	m_Astar->Initialize(this);
 	m_terrain_path = m_Astar->GetTerrain_Path();
+	m_dummy_path = m_Astar->Getdummy_Path();
 	m_unit_path = m_Astar->GetUnit_Path();
+
 }
 
 void CUnit::PathFinder_Update(void)
@@ -167,20 +170,47 @@ void CUnit::PathFinder_Update(void)
 	더미 경로를 미리 구해두고 그뒤에 진짜 경로를 구해본다.*/
 
 	m_Astar->Path_calculation_Update(m_vGoalPos);
+	m_Astar->MoveUpdate();
+
+
+		//if(!m_dummy_path->empty())
+		//{
+		//	static size_t curidx = m_dummy_path->size() - 1;
+
+		//	if(0 != curidx)
+		//	{
+		//		D3DXVECTOR2 curpos;
+		//		D3DXVECTOR2 nextpos;
+		//		D3DXVECTOR2 vnormal;
+
+		//		curpos = (*m_dummy_path)[curidx];
+		//		nextpos = (*m_dummy_path)[curidx-1];
+
+		//		D3DXVec2Normalize(&vnormal , &(nextpos - curpos));
+
+		//		m_vPos += vnormal*GETTIME*100;
+
+		//		if( abs((int)m_vPos.x - (int)nextpos.x) <= 2 &&
+		//			abs((int)m_vPos.y - (int)nextpos.y) <= 2)
+		//		{
+		//			--curidx;
+		//		}
+		//	}
+
+		//}
 
 	
-	if(!m_terrain_path->empty())
-	{
-/*		m_fAstarTick += GETTIME;
-		if(m_fAstarTick > 1.5f)
-		{
-			m_fAstarTick = 0.f;					
-			m_vwaypointPos = (*m_terrain_path)[0];
-			m_Astar->Path_calculation_Start(m_vwaypointPos , m_vGoalPos , false);
-			
-			m_terrain_path->clear();
-		}	*/	
-	}
+	//if(!m_dummy_path->empty())
+	//{
+	//	m_fAstarTick += GETTIME;
+	//	if(m_fAstarTick > 1.5f)
+	//	{
+	//		m_fAstarTick = 0.f;					
+	//		m_Astar->Path_calculation_Start(m_vPos , m_vGoalPos , false);
+	//		
+	//		m_dummy_path->clear();
+	//	}		
+	//}
 }
 void CUnit::Pathfind_start(void)
 {

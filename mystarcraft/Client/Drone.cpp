@@ -70,6 +70,8 @@ void CDrone::Update(void)
 
 void CDrone::Render(void)
 {
+	m_Astar->Path_Render();
+
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY + 7;
@@ -81,8 +83,6 @@ void CDrone::Render(void)
 	m_pSprite->Draw(m_curtex , NULL , &m_vTextureCenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
 
 
-
-	m_Astar->Path_Render();
 }
 void CDrone::Inputkey_reaction(const int& nkey)
 {
