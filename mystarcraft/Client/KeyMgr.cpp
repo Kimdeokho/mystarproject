@@ -10,6 +10,8 @@
 #include "LineMgr.h"
 #include "ObjPoolMgr.h"
 #include "Drone.h"
+#include "MyMath.h"
+#include "TileManager.h"
 
 IMPLEMENT_SINGLETON(CKeyMgr)
 CKeyMgr::CKeyMgr(void)
@@ -41,6 +43,7 @@ void CKeyMgr::TurboKeyDown(const int& nkey)
 	{
 		m_KeyPress[nkey] = true;
 		//여기에 nkey를 현재선택된 오브젝트에 보내서 메세지 반응하게한다.
+		Intputkey_reaction(nkey);
 	}
 	else
 	{
@@ -99,19 +102,22 @@ void CKeyMgr::MouseKeyDown(const int& nkey)
 
 			if(VK_LBUTTON == nkey)
 			{
+				/*곧 지울것들이다*/
 				pObj = new CDrone;
 				pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
 				pObj->Initialize();
 				CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
 			}
 
-			CObjMgr::GetInstance()->Intputkey_reaction(nkey);			
+			Intputkey_reaction(nkey);/*지형 길을 먼저구해야하기때문에 위에 있어야한다*/
+			CObjMgr::GetInstance()->Intputkey_reaction(nkey);						
 		}
 		else
 		{
 			m_curpt.x = float(CMouseMgr::GetMousePt().x);
 			m_curpt.y = float(CMouseMgr::GetMousePt().y);
 
+			/*드래그 이미지에 관한 함수들이다.*/
 			CLineMgr::GetInstance()->SetRectPoint(m_downpt , m_curpt);
 			CLineMgr::GetInstance()->SetRenderSwitch(true);
 		}
@@ -192,4 +198,49 @@ void CKeyMgr::Update(void)
 	//end = clock();
 
 	//CFontMgr::GetInstance()->Setnumber_combine_Font(L"%d" , end - begin , 200, 200);
+}
+
+void CKeyMgr::Intputkey_reaction(const int& nkey)
+{
+	
+
+	if(VK_RBUTTON == nkey)
+	{
+		CFontMgr::GetInstance()->Set_KeyInput_Font(L"우클릭" );
+
+		D3DXVECTOR2 temp = CMouseMgr::GetvMousePt();
+		int goalidx = CMyMath::Pos_to_index(temp.x , temp.y);
+
+
+		CTileManager::GetInstance()->Flowfield_Pathfinding(goalidx);
+	}
+	
+	float fspeed = 1500.f;
+	/*스크롤 XY의 범위는 0~3296*/
+	if(VK_LEFT == nkey)
+	{
+		CScrollMgr::m_fScrollX -= GETTIME*fspeed;
+	}
+	if(VK_RIGHT == nkey)
+	{
+		CScrollMgr::m_fScrollX += GETTIME*fspeed;
+	}
+	if(VK_UP == nkey)
+	{
+		CScrollMgr::m_fScrollY -= GETTIME*fspeed;
+	}
+	if(VK_DOWN == nkey)
+	{
+		CScrollMgr::m_fScrollY += GETTIME*fspeed;
+	}
+
+	if(0 > CScrollMgr::m_fScrollX)
+		CScrollMgr::m_fScrollX = 0;
+	else if(4096 - BACKBUFFER_SIZEX <= CScrollMgr::m_fScrollX)
+		CScrollMgr::m_fScrollX = 4096 - BACKBUFFER_SIZEX;
+
+	if(0 > CScrollMgr::m_fScrollY)
+		CScrollMgr::m_fScrollY = 0;
+	else if(4096 - BACKBUFFER_SIZEY <= CScrollMgr::m_fScrollY)
+		CScrollMgr::m_fScrollY = 4096 - BACKBUFFER_SIZEY;
 }

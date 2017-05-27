@@ -20,10 +20,9 @@ CScene_Stage::~CScene_Stage(void)
 
 HRESULT CScene_Stage::Initialize(void)
 {
+		
 	CTileManager::GetInstance()->Initialize();
-	//CObjPoolMgr::GetInstance()->Initialize();
-
-	LoadData();	
+	LoadData();
 
 	return S_OK;
 }
@@ -40,7 +39,7 @@ void CScene_Stage::Render(void)
 	CTileManager::GetInstance()->RenderTile();
 	CObjMgr::GetInstance()->Render();
 
-	//CTileManager::GetInstance()->RenderFog();
+	CTileManager::GetInstance()->RenderFog();
 
 	CFontMgr::GetInstance()->FontRender();
 	CLineMgr::GetInstance()->LineRender();

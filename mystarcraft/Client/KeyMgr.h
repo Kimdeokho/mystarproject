@@ -32,6 +32,8 @@ public:
 	void DbClick(const int& nkey);
 	void Update(void);
 public:
+	void Intputkey_reaction(const int& nkey);
+public:
 	CKeyMgr(void);
 	~CKeyMgr(void);
 };

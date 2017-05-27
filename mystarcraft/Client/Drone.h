@@ -1,11 +1,16 @@
 #pragma once
 #include "unit.h"
 
+class CComponent;
 class CDrone :
 	public CUnit
 {
 private:
-	const vector<TEXINFO*>*					m_moveTex[DIR_CNT];/*[]는 방향(각도)을 뜻한다*/
+	const vector<TEXINFO*>* 	m_moveTex[DIR_CNT];/*[]는 방향(각도)을 뜻한다*/
+private:
+	/*배열이나 벡터로 만들 생각이다*/
+	CComponent*				    m_comfog;		
+	CComponent*				    m_compathfind;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

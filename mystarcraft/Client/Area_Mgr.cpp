@@ -12,7 +12,18 @@ CArea_Mgr::CArea_Mgr(void)
 CArea_Mgr::~CArea_Mgr(void)
 {
 }
+void CArea_Mgr::DragCheck(const int& idx , MYRECT<float>& rc)
+{
+	Calculator_eightidx(idx , 16);
 
+}
+void CArea_Mgr::Choice_unit(const int& idx)
+{
+	if( !m_Area256[idx].empty() )
+	{
+
+	}
+}
 void CArea_Mgr::SetObj_Area64(const int& curidx , const int& oldidx , CObj* pobj)
 {
 	if(!m_Area64[oldidx].empty())
@@ -25,6 +36,7 @@ void CArea_Mgr::SetObj_Area64(const int& curidx , const int& oldidx , CObj* pobj
 			if( (*iter) == pobj )
 			{
 				iter = m_Area64[oldidx].erase(iter);
+				break;
 			}
 			else
 				++iter;
@@ -32,6 +44,27 @@ void CArea_Mgr::SetObj_Area64(const int& curidx , const int& oldidx , CObj* pobj
 	}
 
 	m_Area64[curidx].push_back(pobj);
+}
+void CArea_Mgr::SetObj_Area256(const int& curidx , const int& oldidx , CObj* pobj)
+{
+	if(!m_Area256[oldidx].empty())
+	{
+		list<CObj*>::iterator iter = m_Area256[oldidx].begin();
+		list<CObj*>::iterator iter_end = m_Area256[oldidx].end();
+
+		for( ; iter != iter_end;)
+		{
+			if( (*iter) == pobj )
+			{
+				iter = m_Area256[oldidx].erase(iter);
+				break;
+			}
+			else
+				++iter;
+		}
+	}
+
+	m_Area256[curidx].push_back(pobj);
 }
 void CArea_Mgr::SetObj_Area512(const int& curidx , const int& oldidx , CObj* pobj)
 {
@@ -53,7 +86,7 @@ void CArea_Mgr::SetObj_Area512(const int& curidx , const int& oldidx , CObj* pob
 
 	m_Area512[curidx].push_back(pobj);
 }
-void CArea_Mgr::Collision_Area(const int& idx , D3DXVECTOR2& vpos)
+void CArea_Mgr::Collision_Area64(const int& idx , D3DXVECTOR2& vpos)
 {
 	if(idx < 0)
 		return;
@@ -110,56 +143,59 @@ void CArea_Mgr::Collision_Area(const int& idx , D3DXVECTOR2& vpos)
 		}
 	}
 }
-bool CArea_Mgr::Check_Area(ASTAR_DIR edir , const int& idx ,const MYRECT<float>& rc , D3DXVECTOR2& vpos)
+void CArea_Mgr::Calculator_eightidx(const int& idx , const int& tilecnt)
 {
-	m_unitrc = rc; // 복사되는지 유의
-
 	m_idx    = idx;
 
 	if(m_idx < 0)
 		m_up_idx = -1;
 	else
-		m_up_idx = (idx - 64);
+		m_up_idx = (idx - tilecnt);
 
 	if(m_idx < 0 ||
-		m_idx % 64 <= 0)
+		m_idx % tilecnt <= 0)
 		m_leftup_idx = -1;
 	else
-		m_leftup_idx = idx - 1 - 64;
+		m_leftup_idx = idx - 1 - tilecnt;
 
 	if(m_idx < 0 ||
-		m_idx % 64 >= 64 - 1)
+		m_idx % tilecnt >= tilecnt - 1)
 		m_rightup_idx = -1;
 	else
-		m_rightup_idx = idx + 1 - 64;
+		m_rightup_idx = idx + 1 - tilecnt;
 
-	if(m_idx / 64 >= 63)
+	if(m_idx / tilecnt >= tilecnt-1)
 		m_down_idx = -1;
 	else
-		m_down_idx = idx + 64;
+		m_down_idx = idx + tilecnt;
 
-	if(m_idx % 64 <= 0)
+	if(m_idx % tilecnt <= 0)
 		m_left_idx = -1;
 	else
 		m_left_idx = idx - 1;
 
-	if(m_idx % 64 >= 63)
+	if(m_idx % tilecnt >= tilecnt - 1)
 		m_right_idx = -1;
 	else
 		m_right_idx = idx + 1;
 
-	if(m_idx / 64 >= 63 ||
-		m_idx % 64 <= 0)
+	if(m_idx / tilecnt >= tilecnt - 1 ||
+		m_idx % tilecnt <= 0)
 		m_leftdown_idx = -1;
 	else
-		m_leftdown_idx = idx - 1 + 64;
+		m_leftdown_idx = idx - 1 + tilecnt;
 
-	if(m_idx / 64 >= 63 ||
-		m_idx % 64 >= 63)
+	if(m_idx / tilecnt >= tilecnt - 1 ||
+		m_idx % tilecnt >= tilecnt - 1)
 		m_rightdown_idx = -1;
 	else
-		m_rightdown_idx = idx + 1 + 64;
+		m_rightdown_idx = idx + 1 + tilecnt;
+}
+bool CArea_Mgr::Check_Area(ASTAR_DIR edir , const int& idx ,const MYRECT<float>& rc , D3DXVECTOR2& vpos)
+{
+	m_unitrc = rc; // 복사되는지 유의
 
+	Calculator_eightidx(idx , 64);
 
 	if(UP == edir)
 	{

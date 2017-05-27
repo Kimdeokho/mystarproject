@@ -136,6 +136,23 @@ typedef struct tagAstarNode
 	}
 }PATH_NODE;
 
+typedef struct tagFlowFieldNode
+{
+	int				iCost;
+	int				index;
+	int				idestidx;
+	bool			bcheck;
+	bool			bmove;
+	tagFlowFieldNode()
+	{
+		index = 0;
+		iCost = 0;
+		idestidx = 0;
+		bcheck = false;
+		bmove =  true;
+	}
+}FLOW_NODE;
+
 typedef struct tagFrame
 {
 	float		fFrame;

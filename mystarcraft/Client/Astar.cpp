@@ -21,8 +21,8 @@ CAstar::CAstar(void)
 	m_dummy_path.reserve(256);
 	m_unit_path.reserve(256);
 
-	m_terrain_openlist = new CMyHeapSort;
-	m_openlist = new CMyHeapSort;
+	m_terrain_openlist = new CMyHeapSort<PATH_NODE*>;
+	m_openlist = new CMyHeapSort<PATH_NODE*>;
 	m_PathPool = new boost::pool<>(sizeof(PATH_NODE));
 
 	m_releasecnt = 0;
@@ -87,9 +87,9 @@ void CAstar::Make_TerrainNode(const int& idx , PATH_NODE* parent_node ,const int
 	pnewnode->pParent = parent_node;
 	pnewnode->index = idx;
 
-	pnewnode->G = parent_node->G + g;
-	pnewnode->H = CMyMath::idx_distance(idx , m_goalidx , m_tilecnt);
-	pnewnode->iCost = pnewnode->G + pnewnode->H;
+	//pnewnode->G = parent_node->G + g;
+	//pnewnode->H = CMyMath::idx_distance(idx  , m_goalidx , m_tilecnt/*간격도 넣어야할듯*/);	
+	pnewnode->iCost = CMyMath::pos_distance(m_vNode_pos , m_vGoal_pos);
 	pnewnode->vPos = m_vNode_pos;
 
 	m_terrain_openlist->push_node(pnewnode);
@@ -218,6 +218,7 @@ void CAstar::Path_calculation_Update(const D3DXVECTOR2& goalpos)
 				pnode = pnode->pParent;
 			}
 			m_brealpath = true;
+			m_pathidx = int(m_terrain_path.size() - 1);
 			break; //여기 걸리면 그뒤로 A스타 그만해야함..
 		}
 
@@ -352,7 +353,7 @@ void CAstar::Path_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECT
 
 	PATH_NODE* pnode = (PATH_NODE*)m_PathPool->malloc();
 	pnode->G = 0;
-	pnode->H = CMyMath::idx_distance(m_startindex , m_goalidx , m_tilecnt);
+	pnode->H = CMyMath::pos_distance(m_vNode_pos , m_vGoal_pos);
 	pnode->iCost = pnode->H;
 	pnode->pParent = NULL;
 	pnode->index = m_startindex;
@@ -644,50 +645,32 @@ void CAstar::Release_UnitPath(void)
 
 void CAstar::Path_Render(void)
 {
-	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 
-	D3DXMATRIX	tempmat;
-	D3DXMatrixIdentity(&tempmat);
+	//D3DXMATRIX	tempmat;
+	//D3DXMatrixIdentity(&tempmat);
 
-	if(!m_terrain_path.empty())
-	{
-		for(size_t i = 0; i < m_terrain_path.size(); ++i)
-		{
-			tempmat._41 = m_terrain_path[i].x - CScrollMgr::m_fScrollX;
-			tempmat._42 = m_terrain_path[i].y - CScrollMgr::m_fScrollY;
-			CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+	//if(!m_terrain_path.empty())
+	//{
+	//	for(size_t i = 0; i < m_terrain_path.size(); ++i)
+	//	{
+	//		tempmat._41 = m_terrain_path[i].x - CScrollMgr::m_fScrollX;
+	//		tempmat._42 = m_terrain_path[i].y - CScrollMgr::m_fScrollY;
+	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
 
-			if(0 == i)
-				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-			else if( i == m_terrain_path.size() - 1)
-				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-			else
-				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-		}
+	//		if(0 == i)
+	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
+	//		else if( i == m_terrain_path.size() - 1)
+	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
+	//		else
+	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
+	//	}
 
-		//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
-		//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
-		//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-		//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	}
-	
-
-	if(!m_dummy_path.empty())
-	{
-		for(size_t i = 0; i < m_dummy_path.size(); ++i)
-		{
-			tempmat._41 = m_dummy_path[i].x - CScrollMgr::m_fScrollX;
-			tempmat._42 = m_dummy_path[i].y - CScrollMgr::m_fScrollY;
-			CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-
-			if(0 == i)
-				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-			else if( i == m_dummy_path.size() - 1)
-				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-			else
-				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-		}
-	}
+	//	//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
+	//	//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
+	//	//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+	//	//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
+	//}
 }
 void CAstar::MoveUpdate(void)
 {

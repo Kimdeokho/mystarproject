@@ -2,6 +2,7 @@
 
 #include "Include.h"
 
+template<typename T>class CMyHeapSort;
 class CTileManager
 {
 public:
@@ -43,16 +44,23 @@ private:
 
 
 
-	LPDIRECT3DSURFACE9 pSurfacefog , pSurfacemask;
-	D3DSURFACE_DESC fogDesc , pmaskDesc;
-	D3DLOCKED_RECT plockedRect , pmaskrect;
-	DWORD* fogimgData;
-	DWORD* maskimgData;
+	//LPDIRECT3DSURFACE9 pSurfacefog , pSurfacemask;
+	//D3DSURFACE_DESC fogDesc , pmaskDesc;
+	//D3DLOCKED_RECT plockedRect , pmaskrect;
+	//DWORD* fogimgData;
+	//DWORD* maskimgData;
 
-
+/*다음으로 갈 인덱스, 비용만 필요 검사했는지 확인용 bool*/
+	CMyHeapSort<FLOW_NODE*>*	m_heapsort;
+	FLOW_NODE*	m_flownode[SQ_TILECNTX*SQ_TILECNTY];
+	int			m_eight_idx[ASTAR_DIR_END];
 	float m_fTimeTest;
 public:
 	void Initialize(void);
+	void Init_eightidx(const int& idx);
+public:
+	void Flowfield_Pathfinding(const int& goalidx);
+	void Flowfield_Render(void);
 public:
 	bool	GetFogLight(const int& idx);
 	BYTE	GetTileOption(const int& idx);
@@ -60,6 +68,7 @@ public:
 	bool	GetFogSearch(const int& idx);
 	TILE**	GetSqTile(void);
 	CREEP_INFO**	GetCreepTile(void);
+	void	GetFlowfield_Path(const int& idx , vector<int>& path);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
 	void SetFogLight(int idx, float fdistance , float fradius);

@@ -7,6 +7,8 @@
 #include "Astar.h"
 #include "MouseMgr.h"
 
+#include "Com_fog.h"
+#include "Com_Pathfind.h"
 CDrone::CDrone(void)
 {
 }
@@ -29,20 +31,27 @@ void CDrone::Initialize(void)
 	m_vTextureCenter = D3DXVECTOR3(64,64,0);
 	m_sortID = SORT_GROUND;
 	m_eType = TYPE_GROUND;
-	m_iSightrange = 19;
+
+	//m_iSightrange = 19;
 
 	m_rect.left = m_vPos.x - 11.5f;
 	m_rect.right = m_vPos.x + 11.5f;
 	m_rect.top = m_vPos.y - 11.5f;
 	m_rect.bottom = m_vPos.y + 11.5f;
 
-	PathFinder_Initialize();
+	m_comfog = new CCom_fog(19);
+	m_comfog->Initialize(this);
+
+	m_compathfind = new Com_Pathfind;
+	m_compathfind->Initialize(this);
 }
 
 void CDrone::Update(void)
 {
 	CObj::idx_update();
 	//CUnit::FogUpdate();
+	m_comfog->Update();
+
 	CUnit::Dir_calculation();
 	CUnit::PathFinder_Update();
 
@@ -88,11 +97,12 @@ void CDrone::Inputkey_reaction(const int& nkey)
 {
 	if(VK_RBUTTON == nkey)
 	{
-		Pathfind_start();
+		((Com_Pathfind*)m_compathfind)->StartPathfinding();
 	}
 }
 
 void CDrone::Release(void)
 {
-	
+	Safe_Delete(m_comfog);
+	Safe_Delete(m_compathfind);
 }

@@ -19,6 +19,7 @@ public:
 	void SetRectPoint(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend);
 	void SetRenderSwitch(bool bswitch);
 	void LineRender(void);
+	void Choose_army_unit(void);
 public:
 	CLineMgr(void);
 	~CLineMgr(void);

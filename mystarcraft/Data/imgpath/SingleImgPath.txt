@@ -6,3 +6,11 @@ Fog|fogmask100|..\Texture\Single\Fog\fogmask100.png
 Fog|fogmask640|..\Texture\Single\Fog\fogmask640.png
 Fog|blackfog|..\Texture\Single\Fog\blackfog.png
 Fog|alphafog|..\Texture\Single\Fog\alphafog.png
+Direction|UP|..\Texture\Single\DebugTile\up.png
+Direction|RIGHT_UP|..\Texture\Single\DebugTile\rightup.png
+Direction|RIGHT|..\Texture\Single\DebugTile\right.png
+Direction|RIGHT_DOWN|..\Texture\Single\DebugTile\rightdown.png
+Direction|DOWN|..\Texture\Single\DebugTile\down.png
+Direction|LEFT_DOWN|..\Texture\Single\DebugTile\leftdown.png
+Direction|LEFT|..\Texture\Single\DebugTile\left.png
+Direction|LEFT_UP|..\Texture\Single\DebugTile\leftup.png

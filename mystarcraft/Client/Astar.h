@@ -2,7 +2,7 @@
 
 #include "Include.h"
 
-class CMyHeapSort;
+template<typename T> class CMyHeapSort;
 class CObj;
 class CAstar //유닛마다 가지고 있어야할듯 싶다.
 {
@@ -10,14 +10,14 @@ class CAstar //유닛마다 가지고 있어야할듯 싶다.
 private://지형이동 Astar
 	boost::pool<>*			m_PathPool;
 
-	CMyHeapSort*			m_terrain_openlist;
+	CMyHeapSort<PATH_NODE*>*			m_terrain_openlist;
 
 	PATH_NODE*				m_terrain_idxopenlist[SQ_TILECNTY*SQ_TILECNTX];
 
 	boost::unordered_map<int /*인덱스*/, PATH_NODE*> m_terrain_closelist;
 private: //유닛사이 이동 AStar
 	//multimap<int/*비용*/ , PATH_NODE*>		m_openlist;
-	CMyHeapSort*							m_openlist;
+	CMyHeapSort<PATH_NODE*>*							m_openlist;
 	boost::unordered_set<int>				m_idxopenlist;//열린목록이 있나 없나 체크할때 필요
 
 	boost::unordered_map<int , PATH_NODE*>	m_closelist;

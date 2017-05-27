@@ -14,9 +14,10 @@ CObj::CObj(void)
 	m_curidx32 = -1;
 	m_oldidx32 = -1;
 	m_oldidx64 = -1;
-	m_oldidx512 = -1;
+	
 	m_curidx64 = -1;
-	m_curidx512 = -1;
+	m_oldidx256 = -1;
+	m_curidx256 = -1;
 
 	m_bdestroy = false;
 
@@ -33,9 +34,9 @@ void CObj::Initialize(void)
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
-	m_curidx512 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 512);
+	m_curidx256 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 256);
 	m_oldidx64 = m_curidx64;
-	m_oldidx512 = m_curidx512;
+	m_oldidx256 = m_curidx256;
 }
 
 void CObj::Update(void)
@@ -46,7 +47,7 @@ void CObj::idx_update(void)
 {
 	//m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
-	m_curidx512 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 512);
+	m_curidx256 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 256);
 
 	//if(m_oldidx32 != m_curidx32)
 	//	m_oldidx32 = m_curidx32;
@@ -57,11 +58,17 @@ void CObj::idx_update(void)
 		m_oldidx64 = m_curidx64;
 	}
 
-	if(m_oldidx512 != m_curidx512)
+	if(m_oldidx256 != m_curidx256)
 	{
-		CArea_Mgr::GetInstance()->SetObj_Area512(m_curidx512 , m_oldidx512 , this);
-		m_oldidx512 = m_curidx512;
+		CArea_Mgr::GetInstance()->SetObj_Area256(m_curidx256 , m_oldidx256 , this);
+		m_oldidx256 = m_curidx256;
 	}
+
+	//if(m_oldidx512 != m_curidx512)
+	//{
+	//	CArea_Mgr::GetInstance()->SetObj_Area512(m_curidx512 , m_oldidx512 , this);
+	//	m_oldidx512 = m_curidx512;
+	//}
 }
 void CObj::SetDestroy(bool bdestroy)
 {
@@ -145,6 +152,11 @@ int CObj::GetObjID(void)
 D3DXVECTOR2& CObj::GetReferencePos(void)
 {
 	return m_vPos;
+}
+
+DISCRIMINATION CObj::GetDiscirimination(void)
+{
+	return m_ediscrimination;
 }
 
 int CObj::m_obj_id;

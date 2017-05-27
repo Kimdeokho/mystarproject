@@ -508,6 +508,34 @@
 					</Filter>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Component"
+				>
+				<File
+					RelativePath=".\Com_fog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_fog.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Pathfind.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Pathfind.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Component.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Component.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"

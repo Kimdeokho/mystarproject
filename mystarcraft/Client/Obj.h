@@ -21,17 +21,19 @@ protected:
 
 	int				m_oldidx64;
 	int				m_curidx64;
-	
-	int				m_oldidx512;
-	int				m_curidx512;
+
+	int				m_oldidx256;
+	int				m_curidx256;
+	//int				m_oldidx512;
+	//int				m_curidx512;
 
 	static int		m_obj_id;
-
-public:
+protected:
 	/*ENUM*/
 	SORT_ID				m_sortID;
 	OBJ_TYPE			m_eType;
-public:
+	DISCRIMINATION		m_ediscrimination;
+protected:
 	bool			m_bdestroy;
 public:
 public:
@@ -48,6 +50,7 @@ public:
 	float					GetY(void);
 	SORT_ID					GetsortID(void);
 	OBJ_TYPE				GetType(void);
+	DISCRIMINATION			GetDiscirimination(void);
 	bool					GetDestroy(void);
 	const MYRECT<float>&	GetMyRect(void);
 	const D3DXVECTOR2&		GetPos(void);

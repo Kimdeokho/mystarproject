@@ -7,6 +7,7 @@
 #include "MouseMgr.h"
 #include "MyMath.h"
 #include "FontMgr.h"
+#include "MyHeapSort.h"
 
 IMPLEMENT_SINGLETON(CTileManager)
 
@@ -26,6 +27,7 @@ CTileManager::~CTileManager(void)
 }
 void CTileManager::Initialize(void)
 {
+	m_heapsort = new CMyHeapSort<FLOW_NODE*>();
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 	D3DXMatrixIdentity(&m_matWorld);
 
@@ -40,16 +42,6 @@ void CTileManager::Initialize(void)
 		}
 	}
 
-	FOG_INFO*	pfoginfo_temp = NULL;
-	CREEP_INFO*	pcreep_temp = NULL;
-	for(int i = 0; i < SQ_TILECNTY*SQ_TILECNTX; ++i)
-	{
-		pfoginfo_temp = new FOG_INFO();
-		m_fogTile[i] = pfoginfo_temp;
-
-		pcreep_temp = new CREEP_INFO();
-		m_creepTile[i] = pcreep_temp;
-	}
 
 	//m_fogTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Fog" , L"blackfog4096")->pTexture;
 	//m_fogMaskTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Fog" , L"fogmask640")->pTexture;
@@ -89,33 +81,7 @@ void CTileManager::ReadyTileTexture(void)
 
 void CTileManager::RenderTile(void)
 {
-	float fspeed = 1500.f;
-	if(GetAsyncKeyState(VK_LEFT))
-	{
-		CScrollMgr::m_fScrollX -= GETTIME*fspeed;
-	}
-	if(GetAsyncKeyState(VK_RIGHT))
-	{
-		CScrollMgr::m_fScrollX += GETTIME*fspeed;
-	}
-	if(GetAsyncKeyState(VK_UP))
-	{
-		CScrollMgr::m_fScrollY -= GETTIME*fspeed;
-	}
-	if(GetAsyncKeyState(VK_DOWN))
-	{
-		CScrollMgr::m_fScrollY += GETTIME*fspeed;
-	}
 
-	if(0 > CScrollMgr::m_fScrollX)
-		CScrollMgr::m_fScrollX = 0;
-	else if(4096 - BACKBUFFER_SIZEX <= CScrollMgr::m_fScrollX)
-		CScrollMgr::m_fScrollX = 4096 - BACKBUFFER_SIZEX;
-
-	if(0 > CScrollMgr::m_fScrollY)
-		CScrollMgr::m_fScrollY = 0;
-	else if(4096 - BACKBUFFER_SIZEY <= CScrollMgr::m_fScrollY)
-		CScrollMgr::m_fScrollY = 4096 - BACKBUFFER_SIZEY;
 
 	m_matWorld._41 = 0;
 	m_matWorld._42 = 0;
@@ -139,6 +105,7 @@ void CTileManager::RenderTile(void)
 
 
 
+	/*디버그 확인용*/
 	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
 	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
@@ -169,7 +136,9 @@ void CTileManager::RenderTile(void)
 	//FogAlgorithm();
 
 	RenderCreep();
-	//RenderFog();
+	Flowfield_Render();
+
+
 	//TCHAR sz[32] = L"";
 	//for(int i = 0; i < 20; ++i)
 	//{
@@ -764,6 +733,20 @@ void CTileManager::LoadTileData(HANDLE hFile)
 		}
 	}
 
+	for(int i = 0; i < SQ_TILECNTY*SQ_TILECNTX; ++i)
+	{
+		m_fogTile[i] = new FOG_INFO();
+
+		m_creepTile[i] = new CREEP_INFO();
+
+		m_flownode[i] = new FLOW_NODE();
+
+		m_flownode[i]->index = i;
+		if(MOVE_NONE == m_sqTile[i]->byOption)
+			m_flownode[i]->bmove = false;
+	}
+
+
 	ReadyMainMap();
 }
 void CTileManager::ReadyMainMap(void)
@@ -855,11 +838,14 @@ void CTileManager::Release(void)
 	{
 		Safe_Delete(m_fogTile[i]);
 		Safe_Delete(m_creepTile[i]);
+		Safe_Delete(m_flownode[i]);
 	}
 
 	vector<list<TERRAIN_INFO*>>().swap(m_terrainInfo_List);
 
 	//m_LightOff_List.clear();
+
+	Safe_Delete(m_heapsort);
 }
 
 bool CTileManager::GetFogLight(const int& idx)
@@ -1169,4 +1155,201 @@ void CTileManager::Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2&
 			}
 		};		
 	}
+}
+void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
+{
+	int curidx = idx;
+	while(true)
+	{
+		if(curidx == m_flownode[curidx]->idestidx ||
+			MOVE_NONE == m_flownode[curidx]->idestidx)
+			break;
+
+		path.push_back(m_flownode[curidx]->index);
+		curidx = m_flownode[curidx]->idestidx;
+
+	}	
+}
+void CTileManager::Flowfield_Pathfinding(const int& goalidx)
+{
+	m_flownode[goalidx]->idestidx = goalidx;
+
+	for(int i = 0; i < 16384; ++i)
+	{
+		m_flownode[i]->bcheck = false;
+	}
+
+	FLOW_NODE* pnode = m_flownode[goalidx];
+	FLOW_NODE* pushnode = NULL;
+
+	m_heapsort->push_node(pnode);
+	pnode->bcheck = true;
+
+	if(10000 != pnode->iCost)
+		pnode->iCost = 0;
+
+	int curcost = 0;
+	while(true)
+	{
+		pnode = m_heapsort->pop_node();
+
+
+		if(NULL == pnode)
+			break;
+
+		Init_eightidx(pnode->index);
+
+		if(false == pnode->bmove)
+			curcost = pnode->iCost % 10000;
+		else
+			curcost = pnode->iCost;
+
+		for(int i = 0; i < ASTAR_DIR_END; ++i)
+		{
+			if(m_eight_idx[i] < 0)
+				continue;
+
+			pushnode = m_flownode[ m_eight_idx[i] ];
+
+
+			if(false == pushnode->bcheck)
+				pushnode->bcheck = true;
+			else
+				continue;
+
+	
+			pushnode->idestidx = pnode->index;
+
+			if( i <= 3)
+				pushnode->iCost = curcost + 1;
+			else
+				pushnode->iCost = curcost + 2;
+
+			if(false == pushnode->bmove)
+				pushnode->iCost += 10000;
+
+			m_heapsort->push_node(pushnode);			
+		}
+	}
+}
+void CTileManager::Flowfield_Render(void)
+{
+
+	const TEXINFO*	ptemp = NULL;
+	int ifogsquence = 1;
+
+	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
+	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
+	int idx = 0;
+
+	for(int i = 0; i < 20; ++i)
+	{
+		for(int j = 0; j < 26; ++j)
+		{
+			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
+
+			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
+				continue;
+
+			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
+			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+
+
+			int dirsequence = m_flownode[idx]->idestidx - idx;
+
+			if( -SQ_TILECNTX == dirsequence)
+			{
+				/*업*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"UP");
+			}
+			else if( -(SQ_TILECNTX - 1) == dirsequence)
+			{
+				/*라이트 업*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"RIGHT_UP");
+			}
+			else if(1 == dirsequence)
+			{
+				/*라이트*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"RIGHT");
+			}
+			else if(SQ_TILECNTX + 1 == dirsequence)
+			{
+				/*라이트 다운*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"RIGHT_DOWN");
+			}
+			else if(SQ_TILECNTX == dirsequence)
+			{
+				/*다운*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"DOWN");
+			}
+			else if(SQ_TILECNTX - 1 == dirsequence)
+			{
+				/*레프트 다운*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"LEFT_DOWN");
+			}
+			else if( -1 == dirsequence)
+			{
+				/*레프트*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"LEFT");
+			}
+			else if( -(SQ_TILECNTX + 1) == dirsequence)
+			{
+				/*레프트 업*/
+				ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"Direction" , L"LEFT_UP");
+			}
+			else
+				continue;
+
+
+			m_pSprite->SetTransform(&m_matWorld);
+			m_pSprite->Draw(ptemp->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
+				,D3DCOLOR_ARGB(255,255,255,255));
+		}
+	}
+}
+void CTileManager::Init_eightidx(const int& idx)
+{
+	if(idx - SQ_TILECNTX < 0)
+		m_eight_idx[UP] = -1;
+	else
+		m_eight_idx[UP] = idx - SQ_TILECNTX;
+
+	if(idx % SQ_TILECNTX <= 0 ||
+		idx - SQ_TILECNTX < 0)
+		m_eight_idx[LEFT_UP] = -1;
+	else
+		m_eight_idx[LEFT_UP] = idx - SQ_TILECNTX - 1;
+
+	if(idx % SQ_TILECNTX >= SQ_TILECNTX - 1 ||
+		idx - SQ_TILECNTX < 0)
+		m_eight_idx[RIGHT_UP] = -1;
+	else
+		m_eight_idx[RIGHT_UP] = idx - SQ_TILECNTX + 1;
+
+	if(idx % SQ_TILECNTX >= SQ_TILECNTX - 1)
+		m_eight_idx[RIGHT] = -1;
+	else
+		m_eight_idx[RIGHT] = idx  + 1;
+
+	if(idx % SQ_TILECNTX <= 0)
+		m_eight_idx[LEFT] = -1;
+	else
+		m_eight_idx[LEFT] = idx  - 1;
+
+	if(idx + SQ_TILECNTX >= SQ_TILECNTX*SQ_TILECNTX)
+		m_eight_idx[DOWN] = -1;
+	else
+		m_eight_idx[DOWN] = idx + SQ_TILECNTX;
+
+	if(idx + SQ_TILECNTX >= SQ_TILECNTX*SQ_TILECNTX ||
+		idx % SQ_TILECNTX >= SQ_TILECNTX - 1)
+		m_eight_idx[RIGHT_DOWN] = -1;
+	else
+		m_eight_idx[RIGHT_DOWN] = idx + SQ_TILECNTX + 1;
+
+	if(idx + SQ_TILECNTX >= SQ_TILECNTX*SQ_TILECNTX ||
+		idx % SQ_TILECNTX <= 0)
+		m_eight_idx[LEFT_DOWN] = -1;
+	else
+		m_eight_idx[LEFT_DOWN] = idx + SQ_TILECNTX - 1;
 }
