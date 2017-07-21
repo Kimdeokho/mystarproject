@@ -12,6 +12,7 @@
 #include "Drone.h"
 #include "MyMath.h"
 #include "TileManager.h"
+#include "UnitMgr.h"
 
 IMPLEMENT_SINGLETON(CKeyMgr)
 CKeyMgr::CKeyMgr(void)
@@ -27,7 +28,9 @@ CKeyMgr::CKeyMgr(void)
 	
 
 	memset(&m_downpt , 0 , sizeof(POINT));
-	memset(&m_curpt , 0 , sizeof(POINT));	
+	memset(&m_curpt , 0 , sizeof(POINT));
+
+	objcnt = 0;
 }
 
 CKeyMgr::~CKeyMgr(void)
@@ -43,6 +46,8 @@ void CKeyMgr::TurboKeyDown(const int& nkey)
 	{
 		m_KeyPress[nkey] = true;
 		//여기에 nkey를 현재선택된 오브젝트에 보내서 메세지 반응하게한다.
+
+		//플레이어 입장에서 입력한것
 		Intputkey_reaction(nkey);
 	}
 	else
@@ -61,10 +66,13 @@ void CKeyMgr::OnceKeyDown(const int& nkey)
 		if(false == m_KeyPress[nkey])
 		{
 			m_KeyPress[nkey] = true;
+
 			//CObjMgr::GetInstance()->DestroyObj(ZB_HACHERY);
 			//CObjPoolMgr::GetInstance()->destroy(pObj , ZU_DRONE);
-			pObj->SetDestroy(true);
+			//pObj->SetDestroy(true);
 			//여기에 nkey를 현재선택된 오브젝트에 보내서 메세지 반응하게한다.
+
+			Intputkey_reaction(nkey);
 		}
 	}
 	else
@@ -90,6 +98,7 @@ void CKeyMgr::MouseKeyDown(const int& nkey)
 	{
 		if(false == m_KeyPress[nkey])
 		{
+
 			m_downpt.x = float(CMouseMgr::GetMousePt().x);
 			m_downpt.y = float(CMouseMgr::GetMousePt().y);
 
@@ -100,14 +109,15 @@ void CKeyMgr::MouseKeyDown(const int& nkey)
 
 			++m_clickCnt[nkey];
 
-			if(VK_LBUTTON == nkey)
-			{
-				/*곧 지울것들이다*/
-				pObj = new CDrone;
-				pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
-				pObj->Initialize();
-				CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
-			}
+			//if(VK_LBUTTON == nkey)
+			//{
+			//	/*곧 지울것들이다*/
+			//	pObj = new CDrone;
+			//	pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+			//	pObj->Initialize();
+			//	CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+			//	objcnt += 1;
+			//}
 
 			Intputkey_reaction(nkey);/*지형 길을 먼저구해야하기때문에 위에 있어야한다*/
 			CObjMgr::GetInstance()->Intputkey_reaction(nkey);						
@@ -133,6 +143,9 @@ void CKeyMgr::MouseKeyUp(const int& nkey)
 	{
 		m_bKeyUp[nkey] = false;
 		CLineMgr::GetInstance()->SetRenderSwitch(false);
+
+		if(nkey == VK_LBUTTON)
+			CLineMgr::GetInstance()->Select_unit();
 	}
 }
 void CKeyMgr::DbClick(const int& nkey)
@@ -186,6 +199,7 @@ void CKeyMgr::Update(void)
 	TurboKeyDown('0');
 
 	OnceKeyDown('A');
+	OnceKeyDown('Z');
 
 	MouseKeyDown(VK_LBUTTON);
 	MouseKeyUp(VK_LBUTTON);
@@ -195,6 +209,7 @@ void CKeyMgr::Update(void)
 
 	DbClick(VK_LBUTTON);
 
+	//Intputkey_reaction(0);
 	//end = clock();
 
 	//CFontMgr::GetInstance()->Setnumber_combine_Font(L"%d" , end - begin , 200, 200);
@@ -204,34 +219,81 @@ void CKeyMgr::Intputkey_reaction(const int& nkey)
 {
 	
 
-	if(VK_RBUTTON == nkey)
+	if( VK_RBUTTON == nkey )
 	{
-		CFontMgr::GetInstance()->Set_KeyInput_Font(L"우클릭" );
+		CFontMgr::GetInstance()->Set_KeyInput_Font(L"우 클릭" );
 
 		D3DXVECTOR2 temp = CMouseMgr::GetvMousePt();
 		int goalidx = CMyMath::Pos_to_index(temp.x , temp.y);
 
 
 		CTileManager::GetInstance()->Flowfield_Pathfinding(goalidx);
+		CUnitMgr::GetInstance()->path_relay(goalidx);
 	}
-	
+
+	if( VK_LBUTTON == nkey )
+	{
+		CFontMgr::GetInstance()->Set_KeyInput_Font(L"좌 클릭" );
+
+		//clock_t tbegin , tend;
+
+		//tbegin = clock();
+		//while(true)
+		//{
+		//	tend = clock();
+		//	if(tend - tbegin > 100)
+		//		break;
+		//}
+	}
+	if( 'A' == nkey )
+	{
+		/*곧 지울것들이다*/
+		pObj = new CDrone;
+		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		pObj->Initialize();
+		CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+		objcnt += 1;
+		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+	}
+
+	if( 'Z' == nkey )
+	{
+		/*곧 지울것들이다*/
+		pObj = new CDrone;
+		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		pObj->Initialize();
+		pObj->SetVertex(11.5f , 11.5f , 11.5f , 11.5f);
+		CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+		objcnt += 1;
+		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+	}
 	float fspeed = 1500.f;
 	/*스크롤 XY의 범위는 0~3296*/
-	if(VK_LEFT == nkey)
+	if( VK_LEFT == nkey )
 	{
 		CScrollMgr::m_fScrollX -= GETTIME*fspeed;
 	}
-	if(VK_RIGHT == nkey)
+	if( VK_RIGHT == nkey )
 	{
 		CScrollMgr::m_fScrollX += GETTIME*fspeed;
 	}
-	if(VK_UP == nkey)
+	if( VK_UP == nkey )
 	{
 		CScrollMgr::m_fScrollY -= GETTIME*fspeed;
 	}
-	if(VK_DOWN == nkey)
+	if( VK_DOWN == nkey )
 	{
 		CScrollMgr::m_fScrollY += GETTIME*fspeed;
+	}
+	if('1' == nkey)
+	{
+		/*곧 지울것들이다*/
+		//pObj = new CDrone;
+		//pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		//pObj->Initialize();
+		//CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+		//objcnt += 1;
+		//CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 	}
 
 	if(0 > CScrollMgr::m_fScrollX)

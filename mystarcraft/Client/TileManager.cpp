@@ -105,7 +105,7 @@ void CTileManager::RenderTile(void)
 
 
 
-	/*디버그 확인용*/
+	/*타일 옵션 디버그 확인용*/
 	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
 	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
@@ -136,7 +136,7 @@ void CTileManager::RenderTile(void)
 	//FogAlgorithm();
 
 	RenderCreep();
-	Flowfield_Render();
+	//Flowfield_Render();
 
 
 	//TCHAR sz[32] = L"";
@@ -186,49 +186,23 @@ void CTileManager::RenderFog(void)
 			//CFontMgr::GetInstance()->Setnumber_combine_Font(L"%d" , m_fogTile[idx]->overlap_cnt , m_matWorld._41 , m_matWorld._42);
 			ifogsquence = m_fogTile[idx]->fog_sequence;
 
-			if(0 == ifogsquence)
-				continue;
-
+			//if(0 == ifogsquence ||
+				//2 == ifogsquence)
+				//continue;
 
 			m_pSprite->SetTransform(&m_matWorld);
-			m_pSprite->Draw(ptemp[ifogsquence]->pTexture , NULL , &D3DXVECTOR3(48, 48,0), NULL
+			m_pSprite->Draw(ptemp[ifogsquence]->pTexture , NULL , &D3DXVECTOR3(48, 48, 0), NULL
 				,m_fogTile[idx]->fog_color);
+
+			//TCHAR temp[32];
+			//RECT rc = {0};
+			//wsprintf(temp , L"%d" , m_fogTile[idx]->overlap_cnt);
+			//CDevice::GetInstance()->GetFont()->DrawTextW(m_pSprite , temp , lstrlen(temp) , &rc , DT_NOCLIP
+			//	,D3DCOLOR_ARGB(255,0,255,0));
 		}
 	}
 
 
-
-
-
-	//D3DXVECTOR2	vPoint[2];
-
-	//int scrollX = (int)CScrollMgr::m_fScrollX;
-	//int scrollY = (int)CScrollMgr::m_fScrollY;
-
-	//CDevice::GetInstance()->Render_End();
-	//CDevice::GetInstance()->Render_Begin();
-
-	//for(int j = 0; j < 40; ++j)
-	//{
-	//	int index = j + scrollX/SQ_TILESIZEX;
-	//	vPoint[0] = D3DXVECTOR2( float(index*SQ_TILESIZEX) - scrollX,0 - (float)scrollY);
-	//	vPoint[1] = D3DXVECTOR2( float(index*SQ_TILESIZEX) - scrollX, float(SQ_TILECNTY*SQ_TILESIZEY) - scrollY);
-
-	//	CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
-	//	CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,255,0));
-	//}
-	//for(int j = 0; j < 32; ++j)
-	//{
-	//	int index = j + scrollY/SQ_TILESIZEY;
-	//	vPoint[0] = D3DXVECTOR2(0 - (float)scrollX ,float(index*SQ_TILESIZEX) - scrollY );
-	//	vPoint[1] = D3DXVECTOR2(float (SQ_TILECNTX*SQ_TILESIZEX) - scrollX, float(index*SQ_TILESIZEX) - scrollY);
-
-	//	CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
-	//	CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,255,0));
-	//}
-
-	//CDevice::GetInstance()->Render_End();
-	//CDevice::GetInstance()->Render_Begin();
 }
 
 void CTileManager::RenderCreep(void)
@@ -536,10 +510,10 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& 
 {
 	//range는 가급적 홀수
 
-	int fradius = irange/2*32;
-	int istartX = idx - irange/2;
+	//int fradius = irange/2*32;
+	int fradius = (irange/2);
 
-	int half_range = irange/2;
+	int half_range = fradius / SQ_TILESIZEX; //irange/2;
 
 	int LUvtx_idx = idx - SQ_TILECNTX*half_range - half_range;
 	int RUvtx_idx = idx - SQ_TILECNTX*half_range + half_range;
@@ -554,7 +528,7 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& 
 	{
 		fogsearch[idx] = true;
 		sightoff_list.push_back(startIdx);		
-		CTileManager::GetInstance()->SetFogoverlap_cnt(idx , 1);
+		CTileManager::GetInstance()->SetFogoverlap_cnt(idx);
 		CTileManager::GetInstance()->SetFogSquence(startIdx , 0);
 		CTileManager::GetInstance()->SetFogLight(startIdx , 0 , 1);
 	}
@@ -868,9 +842,9 @@ CREEP_INFO** CTileManager::GetCreepTile(void)
 	return m_creepTile;
 }
 
-void CTileManager::SetFogoverlap_cnt(const int& idx, const int& cnt)
+void CTileManager::SetFogoverlap_cnt(const int& idx)
 {
-
+	//유닛 시야끼리 겹친부분의 타일을 +1한다
 	m_fogTile[idx]->overlap_cnt += 1;
 
 }
@@ -887,6 +861,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 {
 	int iWidth = int(vDest.x - vStart.x);
 	int iHeight = int(vDest.y - vStart.y);
+	float ishade_range = 0; //ishade_range 범위 0 ~ 1, 1에 가까울수록 범위에 다다른것임
 
 	int e = 0;
 	int icnt = 0;
@@ -941,16 +916,17 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 			if(X + Y <= fRadius*fRadius ) //범위안에 있으면
 			{
 				idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
+				ishade_range = (X + Y) / (fRadius*fRadius);
 
 				if(TYPE_AIR == etype)
 				{
 					if(false == fogsearch[idx])
 					{						
 						fogsearch[idx] = true;
-						SetFogoverlap_cnt(idx , 1);
+						SetFogoverlap_cnt(idx);
 						light_IdxList.push_back(idx);						
 					}
-					if(fRadius*fRadius - 192*192 <= X + Y)
+					if(ishade_range >= 0.8f)
 					{
 						SetFogSquence(idx , 1);
 						SetFogLight(idx , X + Y , float(fRadius*fRadius));
@@ -963,15 +939,15 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 				}
 				else if(TYPE_GROUND == etype)
 				{
-					if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))//공중일 경우 신경안쓴다.
+					if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))//공중일 경우 언덕지형을 신경안쓴다.
 					{					
 						if(false == fogsearch[idx])
 						{						
 							fogsearch[idx] = true;
-							SetFogoverlap_cnt(idx , 1);
+							SetFogoverlap_cnt(idx);
 							light_IdxList.push_back(idx);						
 						}
-						if(fRadius*fRadius - 192*192 <= X + Y)
+						if(ishade_range >= 0.8f)
 						{
 							SetFogSquence(idx , 1);
 							SetFogLight(idx , X + Y , float(fRadius*fRadius));
@@ -1012,18 +988,19 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 			if(X + Y <= fRadius*fRadius )
 			{
 				idx = CMyMath::Pos_to_index(vStart.x + icnt * isignX , vStart.y + i*SQ_TILESIZEY*isignY);
+				ishade_range = (X + Y) / (fRadius*fRadius);
 
 				if(TYPE_AIR == etype)
 				{
 					if(false == fogsearch[idx])
 					{						
 						fogsearch[idx] = true;
-						SetFogoverlap_cnt(idx , 1);
+						SetFogoverlap_cnt(idx);
 						light_IdxList.push_back(idx);						
 					}
-					if(fRadius*fRadius - 192*192 <= X + Y)
+					if(ishade_range >= 0.8f)
 					{
-						SetFogSquence(idx , 1);
+						SetFogSquence(idx , 0);
 						SetFogLight(idx , X + Y , float(fRadius*fRadius));
 					}
 					else
@@ -1039,16 +1016,21 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						if(false == fogsearch[idx])
 						{						
 							fogsearch[idx] = true;
-							SetFogoverlap_cnt(idx , 1);
+							SetFogoverlap_cnt(idx);
 							light_IdxList.push_back(idx);						
 						}
-						if(fRadius*fRadius - 192*192 <= X + Y)
+						//if(fRadius*fRadius - ishade_range <= X + Y)
+						if(ishade_range >= 0.8f)
 						{
+							//ishade_range 범위 0 ~ 1
+
+							//끝에 어두운 효과를 주는 곳
 							SetFogSquence(idx , 1);
 							SetFogLight(idx , X + Y , float(fRadius*fRadius));
 						}
 						else
 						{
+							/*일반적으로 밝히는곳*/
 							SetFogSquence(idx , 0);
 							SetFogLight(idx , 0 , 1);
 						}
@@ -1158,6 +1140,7 @@ void CTileManager::Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2&
 }
 void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
 {
+	//임시방편으로 만든건데 지워야할듯
 	int curidx = idx;
 	while(true)
 	{
@@ -1206,6 +1189,9 @@ void CTileManager::Flowfield_Pathfinding(const int& goalidx)
 
 		for(int i = 0; i < ASTAR_DIR_END; ++i)
 		{
+			if( i == CENTER)
+				continue;
+
 			if(m_eight_idx[i] < 0)
 				continue;
 
@@ -1220,7 +1206,7 @@ void CTileManager::Flowfield_Pathfinding(const int& goalidx)
 	
 			pushnode->idestidx = pnode->index;
 
-			if( i <= 3)
+			if( i <= 4)
 				pushnode->iCost = curcost + 1;
 			else
 				pushnode->iCost = curcost + 2;
@@ -1309,6 +1295,8 @@ void CTileManager::Flowfield_Render(void)
 }
 void CTileManager::Init_eightidx(const int& idx)
 {
+	m_eight_idx[CENTER] = idx;
+
 	if(idx - SQ_TILECNTX < 0)
 		m_eight_idx[UP] = -1;
 	else
@@ -1352,4 +1340,9 @@ void CTileManager::Init_eightidx(const int& idx)
 		m_eight_idx[LEFT_DOWN] = -1;
 	else
 		m_eight_idx[LEFT_DOWN] = idx + SQ_TILECNTX - 1;
+}
+
+FLOW_NODE** CTileManager::Get_flowfield_node(void)
+{
+	return m_flownode;
 }

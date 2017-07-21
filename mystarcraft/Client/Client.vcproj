@@ -181,10 +181,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LineMgr.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -304,6 +300,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\LineMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LineMgr.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MouseMgr.cpp"
 					>
 				</File>
@@ -381,6 +385,14 @@
 				</File>
 				<File
 					RelativePath=".\TimeMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UnitMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UnitMgr.h"
 					>
 				</File>
 			</Filter>
@@ -544,10 +556,6 @@
 			>
 			<File
 				RelativePath=".\Client.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LineMgr.h"
 				>
 			</File>
 			<File

@@ -5,14 +5,10 @@
 #include "Obj.h"
 #include "MyMath.h"
 #include "TileManager.h"
-CCom_fog::CCom_fog(void)
-{
-	m_iSightrange = 19;
-}
 
-CCom_fog::CCom_fog(const int& iragne)
+CCom_fog::CCom_fog(const int& curidx , const int& irange):m_rcuridx32(curidx)
+ , m_iSightrange(irange)
 {
-	m_iSightrange = iragne;
 }
 
 CCom_fog::~CCom_fog(void)
@@ -28,12 +24,12 @@ void CCom_fog::Initialize(CObj* pobj)
 	m_sightoffsw = false;
 	m_InitSight = false;
 	memset(m_fogsearch , 0 , sizeof(m_fogsearch));
+
+	m_oldidx32 = -1;
 }
 void CCom_fog::Update(void)
 {
-	m_curidx32 = CMyMath::Pos_to_index(m_pobj->GetPos().x , m_pobj->GetPos().y);
-
-
+	/*m_iSightrange는 픽셀단위 범위, 32배수*/
 	if(true == m_sightoffsw)
 		m_fogtime += GETTIME;
 
@@ -41,6 +37,7 @@ void CCom_fog::Update(void)
 	{
 		if(!m_Sightoff_List.empty() )
 		{
+			//vector로 바꿔야할듯
 			list<int>::iterator iter = m_Sightoff_List.begin();
 			list<int>::iterator iter_end = m_Sightoff_List.end();
 
@@ -54,15 +51,15 @@ void CCom_fog::Update(void)
 		}
 		m_fogtime = 0.f;
 		m_sightoffsw = false;
-		CTileManager::GetInstance()->SightOnRender(m_curidx32 , m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetType());
+		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetType());
 	}
 
-	if(m_curidx32 != m_oldidx32)
+	if(m_rcuridx32 != m_oldidx32)
 	{
 		m_sightoffsw = true;		
-		CTileManager::GetInstance()->SightOnRender(m_curidx32 , m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetType());
-		m_oldidx32 = m_curidx32;
-	}	
+		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetType());
+		m_oldidx32 = m_rcuridx32;
+	}
 }
 
 void CCom_fog::Release(void)
@@ -72,3 +69,4 @@ void CCom_fog::Release(void)
 		m_Sightoff_List.clear();
 	}
 }
+

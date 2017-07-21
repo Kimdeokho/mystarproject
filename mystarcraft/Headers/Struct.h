@@ -140,7 +140,7 @@ typedef struct tagFlowFieldNode
 {
 	int				iCost;
 	int				index;
-	int				idestidx;
+	short			idestidx;
 	bool			bcheck;
 	bool			bmove;
 	tagFlowFieldNode()
@@ -155,18 +155,18 @@ typedef struct tagFlowFieldNode
 
 typedef struct tagFrame
 {
-	float		fFrame;
-	float		fCnt;
-	float		fMax;
+	float				fcurframe;
+	float				fframespeed;
+	unsigned int		umax;
 
 	tagFrame(void) 
-		: fFrame(0.f), fCnt(0.f), fMax(0.f)
+		: fcurframe(0.f), fframespeed(0.f), umax(0)
 	{
 
 	}
 
-	tagFrame(float _frame, float _cnt, float _max)
-		: fFrame(_frame), fCnt(_cnt), fMax(_max) 
+	tagFrame(float _frame, float _cnt, unsigned int _max)
+		: fcurframe(_frame), fframespeed(_cnt), umax(_max) 
 	{
 
 	}

@@ -105,6 +105,7 @@ enum OBJ_TYPE
 
 enum ASTAR_DIR
 {
+	CENTER,
 	UP,
 	DOWN,
 	LEFT,
@@ -115,8 +116,15 @@ enum ASTAR_DIR
 	RIGHT_DOWN,
 	ASTAR_DIR_END,
 };
-enum DISCRIMINATION
+enum DISTINCTION
 {
 	ALLY,
 	ENEMY,
+};
+
+enum STATE
+{
+	IDLE,
+	MOVE,
+	ATTACK,
 };

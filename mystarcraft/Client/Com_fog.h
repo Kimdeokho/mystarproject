@@ -12,14 +12,30 @@ private:
 
 	int					m_iSightrange;
 	float				m_fogtime;
-	int					m_curidx32;
+	const int&			m_rcuridx32;
 	int					m_oldidx32;
+
 public:
 	virtual void Initialize(CObj* pobj);
 	virtual void Update(void);
 	virtual void Release(void);
 public:
-	CCom_fog(void);
-	CCom_fog(const int& iragne);
+	//레퍼런스 멤버변수를 초기화할때
+	//생성자가 오버로딩에 인해 
+	//초기화가 일어나지 않는 현상이 있으면 안된다.
+	CCom_fog(const int& curidx , const int& irange);
 	~CCom_fog(void);
+};
+
+class A
+{
+public:
+	int b;
+	int& z;
+public:
+	A(int v):z(v)
+	{
+
+	};
+	~A(){};
 };

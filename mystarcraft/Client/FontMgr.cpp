@@ -55,7 +55,7 @@ void CFontMgr::FontRender(void)
 
 
 		}
-		m_render_fontlist.clear();
+		//m_render_fontlist.clear();
 	}
 
 
@@ -77,6 +77,8 @@ void CFontMgr::FontRender(void)
 }
 void CFontMgr::Setnumber_combine_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
+	m_render_fontlist.clear();
+
 	FONT_INFO ptemp;
 
 	ptemp.fX = posX;
@@ -118,6 +120,8 @@ void CFontMgr::Setnumber_combine_Font(const TCHAR* szfont , const float& font_nu
 }
 void CFontMgr::SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
+	m_render_fontlist.clear();
+
 	FONT_INFO ptemp;
 
 	lstrcpy(ptemp.font , szfont);

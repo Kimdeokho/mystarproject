@@ -23,6 +23,8 @@ private:
 	D3DXVECTOR2 m_curpt;
 
 	CObj* pObj;
+
+	int objcnt;
 public:
 	void TurboKeyDown(const int& nkey);
 	void OnceKeyDown(const int& nkey);

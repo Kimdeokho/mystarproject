@@ -14,3 +14,13 @@ Direction|DOWN|..\Texture\Single\DebugTile\down.png
 Direction|LEFT_DOWN|..\Texture\Single\DebugTile\leftdown.png
 Direction|LEFT|..\Texture\Single\DebugTile\left.png
 Direction|LEFT_UP|..\Texture\Single\DebugTile\leftup.png
+UI|Select22|..\Texture\Single\UI\Select22.png
+UI|Select32|..\Texture\Single\UI\Select32.png
+UI|Select48|..\Texture\Single\UI\Select48.png
+UI|Select62|..\Texture\Single\UI\Select62.png
+UI|Select72|..\Texture\Single\UI\Select72.png
+UI|Select94|..\Texture\Single\UI\Select94.png
+UI|Select110|..\Texture\Single\UI\Select110.png
+UI|Select122|..\Texture\Single\UI\Select122.png
+UI|Select146|..\Texture\Single\UI\Select146.png
+UI|Select224|..\Texture\Single\UI\Select224.png

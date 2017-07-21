@@ -16,6 +16,10 @@ int CMyMath::Pos_to_index(const float& x , const float& y , const int& tilesize)
 {
 	return int(y/tilesize)*(4096/tilesize) + int(x/tilesize);
 }
+int CMyMath::Pos_to_index(const D3DXVECTOR2& vpos, const int& tilesize)
+{
+	return int(vpos.y/tilesize)*(4096/tilesize) + int(vpos.x/tilesize);
+}
 float  CMyMath::dgree_to_radian(const float& dgree)
 {
 	return dgree*PI/180;
@@ -29,12 +33,12 @@ float CMyMath::scala_to_dgree(const float& scala)
 	return (180*acos(scala))/PI;
 }
 
-int CMyMath::idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt)
+int CMyMath::idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt , const int& tilesize)
 {
 	int iwidth = abs(idx1%tilecnt - idx2%tilecnt);//가로거리
 	int iheght = abs(idx1/tilecnt - idx2/tilecnt);//세로거리
 
-	return (iwidth + iheght)*32;
+	return (iwidth + iheght)*tilesize;
 }
 int CMyMath::pos_distance(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vdest)
 {

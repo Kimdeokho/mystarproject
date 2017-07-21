@@ -5,7 +5,7 @@
 #include "Area_Mgr.h"
 #include "ScrollMgr.h"
 #include "MyMath.h"
-
+#include "MouseMgr.h"
 IMPLEMENT_SINGLETON(CLineMgr)
 CLineMgr::CLineMgr(void)
 {
@@ -48,22 +48,117 @@ void CLineMgr::LineRender(void)
 		CDevice::GetInstance()->Render_Begin();
 	}
 }
-void CLineMgr::Choose_army_unit(void)
+void CLineMgr::collisionbox_render(const MYRECT<float>& rc)
 {
-	MYRECT<float>	rc;
+	D3DXVECTOR2 vpt[5];
 
-	rc.left = m_RectLine[0].x;
-	rc.top = m_RectLine[0].y;
+	vpt[0].x = rc.left - CScrollMgr::m_fScrollX;
+	vpt[0].y = rc.top - CScrollMgr::m_fScrollY;
 
-	rc.right = m_RectLine[2].x;
-	rc.bottom = m_RectLine[2].y;
+	vpt[1].x = rc.right - CScrollMgr::m_fScrollX;
+	vpt[1].y = rc.top - CScrollMgr::m_fScrollY;
 
-	float fX = CScrollMgr::m_fScrollX + BACKBUFFER_SIZEX/2;
-	float fY = CScrollMgr::m_fScrollY + BACKBUFFER_SIZEY/2;
+	vpt[2].x = rc.right - CScrollMgr::m_fScrollX;
+	vpt[2].y = rc.bottom - CScrollMgr::m_fScrollY;
 
-	int idx = CMyMath::Pos_to_index(fX , fY , 256);
+	vpt[3].x = rc.left - CScrollMgr::m_fScrollX;
+	vpt[3].y = rc.bottom - CScrollMgr::m_fScrollY;
 
+	vpt[4] = vpt[0];
 
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+
+	m_pLine->SetWidth(1.0f);
+	m_pLine->Draw(vpt , 5 , D3DCOLOR_ARGB(255,0,255,0));
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+}
+void CLineMgr::Select_unit(void)
+{	
+	D3DXVECTOR2 vMousept;
+
+	vMousept.x = CMouseMgr::GetvMousePt().x;
+	vMousept.y = CMouseMgr::GetvMousePt().y;
+	int idx = CMyMath::Pos_to_index(vMousept.x , vMousept.y , 64);
+
+	if( (int)m_RectLine[0].x == (int)m_RectLine[2].x &&
+		(int)m_RectLine[0].y == (int)m_RectLine[2].y) 
+	{
+		CArea_Mgr::GetInstance()->SelectCheck(idx , vMousept);
+	}
+	else
+	{
+		MYRECT<float>	rc;
+		float fX = CScrollMgr::m_fScrollX + BACKBUFFER_SIZEX/2;
+		float fY = CScrollMgr::m_fScrollY + BACKBUFFER_SIZEY/2;
+
+		idx = CMyMath::Pos_to_index(fX , fY , 256);
+
+		if(m_RectLine[0].x < m_RectLine[2].x)
+		{
+			rc.left = m_RectLine[0].x + CScrollMgr::m_fScrollX;
+			rc.right = m_RectLine[2].x + CScrollMgr::m_fScrollX;
+		}
+		else
+		{
+			rc.left = m_RectLine[2].x + CScrollMgr::m_fScrollX;
+			rc.right = m_RectLine[0].x + CScrollMgr::m_fScrollX;
+		}
+
+		if(m_RectLine[0].y < m_RectLine[2].y)
+		{
+			rc.top = m_RectLine[0].y + CScrollMgr::m_fScrollY;
+			rc.bottom = m_RectLine[2].y + CScrollMgr::m_fScrollY;
+		}
+		else
+		{
+			rc.top = m_RectLine[2].y + CScrollMgr::m_fScrollY;
+			rc.bottom = m_RectLine[0].y + CScrollMgr::m_fScrollY;
+		}
+
+		CArea_Mgr::GetInstance()->DragCheck(idx , rc);
+	}
+	//DragCheck()
+}
+void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
+{
+	const int iwidth = 1000;
+	const int iheight = 800;
+
+	int col = iwidth / tilesize;
+	int row = iheight / tilesize;
+	
+	D3DXVECTOR2	vPoint[2];
+
+	int scrollX = (int)CScrollMgr::m_fScrollX;
+	int scrollY = (int)CScrollMgr::m_fScrollY;
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+
+	for(int j = 0; j < col; ++j)
+	{
+		int index = j + scrollX/tilesize;
+		vPoint[0] = D3DXVECTOR2( float(index*tilesize) - scrollX,0 - (float)scrollY);
+		vPoint[1] = D3DXVECTOR2( float(index*tilesize) - scrollX, float(tilecnt*tilesize) - scrollY);
+
+		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
+		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,255,0));
+	}
+	for(int j = 0; j < row; ++j)
+	{
+		int index = j + scrollY/tilesize;
+		vPoint[0] = D3DXVECTOR2(0 - (float)scrollX ,float(index*tilesize) - scrollY );
+		vPoint[1] = D3DXVECTOR2(float (tilecnt*tilesize) - scrollX, float(index*tilesize) - scrollY);
+
+		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
+		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,255,0));
+	}
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
 }
 void CLineMgr::SetRenderSwitch(bool bswitch)
 {

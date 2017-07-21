@@ -20,23 +20,34 @@ CObj::CObj(void)
 	m_curidx256 = -1;
 
 	m_bdestroy = false;
+	m_bSelect = false;
 
-	m_obj_id += 1;
+	m_globalobj_id += 1;
+	m_obj_id = m_globalobj_id;
 }
 
 CObj::~CObj(void)
 {
-	m_obj_id -= 1;
+	Release();
 }
 
 void CObj::Initialize(void)
 {
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 
+	m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
 	m_curidx256 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 256);
+	m_curidx512 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 512);
+
 	m_oldidx64 = m_curidx64;
 	m_oldidx256 = m_curidx256;
+	m_oldidx512 = m_curidx512;
+
+	CArea_Mgr::GetInstance()->SetObj_Area512(m_curidx512 , m_curidx512 , this);
+	CArea_Mgr::GetInstance()->SetObj_Area256(m_curidx256 , m_curidx256 , this);
+	CArea_Mgr::GetInstance()->SetObj_Area64(m_curidx64 , m_curidx64 , this);
+	
 }
 
 void CObj::Update(void)
@@ -45,12 +56,13 @@ void CObj::Update(void)
 }
 void CObj::idx_update(void)
 {
-	//m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y);
+	m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
 	m_curidx256 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 256);
+	m_curidx512 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 512);
 
-	//if(m_oldidx32 != m_curidx32)
-	//	m_oldidx32 = m_curidx32;
+	if(m_oldidx32 != m_curidx32)
+		m_oldidx32 = m_curidx32;
 
 	if(m_oldidx64 != m_curidx64)
 	{
@@ -64,11 +76,14 @@ void CObj::idx_update(void)
 		m_oldidx256 = m_curidx256;
 	}
 
-	//if(m_oldidx512 != m_curidx512)
-	//{
-	//	CArea_Mgr::GetInstance()->SetObj_Area512(m_curidx512 , m_oldidx512 , this);
-	//	m_oldidx512 = m_curidx512;
-	//}
+	if(m_oldidx512 != m_curidx512)
+	{
+		CArea_Mgr::GetInstance()->SetObj_Area512(m_curidx512 , m_oldidx512 , this);
+		m_oldidx512 = m_curidx512;
+	}
+}
+void CObj::idx_release(void)
+{
 }
 void CObj::SetDestroy(bool bdestroy)
 {
@@ -80,7 +95,9 @@ void CObj::Render(void)
 
 void CObj::Release(void)
 {
-
+	CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
+	CArea_Mgr::GetInstance()->ReleaseObj_Area256(m_curidx256 , this);
+	CArea_Mgr::GetInstance()->ReleaseObj_Area512(m_curidx512 , this);
 }
 void CObj::SetPos(const float x , const float y, OBJ_POS_KIND ekind /*= STATIC_OBJ*/)
 {
@@ -154,9 +171,27 @@ D3DXVECTOR2& CObj::GetReferencePos(void)
 	return m_vPos;
 }
 
-DISCRIMINATION CObj::GetDiscirimination(void)
+DISTINCTION CObj::GetDiscirimination(void)
 {
 	return m_ediscrimination;
 }
 
-int CObj::m_obj_id;
+void CObj::SetSelect(bool bselect)
+{
+	m_bSelect = bselect;
+}
+
+void CObj::Setstate(const CHAR* statekey)
+{
+
+}
+
+void CObj::SetVertex(const float& _left, const float& _right, const float& _top , const float& _bottom)
+{
+	m_vertex.left = _left;
+	m_vertex.right = _right;
+	m_vertex.top = _top;
+	m_vertex.bottom = _bottom;
+}
+
+int CObj::m_globalobj_id;

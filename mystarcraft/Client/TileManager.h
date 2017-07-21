@@ -69,13 +69,14 @@ public:
 	TILE**	GetSqTile(void);
 	CREEP_INFO**	GetCreepTile(void);
 	void	GetFlowfield_Path(const int& idx , vector<int>& path);
+	FLOW_NODE**   Get_flowfield_node(void);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
 	void SetFogLight(int idx, float fdistance , float fradius);
 	void SetFogColor(const int& idx , D3DCOLOR color);
 	void SetCreepInstall(const int& idx , bool binstall);
 
-	void SetFogoverlap_cnt(const int& idx  , const int& cnt);
+	void SetFogoverlap_cnt(const int& idx);
 	void SetFogSearch(const int& idx,bool bsearch);
 public:
 	bool CheckFogFloor(int myidx , int destidx);

@@ -8,6 +8,7 @@
 #include "LineMgr.h"
 #include "ObjPoolMgr.h"
 #include "Astar.h"
+#include "UnitMgr.h"
 
 CScene_Stage::CScene_Stage(void)
 {
@@ -21,6 +22,7 @@ CScene_Stage::~CScene_Stage(void)
 HRESULT CScene_Stage::Initialize(void)
 {
 		
+	CUnitMgr::GetInstance()->Initialize();
 	CTileManager::GetInstance()->Initialize();
 	LoadData();
 
@@ -31,15 +33,14 @@ void CScene_Stage::Update(void)
 {
 	CKeyMgr::GetInstance()->Update();
 	CObjMgr::GetInstance()->Update();
-
-	CFontMgr::GetInstance()->Setnumber_combine_Font(L"OBJ NUM%d" , CObjPoolMgr::m_Obj_Cnt , 400, 300);
 }
 void CScene_Stage::Render(void)
 {
 	CTileManager::GetInstance()->RenderTile();
 	CObjMgr::GetInstance()->Render();
 
-	CTileManager::GetInstance()->RenderFog();
+	//CTileManager::GetInstance()->RenderFog();
+	CLineMgr::GetInstance()->RenderGrid(64 , 64);
 
 	CFontMgr::GetInstance()->FontRender();
 	CLineMgr::GetInstance()->LineRender();
@@ -47,6 +48,7 @@ void CScene_Stage::Render(void)
 void CScene_Stage::Release(void)
 {
 	CObjPoolMgr::DestroyInstance();
+	CUnitMgr::DestroyInstance();
 	//CAstar::DestroyInstance();
 }
 

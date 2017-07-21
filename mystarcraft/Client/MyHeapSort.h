@@ -173,6 +173,9 @@ T CMyHeapSort<T>::pop_node(void)
 	}
 
 	--m_cursize;
+
+	if(ptemp == NULL)
+		int a = 0;
 	return ptemp;
 }
 
@@ -199,10 +202,10 @@ void CMyHeapSort<T>::Release(PATH_NODE** openidx , boost::pool<>* _pool)
 template<typename T>
 void CMyHeapSort<T>::Release(void)
 {
-	//for(int i = 0; i < m_cursize; ++i)
-	//{
-	//	delete m_nodelist[i];
-	//	m_nodelist[i] = NULL;
-	//}
+	for(int i = 0; i < m_cursize; ++i)
+	{
+		delete m_nodelist[i];
+		m_nodelist[i] = NULL;
+	}
 	m_cursize = 0;
 }

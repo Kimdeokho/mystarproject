@@ -19,7 +19,9 @@ public:
 	void SetRectPoint(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend);
 	void SetRenderSwitch(bool bswitch);
 	void LineRender(void);
-	void Choose_army_unit(void);
+	void Select_unit(void);
+	void collisionbox_render(const MYRECT<float>& rc);
+	void RenderGrid(const int& tilesize , const int& tilecnt);
 public:
 	CLineMgr(void);
 	~CLineMgr(void);

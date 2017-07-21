@@ -6,11 +6,10 @@
 
 CLoding::CLoding(void)
 {
-	lstrcpy(m_szPath , L"");
 }
 
 CLoding::CLoding(LODINGFLAG eFlag)
-{
+{	
 	m_eLodingFlag = eFlag;
 }
 CLoding::~CLoding(void)
@@ -39,6 +38,8 @@ unsigned int APIENTRY LodingStart(void* parg)
 
 void CLoding::Initialize(void)
 {
+	lstrcpy(m_szPath , L"");
+
 	m_bLodingComplete = false;
 	m_pTextureMgr = CTextureMgr::GetInstance();
 

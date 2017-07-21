@@ -5,8 +5,7 @@ class CComponent;
 class CDrone :
 	public CUnit
 {
-private:
-	const vector<TEXINFO*>* 	m_moveTex[DIR_CNT];/*[]는 방향(각도)을 뜻한다*/
+private:	
 private:
 	/*배열이나 벡터로 만들 생각이다*/
 	CComponent*				    m_comfog;		
