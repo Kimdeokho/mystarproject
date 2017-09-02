@@ -78,13 +78,15 @@ void CUnitMultiTexture::Release(void)
 		map<wstring,vector<TEXINFO*>>::iterator iter = m_multiTex[i].begin();
 		map<wstring,vector<TEXINFO*>>::iterator iter_end = m_multiTex[i].end();
 
-		for(size_t j = 0; j < iter->second.size(); ++j)
+		for( ; iter != iter_end; ++iter)
 		{
-			iter->second[j]->pTexture->Release();
-			Safe_Delete(iter->second[j]);
+			for(size_t j = 0; j < iter->second.size(); ++j)
+			{
+				iter->second[j]->pTexture->Release();
+				Safe_Delete(iter->second[j]);
+			}
+			iter->second.clear();
 		}
-		iter->second.clear();
-
 		m_multiTex[i].clear();
 	}
 }

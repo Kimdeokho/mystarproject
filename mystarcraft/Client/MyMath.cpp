@@ -28,21 +28,25 @@ float CMyMath::radian_to_dgree(const float& rad)
 {
 	return (180*rad)/PI;
 }
-float CMyMath::scala_to_dgree(const float& scala)
+float CMyMath::scala_to_dgree(float& scala)
 {
-	return (180*acos(scala))/PI;
+	//acos 비율을 주면 라디안을 뱉는다
+	if(scala <= -1)
+		scala = -1;
+
+	return (180.f*acos(scala))/PI;
 }
 
-int CMyMath::idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt , const int& tilesize)
+float CMyMath::idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt , const int& tilesize)
 {
 	int iwidth = abs(idx1%tilecnt - idx2%tilecnt);//가로거리
 	int iheght = abs(idx1/tilecnt - idx2/tilecnt);//세로거리
 
-	return (iwidth + iheght)*tilesize;
+	return float((iwidth + iheght)*tilesize);
 }
-int CMyMath::pos_distance(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vdest)
+float CMyMath::pos_distance(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vdest)
 {
-	return int((vdest.x - vstart.x) * (vdest.x - vstart.x) + (vdest.y - vstart.y) * (vdest.y - vstart.y));
+	return ((vdest.x - vstart.x) * (vdest.x - vstart.x) + (vdest.y - vstart.y) * (vdest.y - vstart.y));
 }
 
 D3DXVECTOR2 CMyMath::index_to_Pos(const int& idx ,const int& tilecnt , const int& tilesize)
@@ -58,4 +62,32 @@ D3DXVECTOR2 CMyMath::index_to_Pos(const int& idx ,const int& tilecnt , const int
 	vpos.y = float(tilesize/2 + (idx / tilecnt)*tilesize);
 
 	return vpos;
+}
+bool CMyMath::linecross_check(const MYLINE& line1 , const MYLINE& line2)
+{
+	float a = (line1.fy2 - line1.fy1)*(line2.fx1 - line1.fx1) - (line2.fy1 - line1.fy1)*(line1.fx2 - line1.fx1);
+	float b = (line1.fy2 - line1.fy1)*(line2.fx2 - line1.fx1) - (line2.fy2 - line1.fy1)*(line1.fx2 - line1.fx1);
+
+	if(a*b < 0)
+	{
+		a = (line2.fy2 - line2.fy1)*(line1.fx1 - line2.fx1) - (line1.fy1 - line2.fy1)*(line2.fx2 - line2.fx1);
+		b = (line2.fy2 - line2.fy1)*(line1.fx2 - line2.fx1) - (line1.fy2 - line2.fy1)*(line2.fx2 - line2.fx1);
+		if(a*b < 0)
+			return true;
+		else
+			return false;
+	}
+	return false;
+
+	//float den, ua, ub;
+
+	//den = (line2.fy2 -  line2.fy1)*(line1.fx2 - line1.fx1) - (line2.fx2 - line2.fx1)*(line1.fy2 - line1.fy1);
+	////ua , ub 둘다 0~1사이라면 선분교차이다
+	//ua = (line2.fx2 - line2.fx1)*(line1.fy1 - line2.fy1) - (line2.fy2 - line2.fy1)*(line1.fx1 - line2.fx1) / den;
+	//ub = (line1.fx2 - line1.fx1)*(line1.fy1 - line2.fy1) - (line1.fy2 - line1.fy1)*(line1.fx1 - line2.fx1) / den;
+
+	//if(ua*ub <= 1)
+	//	return true;
+	//else
+	//	return false;
 }

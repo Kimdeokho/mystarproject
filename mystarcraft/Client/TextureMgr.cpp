@@ -125,7 +125,7 @@ void CTextureMgr::Release( void )
 	}
 	m_ZergTex.clear();
 }
-HRESULT CTextureMgr::Read_MultiImgPath(const wstring& wstrFilePath ,TCHAR*	szPath)
+HRESULT CTextureMgr::Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath)
 {
 	wifstream	LoadFile;
 
@@ -155,9 +155,12 @@ HRESULT CTextureMgr::Read_MultiImgPath(const wstring& wstrFilePath ,TCHAR*	szPat
 
 		int		iCount = _ttoi(szCount);
 
-		if(!_tcscmp(szKind , L"Tile"))
-			Insert_TileMultiTex(szImgPath, szObjKey, szStateKey, iCount);
-		else if(!_tcscmp(szKind , L"ZERG"))
+		//if(!_tcscmp(szKind , L"Tile"))
+		//	Insert_TileMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		//else if(!_tcscmp(szKind , L"ZERG"))
+		//	Insert_ZUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+
+		if(!_tcscmp(szKind , L"ZERG"))
 			Insert_ZUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
 
 		lstrcpy(szPath , szImgPath);
@@ -269,6 +272,48 @@ HRESULT CTextureMgr::Read_LodingImgPath(const wstring& wstrFilePath)
 	LoadFile.close();
 	return S_OK;
 }
+HRESULT CTextureMgr::Read_StateImgPath(const wstring& wstrFilePath ,TCHAR* szPath)
+{
+	wifstream	LoadFile;
+
+	LoadFile.open(wstrFilePath.c_str(), ios::in);
+
+	if(!LoadFile.is_open())
+	{
+		ERR_MSG(L"Read_MultiImgPath ERROR");
+		return E_FAIL;
+	}
+
+	TCHAR	szKind[MIN_STR] = L""; //종족,오브젝트,타일 등을 구분한다
+	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물,이펙트,자원 세부적인걸 구분한다
+	TCHAR	szObjKey[MIN_STR] = L"";
+	TCHAR	szStateKey[MIN_STR] = L"";
+	TCHAR	szCount[MIN_STR] = L"";
+	TCHAR	szImgPath[MAX_PATH] = L"";
+
+	while(!LoadFile.eof())
+	{
+		LoadFile.getline(szKind, MIN_STR, L'|');
+		LoadFile.getline(szSystem, MIN_STR, L'|');
+		LoadFile.getline(szObjKey, MIN_STR, L'|');
+		LoadFile.getline(szStateKey, MIN_STR, L'|');
+		LoadFile.getline(szCount, MIN_STR, L'|');
+		LoadFile.getline(szImgPath, MAX_PATH);
+
+		int		iCount = _ttoi(szCount);
+
+		if(!_tcscmp(szKind , L"Tile"))
+			Insert_TileMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+
+
+		lstrcpy(szPath , szImgPath);
+	}
+
+	LoadFile.close();
+
+	return S_OK;
+}
+
 const vector<TEXINFO*>* CTextureMgr::GetTileTexture_vecset(const wstring& wstrObjey, const wstring& wstrStatekey)
 {
 	map<wstring , CTexture*>::iterator iter = m_TileTexture.find(wstrObjey);
@@ -328,8 +373,11 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 	if(Read_GeneralImgPath(L"../Data/imgpath/GeneralImgPath.txt" , szPath) )
 		ERR_MSG(L"일반텍스쳐 불러오기 실패");
 
-	if(Read_MultiImgPath(L"../Data/imgpath/MultiImgPath.txt" , szPath) )
-		ERR_MSG(L"멀티텍스쳐 불러오기 실패");
+	if(Read_StateImgPath(L"../Data/imgpath/StateImgPath.txt" , szPath) )
+		ERR_MSG(L"방향성은 없지만 상태가 있는 텍스쳐 불러오기 실패");
+
+	if(Read_directional_ImgPath(L"../Data/imgpath/directionalImgPath.txt" , szPath) )
+		ERR_MSG(L"유닛텍스쳐 불러오기 실패");
 
 	lstrcpy(szPath , L"로딩완료");
 
@@ -337,4 +385,5 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 	//종족별 멀티텍스쳐는 게임 시작전에 따로 부르기
 
 }
+
 

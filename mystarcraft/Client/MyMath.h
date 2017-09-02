@@ -10,9 +10,10 @@ public:
 
 	static float dgree_to_radian(const float& dgree);
 	static float radian_to_dgree(const float& rad);
-	static float scala_to_dgree(const float& scala);
-	static int	 idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt, const int& tilesize);
-	static int	 pos_distance(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vdest);
+	static float scala_to_dgree(float& scala);
+	static float idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt, const int& tilesize);
+	static float pos_distance(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vdest);
+	static bool	 linecross_check(const MYLINE& line1 , const MYLINE& line2);
 public:
 	CMyMath(void);
 	~CMyMath(void);

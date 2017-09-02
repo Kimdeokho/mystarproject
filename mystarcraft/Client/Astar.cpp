@@ -22,8 +22,8 @@ CAstar::CAstar(void)
 	m_unit_path.reserve(256);
 
 	m_terrain_openlist = new CMyHeapSort<PATH_NODE*>;
-	//m_openlist = new CMyHeapSort<PATH_NODE*>;
-	m_PathPool = new boost::pool<>(sizeof(PATH_NODE));
+	m_openlist = new CMyHeapSort<PATH_NODE*>;
+	//m_PathPool = new boost::pool<>(sizeof(PATH_NODE));
 
 	m_releasecnt = 0;
 	m_bPathUpdatestart = false;
@@ -51,13 +51,22 @@ CAstar::CAstar(void)
 	m_funit_astartime = 0.f;
 
 	m_areamgr_inst = CArea_Mgr::GetInstance();
+
+	m_unitpath_pool = new PATH_NODE[MAXPATH_IDX];
+	m_pathpool_idx = 0;
+	m_objid = -1;
+	m_unit_stepsize = 0;
+	m_unit_diagonalstep = 0.f;
+
+	m_bweightG = true;
 }
 CAstar::~CAstar(void)
 {
+	m_pObj = NULL;
 	Release();
 	Safe_Delete(m_terrain_openlist);
-	//Safe_Delete(m_openlist);
-	Safe_Delete(m_PathPool);
+	Safe_Delete(m_openlist);
+	//Safe_Delete(m_PathPool);
 
 }
 //for_each()
@@ -86,7 +95,7 @@ bool CAstar::Shortest_distance_check(const int& idx , PATH_NODE* pnode , const i
 }
 void CAstar::Make_TerrainNode(const int& idx , PATH_NODE* parent_node ,const int& g)
 {
-	PATH_NODE*	pnewnode = (PATH_NODE*)m_PathPool->malloc();
+	PATH_NODE*	pnewnode = new PATH_NODE;//(PATH_NODE*)m_PathPool->malloc();
 
 	pnewnode->pParent = parent_node;
 	pnewnode->index = idx;
@@ -97,36 +106,134 @@ void CAstar::Make_TerrainNode(const int& idx , PATH_NODE* parent_node ,const int
 	pnewnode->vPos = m_vNode_pos;
 
 	m_terrain_openlist->push_node(pnewnode);
-;
 	m_terrain_idxopenlist[pnewnode->index] = pnewnode;
 }
-void CAstar::Make_UnitNode(const int& idx , PATH_NODE* parent_node ,const int& g)
+void CAstar::Make_UnitNode(PATH_NODE* parent_node ,const D3DXVECTOR2& vpos , const float& g_distance)
 {
 
-	int idx32 = CMyMath::Pos_to_index(m_vNode_pos.x , m_vNode_pos.y , 32);
-	if( MOVE_NONE == CTileManager::GetInstance()->GetTileOption(idx32))
+	int idx32 = CMyMath::Pos_to_index(vpos.x , vpos.y , 32);
+	if( MOVE_NONE == CTileManager::GetInstance()->GetTileOption(idx32) || 
+		m_pathpool_idx >= MAXPATH_IDX - 1)
 		return;
 
-	PATH_NODE*	pnewnode = new PATH_NODE;
-	//PATH_NODE*	pnewnode =(PATH_NODE*)m_PathPool->malloc();
+	PATH_NODE* pnewnode = &m_unitpath_pool[m_pathpool_idx];
+	++m_pathpool_idx;
 
 	pnewnode->pParent = parent_node;
-	pnewnode->index = idx;
-	pnewnode->vPos = m_vNode_pos;
+	pnewnode->index = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
+	pnewnode->vPos = vpos;
 
-	pnewnode->G = parent_node->G + g;
-	pnewnode->H = CMyMath::idx_distance(idx  , m_goalidx , m_tilecnt/*간격도 넣어야할듯*/ , 16);
+	//D3DXVECTOR2 vnormal1 , vnormal2;
+	//D3DXVec2Normalize( &vnormal1 , &(m_vGoal_pos - m_vStart_pos) );
+	//D3DXVec2Normalize( &vnormal2 , &(vpos - m_vStart_pos) );
+	//float fdot = D3DXVec2Dot(&vnormal1 , &vnormal2);	
+
+	pnewnode->G = parent_node->G + g_distance;
+
+	//pnewnode->G = parent_node->G + g_distance * -fdot;
+
+	//float weight = g_distance*g_distance*(-fdot);
+	//pnewnode->G = parent_node->G + weight;
+
+
+	int hidx = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
+	pnewnode->H = CMyMath::idx_distance(hidx , m_goalidx , m_tilecnt , m_unit_stepsize);
+	//pnewnode->H = CMyMath::pos_distance(vpos , m_vGoal_pos);
 	pnewnode->iCost = pnewnode->G + pnewnode->H;
-
 	
-	//pnewnode->iCost = CMyMath::pos_distance(m_vNode_pos , m_vGoal_pos);//pnewnode->G + pnewnode->H;
-	
+	m_openlist->push_node(pnewnode);
 
-
-	m_openlist.insert(multimap<int , PATH_NODE*>::value_type(pnewnode->iCost , pnewnode));
-
-	//m_openlist->push_node(pnewnode);
 	m_idxopenlist.insert(boost::unordered_map<int , PATH_NODE*>::value_type(pnewnode->index , pnewnode));
+}
+void CAstar::Init_eightpos_rect(const D3DXVECTOR2& vpos , const MYRECT<float>& rc, const int& stepsize)
+{
+	for(int i = 0; i < ASTAR_DIR_END; ++i)
+	{
+		m_eight_vpos[i] = vpos;
+		m_eight_rect[i] = rc;
+	}
+
+
+
+	if(vpos.y >= stepsize)
+		m_eight_vpos[UP].y = m_eight_vpos[CENTER].y - stepsize;
+
+	if(vpos.y <= 4096 - stepsize)
+		m_eight_vpos[DOWN].y = m_eight_vpos[CENTER].y + stepsize;
+
+	if(vpos.x >= stepsize)
+		m_eight_vpos[LEFT].x = m_eight_vpos[CENTER].x - stepsize;
+
+	if(vpos.x <= 4096 - stepsize)
+		m_eight_vpos[RIGHT].x = m_eight_vpos[CENTER].x + stepsize;
+
+
+	if(vpos.x <= 4096 - stepsize &&
+		vpos.y >= stepsize )
+	{
+		m_eight_vpos[RIGHT_UP].x = m_eight_vpos[CENTER].x + stepsize;
+		m_eight_vpos[RIGHT_UP].y = m_eight_vpos[CENTER].y - stepsize;
+	}
+	
+
+	if(vpos.x <= 4096 - stepsize &&
+		vpos.y <= 4096 - stepsize )
+	{
+		m_eight_vpos[RIGHT_DOWN].x = m_eight_vpos[CENTER].x + stepsize;
+		m_eight_vpos[RIGHT_DOWN].y = m_eight_vpos[CENTER].y + stepsize;
+	}
+
+	if(vpos.x >= stepsize &&
+		vpos.y <= 4096 - stepsize)
+	{
+		m_eight_vpos[LEFT_DOWN].x = m_eight_vpos[CENTER].x - stepsize;
+		m_eight_vpos[LEFT_DOWN].y = m_eight_vpos[CENTER].y + stepsize;
+	}
+
+	if(vpos.x >= stepsize &&
+		vpos.y >= stepsize)
+	{
+		m_eight_vpos[LEFT_UP].x = m_eight_vpos[CENTER].x - stepsize;
+		m_eight_vpos[LEFT_UP].y = m_eight_vpos[CENTER].y - stepsize;
+	}
+
+	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+	if(rc.top >= stepsize)
+	{
+		m_eight_rect[UP].top = m_eight_rect[CENTER].top - stepsize;
+		m_eight_rect[UP].bottom = m_eight_rect[CENTER].bottom - stepsize;
+	}
+
+	m_eight_rect[DOWN].top = m_eight_rect[CENTER].top + stepsize;
+	m_eight_rect[DOWN].bottom = m_eight_rect[CENTER].bottom + stepsize;
+
+	m_eight_rect[LEFT].left = m_eight_rect[CENTER].left - stepsize;
+	m_eight_rect[LEFT].right = m_eight_rect[CENTER].right - stepsize;
+
+	m_eight_rect[RIGHT].left = m_eight_rect[CENTER].left + stepsize;
+	m_eight_rect[RIGHT].right = m_eight_rect[CENTER].right + stepsize;
+
+	m_eight_rect[LEFT_UP].left = m_eight_rect[CENTER].left - stepsize;
+	m_eight_rect[LEFT_UP].right = m_eight_rect[CENTER].right - stepsize;
+	m_eight_rect[LEFT_UP].top = m_eight_rect[CENTER].top - stepsize;
+	m_eight_rect[LEFT_UP].bottom = m_eight_rect[CENTER].bottom - stepsize;
+
+	m_eight_rect[LEFT_DOWN].left = m_eight_rect[CENTER].left - stepsize;
+	m_eight_rect[LEFT_DOWN].right = m_eight_rect[CENTER].right - stepsize;
+	m_eight_rect[LEFT_DOWN].top = m_eight_rect[CENTER].top + stepsize;
+	m_eight_rect[LEFT_DOWN].bottom = m_eight_rect[CENTER].bottom + stepsize;
+
+	m_eight_rect[RIGHT_DOWN].left = m_eight_rect[CENTER].left + stepsize;
+	m_eight_rect[RIGHT_DOWN].right = m_eight_rect[CENTER].right + stepsize;
+	m_eight_rect[RIGHT_DOWN].top = m_eight_rect[CENTER].top + stepsize;
+	m_eight_rect[RIGHT_DOWN].bottom = m_eight_rect[CENTER].bottom + stepsize;
+
+	m_eight_rect[RIGHT_UP].left = m_eight_rect[CENTER].left + stepsize;
+	m_eight_rect[RIGHT_UP].right = m_eight_rect[CENTER].right + stepsize;
+	m_eight_rect[RIGHT_UP].top = m_eight_rect[CENTER].top - stepsize;
+	m_eight_rect[RIGHT_UP].bottom = m_eight_rect[CENTER].bottom - stepsize;
+
 }
 void CAstar::Init_eightidx(const int& idx)
 {
@@ -235,9 +342,10 @@ void CAstar::TerrainPath_calculation_Update(const D3DXVECTOR2& goalpos)
 			break; //여기 걸리면 그뒤로 A스타 그만해야함..
 		}
 
-		if(m_dummynode->H > pnode->H)
+		//if(m_dummynode->H > pnode->H)
+		//	m_dummynode = pnode;
+		if(m_dummynode->iCost > pnode->iCost)
 			m_dummynode = pnode;
-
 
 
 		if(pnode->index == m_goalidx)
@@ -346,6 +454,7 @@ void CAstar::TerrainPath_calculation_Update(const D3DXVECTOR2& goalpos)
 }
 void CAstar::TerrainPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos)
 {
+
 	m_fdummytime = 0.f;
 	m_fAstarTime = 0.f;
 
@@ -364,7 +473,7 @@ void CAstar::TerrainPath_calculation_Start(const D3DXVECTOR2& startpos , const D
 	m_startindex = CMyMath::Pos_to_index(startpos.x , startpos.y ,32);
 	m_goalidx = CMyMath::Pos_to_index(goalpos.x , goalpos.y ,32);
 
-	PATH_NODE* pnode = (PATH_NODE*)m_PathPool->malloc();
+	PATH_NODE* pnode = new PATH_NODE;//(PATH_NODE*)m_PathPool->malloc();
 	pnode->G = 0;
 	pnode->H = CMyMath::pos_distance(m_vNode_pos , m_vGoal_pos);
 	pnode->iCost = pnode->H;
@@ -376,86 +485,104 @@ void CAstar::TerrainPath_calculation_Start(const D3DXVECTOR2& startpos , const D
 	//m_terrain_openlist.insert(make_pair(pnode->iCost , pnode));
 	m_terrain_idxopenlist[pnode->index] = pnode;
 }
-void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos)
+void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const int& stepsize , const int& objid , bool weightG)
 {
 	Release_unit_closelist();
 	Release_UnitPath();
 
+	m_bweightG = weightG;
+
+	m_objid = objid;
+	m_unit_stepsize = stepsize;
+	m_unit_diagonalstep = (sqrtf((float)(stepsize*stepsize + stepsize*stepsize)));
+	m_tilecnt = SQ_TILECNTX*(SQ_TILESIZEX/stepsize);
+
+	m_accumulate = 0;
+
+	
+	m_vStart_pos = startpos;
 	m_vGoal_pos = goalpos;
 
-	m_tilecnt = 256;
-	
-	m_startindex = CMyMath::Pos_to_index(startpos.x , startpos.y , 16);
-	m_goalidx = CMyMath::Pos_to_index(goalpos.x , goalpos.y , 16);
+	m_startindex = CMyMath::Pos_to_index(startpos.x , startpos.y , m_unit_stepsize);
+	m_goalidx = CMyMath::Pos_to_index(goalpos.x , goalpos.y , m_unit_stepsize);
 
-	PATH_NODE* pnode = new PATH_NODE;
+	//PATH_NODE* pnode = new PATH_NODE;
 	//PATH_NODE* pnode = (PATH_NODE*)m_PathPool->malloc();
+	PATH_NODE* pnode = &m_unitpath_pool[m_pathpool_idx];
+	++m_pathpool_idx;
+
 	pnode->G = 0;
-	pnode->H = CMyMath::idx_distance(m_startindex , m_goalidx , m_tilecnt , 16);
+	pnode->H = CMyMath::idx_distance(m_startindex , m_goalidx , m_tilecnt , m_unit_stepsize);
+	//pnode->H = CMyMath::pos_distance(startpos , goalpos);
 	pnode->iCost = pnode->G + pnode->H;
 
 	pnode->index = m_startindex;
 	pnode->vPos = startpos;
 	pnode->pParent = NULL;
 
-	m_openlist.insert(multimap<int , PATH_NODE*>::value_type(pnode->iCost , pnode));
+	//m_openlist.insert(multimap<int , PATH_NODE*>::value_type(pnode->iCost , pnode));
+	m_openlist->push_node(pnode);
 	m_idxopenlist.insert(boost::unordered_map<int , PATH_NODE*>::value_type(pnode->index , pnode));
 
 
-	boost::unordered_map<int , PATH_NODE*>::iterator iter = m_closelist.find(pnode->index);
-
-	if(iter != m_closelist.end())
-	{
-		delete iter->second;
-		iter->second = NULL;
-		m_closelist.erase(iter);
-	}
+	m_dummynode = pnode;
 }
-void CAstar::UnitPath_calculation_Update(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const MYRECT<float>& rect , const int& objid , vector<D3DXVECTOR2>& vecpath, bool dummymode)
+void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3DXVECTOR2>& vecpath)
 {
 
-
-
-
-
-	//Release_UnitPath();
-	int istep = 16;
-	m_tilecnt = 256;
-
-	m_goalidx = CMyMath::Pos_to_index(goalpos.x , goalpos.y , istep);
-	int idx64 = CMyMath::Pos_to_index(startpos.x , startpos.y , 64);
 	PATH_NODE* pnode;
 
-	m_areamgr_inst->SetObjId(objid);
+	//MYRECT<float>	vtx;
+	MYRECT<float> temprect;
 
-	MYRECT<float>	vtx;
-	MYRECT<float> temprect = rect;
+	//vtx.left = (rect.right - rect.left)/2;
+	//vtx.right = (rect.right - rect.left)/2;
+	//vtx.bottom = (rect.bottom - rect.top)/2;
+	//vtx.top = (rect.bottom - rect.top)/2;
 
-	vtx.left = (rect.right - rect.left)/2;
-	vtx.right = (rect.right - rect.left)/2;
-	vtx.bottom = (rect.bottom - rect.top)/2;
-	vtx.top = (rect.bottom - rect.top)/2;
-
+	//vtx.left = vertex.left;
+	//vtx.right = vertex.right;
+	//vtx.bottom = vertex.bottom;
+	//vtx.top = vertex.top;
 	
 	clock_t tbegin , tend;
-
 	tbegin = clock();
 
-	boost::unordered_map<int , PATH_NODE*>::iterator iter;
+	//pdummynode = m_openlist.begin()->second;
+	//pdummynode = m_openlist->pop_node();
+
+	//boost::unordered_map<int , PATH_NODE*>::iterator iter;
+
+
 	while(true)
 	{
-		pnode = m_openlist.begin()->second;
-		m_openlist.erase(m_openlist.begin());
-
-		iter = m_idxopenlist.find(pnode->index);
-		m_idxopenlist.erase(iter);
+		tend = clock();
+		if(tend - tbegin >= 1)
+			break;
 
 
-		m_closelist.insert(boost::unordered_map<int , PATH_NODE*>::value_type(pnode->index , pnode));
+
+		pnode = m_openlist->pop_node();
+		//pnode = m_openlist.begin()->second;
+		//m_openlist.erase(m_openlist.begin());
+
+		if(NULL != pnode)
+			m_closelist.insert(boost::unordered_map<int , PATH_NODE*>::value_type(pnode->index , pnode));
+
+		if(NULL == pnode || m_pathpool_idx >= MAXPATH_IDX - 1)
+		{
+			while(NULL != m_dummynode)
+			{
+				vecpath.push_back(m_dummynode->vPos);
+				m_dummynode = m_dummynode->pParent;
+			}
+			break;
+		}
+				
 
 		if(pnode->index == m_goalidx)
 		{
-			pnode->vPos = CMyMath::index_to_Pos(m_goalidx , m_tilecnt , istep);
+			pnode->vPos = CMyMath::index_to_Pos(m_goalidx , m_tilecnt , m_unit_stepsize);
 
 			while(NULL != pnode)
 			{
@@ -465,101 +592,45 @@ void CAstar::UnitPath_calculation_Update(const D3DXVECTOR2& startpos , const D3D
 			break;
 		}
 
-		tend = clock();
-		if(true == dummymode && 
-			tend - tbegin >= 2)
+		if(m_bweightG)
 		{
-			while(NULL != pnode)
+			if(m_dummynode->G <= pnode->G)
+				m_dummynode = pnode;
+		}
+		else
+		{
+			if(m_dummynode->H > pnode->H)
+				m_dummynode = pnode;
+		}
+
+		temprect.left = pnode->vPos.x - vertex.left;
+		temprect.right = pnode->vPos.x + vertex.right;
+		temprect.top = pnode->vPos.y - vertex.top;
+		temprect.bottom = pnode->vPos.y + vertex.bottom;
+
+		Init_eightpos_rect(pnode->vPos , temprect , m_unit_stepsize);
+
+		float gdistance = 0;
+		int idx = 0;
+		for(int i = 1; i < ASTAR_DIR_END; ++i)
+		{
+			if( i >= 5)
+				gdistance = m_unit_diagonalstep;
+			else
+				gdistance = (float)m_unit_stepsize;
+
+			if( Check_TileOption(m_eight_vpos[i]) &&
+				Check_CloseList(m_eight_vpos[i]) &&	
+				Check_OpenList(m_eight_vpos[i] , pnode) &&
+				m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , m_eight_rect[CENTER] , m_eight_vpos[CENTER] , m_unit_stepsize , m_objid , (ASTAR_DIR)i))
 			{
-				vecpath.push_back(pnode->vPos);
-				pnode = pnode->pParent;
+				Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
 			}
-			break;
-		}
-		if(tend - tbegin >= 2)
-			break;
-
-
-		idx64 = CMyMath::Pos_to_index(pnode->vPos , 64);
-
-		temprect.left = pnode->vPos.x - vtx.left;
-		temprect.right = pnode->vPos.x + vtx.right;
-		temprect.top = pnode->vPos.y - vtx.top;
-		temprect.bottom = pnode->vPos.y + vtx.bottom;
-
-		Init_eightidx(pnode->index);
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(UP , idx64 , temprect , m_vNode_pos) &&
-			Check_CloseList(m_eight_idx[UP]) &&				
-			Check_OpenList(m_eight_idx[UP] , istep , pnode) )
-		{
-			Make_UnitNode(m_eight_idx[UP] , pnode , istep);	
-		}
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(DOWN , idx64 , temprect , m_vNode_pos) &&
-			Check_CloseList(m_eight_idx[DOWN]) &&						 
-			Check_OpenList(m_eight_idx[DOWN] , istep , pnode))
-		{
-			Make_UnitNode(m_eight_idx[DOWN] , pnode , istep);
-		}
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(LEFT , idx64 , temprect , m_vNode_pos)  &&
-			Check_CloseList(m_eight_idx[LEFT]) &&						
-			Check_OpenList(m_eight_idx[LEFT] , istep , pnode))
-		{
-			Make_UnitNode(m_eight_idx[LEFT] , pnode , istep);
-		}
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(RIGHT , idx64 , temprect , m_vNode_pos) &&			 
-			Check_CloseList(m_eight_idx[RIGHT]) &&			
-			Check_OpenList(m_eight_idx[RIGHT] , istep , pnode))
-		{
-			Make_UnitNode(m_eight_idx[RIGHT] , pnode , istep);
-		}
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(RIGHT_DOWN , idx64 , temprect , m_vNode_pos) &&
-			Check_CloseList(m_eight_idx[RIGHT_DOWN]) &&						 
-			Check_OpenList(m_eight_idx[RIGHT_DOWN] , 22 , pnode))
-		{
-			Make_UnitNode(m_eight_idx[RIGHT_DOWN] , pnode , 22);
-		}
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(RIGHT_UP , idx64 , temprect , m_vNode_pos) &&
-			Check_CloseList(m_eight_idx[RIGHT_UP]) &&						 
-			Check_OpenList(m_eight_idx[RIGHT_UP] , 22 , pnode))
-		{
-			Make_UnitNode(m_eight_idx[RIGHT_UP] , pnode , 22);
-		}
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(LEFT_DOWN , idx64 , temprect , m_vNode_pos)  &&
-			Check_CloseList(m_eight_idx[LEFT_DOWN]) &&						
-			Check_OpenList(m_eight_idx[LEFT_DOWN] , 22 , pnode))
-		{
-			Make_UnitNode(m_eight_idx[LEFT_DOWN] , pnode , 22);
-		}
-
-		m_vNode_pos = pnode->vPos;
-		if( Search_surrounding_units(LEFT_UP , idx64 , temprect , m_vNode_pos) &&
-			Check_CloseList(m_eight_idx[LEFT_UP]) &&						 
-			Check_OpenList(m_eight_idx[LEFT_UP] , 22 , pnode))
-		{
-			Make_UnitNode(m_eight_idx[LEFT_UP] , pnode , 22);
 		}
 	}
+	//printf("지연시간 %d , OBJ_ID = %d \n" , m_accumulate , m_objid);
+	//printf("pool 인덱스 %d , OBJ_ID = %d\n" , m_pathpool_idx , m_objid);
 
-
-
-	
-
-	printf("지연시간 %d\n" , tend - tbegin);
-	
 }
 bool CAstar::Check_TileOption(const int& idx)
 {
@@ -586,54 +657,51 @@ bool CAstar::Check_TileOption(const D3DXVECTOR2& vpos)
 
 }
 
-bool CAstar::Search_surrounding_units(ASTAR_DIR edir , const int& idx/*인덱스64여야 한다.*/, const MYRECT<float>& rect ,D3DXVECTOR2& vpos)
+bool CAstar::Search_surrounding_units(const MYRECT<float>& rect ,D3DXVECTOR2& vpos ,const MYRECT<float>& center_rc, const D3DXVECTOR2& vcenterpos)
 {
 	/*주위 유닛과 충돌이 일어나는지 검사한다*/
 
-	if(m_areamgr_inst->Check_Area(edir , idx , rect , vpos))
-		return true;
-	else
-		return false;
-
+	return true;//m_areamgr_inst->Check_Area(rect , vpos , center_rc , vcenterpos);
 }
-bool CAstar::Check_CloseList(const int& idx)
+bool CAstar::Check_CloseList(const D3DXVECTOR2& vpos)
 {
-	//if( m_closelist.end() != m_closelist.find(idx) )
-	//	return false;
+	int idx = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
+
+	if( m_closelist.end() != m_closelist.find(idx) )
+		return false;
 
 	return true;
 }
-bool CAstar::Check_OpenList(const int& idx , const int& _g , PATH_NODE* parentnode)
+bool CAstar::Check_OpenList(const D3DXVECTOR2& idxpos , PATH_NODE* parentnode)
 {
-	//boost::unordered_map<int , PATH_NODE*>::iterator iter = m_idxopenlist.find(idx);
 
-	//if(iter != m_idxopenlist.end())
-	//{
-	//	//키값을 찾았다
-	//	//iter->second는 기존의 오픈리스트에 있는 노드이고..
-	//	if(iter->second->G > parentnode->G + _g)
-	//	{
-	//		iter->second->G = parentnode->G + _g;
-	//		iter->second->iCost = iter->second->G + iter->second->H;
-	//		iter->second->pParent = parentnode;
+	int idx = CMyMath::Pos_to_index( idxpos , m_unit_stepsize );
+	boost::unordered_map<int , PATH_NODE*>::iterator iter = m_idxopenlist.find(idx);
 
-	//		multimap<int , PATH_NODE*>::iterator opiter = m_openlist.begin();
-	//		multimap<int , PATH_NODE*>::iterator opiter_end = m_openlist.end();
-	//		for( ; opiter != opiter_end; ++opiter)
-	//		{
-	//			if(iter->second == opiter->second)
-	//			{
-	//				m_openlist.erase(opiter);
-	//				break;
-	//			}
-	//		}
-	//		m_openlist.insert(multimap<int, PATH_NODE*>::value_type(iter->second->iCost , iter->second));
-	//	}
+	if(iter != m_idxopenlist.end())
+	{
+		//if( parentnode->G + g_distance < iter->second->G )
+		//{
+		//	iter->second->G = parentnode->G + g_distance;
+		//	iter->second->iCost = iter->second->H + iter->second->G;
+		//	iter->second->pParent = parentnode;
 
-	//	return false;
-	//}
-	//else
-	//	return true;
+		//	multimap<int , PATH_NODE*>::iterator open_iter = m_openlist.begin();
+		//	multimap<int , PATH_NODE*>::iterator open_iter_end = m_openlist.end();
+		//	for( ; open_iter != open_iter_end; ++open_iter)
+		//	{
+		//		if(iter->second == open_iter->second)
+		//		{
+		//			m_openlist.erase(open_iter);
+		//			break;
+		//		}
+		//	}
+		//	m_openlist.insert(multimap<int, PATH_NODE*>::value_type(iter->second->iCost , iter->second));
+		//}
+		return false;
+	}
+	else
+		return true;
 }
 
 bool CAstar::Check_TerrainOpenList(const int& idx)
@@ -690,6 +758,9 @@ void CAstar::Release(void)
 	Release_TerrainPath();
 	Release_unit_closelist();
 	Release_UnitPath();
+
+	delete[] m_unitpath_pool;
+	m_unitpath_pool = NULL;
 }
 void CAstar::Release_TerrainCloseList(void)
 {
@@ -710,8 +781,7 @@ void CAstar::Release_TerrainCloseList(void)
 			if(m_releasecnt > 10)
 				break;
 
-			//Safe_Delete(iter->second);
-			m_PathPool->free(iter->second);
+			delete iter->second;
 			iter->second = NULL;
 
 			iter = m_terrain_closelist.erase(iter);
@@ -722,7 +792,8 @@ void CAstar::Release_TerrainCloseList(void)
 	else
 		m_brelease_start = false;
 
-	m_terrain_openlist->Release(m_terrain_idxopenlist , m_PathPool);
+	//m_terrain_openlist->Release(m_terrain_idxopenlist , m_PathPool);
+	m_terrain_openlist->Release();
 
 }
 void CAstar::Release_TerrainPath(void)
@@ -733,13 +804,14 @@ void CAstar::Release_TerrainPath(void)
 		boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_terrain_closelist.end();
 		for( ; iter != iter_end; ++iter)
 		{
-			m_PathPool->free(iter->second);
+			//m_PathPool->free(iter->second);
+			delete iter->second;
 			iter->second = NULL;
 		}
 		m_terrain_closelist.clear();
 	}
 
-	m_terrain_openlist->Release(m_terrain_idxopenlist , m_PathPool);
+	m_terrain_openlist->Release();
 
 	if(!m_terrain_path.empty())
 		m_terrain_path.clear();
@@ -749,47 +821,18 @@ void CAstar::Release_TerrainPath(void)
 }
 void CAstar::Release_unit_closelist(void)
 {
+	m_pathpool_idx = 0;
 	if(!m_closelist.empty())
-	{
-		boost::unordered_map<int , PATH_NODE*>::iterator iter = m_closelist.begin();
-		boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_closelist.end();
-		for( ; iter != iter_end; ++iter)
-		{
-			//m_PathPool->free(iter->second);
-			delete iter->second;
-			iter->second = NULL;
-		}
 		m_closelist.clear();
-	}
 }
 void CAstar::Release_UnitPath(void)
 {
+	m_openlist->Release();
+	//m_openlist.clear();
 
-	//m_idxopenlist.clear();
-	//m_openlist->Release();
+	if(!m_idxopenlist.empty())
+		m_idxopenlist.clear();
 
-	multimap<int , PATH_NODE*>::iterator iter = m_openlist.begin();
-	multimap<int , PATH_NODE*>::iterator iter_end = m_openlist.end();
-	
-	for( ; iter != iter_end; ++iter) 
-	{
-		delete iter->second;
-		iter->second = NULL;
-	}
-	m_openlist.clear();
-
-	//boost::unordered_map<int , PATH_NODE*>::iterator idxiter = m_idxopenlist.begin();
-	//boost::unordered_map<int , PATH_NODE*>::iterator idxiter_end = m_idxopenlist.end();
-
-	//for( ; idxiter != idxiter_end; ++idxiter) 
-	//{
-	//	if(NULL == idxiter->second)
-	//		continue;
-
-	//	delete idxiter->second;
-	//	idxiter->second = NULL;
-	//}
-	m_idxopenlist.clear();
 
 	if(!m_unit_path.empty())
 		m_unit_path.clear();
@@ -797,35 +840,6 @@ void CAstar::Release_UnitPath(void)
 
 void CAstar::Path_Render(void)
 {
-	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
-
-	//D3DXMATRIX	tempmat;
-	//D3DXMatrixIdentity(&tempmat);
-
-	//if(!m_terrain_path.empty())
-	//{
-	//	for(size_t i = 0; i < m_terrain_path.size(); ++i)
-	//	{
-	//		tempmat._41 = m_terrain_path[i].x - CScrollMgr::m_fScrollX;
-	//		tempmat._42 = m_terrain_path[i].y - CScrollMgr::m_fScrollY;
-	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-
-	//		if(0 == i)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-	//		else if( i == m_terrain_path.size() - 1)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-	//		else
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	//	}
-
-	//	//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
-	//	//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
-	//	//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-	//	//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	//}
-
-
-
 
 	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"tile8x8");
 
@@ -854,31 +868,38 @@ void CAstar::Path_Render(void)
 		//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
 		//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
 	}
-}
-void CAstar::MoveUpdate(void)
-{
-	if(m_brealpath)
+
+	if(!m_closelist.empty())
 	{
-		if(!m_terrain_path.empty())
+		boost::unordered_map<int , PATH_NODE*>::iterator iter = m_closelist.begin();
+		boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_closelist.end();
+
+		for( ; iter != iter_end; ++iter)
 		{
-			D3DXVECTOR2 curpos;
-			D3DXVECTOR2 nextpos;
-			D3DXVECTOR2 vnormal;
-			if( 0 != m_pathidx)
-			{
-				curpos = (m_terrain_path)[m_pathidx];
-				nextpos = (m_terrain_path)[m_pathidx-1];
+			tempmat._41 = iter->second->vPos.x - CScrollMgr::m_fScrollX;
+			tempmat._42 = iter->second->vPos.y - CScrollMgr::m_fScrollY;
 
-				D3DXVec2Normalize(&vnormal , &(nextpos - curpos));
+			CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
 
-				m_pObj->GetReferencePos() += vnormal*GETTIME*500;
-
-				if(CMyMath::pos_distance(m_pObj->GetPos() , nextpos) < 30*30)
-				{
-					--m_pathidx;
-				}
-			}
+			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,0));
 		}
+	}
 
+	PATH_NODE* pnode = NULL;
+	int idx = 0;
+	while(true)
+	{
+		pnode = m_openlist->Render(idx);
+		if(NULL == pnode)
+			break;
+
+		++idx;
+
+		tempmat._41 = pnode->vPos.x - CScrollMgr::m_fScrollX;
+		tempmat._42 = pnode->vPos.y - CScrollMgr::m_fScrollY;
+
+		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+
+		CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,255,255));
 	}
 }

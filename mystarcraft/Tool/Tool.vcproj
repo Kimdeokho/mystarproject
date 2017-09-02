@@ -357,30 +357,6 @@
 					RelativePath=".\TileMgr.h"
 					>
 				</File>
-				<File
-					RelativePath=".\Tool_Astar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Tool_Astar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tool_MyHeapSort.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Tool_MyHeapSort.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tool_MyMath.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Tool_MyMath.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="FormView"

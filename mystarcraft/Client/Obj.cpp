@@ -56,10 +56,12 @@ void CObj::Update(void)
 }
 void CObj::idx_update(void)
 {
-	m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y);
-	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
-	m_curidx256 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 256);
-	m_curidx512 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 512);
+	//¿Ã∞≈ ππæﬂ???????
+
+	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
+	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
+	m_curidx256 = CMyMath::Pos_to_index(m_vPos , 256);
+	m_curidx512 = CMyMath::Pos_to_index(m_vPos , 512);
 
 	if(m_oldidx32 != m_curidx32)
 		m_oldidx32 = m_curidx32;
@@ -125,7 +127,10 @@ bool CObj::Be_in_camera(void)
 
 	return false;
 }
-
+float CObj::GetX(void)
+{
+	return m_vPos.x;
+}
 float CObj::GetY(void)
 {
 	return m_vPos.y;
@@ -143,6 +148,11 @@ bool CObj::GetDestroy(void)
 
 const MYRECT<float>& CObj::GetMyRect(void)
 {
+	m_rect.left = m_vPos.x - m_vertex.left; 
+	m_rect.right = m_vPos.x + m_vertex.right;
+	m_rect.top = m_vPos.y - m_vertex.top;
+	m_rect.bottom = m_vPos.y + m_vertex.bottom;
+
 	return m_rect;
 }
 
@@ -155,8 +165,10 @@ void CObj::Inputkey_reaction(const int& nkey)
 {
 
 }
-
-OBJ_TYPE CObj::GetType(void)
+void CObj::Inputkey_reaction(const int& firstkey , const int& secondkey)
+{
+}
+MOVE_TYPE CObj::GetType(void)
 {
 	return m_eType;
 }
@@ -180,18 +192,43 @@ void CObj::SetSelect(bool bselect)
 {
 	m_bSelect = bselect;
 }
-
-void CObj::Setstate(const CHAR* statekey)
-{
-
-}
-
 void CObj::SetVertex(const float& _left, const float& _right, const float& _top , const float& _bottom)
 {
 	m_vertex.left = _left;
 	m_vertex.right = _right;
 	m_vertex.top = _top;
 	m_vertex.bottom = _bottom;
+}
+
+STATE CObj::GetState(void)
+{
+	return m_estate;
+}
+
+KATEGORIE CObj::GetKategorie(void)
+{
+	return m_ekategorie;
+}
+
+CComponent* CObj::GetComponent(COMPONENT_LIST ecom_name)
+{
+	boost::unordered_map<COMPONENT_LIST , CComponent*>::iterator iter;
+	iter = m_componentlist.find(ecom_name);
+
+	if(iter != m_componentlist.end())
+		return iter->second;
+
+	return NULL;
+}
+
+void CObj::Setdir(D3DXVECTOR2& vdir)
+{
+	D3DXVec2Normalize(&m_vcurdir , &vdir);
+}
+
+const D3DXVECTOR2& CObj::GetcurDir(void)
+{
+	return m_vcurdir;
 }
 
 int CObj::m_globalobj_id;

@@ -40,6 +40,7 @@ void Com_Pathfind::StartPathfinding(void)
 }
 void Com_Pathfind::Release(void)
 {
+	m_pobj = NULL;
 	Safe_Delete(m_Astar);
 }
 

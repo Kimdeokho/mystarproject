@@ -30,6 +30,8 @@ void CHD_Group_R::Group_R_Algorithm()
 
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
+	if(NULL == m_oriTerrainInfo)
+		return;
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
 	{

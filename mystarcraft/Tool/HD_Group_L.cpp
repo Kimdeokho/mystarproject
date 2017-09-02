@@ -31,6 +31,8 @@ void CHD_Group_L::Group_L_Algorithm()
 
 	m_oriTerrainInfo = CTileMgr::GetInstance()->GetTerrain_Info(m_startidx);
 
+	if(NULL == m_oriTerrainInfo)
+		return;
 
 	if(GROUP_L == m_oriTerrainInfo->byGroup_ID)
 	{

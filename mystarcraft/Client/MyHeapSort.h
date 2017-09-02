@@ -17,6 +17,7 @@ public:
 	void push_node(T pnode);
 	T pop_node(void);
 	int getsize(void);
+	T Render(const int& idx);
 	void Release(void);
 	void Release(PATH_NODE** openidx , boost::pool<>* _pool);
 public:
@@ -184,7 +185,14 @@ int CMyHeapSort<T>::getsize(void)
 {
 	return m_cursize;
 }
+template<typename T>
+T CMyHeapSort<T>::Render(const int& idx)
+{
+	if(idx >= m_cursize)
+		return NULL;
 
+	return m_nodelist[idx];
+}
 template<typename T>
 void CMyHeapSort<T>::Release(PATH_NODE** openidx , boost::pool<>* _pool)
 {
@@ -204,7 +212,7 @@ void CMyHeapSort<T>::Release(void)
 {
 	for(int i = 0; i < m_cursize; ++i)
 	{
-		delete m_nodelist[i];
+		//delete m_nodelist[i];
 		m_nodelist[i] = NULL;
 	}
 	m_cursize = 0;

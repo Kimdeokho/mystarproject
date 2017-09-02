@@ -53,13 +53,14 @@ private:
 /*다음으로 갈 인덱스, 비용만 필요 검사했는지 확인용 bool*/
 	CMyHeapSort<FLOW_NODE*>*	m_heapsort;
 	FLOW_NODE*	m_flownode[SQ_TILECNTX*SQ_TILECNTY];
+	short		m_flowdestidx[SQ_TILECNTX*SQ_TILECNTY];
 	int			m_eight_idx[ASTAR_DIR_END];
 	float m_fTimeTest;
 public:
 	void Initialize(void);
 	void Init_eightidx(const int& idx);
 public:
-	void Flowfield_Pathfinding(const int& goalidx);
+	void Flowfield_Pathfinding(void);
 	void Flowfield_Render(void);
 public:
 	bool	GetFogLight(const int& idx);
@@ -69,7 +70,7 @@ public:
 	TILE**	GetSqTile(void);
 	CREEP_INFO**	GetCreepTile(void);
 	void	GetFlowfield_Path(const int& idx , vector<int>& path);
-	FLOW_NODE**   Get_flowfield_node(void);
+	short*   Get_flowfield_node(void);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
 	void SetFogLight(int idx, float fdistance , float fradius);
@@ -85,13 +86,13 @@ public:
 	//void CreepAlgorithm(void);
 public:	
 	void SightOffRender(const int& idx);
-	void SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , OBJ_TYPE etype);
+	void SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , MOVE_TYPE etype);
 
 	//void Creep_increase(const D3DXVECTOR2& vPos/*유닛의 위치*/ , int irange);
 	void Creep_decrease_autotile(const int& idx);
 	void Creep_Autotile(const int& idx);
 public:
-	void Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , OBJ_TYPE etype);
+	void Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype);
 	void Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int& fRadius ,const int& loopcnt,list<int>& creep_IdxList);
 public:
 	void ReadyTileTexture(void);

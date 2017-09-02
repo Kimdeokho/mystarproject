@@ -1,0 +1,2 @@
+ZERG|UNIT|DRONE|MOVE|54|..\Texture\Multi\Zerg\Unit\drone\move\drone_move%d.png
+ZERG|UNIT|DRONE|IDLE|9|..\Texture\Multi\Zerg\Unit\drone\idle\drone_idle%d.png

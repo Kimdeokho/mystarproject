@@ -528,6 +528,7 @@ void CTileDebug::MoveOption_Render(void)
 				CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
 					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
 					, D3DCOLOR_ARGB(60,255,0,0));
+				continue;
 			}
 
 
@@ -542,7 +543,7 @@ void CTileDebug::MoveOption_Render(void)
 			{
 				CDevice::GetInstance()->GetSprite()->Draw(ptemp->pTexture
 					, NULL, &D3DXVECTOR3(16, 16, 0.f), NULL
-					, D3DCOLOR_ARGB(60,0,255,0));
+					, D3DCOLOR_ARGB(60,0,255,255));
 			}
 		}
 	}

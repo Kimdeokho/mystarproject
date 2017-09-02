@@ -273,6 +273,34 @@ void CTileMgr::TileOption_Update(void)
 
 			if(ptemp->byTerrain_ID == TERRAIN_WATER)
 				m_sqTile[iindex]->byFloor = 1;
+			else if(ptemp->byTerrain_ID == TERRAIN_HILL_R)
+			{
+				if(0 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 3 ||
+					6 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 9 ||
+					12 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 16 ||
+					20 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 21)
+				{
+					m_sqTile[iindex]->byFloor = 2;
+				}
+			}
+			else if(ptemp->byTerrain_ID == TERRAIN_HILL_L)
+			{
+				if(2 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 5 ||
+					8 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 11 ||
+					13 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 17 ||
+					20 <= ptemp->byGroup_sequence &&
+					ptemp->byGroup_sequence <= 21)
+				{
+					m_sqTile[iindex]->byFloor = 2;
+				}
+			}
 			else
 			{
 				if(ptemp->byGroup_ID == GROUP_L)

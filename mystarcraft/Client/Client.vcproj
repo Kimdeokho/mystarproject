@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib"
+				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib ../Debug/LowLib.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\Boost\library\boost\lib\i386"
 				GenerateDebugInformation="true"
@@ -532,6 +532,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Com_info.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_info.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Com_Pathfind.cpp"
 					>
 				</File>
@@ -545,6 +553,54 @@
 				</File>
 				<File
 					RelativePath=".\Component.h"
+					>
+				</File>
+				<Filter
+					Name="texture"
+					>
+					<File
+						RelativePath=".\Com_generaltexture.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_generaltexture.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_multitexture.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_multitexture.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_singletexture.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_singletexture.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Animation"
+				>
+				<File
+					RelativePath=".\Animation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Animation.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DroneAnim.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DroneAnim.h"
 					>
 				</File>
 			</Filter>

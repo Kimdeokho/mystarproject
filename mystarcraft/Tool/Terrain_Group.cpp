@@ -27,7 +27,7 @@ void CTerrain_Group::SetTerrainInfo(int idx , BYTE byterrain_id ,BYTE bygroup_id
 	temp.terrain_info.byGroup_ID = bygroup_id;
 	temp.terrain_info.byGroup_sequence = bysequence;
 	temp.terrain_info.bysortLV = bysortlv;
-	temp.bdelete = bdelete;
+	temp.bdelete = bdelete;//기존에 겹쳐있는 이미지를 삭제할것인가
 
 	m_TerrainUpdateList.push_back(temp);
 }

@@ -46,57 +46,6 @@ void CHighDirt_Brush::BrushPaint()
 	m_pGroup[GROUP_RD]->MakeTerrain_Group(idx);
 	m_pGroup[GROUP_LD]->MakeTerrain_Group(idx - 2);
 
-	/*1층 내릴때*/
-	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*3 - 2);
-	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx - SQ_TILECNTX*2 - 4);
-
-	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx - SQ_TILECNTX*3);
-	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx - SQ_TILECNTX*2 + 2);
-
-	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx + SQ_TILECNTX - 2);
-	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx - 4);
-
-	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + SQ_TILECNTX );
-	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx + 2);
-
-	//((CHD_Group_Flat*)m_pGroup[GROUP_FLAT])->SetRowCol(1,4);
-	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - 2);
-	/*1층 내릴때*/
-
-	/*임시용*/
-	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx - SQ_TILECNTX*4 - 2);
-	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx -  SQ_TILECNTX*3 - 4);
-	//m_pGroup[GROUP_LU]->MakeTerrain_Group(idx -  SQ_TILECNTX*2 - 6);
-	//m_pGroup[GROUP_L]->MakeTerrain_Group(idx - SQ_TILECNTX - 8);
-
-	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx + SQ_TILECNTX*2 - 2);
-	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx + SQ_TILECNTX - 4);
-	//m_pGroup[GROUP_LD]->MakeTerrain_Group(idx  - 6);
-
-	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*2 - 2 , 4, 2);
-	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*1 - 4 , 2 , 2);
-
-	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx - SQ_TILECNTX*4 );
-	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx -  SQ_TILECNTX*3 + 2);
-	//m_pGroup[GROUP_RU]->MakeTerrain_Group(idx -  SQ_TILECNTX*2 + 4);
-	//m_pGroup[GROUP_R]->MakeTerrain_Group(idx - SQ_TILECNTX + 6);
-
-	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx + SQ_TILECNTX*2 );
-	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx + SQ_TILECNTX + 2);
-	//m_pGroup[GROUP_RD]->MakeTerrain_Group(idx  + 4);
-
-	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*2 , 4, 2);
-	//m_pGroup[GROUP_FLAT]->MakeTerrain_Group(idx - SQ_TILECNTX*1 + 2 , 2 , 2);
-	/**/
-
-	//LeftArea(idx - 132);
-	//LeftUpArea(idx - 258) ;
-	//RightUpArea(idx - 256);
-	//RightArea(idx - 126);
-	//RightDown(idx);
-	//LeftDown(idx - 2);
-
-
 	for(int i = 0; i < GROUP_END; ++i)
 	{
 		if( NULL == m_pGroup[i])

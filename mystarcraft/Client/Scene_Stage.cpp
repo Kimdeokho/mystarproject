@@ -10,6 +10,9 @@
 #include "Astar.h"
 #include "UnitMgr.h"
 
+#include "ScrollMgr.h"
+#include "Area_Mgr.h"
+
 CScene_Stage::CScene_Stage(void)
 {
 }
@@ -33,14 +36,19 @@ void CScene_Stage::Update(void)
 {
 	CKeyMgr::GetInstance()->Update();
 	CObjMgr::GetInstance()->Update();
+
+	CScrollMgr::update();
+
+	//CArea_Mgr::GetInstance()->Areasize_debugrender(256 , 16);
 }
 void CScene_Stage::Render(void)
 {
 	CTileManager::GetInstance()->RenderTile();
 	CObjMgr::GetInstance()->Render();
 
-	//CTileManager::GetInstance()->RenderFog();
-	CLineMgr::GetInstance()->RenderGrid(64 , 64);
+	CTileManager::GetInstance()->RenderFog();
+	//CTileManager::GetInstance()->Flowfield_Render();
+	CLineMgr::GetInstance()->RenderGrid(256 , 16);
 
 	CFontMgr::GetInstance()->FontRender();
 	CLineMgr::GetInstance()->LineRender();

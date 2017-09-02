@@ -24,7 +24,6 @@ public:
 public:
 	void LoadObj(HANDLE hFile);
 public:
-	void Intputkey_reaction(const int& nkey);
 public:
 	void Update(void);
 	void Render(void);

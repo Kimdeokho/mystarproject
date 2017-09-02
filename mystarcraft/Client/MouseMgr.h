@@ -9,6 +9,7 @@ private:
 public:
 	static const POINT& GetMousePt(void);
 	static const D3DXVECTOR2& GetvMousePt(void);
+	static const int GetMousePt_to_idx(const int& tilesize);
 public:
 	CMouseMgr(void);
 	~CMouseMgr(void);

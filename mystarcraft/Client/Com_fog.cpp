@@ -64,6 +64,7 @@ void CCom_fog::Update(void)
 
 void CCom_fog::Release(void)
 {
+	m_pobj = NULL;
 	if(!m_Sightoff_List.empty())
 	{
 		m_Sightoff_List.clear();

@@ -34,7 +34,7 @@ const BYTE	TERRAIN_END = 5;
 const int	MAX_OBJECTCNT = 400;
 const int	DIR_CNT = 9;
 
-const D3DXVECTOR2	OFFSET_DIRVEC = D3DXVECTOR2(0,-1);
+const D3DXVECTOR2	OFFSET_DIRVEC = D3DXVECTOR2(0.f,-1.f);
 const float PI = 3.141592f;
 //const int   MOVE_OK = 0;
 //const int   MOVE_NONE = 1;

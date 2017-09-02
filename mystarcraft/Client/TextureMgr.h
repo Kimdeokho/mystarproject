@@ -17,10 +17,12 @@ private:
 	map<wstring, CTexture*>		m_ZergTex;
 public:
 public:
-	HRESULT	Read_MultiImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
+	HRESULT	Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
+	HRESULT	Read_StateImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT Read_GeneralImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT Read_SingleImagePath(const wstring& wstrFilePath,TCHAR*	szPath );
 	HRESULT Read_LodingImgPath(const wstring& wstrFilePath);
+
 	bool	Read_Texture(TCHAR*	szPath);
 public:
 	HRESULT	Insert_TileMultiTex(const wstring& wstrFilePath

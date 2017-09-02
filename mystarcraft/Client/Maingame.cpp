@@ -31,6 +31,7 @@ HRESULT CMaingame::Initialize(void)
 
 	m_fTime = 0.f;
 	m_iFPS = 0;
+	srand(unsigned int(time(NULL)));
 	lstrcpy(m_szFPS , L"hello world");
 	CDevice::GetInstance()->InitDevice();
 	
@@ -45,6 +46,18 @@ HRESULT CMaingame::Initialize(void)
 	CSceneMgr::GetInstance()->SetScene(SCENE_LOGO);
 
 
+	D3DXVECTOR2 vstart , vgoal , vtemp , vnormal1 , vnormal2;
+
+	vstart	= D3DXVECTOR2(0,0);
+	vgoal	= D3DXVECTOR2(-1 , -3);
+	vtemp	= D3DXVECTOR2(-2,-5);
+
+	D3DXVec2Normalize(&vnormal1 , &(vgoal - vstart));
+	D3DXVec2Normalize(&vnormal2 , &(vtemp - vstart));
+
+	float fdot = D3DXVec2Dot(&vnormal1 , &vnormal2);
+
+	printf("³»Àû°ª %f\n" , (180*acos(-1.1f))/PI);
 	return S_OK;
 }
 

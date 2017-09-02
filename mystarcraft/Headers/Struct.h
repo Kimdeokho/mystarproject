@@ -119,9 +119,9 @@ typedef struct tagImgPath
 
 typedef struct tagAstarNode
 {
-	int				iCost; //거리비용
-	int				G;//현재노드와 시작점의 거리
-	int				H;//현재 노드와 도착점의 거리
+	float				iCost; //거리비용
+	float				G;//현재노드와 시작점의 거리
+	float				H;//현재 노드와 도착점의 거리
 	int				index;//노드의 인덱스
 	tagAstarNode*	pParent;//부모의 노드
 	D3DXVECTOR2		vPos;
@@ -172,3 +172,19 @@ typedef struct tagFrame
 	}
 
 }FRAME;
+typedef struct myline
+{
+	float fx1;
+	float fy1;
+
+	float fx2;
+	float fy2;
+
+	void setpoint(const float& _fx1 , const float& _fy1 , const float& _fx2 , const float& _fy2)
+	{
+		fx1 = _fx1;
+		fy1 = _fy1;
+		fx2 = _fx2;
+		fy2 = _fy2;
+	}
+}MYLINE;

@@ -19,6 +19,7 @@ void CFontMgr::Initialize(void)
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 	m_pFont   = CDevice::GetInstance()->GetFont();
 
+	m_vecbatchfont.reserve(600);
 		
 }
 
@@ -74,6 +75,23 @@ void CFontMgr::FontRender(void)
 
 		}
 	}
+
+
+	if(!m_vecbatchfont.empty())
+	{
+		size_t loopcnt = m_vecbatchfont.size();
+
+		for(size_t i = 0; i < loopcnt; ++i)
+		{
+			
+			m_matfont._41 = m_vecbatchfont[i].fX;
+			m_matfont._42 = m_vecbatchfont[i].fY;
+
+			m_pSprite->SetTransform(&m_matfont);
+			m_pFont->DrawTextW(m_pSprite, m_vecbatchfont[i].font , lstrlen(m_vecbatchfont[i].font) , &rc , DT_NOCLIP , m_vecbatchfont[i].font_color );
+		}
+		m_vecbatchfont.clear();
+	}
 }
 void CFontMgr::Setnumber_combine_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
@@ -94,29 +112,49 @@ void CFontMgr::Set_KeyInput_Font(const TCHAR* szfont , D3DCOLOR _color /*= D3DCO
 	FONT_INFO ptemp;
 
 	float startpos = 500;
-	float ypos = float(m_keyrender.size()*15);
+
+	if(m_keyrender.size() >= 30)
+	{
+		m_keyrender.pop_front();
+	}
+
+	if(!m_keyrender.empty())
+	{
+		for(list<FONT_INFO>::iterator iter = m_keyrender.begin(); iter != m_keyrender.end(); ++iter)
+			(*iter).fY -= 15;
+	}
 
 	lstrcpy(ptemp.font , szfont);
 	ptemp.fX = 10;
-	ptemp.fY = startpos - ypos;
+	ptemp.fY = startpos;
 	ptemp.font_color = _color;
 
 	m_keyrender.push_back(ptemp);
 
-	if(m_keyrender.size() >= 30)
-		m_keyrender.pop_back();
+
+
 }
-void CFontMgr::Setnumber_combine_Font(const TCHAR* szfont , const float& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
+void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
-	//FONT_INFO* ptemp = new FONT_INFO;
+	FONT_INFO ptemp;
 
-	//ptemp->fX = posX;
-	//ptemp->fY = posY;
-	//ptemp->font_color = _color;
+	ptemp.fX = posX;
+	ptemp.fY = posY;
+	ptemp.font_color = _color;
 
-	//_stprintf_s(ptemp->font , sizeof(TCHAR)*255 ,L"%f", font_number);
+	wsprintf(ptemp.font , szfont , font_number);
 
-	//m_render_fontlist.push_back(ptemp);
+	m_vecbatchfont.push_back(ptemp);
+}
+void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
+{
+	FONT_INFO ptemp;
+
+	ptemp.fX = posX;
+	ptemp.fY = posY;
+	ptemp.font_color = _color;
+	lstrcpy(ptemp.font , szfont);
+	m_vecbatchfont.push_back(ptemp);
 }
 void CFontMgr::SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {

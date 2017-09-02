@@ -46,5 +46,8 @@ void CTimeMgr::SetTime( void )
 	m_fTime = float(m_FrameTime.QuadPart - m_FixTime.QuadPart) / m_CpuTick.QuadPart;
 
 	m_FixTime = m_FrameTime;
+
+	//ex 30프레임 밑으로 내려가면 m_ftime을 강제로 30프레임에 대한 ms로 수정해보자
+
 }
 

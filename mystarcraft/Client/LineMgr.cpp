@@ -86,15 +86,16 @@ void CLineMgr::Select_unit(void)
 	if( (int)m_RectLine[0].x == (int)m_RectLine[2].x &&
 		(int)m_RectLine[0].y == (int)m_RectLine[2].y) 
 	{
+		//제자리에 찍었을때
 		CArea_Mgr::GetInstance()->SelectCheck(idx , vMousept);
 	}
 	else
 	{
 		MYRECT<float>	rc;
-		float fX = CScrollMgr::m_fScrollX + BACKBUFFER_SIZEX/2;
-		float fY = CScrollMgr::m_fScrollY + BACKBUFFER_SIZEY/2;
+		float fX = CScrollMgr::m_fScrollX + CLINETSIZE_X/2;
+		float fY = CScrollMgr::m_fScrollY + CLINETSIZE_Y/2;
 
-		idx = CMyMath::Pos_to_index(fX , fY , 256);
+		idx = CMyMath::Pos_to_index(fX , fY , 512);
 
 		if(m_RectLine[0].x < m_RectLine[2].x)
 		{
@@ -127,8 +128,8 @@ void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
 	const int iwidth = 1000;
 	const int iheight = 800;
 
-	int col = iwidth / tilesize;
-	int row = iheight / tilesize;
+	int col = iwidth / tilesize + 2;
+	int row = iheight / tilesize + 2;
 	
 	D3DXVECTOR2	vPoint[2];
 
@@ -145,7 +146,7 @@ void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
 		vPoint[1] = D3DXVECTOR2( float(index*tilesize) - scrollX, float(tilecnt*tilesize) - scrollY);
 
 		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
-		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,255,0));
+		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,0,0));
 	}
 	for(int j = 0; j < row; ++j)
 	{
@@ -154,7 +155,7 @@ void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
 		vPoint[1] = D3DXVECTOR2(float (tilecnt*tilesize) - scrollX, float(index*tilesize) - scrollY);
 
 		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
-		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,255,0));
+		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,0,0));
 	}
 
 	CDevice::GetInstance()->Render_End();

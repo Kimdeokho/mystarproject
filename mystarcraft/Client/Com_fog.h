@@ -26,16 +26,3 @@ public:
 	CCom_fog(const int& curidx , const int& irange);
 	~CCom_fog(void);
 };
-
-class A
-{
-public:
-	int b;
-	int& z;
-public:
-	A(int v):z(v)
-	{
-
-	};
-	~A(){};
-};

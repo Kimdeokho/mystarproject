@@ -7,6 +7,7 @@
 
 #include "Zerg_Building.h"
 #include "ObjPoolMgr.h"
+#include "Area_Mgr.h"
 
 IMPLEMENT_SINGLETON(CObjMgr)
 CObjMgr::CObjMgr(void)
@@ -88,13 +89,15 @@ void CObjMgr::Update(void)
 				fy = (*iter)->GetY();
 				sortid = (*iter)->GetsortID();
 
-				//if(true == (*iter)->Be_in_camera() )
+				if(true == (*iter)->Be_in_camera() )
 					m_rendersort[ sortid ].insert( make_pair( fy , (*iter) ) );
 
 				++iter;
 			}
 		}
 	}
+
+
 }
 
 void CObjMgr::Render(void)
@@ -169,13 +172,15 @@ void CObjMgr::DestroyObj(ZERG_BUILDING_ID eid)
 }
 void CObjMgr::Release()
 {	
+	list<CObj*>::iterator iter;
+	list<CObj*>::iterator iter_end;
 	for(int i = 0; i < OBJ_END; ++i)
 	{
 		if(m_ObjList[i].empty())
 			continue;
 
-		list<CObj*>::iterator iter = m_ObjList[i].begin();
-		list<CObj*>::iterator iter_end = m_ObjList[i].end();
+		iter = m_ObjList[i].begin();
+		iter_end = m_ObjList[i].end();
 
 		for( ; iter != iter_end; ++iter)
 			Safe_Delete(*iter);
@@ -184,8 +189,7 @@ void CObjMgr::Release()
 	}
 
 
-	list<CObj*>::iterator iter;
-	list<CObj*>::iterator iter_end;
+
 	for(int i = 0; i < ZB_END; ++i)
 	{
 		if(m_ZBuilding_List[i].empty())
@@ -224,30 +228,3 @@ void CObjMgr::Release()
 		m_rendersort[i].clear();
 	}
 }
-void CObjMgr::Intputkey_reaction(const int& nkey)
-{
-	list<CObj*>::iterator iter;
-	list<CObj*>::iterator iter_end;
-	for(int i = 0; i < ZB_END; ++i)
-	{
-		 iter = m_ZBuilding_List[i].begin();
-		 iter_end = m_ZBuilding_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			(*iter)->Inputkey_reaction(nkey);
-		}
-	}
-
-	for(int i = 0; i < ZU_END; ++i)
-	{
-		iter = m_ZUnit_List[i].begin();
-		iter_end = m_ZUnit_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			(*iter)->Inputkey_reaction(nkey);
-		}
-	}
-}
-

@@ -8,6 +8,7 @@
 #include "MyMath.h"
 #include "FontMgr.h"
 #include "MyHeapSort.h"
+#include "UnitMgr.h"
 
 IMPLEMENT_SINGLETON(CTileManager)
 
@@ -16,9 +17,7 @@ CTileManager::CTileManager(void)
 	for(int i = 0; i < 7; ++i)
 		for(int j = 0; j < 6; ++j)
 			m_MapTexture[i][j] = NULL;
-
-	//m_fogTexture = NULL;
-	//m_fogMaskTexture = NULL;
+;
 }
 
 CTileManager::~CTileManager(void)
@@ -506,7 +505,7 @@ void CTileManager::SightOffRender(const int& idx)
 		m_fogTile[idx]->fog_sequence = 1;
 	}
 }
-void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , OBJ_TYPE etype)
+void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , MOVE_TYPE etype)
 {
 	//range는 가급적 홀수
 
@@ -851,13 +850,15 @@ void CTileManager::SetFogoverlap_cnt(const int& idx)
 
 void CTileManager::SetFogSearch(const int& idx, bool bsearch)
 {
+	//지워도 될듯
 	m_fogTile[idx]->bsearch = bsearch;
 }
 bool CTileManager::GetFogSearch(const int& idx)
 {
+	//지워도 될듯
 	return m_fogTile[idx]->bsearch;
 }
-void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , OBJ_TYPE etype)
+void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype)
 {
 	int iWidth = int(vDest.x - vStart.x);
 	int iHeight = int(vDest.y - vStart.y);
@@ -918,7 +919,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 				idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
 				ishade_range = (X + Y) / (fRadius*fRadius);
 
-				if(TYPE_AIR == etype)
+				if(MOVE_AIR == etype)
 				{
 					if(false == fogsearch[idx])
 					{						
@@ -937,7 +938,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						SetFogLight(idx , 0 , 1);
 					}
 				}
-				else if(TYPE_GROUND == etype)
+				else if(MOVE_GROUND == etype)
 				{
 					if(true == CTileManager::GetInstance()->CheckFogFloor(myidx , idx))//공중일 경우 언덕지형을 신경안쓴다.
 					{					
@@ -990,7 +991,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 				idx = CMyMath::Pos_to_index(vStart.x + icnt * isignX , vStart.y + i*SQ_TILESIZEY*isignY);
 				ishade_range = (X + Y) / (fRadius*fRadius);
 
-				if(TYPE_AIR == etype)
+				if(MOVE_AIR == etype)
 				{
 					if(false == fogsearch[idx])
 					{						
@@ -1009,7 +1010,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						SetFogLight(idx , 0 , 1);
 					}
 				}
-				else if(TYPE_GROUND == etype)
+				else if(MOVE_GROUND == etype)
 				{
 					if(true == CheckFogFloor(myidx , idx))//공중일 경우 신경안쓴다.
 					{					
@@ -1153,13 +1154,17 @@ void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
 
 	}	
 }
-void CTileManager::Flowfield_Pathfinding(const int& goalidx)
+void CTileManager::Flowfield_Pathfinding(void)
 {
+	D3DXVECTOR2 temp = CMouseMgr::GetvMousePt();
+	int goalidx = CMyMath::Pos_to_index(temp.x , temp.y);
+
 	m_flownode[goalidx]->idestidx = goalidx;
 
 	for(int i = 0; i < 16384; ++i)
 	{
 		m_flownode[i]->bcheck = false;
+		//m_flowdestidx[i] = -1;
 	}
 
 	FLOW_NODE* pnode = m_flownode[goalidx];
@@ -1205,6 +1210,7 @@ void CTileManager::Flowfield_Pathfinding(const int& goalidx)
 
 	
 			pushnode->idestidx = pnode->index;
+			m_flowdestidx[ m_eight_idx[i] ] = pnode->index;
 
 			if( i <= 4)
 				pushnode->iCost = curcost + 1;
@@ -1217,6 +1223,8 @@ void CTileManager::Flowfield_Pathfinding(const int& goalidx)
 			m_heapsort->push_node(pushnode);			
 		}
 	}
+
+	CUnitMgr::GetInstance()->path_relay(goalidx);
 }
 void CTileManager::Flowfield_Render(void)
 {
@@ -1241,7 +1249,8 @@ void CTileManager::Flowfield_Render(void)
 			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
 
 
-			int dirsequence = m_flownode[idx]->idestidx - idx;
+			//int dirsequence = m_flownode[idx]->idestidx - idx;
+			int dirsequence = m_flowdestidx[idx] - idx;
 
 			if( -SQ_TILECNTX == dirsequence)
 			{
@@ -1342,7 +1351,8 @@ void CTileManager::Init_eightidx(const int& idx)
 		m_eight_idx[LEFT_DOWN] = idx + SQ_TILECNTX - 1;
 }
 
-FLOW_NODE** CTileManager::Get_flowfield_node(void)
+short* CTileManager::Get_flowfield_node(void)
 {
-	return m_flownode;
+	//return m_flownode;
+	return m_flowdestidx;
 }

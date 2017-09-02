@@ -2,6 +2,7 @@
 #include "MouseMgr.h"
 
 #include "ScrollMgr.h"
+#include "MyMath.h"
 
 CMouseMgr::CMouseMgr(void)
 {
@@ -9,6 +10,10 @@ CMouseMgr::CMouseMgr(void)
 
 CMouseMgr::~CMouseMgr(void)
 {
+}
+const int CMouseMgr::GetMousePt_to_idx(const int& tilesize)
+{
+	return CMyMath::Pos_to_index(m_vmousept , tilesize);
 }
 const D3DXVECTOR2& CMouseMgr::GetvMousePt(void)
 {
