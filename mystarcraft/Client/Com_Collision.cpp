@@ -5,7 +5,7 @@
 #include "TimeMgr.h"
 #include "Area_Mgr.h"
 #include "TileManager.h"
-
+#include "Com_Animation.h"
 CCom_Collision::CCom_Collision(D3DXVECTOR2& vpos , MYRECT<float>& rc , const MYRECT<float>& vtx)
 :m_vPos(vpos) , m_rect(rc) , m_vertex(vtx)
 {
@@ -32,6 +32,8 @@ void CCom_Collision::Initialize(CObj* pobj)
 	m_rect.bottom = m_vPos.y + m_vertex.bottom;
 
 	m_collision_target = NULL;
+
+	m_animation = (CCom_Animation*)(m_pobj->GetComponent(COM_ANIMATION));
 }
 
 void CCom_Collision::Update(void)
@@ -91,8 +93,9 @@ void CCom_Collision::Update(void)
 				m_vPos -= GETTIME* (*m_fspeed) *m_collision_vnormal;
 
 				//m_estate = MOVE;
+				m_pobj->Setdir(-m_collision_vnormal);
 				m_pobj->SetState(MOVE);
-				//Set_texture_statename(L"MOVE");
+				m_animation->SetAnimation(L"MOVE");
 			}
 		}
 		else
@@ -101,7 +104,7 @@ void CCom_Collision::Update(void)
 			//현재 받고있는 명령에따라 상태를 해준다.
 			//m_estate = IDLE;
 			m_pobj->SetState(IDLE);
-			//Set_texture_statename(L"IDLE");
+			m_animation->SetAnimation(L"IDLE");
 		}
 
 	}

@@ -1,9 +1,13 @@
 #pragma once
 #include "component.h"
 
+class CCom_Animation;
+
 class CCom_Collision :
 	public CComponent
 {
+private:
+	CCom_Animation*				m_animation;
 private:
 	float			m_search_time;
 	float*			m_fspeed;
