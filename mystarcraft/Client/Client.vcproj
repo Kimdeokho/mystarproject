@@ -611,34 +611,54 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="Animation"
-				>
-				<File
-					RelativePath=".\Com_Animation.cpp"
+				<Filter
+					Name="Animation"
 					>
-				</File>
-				<File
-					RelativePath=".\Com_Animation.h"
+					<File
+						RelativePath=".\Com_Animation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Animation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_DroneAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_DroneAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_MarineAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_MarineAnim.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Weapon"
 					>
-				</File>
-				<File
-					RelativePath=".\Com_DroneAnim.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_DroneAnim.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_MarineAnim.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_MarineAnim.h"
-					>
-				</File>
+					<File
+						RelativePath=".\Com_Weapon.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Weapon.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Wmarine.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Wmarine.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

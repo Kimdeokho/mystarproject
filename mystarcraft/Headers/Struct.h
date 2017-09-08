@@ -166,7 +166,7 @@ typedef struct tagFrame
 {
 	float				fcurframe;
 	float				fframespeed;
-	unsigned int		umax;
+	int					umax;
 
 	tagFrame(void) 
 		: fcurframe(0.f), fframespeed(0.f), umax(0)
@@ -174,7 +174,7 @@ typedef struct tagFrame
 
 	}
 
-	tagFrame(float _frame, float _cnt, unsigned int _max)
+	tagFrame(float _frame, float _cnt, int _max)
 		: fcurframe(_frame), fframespeed(_cnt), umax(_max) 
 	{
 

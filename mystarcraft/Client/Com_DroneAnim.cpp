@@ -32,7 +32,7 @@ void CCom_DroneAnim::Update(void)
 
 	const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
 
-	if( (unsigned int)m_frame.fcurframe <= m_frame.umax)
+	if( (int)(m_frame.fcurframe) <= m_frame.umax)
 		m_curtex = (*vtemp)[int(m_frame.fcurframe)];
 
 }

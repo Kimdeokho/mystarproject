@@ -64,12 +64,6 @@ void CCom_Pathfind::Initialize(CObj* pobj)
 void CCom_Pathfind::Update(void)
 {
 
-	//if( true == m_pathfind_pause)
-	//{
-	//	return; 이래야 할듯
-	//}
-
-
 	m_pTarget = m_com_target->GetTarget();
 	if(NULL != m_pTarget)
 	{
@@ -116,17 +110,6 @@ void CCom_Pathfind::Update(void)
 
 void CCom_Pathfind::UnitMoving_update()
 {
-	//if(true == m_collision_move)
-	//{
-	//	m_stoptime += GETTIME;
-	//	if(m_stoptime >= 0.2f)
-	//	{
-	//		m_stoptime = 0.f;
-	//		m_collision_move = false;
-	//	}
-
-	//	return;
-	//}
 
 	if( m_realpath.empty() )
 		return;
@@ -144,8 +127,6 @@ void CCom_Pathfind::UnitMoving_update()
 				if((unsigned int)m_curterrain_pathidx >= m_terrainpath.size())
 				{
 					//도착점에 도착 했을때
-					//m_eorder = ORDER_NONE;
-					//m_estate = IDLE;
 					m_pobj->SetOrder(ORDER_NONE);
 					m_pobj->SetState(IDLE);
 

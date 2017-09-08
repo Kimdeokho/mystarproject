@@ -34,11 +34,10 @@ void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 		//재생해도 된다
 		m_banimplay = true;
 
-
 		m_frame.fcurframe = 0;
 
-		if(statekey == L"ATTACK")
-			m_statkey = L"ATTACK_READY";
+		//if(statekey == L"ATTACK")
+			//m_statkey = L"ATTACK_READY";
 
 		for(int i = 0; i < DIR_CNT; ++i)
 		{
@@ -86,30 +85,10 @@ void CCom_MarineAnim::Update(void)
 			return;
 	}
 
-	if( unsigned int(m_frame.fcurframe) >= m_frame.umax)
+	if( int(m_frame.fcurframe) > m_frame.umax)
 	{
-		if(L"ATTACK_READY" == m_statkey)
-		{
-			m_statkey = L"ATTACK";
 
-			for(int i = 0; i < DIR_CNT; ++i)
-			{
-				/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-				m_animtexture[i] = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey , i);
-				if(NULL == m_animtexture[i])
-					break;
-			}
-
-			if(NULL != m_animtexture[0])
-			{
-				m_frame.umax = m_animtexture[0]->size() - 1;
-				m_frame.fframespeed = (float)m_frame.umax + 1;
-				if(L"ATTACK" == m_statkey)
-					m_frame.fframespeed *= 2;
-			}
-
-		}
-		else if(L"ATTACK" == m_statkey)
+		if(L"ATTACK" == m_statkey)
 			++m_attackloop;
 
 		m_frame.fcurframe = 0;
@@ -118,7 +97,7 @@ void CCom_MarineAnim::Update(void)
 
 	const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
 
-	if( (unsigned int)m_frame.fcurframe <= m_frame.umax)
+	if( (int)(m_frame.fcurframe) <= m_frame.umax)
 		m_curtex = (*vtemp)[int(m_frame.fcurframe)];
 
 }

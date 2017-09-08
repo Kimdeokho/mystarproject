@@ -5,8 +5,10 @@
 
 #include "Com_Pathfind.h"
 #include "Com_Animation.h"
+#include "Com_Weapon.h"
 #include "Area_Mgr.h"
 #include "MyMath.h"
+
 
 CCom_Targetsearch::CCom_Targetsearch(void)
 {
@@ -33,7 +35,7 @@ void CCom_Targetsearch::Initialize(CObj* pobj)
 
 	m_com_pathfind = ((CCom_Pathfind*)m_pobj->GetComponent(COM_PATHFINDE));
 	m_com_anim = ((CCom_Animation*)m_pobj->GetComponent(COM_ANIMATION));
-
+	m_com_weapon = ((CCom_Weapon*)m_pobj->GetComponent(COM_WEAPON));
 }
 
 void CCom_Targetsearch::Update(void)
@@ -49,20 +51,23 @@ void CCom_Targetsearch::Update(void)
 		{
 			//공격
 
-			//m_estate = ATTACK;
 			m_pobj->SetState(ATTACK);
-			m_com_anim->SetAnimation(L"ATTACK");
+			m_pobj->Setdir(m_ptarget->GetPos() - m_pobj->GetPos());
+			m_com_weapon->fire(m_ptarget);
+
 			m_com_pathfind->ClearPath();
 			m_com_pathfind->SetPathfindPause(true);
 		}
 		else
 		{
 			//공격 후딜이 다 끝나고 추적
-			m_com_pathfind->SetPathfindPause(false);
-			m_pobj->SetState(MOVE);
-			m_com_anim->SetAnimation(L"MOVE");
-			//m_com_pathfind->SetGoalPos(m_ptarget->GetPos());
-			//m_com_pathfind->SetGoalidx(CMyMath::Pos_to_index(m_ptarget->GetPos() , 32));
+
+			if(false == m_com_weapon->GetFire())
+			{
+				m_com_pathfind->SetPathfindPause(false);
+				m_pobj->SetState(MOVE);
+				m_com_anim->SetAnimation(L"MOVE");
+			}
 		}
 	}
 }

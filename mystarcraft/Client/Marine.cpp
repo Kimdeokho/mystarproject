@@ -12,6 +12,7 @@
 #include "Com_Targetsearch.h"
 #include "Com_singletexture.h"
 #include "Com_MarineAnim.h"
+#include "Com_Wmarine.h"
 
 #include "LineMgr.h"
 #include "TileManager.h"
@@ -64,6 +65,7 @@ void CMarine::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Targetsearch(128 , 256 , SEARCH_ONLY_ENEMY) ) );	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex)) ) ;	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , new CCom_Wmarine()) ) ;	
 
 
 	//m_fspeed = float(rand()%170 + 30);

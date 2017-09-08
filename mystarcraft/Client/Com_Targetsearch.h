@@ -3,6 +3,7 @@
 
 class CCom_Pathfind;
 class CCom_Animation;
+class CCom_Weapon;
 
 class CCom_Targetsearch :
 	public CComponent
@@ -11,6 +12,7 @@ private:
 	CObj*			m_ptarget;
 	CCom_Pathfind*	m_com_pathfind;
 	CCom_Animation*	m_com_anim;
+	CCom_Weapon*	m_com_weapon;
 
 	TARGET_SEARCH_TYPE	m_search_type;
 	int				m_iattack_range;
