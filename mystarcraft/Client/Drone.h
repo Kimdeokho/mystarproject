@@ -8,7 +8,7 @@ class CDrone :
 private:	
 private:
 	/*배열이나 벡터로 만들 생각이다*/
-	CComponent*				    m_comfog;		
+	//CComponent*				    m_comfog;		
 	//CComponent*				    m_compathfind;
 public:
 	virtual void Initialize(void);

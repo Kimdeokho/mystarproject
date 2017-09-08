@@ -98,6 +98,63 @@ void CObjMgr::Update(void)
 	}
 
 
+
+
+
+	for(int i = 0; i < TB_END; ++i)
+	{
+		list<CObj*>::iterator iter = m_TBuilding_List[i].begin();
+		list<CObj*>::iterator iter_end = m_TBuilding_List[i].end();
+
+		for( ; iter != iter_end;)
+		{
+			(*iter)->Update();
+
+			if(true == (*iter)->GetDestroy() )
+			{
+				Safe_Delete(*iter);
+				iter = m_TBuilding_List[i].erase(iter);
+				continue;
+			}
+			else
+			{
+				fy = (*iter)->GetY();
+				sortid = (*iter)->GetsortID();
+
+				if(true == (*iter)->Be_in_camera() )
+					m_rendersort[ sortid ].insert( make_pair( fy , (*iter) ) );
+				++iter;
+			}
+		}
+	}
+
+	for(int i = 0; i < TU_END; ++i)
+	{
+		list<CObj*>::iterator iter = m_TUnit_List[i].begin();
+		list<CObj*>::iterator iter_end = m_TUnit_List[i].end();
+
+		for( ; iter != iter_end; )
+		{
+			(*iter)->Update();
+
+			if(true == (*iter)->GetDestroy() )
+			{
+				Safe_Delete(*iter);
+				iter = m_TUnit_List[i].erase(iter);
+				continue;
+			}
+			else
+			{
+				fy = (*iter)->GetY();
+				sortid = (*iter)->GetsortID();
+
+				if(true == (*iter)->Be_in_camera() )
+					m_rendersort[ sortid ].insert( make_pair( fy , (*iter) ) );
+
+				++iter;
+			}
+		}
+	}
 }
 
 void CObjMgr::Render(void)
@@ -165,6 +222,17 @@ void CObjMgr::AddObject(CObj* pObj , ZERG_UNIT_ID eid)
 {
 	m_ZUnit_List[eid].push_back(pObj);
 }
+
+void CObjMgr::AddObject(CObj* pObj , TERRAN_BUILDING_ID eid)
+{
+	m_TBuilding_List[eid].push_back(pObj);
+}
+
+void CObjMgr::AddObject(CObj* pObj , TERRAN_UNIT_ID eid)
+{
+	m_TUnit_List[eid].push_back(pObj);
+}
+
 void CObjMgr::DestroyObj(ZERG_BUILDING_ID eid)
 {
 	CObj* pObj = m_ZBuilding_List[eid].back();

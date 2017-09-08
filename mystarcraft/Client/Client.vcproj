@@ -473,33 +473,49 @@
 					<Filter
 						Name="Unit"
 						>
+						<File
+							RelativePath=".\Marine.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marine.h"
+							>
+						</File>
 					</Filter>
 				</Filter>
 				<Filter
-					Name="Zerg"
+					Name="Building"
 					>
-					<Filter
-						Name="Building"
+					<File
+						RelativePath=".\Hatchery.cpp"
 						>
-						<File
-							RelativePath=".\Hatchery.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\Hatchery.h"
-							>
-						</File>
-						<File
-							RelativePath=".\Zerg_Building.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\Zerg_Building.h"
-							>
-						</File>
-					</Filter>
+					</File>
+					<File
+						RelativePath=".\Hatchery.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Zerg_Building.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Zerg_Building.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Unit"
+					>
+					<File
+						RelativePath=".\Unit.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Unit.h"
+						>
+					</File>
 					<Filter
-						Name="Unit"
+						Name="Zerg"
 						>
 						<File
 							RelativePath=".\Drone.cpp"
@@ -509,20 +525,24 @@
 							RelativePath=".\Drone.h"
 							>
 						</File>
-						<File
-							RelativePath=".\Unit.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\Unit.h"
-							>
-						</File>
+					</Filter>
+					<Filter
+						Name="Terran"
+						>
 					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="Component"
 				>
+				<File
+					RelativePath=".\Com_Collision.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Collision.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Com_fog.cpp"
 					>
@@ -548,6 +568,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Com_Targetsearch.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Targetsearch.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Component.cpp"
 					>
 				</File>
@@ -556,7 +584,7 @@
 					>
 				</File>
 				<Filter
-					Name="texture"
+					Name="com_texture"
 					>
 					<File
 						RelativePath=".\Com_generaltexture.cpp"
@@ -588,19 +616,27 @@
 				Name="Animation"
 				>
 				<File
-					RelativePath=".\Animation.cpp"
+					RelativePath=".\Com_Animation.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Animation.h"
+					RelativePath=".\Com_Animation.h"
 					>
 				</File>
 				<File
-					RelativePath=".\DroneAnim.cpp"
+					RelativePath=".\Com_DroneAnim.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\DroneAnim.h"
+					RelativePath=".\Com_DroneAnim.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_MarineAnim.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_MarineAnim.h"
 					>
 				</File>
 			</Filter>

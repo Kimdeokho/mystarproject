@@ -11,6 +11,9 @@ private:
 	list<CObj*>		m_ObjList[OBJ_END];
 	list<CObj*>		m_ZBuilding_List[ZB_END];
 	list<CObj*>		m_ZUnit_List[ZU_END];
+
+	list<CObj*>		m_TBuilding_List[TB_END];
+	list<CObj*>		m_TUnit_List[TU_END];
 	multimap<float , CObj*> m_rendersort[SORT_END];
 
 public:
@@ -19,6 +22,9 @@ public:
 	void AddObject(CObj* pObj , OBJID eid);
 	void AddObject(CObj* pObj , ZERG_BUILDING_ID eid);
 	void AddObject(CObj* pObj , ZERG_UNIT_ID eid);
+
+	void AddObject(CObj* pObj , TERRAN_BUILDING_ID eid);
+	void AddObject(CObj* pObj , TERRAN_UNIT_ID eid);
 
 	void DestroyObj(ZERG_BUILDING_ID eid);
 public:

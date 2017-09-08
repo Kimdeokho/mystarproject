@@ -31,3 +31,4 @@
 #define ERR_MSG(message)	MessageBox(g_hWnd, message, L"System Error", NULL)
 
 #define GETTIME		CTimeMgr::GetInstance()->GetTime()
+

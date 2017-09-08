@@ -2,18 +2,20 @@
 #include "Com_multitexture.h"
 
 #include "Device.h"
-#include "Animation.h"
+#include "Com_Animation.h"
 #include "Obj.h"
 #include "MyMath.h"
+#include "ScrollMgr.h"
 //CCom_multitexture::CCom_multitexture(void)
 //{
 //}
 
-CCom_multitexture::CCom_multitexture(const D3DXVECTOR2& vpos , D3DXMATRIX& matworld , CAnimation* panim)
-:m_vobjpos(vpos) , m_objmat(matworld)
+CCom_multitexture::CCom_multitexture(const D3DXVECTOR2& vpos , D3DXMATRIX& matworld , CComponent* panim )
+:m_vobjpos(vpos) , m_objmat(matworld) 
 {
 	m_anim = panim;
 	m_pSprite = NULL;
+
 }
 
 CCom_multitexture::~CCom_multitexture(void)
@@ -23,35 +25,16 @@ CCom_multitexture::~CCom_multitexture(void)
 void CCom_multitexture::Initialize(CObj* pobj)
 {
 	m_pobj = pobj;
-	m_anim->Setcurtex_adress(&m_curtex);
 	m_pSprite = CDevice::GetInstance()->GetSprite();
+
+	m_anim->Initialize(m_pobj);
+
 }
 
 void CCom_multitexture::Update(void)
 {
-	float       fdot , fdgree;
-	int			diridx;
-	D3DXVECTOR2	curdir = m_pobj->GetcurDir(); 
 
-	fdot = D3DXVec2Dot(&curdir , &OFFSET_DIRVEC);
-
-	fdgree = CMyMath::scala_to_dgree(fdot);
-
-	if(m_pobj->GetcurDir().x < 0)
-		fdgree = 360 - fdgree;
-
-	diridx = (int)( (fdgree/22.5f) + 0.5f);
-
-
-	if(diridx > 8)
-	{
-		diridx = 16 - diridx;
-		m_objmat._11 = -1;
-	}
-	else
-		m_objmat._11 = 1;
-
-	m_anim->Setdir(diridx);
+	m_anim->Update();
 }
 
 void CCom_multitexture::Render(void)
@@ -63,6 +46,11 @@ void CCom_multitexture::Render(void)
 void CCom_multitexture::Release(void)
 {
 
+}
+
+void CCom_multitexture::SetAnimation(const TCHAR* statekey)
+{
+	//m_anim->SetAnimation(statekey);
 }
 
 

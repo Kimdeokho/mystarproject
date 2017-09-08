@@ -24,6 +24,8 @@ CObj::CObj(void)
 
 	m_globalobj_id += 1;
 	m_obj_id = m_globalobj_id;
+
+	m_vcurdir = OFFSET_DIRVEC;
 }
 
 CObj::~CObj(void)
@@ -84,9 +86,6 @@ void CObj::idx_update(void)
 		m_oldidx512 = m_curidx512;
 	}
 }
-void CObj::idx_release(void)
-{
-}
 void CObj::SetDestroy(bool bdestroy)
 {
 	m_bdestroy = bdestroy;
@@ -108,11 +107,6 @@ void CObj::SetPos(const float x , const float y, OBJ_POS_KIND ekind /*= STATIC_O
 	m_vPos.y = y;
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
-}
-
-void CObj::InitialRect(void)
-{
-
 }
 
 bool CObj::Be_in_camera(void)
@@ -160,7 +154,10 @@ const D3DXVECTOR2& CObj::GetPos(void)
 {
 	return m_vPos;
 }
-
+const D3DXVECTOR2* CObj::GetPosAdress(void)
+{
+	return &m_vPos;
+}
 void CObj::Inputkey_reaction(const int& nkey)
 {
 
@@ -183,21 +180,18 @@ D3DXVECTOR2& CObj::GetReferencePos(void)
 	return m_vPos;
 }
 
-DISTINCTION CObj::GetDiscirimination(void)
+TEAM_NUMBER CObj::GetTeamNumber(void)
 {
-	return m_ediscrimination;
+	return m_eteamnumber;
 }
 
 void CObj::SetSelect(bool bselect)
 {
 	m_bSelect = bselect;
 }
-void CObj::SetVertex(const float& _left, const float& _right, const float& _top , const float& _bottom)
+void CObj::SetState(STATE estate)
 {
-	m_vertex.left = _left;
-	m_vertex.right = _right;
-	m_vertex.top = _top;
-	m_vertex.bottom = _bottom;
+	m_estate = estate;
 }
 
 STATE CObj::GetState(void)
@@ -223,12 +217,56 @@ CComponent* CObj::GetComponent(COMPONENT_LIST ecom_name)
 
 void CObj::Setdir(D3DXVECTOR2& vdir)
 {
-	D3DXVec2Normalize(&m_vcurdir , &vdir);
+	//D3DXVec2Normalize(&m_vcurdir , &vdir);
+	m_vcurdir = vdir;
 }
 
 const D3DXVECTOR2& CObj::GetcurDir(void)
 {
+	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 	return m_vcurdir;
+}
+
+int CObj::Getcuridx(const int& tilesize)
+{
+	if(32 == tilesize)
+	{
+		return m_curidx32;
+	}
+	else if(64 ==  tilesize)
+	{
+		return m_curidx64;
+	}
+	else if(256 ==  tilesize)
+	{
+		return m_curidx256;
+	}
+	else if(512 ==  tilesize)
+	{ 
+		return m_curidx512;
+	}
+
+	return -1;
+}
+
+ORDER CObj::GetOrder(void)
+{
+	return m_eorder;
+}
+
+const MYRECT<float>& CObj::GetVertex(void)
+{
+	return m_vertex;
+}
+
+void CObj::SetOrder(ORDER eorder)
+{
+	m_eorder = eorder;
+}
+
+float* CObj::GetSpeed(void)
+{
+	return &m_fspeed;
 }
 
 int CObj::m_globalobj_id;

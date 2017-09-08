@@ -38,12 +38,6 @@ private:
 
 	int									m_icuridx;
 	D3DXVECTOR2							m_vcurPos;
-
-
-
-
-
-
 	//LPDIRECT3DSURFACE9 pSurfacefog , pSurfacemask;
 	//D3DSURFACE_DESC fogDesc , pmaskDesc;
 	//D3DLOCKED_RECT plockedRect , pmaskrect;
@@ -55,13 +49,15 @@ private:
 	FLOW_NODE*	m_flownode[SQ_TILECNTX*SQ_TILECNTY];
 	short		m_flowdestidx[SQ_TILECNTX*SQ_TILECNTY];
 	int			m_eight_idx[ASTAR_DIR_END];
-	float m_fTimeTest;
+	float		m_fTimeTest;
+	int			m_flowfield_goalidx;
+	D3DXVECTOR2	m_flowfield_goalpos;
 public:
 	void Initialize(void);
 	void Init_eightidx(const int& idx);
 public:
 	void Flowfield_Pathfinding(void);
-	void Flowfield_Render(void);
+	
 public:
 	bool	GetFogLight(const int& idx);
 	BYTE	GetTileOption(const int& idx);
@@ -71,6 +67,8 @@ public:
 	CREEP_INFO**	GetCreepTile(void);
 	void	GetFlowfield_Path(const int& idx , vector<int>& path);
 	short*   Get_flowfield_node(void);
+	int				GetFlowFiled_Goalidx(void);
+	D3DXVECTOR2		GetFlowFiled_GoalPos(void);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
 	void SetFogLight(int idx, float fdistance , float fradius);
@@ -103,6 +101,7 @@ public:
 	void RenderTile(void);
 	void RenderFog(void);
 	void RenderCreep(void);
+	void Render_Flowfield(void);
 public:
 	void Release(void);
 public:

@@ -16,7 +16,7 @@ private:
 	int					m_oldidx32;
 
 public:
-	virtual void Initialize(CObj* pobj);
+	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);
 	virtual void Release(void);
 public:

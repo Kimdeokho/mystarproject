@@ -47,7 +47,7 @@ void CScene_Stage::Render(void)
 	CObjMgr::GetInstance()->Render();
 
 	CTileManager::GetInstance()->RenderFog();
-	//CTileManager::GetInstance()->Flowfield_Render();
+	//CTileManager::GetInstance()->Render_Flowfield();
 	CLineMgr::GetInstance()->RenderGrid(256 , 16);
 
 	CFontMgr::GetInstance()->FontRender();

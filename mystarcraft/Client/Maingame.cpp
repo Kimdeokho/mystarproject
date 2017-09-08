@@ -26,6 +26,8 @@ CMaingame::~CMaingame(void)
 
 HRESULT CMaingame::Initialize(void)
 {
+	//공중유닛은 Y소팅을 하지 않는다 그냥 생산된 순서대로 렌더를 실행한다
+
 	AllocConsole();
 	freopen( "CONOUT$",  "wt", stdout);
 

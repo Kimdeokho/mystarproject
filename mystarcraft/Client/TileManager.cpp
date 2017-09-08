@@ -1156,18 +1156,22 @@ void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
 }
 void CTileManager::Flowfield_Pathfinding(void)
 {
-	D3DXVECTOR2 temp = CMouseMgr::GetvMousePt();
-	int goalidx = CMyMath::Pos_to_index(temp.x , temp.y);
+	//D3DXVECTOR2 temp = CMouseMgr::GetvMousePt();
+	//int goalidx = CMyMath::Pos_to_index(temp.x , temp.y);
 
-	m_flownode[goalidx]->idestidx = goalidx;
+	//m_flowfield_goalidx = CMouseMgr::GetMousePt_to_idx(32);
+	m_flowfield_goalpos = CMouseMgr::GetvMousePt();
+	m_flowfield_goalidx = CMyMath::Pos_to_index(m_flowfield_goalpos , 32);
+
 
 	for(int i = 0; i < 16384; ++i)
 	{
 		m_flownode[i]->bcheck = false;
 		//m_flowdestidx[i] = -1;
 	}
+	m_flowdestidx[m_flowfield_goalidx] = -1;
 
-	FLOW_NODE* pnode = m_flownode[goalidx];
+	FLOW_NODE* pnode = m_flownode[m_flowfield_goalidx];
 	FLOW_NODE* pushnode = NULL;
 
 	m_heapsort->push_node(pnode);
@@ -1224,9 +1228,9 @@ void CTileManager::Flowfield_Pathfinding(void)
 		}
 	}
 
-	CUnitMgr::GetInstance()->path_relay(goalidx);
+	//CUnitMgr::GetInstance()->path_relay(m_flowfield_goalidx);
 }
-void CTileManager::Flowfield_Render(void)
+void CTileManager::Render_Flowfield(void)
 {
 
 	const TEXINFO*	ptemp = NULL;
@@ -1355,4 +1359,14 @@ short* CTileManager::Get_flowfield_node(void)
 {
 	//return m_flownode;
 	return m_flowdestidx;
+}
+
+int CTileManager::GetFlowFiled_Goalidx(void)
+{
+	return m_flowfield_goalidx;
+}
+
+D3DXVECTOR2 CTileManager::GetFlowFiled_GoalPos(void)
+{
+	return m_flowfield_goalpos;
 }

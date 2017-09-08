@@ -13,6 +13,7 @@
 #include "MyMath.h"
 #include "TileManager.h"
 #include "UnitMgr.h"
+#include "Marine.h"
 
 IMPLEMENT_SINGLETON(CKeyMgr)
 CKeyMgr::CKeyMgr(void)
@@ -339,18 +340,11 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		CFontMgr::GetInstance()->Set_KeyInput_Font(L"Z 입력" );
 
 		//	/*곧 지울것들이다*/
-		pObj = new CDrone;
+		pObj = new CMarine;
 		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
 		pObj->Initialize();
 
-		int icase = rand()%23 + 15;
-
-		float fvtx = (float)(icase)/2;
-		//float fvtx = 8.5f;
-
-		pObj->SetVertex(fvtx , fvtx, fvtx, fvtx);
-		//pObj->SetVertex(8.f , 8.f , 8.f , 8.f);
-		CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+		CObjMgr::GetInstance()->AddObject(pObj , TU_MARINE);
 		objcnt += 1;
 		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 		CUnitMgr::GetInstance()->Intputkey_reaction('Z');
@@ -366,6 +360,16 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			m_clickwating['A'] = false;
 		else
 			m_clickwating['A'] = true;//공격 마우스띄우기 아이콘
+
+
+		pObj = new CDrone;
+		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		pObj->Initialize();
+
+		CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+		objcnt += 1;
+		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('A');
 	}

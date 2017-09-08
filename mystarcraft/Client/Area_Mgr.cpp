@@ -113,12 +113,12 @@ void CArea_Mgr::Target_extract512(CObj* pself ,CObj*& ptarget , const int& idx ,
 			//지상만 공격 가능한 유닛은 지상만 검사한다
 			if( SEARCH_ONLY_ENEMY == esearchtype)
 			{
-				if(ENEMY != (*iter)->GetDiscirimination())
+				if(pself->GetTeamNumber() == (*iter)->GetTeamNumber())
 					continue;
 			}
 			else if(SEARCH_ONLY_ALLY == esearchtype)
 			{
-				if(ALLY != (*iter)->GetDiscirimination())
+				if(pself->GetTeamNumber() != (*iter)->GetTeamNumber())
 					continue;
 			}
 			else
@@ -177,12 +177,12 @@ void CArea_Mgr::Target_extract256(CObj* pself ,CObj*& ptarget, const int& idx , 
 			//지상만 공격 가능한 유닛은 지상만 검사한다
 			if( SEARCH_ONLY_ENEMY == esearchtype)
 			{
-				if(ENEMY != (*iter)->GetDiscirimination())
+				if(pself->GetTeamNumber() == (*iter)->GetTeamNumber())
 					continue;
 			}
 			else if(SEARCH_ONLY_ALLY == esearchtype)
 			{
-				if(ALLY != (*iter)->GetDiscirimination())
+				if(pself->GetTeamNumber() != (*iter)->GetTeamNumber())
 					continue;
 			}
 			else
@@ -340,6 +340,24 @@ void CArea_Mgr::Choice_unit(const int& idx, const MYRECT<float>& rc)
 					CUnitMgr::GetInstance()->SetUnit((*iter));				
 				}
 				/*아군만 선택*/
+			}
+		}
+
+		if(CUnitMgr::GetInstance()->GetUnitlistempty())
+		{
+			iter = m_Area512[idx].begin();
+			iter_end = m_Area512[idx].end();
+
+			for( ; iter != iter_end; ++iter)
+			{
+				if(MyIntersectrect(&temprc , &(*iter)->GetMyRect() , &rc ))
+				{
+					if(BUILDING == (*iter)->GetKategorie())
+					{
+						(*iter)->SetSelect(true);
+						CUnitMgr::GetInstance()->SetUnit((*iter));				
+					}
+				}
 			}
 		}
 	}

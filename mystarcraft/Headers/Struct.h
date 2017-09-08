@@ -85,6 +85,15 @@ struct MYRECT
 	T right;
 	T top;
 	T bottom;
+
+	MYRECT(){}
+	MYRECT(T _left , T _right, T _top , T _bottom)
+	{
+		left = _left;
+		right = _right;
+		top = _top;
+		bottom = _bottom;
+	}
 };
 
 typedef struct fontinfo

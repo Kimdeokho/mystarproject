@@ -57,6 +57,28 @@ HRESULT CTextureMgr::Insert_ZUnitMultiTex( const wstring& wstrFilePath
 
 	return S_OK;
 }
+HRESULT CTextureMgr::Insert_TUnitMultiTex( const wstring& wstrFilePath 
+										  , const wstring& wstrObjKey 
+										  , const wstring& wstrStateKey /*= L"" */
+										  , const int& iCnt /*= 0*/ )
+{
+	map<wstring, CTexture*>::iterator	iter = m_TerranTex.find(wstrObjKey);
+
+	if(iter == m_TerranTex.end()) //키값을 못찾았다면
+	{
+		CTexture*	pTexture = NULL;
+		pTexture = new CUnitMultiTexture;
+
+		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
+
+		m_TerranTex.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
+	}
+	else
+		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
+
+	return S_OK;
+}
+
 HRESULT CTextureMgr::Insert_GeneralTex(const wstring& wstrFilePath , const wstring& wstrObjKey , const wstring& wstrStateKey , const int& iCnt)
 {
 	map<wstring, CTexture*>::iterator	iter = m_GeneralTex.find(wstrObjKey);
@@ -162,6 +184,8 @@ HRESULT CTextureMgr::Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR
 
 		if(!_tcscmp(szKind , L"ZERG"))
 			Insert_ZUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		else if(!_tcscmp(szKind , L"TERRAN"))
+			Insert_TUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
 
 		lstrcpy(szPath , szImgPath);
 	}
@@ -332,6 +356,20 @@ const vector<TEXINFO*>* CTextureMgr::GetZUnitTexture(const wstring& wstrobjkey ,
 	map<wstring , CTexture*>::iterator iter = m_ZergTex.find(wstrobjkey);
 
 	if(m_ZergTex.end() != iter)
+	{
+		/*키 값을 찾았다.*/
+		CTexture* pTexture = iter->second;
+
+		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey , diridx);
+	}
+	else
+		return NULL;
+}
+const vector<TEXINFO*>* CTextureMgr::GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+{
+	map<wstring , CTexture*>::iterator iter = m_TerranTex.find(wstrobjkey);
+
+	if(m_TerranTex.end() != iter)
 	{
 		/*키 값을 찾았다.*/
 		CTexture* pTexture = iter->second;

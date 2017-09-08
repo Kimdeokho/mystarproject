@@ -5,7 +5,7 @@ class CCom_info :
 	public CComponent
 {
 public:
-	virtual void Initialize(CObj* pobj);
+	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);
 	virtual void Render(void);
 	virtual void Release(void);

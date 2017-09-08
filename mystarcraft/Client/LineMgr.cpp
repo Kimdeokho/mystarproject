@@ -79,9 +79,9 @@ void CLineMgr::Select_unit(void)
 {	
 	D3DXVECTOR2 vMousept;
 
-	vMousept.x = CMouseMgr::GetvMousePt().x;
-	vMousept.y = CMouseMgr::GetvMousePt().y;
+	vMousept = CMouseMgr::GetvMousePt();
 	int idx = CMyMath::Pos_to_index(vMousept.x , vMousept.y , 64);
+
 
 	if( (int)m_RectLine[0].x == (int)m_RectLine[2].x &&
 		(int)m_RectLine[0].y == (int)m_RectLine[2].y) 

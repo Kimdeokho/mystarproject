@@ -1,2 +1,7 @@
 ZERG|UNIT|DRONE|MOVE|54|..\Texture\Multi\Zerg\Unit\drone\move\drone_move%d.png
 ZERG|UNIT|DRONE|IDLE|9|..\Texture\Multi\Zerg\Unit\drone\idle\drone_idle%d.png
+TERRAN|UNIT|MARINE|IDLE|9|..\Texture\Multi\Terran\Unit\marine\idle\marine_idle%d.png
+TERRAN|UNIT|MARINE|ATTACK|18|..\Texture\Multi\Terran\Unit\marine\attack\marine_attack%d.png
+TERRAN|UNIT|MARINE|ATTACK_READY|9|..\Texture\Multi\Terran\Unit\marine\attack_ready\marine_attack_ready%d.png
+TERRAN|UNIT|MARINE|DEAD|8|..\Texture\Multi\Terran\Unit\marine\dead\marine_dead%d.png
+TERRAN|UNIT|MARINE|MOVE|81|..\Texture\Multi\Terran\Unit\marine\move\marine_move%d.png
