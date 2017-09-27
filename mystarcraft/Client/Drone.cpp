@@ -13,9 +13,13 @@
 #include "Com_singletexture.h"
 #include "Com_DroneAnim.h"
 
+#include "UI_Select.h"
+#include "ObjMgr.h"
 #include "LineMgr.h"
 #include "TileManager.h"
 #include "Com_Collision.h"
+#include "UnitMgr.h"
+#include "MyMath.h"
 CDrone::CDrone(void)
 {
 }
@@ -28,16 +32,23 @@ CDrone::~CDrone(void)
 void CDrone::Initialize(void)
 {
 	CObj::Initialize();
+	CUnit::Initialize();
 	m_curtex = NULL;
 
 	
 	
 	m_sortID = SORT_GROUND;
-	m_eType = MOVE_GROUND;
-	m_estate = IDLE;
-	m_ekategorie = UNIT;
+	m_ecategory = UNIT;
 	m_eteamnumber = TEAM_0;
-	m_eorder = ORDER_NONE;
+
+	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.eMoveType = MOVE_GROUND;
+	m_unitinfo.estate = IDLE;
+	m_unitinfo.hp = 40;
+	m_unitinfo.fspeed = 80;
+	m_unitinfo.attack_range = 16;
+	m_unitinfo.search_range = 256;
+	m_unitinfo.fog_range = 512;
 
 
 	int icase = rand()%23 + 15;
@@ -60,15 +71,14 @@ void CDrone::Initialize(void)
 
 	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect);
 
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , 512)));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_DroneAnim(m_matWorld , m_curtex)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );	
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Targetsearch(128 , 256 , SEARCH_ONLY_ENEMY) ) );	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Targetsearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY) ) );	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex)) ) ;	
 
 
 	//m_fspeed = float(rand()%170 + 30);
-	m_fspeed = 60;
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -76,7 +86,9 @@ void CDrone::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-	//m_panimation->Initialize(this);
+	m_select_ui = new CUI_Select(L"Select32" , m_matWorld);
+	m_select_ui->Initialize();
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
 }
 
 void CDrone::Update(void)
@@ -95,6 +107,19 @@ void CDrone::Update(void)
 	m_matshadow = m_matWorld;
 	m_matshadow._42 += 7;
 
+
+	if(IDLE == m_unitinfo.estate)
+	{
+		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
+	}
+	else if(ATTACK == m_unitinfo.estate)
+	{
+		((CCom_Animation*)m_com_anim)->SetAnimation(L"ATTACK");
+	}
+	else if(MOVE == m_unitinfo.estate || COLLISION == m_unitinfo.estate)
+	{
+		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
+	}
 }
 
 void CDrone::Render(void)
@@ -130,13 +155,20 @@ void CDrone::Inputkey_reaction(const int& nkey)
 {
 	if(VK_RBUTTON == nkey)
 	{
-		m_estate = MOVE;
-		m_eorder = ORDER_MOVE;
+		m_unitinfo.estate = MOVE;
+		m_unitinfo.eorder = ORDER_MOVE;
 
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(CTileManager::GetInstance()->GetFlowFiled_GoalPos());
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CTileManager::GetInstance()->GetFlowFiled_Goalidx());
-		((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-		((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+		if(NULL != m_com_pathfind)
+		{
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+
+
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
+			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			m_bmagicbox = false;
+		}
 
 		//무기가 발사준비 완료일때 무브시킨다
 	}
@@ -161,24 +193,23 @@ void CDrone::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
-		m_eorder = ORDER_MOVE_ATTACK;
-		m_estate = MOVE;
+		m_unitinfo.eorder = ORDER_MOVE_ATTACK;
+		m_unitinfo.estate = MOVE;
 
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(CTileManager::GetInstance()->GetFlowFiled_GoalPos());
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CTileManager::GetInstance()->GetFlowFiled_Goalidx());
-		((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-		((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+		if(NULL != m_com_pathfind)
+		{
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+
+
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
+			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			m_bmagicbox = false;
+		}
 	}
 }
 void CDrone::Release(void)
 {
-	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
-	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
-
-	for( ; iter != iter_end; ++iter)
-		Safe_Delete(iter->second);
-
-	m_componentlist.clear();
-
-
+	m_select_ui->SetDestroy(true);
 }

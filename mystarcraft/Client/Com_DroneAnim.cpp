@@ -7,6 +7,8 @@ CCom_DroneAnim::CCom_DroneAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
 {
 	m_objname = L"DRONE";
 	m_statkey = L"";
+	//lstrcpy(m_objname ,L"DRONE");
+	//memset(m_statkey , 0 , sizeof(TCHAR)*64);
 }
 
 CCom_DroneAnim::~CCom_DroneAnim(void)
@@ -18,6 +20,8 @@ void CCom_DroneAnim::Initialize(CObj* pobj)
 	SetAnimation(L"IDLE");
 
 	m_pobj = pobj;
+
+		CCom_Animation::InitTexidx();
 }
 
 void CCom_DroneAnim::Update(void)

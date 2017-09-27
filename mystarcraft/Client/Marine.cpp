@@ -6,81 +6,114 @@
 #include "TimeMgr.h"
 #include "MouseMgr.h"
 
+
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
-#include "Com_multitexture.h"
-#include "Com_Targetsearch.h"
-#include "Com_singletexture.h"
 #include "Com_MarineAnim.h"
 #include "Com_Wmarine.h"
+#include "Com_Targetsearch.h"
 
+#include "Skill_SP.h"
+
+#include "ObjMgr.h"
 #include "LineMgr.h"
 #include "TileManager.h"
 #include "Com_Collision.h"
+#include "FontMgr.h"
+#include "UI_Select.h"
+
+
+#include "Corpse.h"
+#include "UnitMgr.h"
+#include "Area_Mgr.h"
+
+
+#include "MyMath.h"
+
 CMarine::CMarine(void)
 {
 }
 
 CMarine::~CMarine(void)
 {
+	Release();
 }
 
 void CMarine::Initialize(void)
 {
 	CObj::Initialize();
+	CUnit::Initialize();
+
 	m_curtex = NULL;
+	m_com_pathfind = NULL;
+	m_com_targetsearch = NULL;
 
-
-
+	
 	m_sortID = SORT_GROUND;
-	m_eType = MOVE_GROUND;
-	m_estate = IDLE;
-	m_ekategorie = UNIT;
+	m_unitinfo.eMoveType = MOVE_GROUND;
+	m_ecategory = UNIT;
 	m_eteamnumber = TEAM_0;
-	m_eorder = ORDER_NONE;
 
+	m_unitinfo.estate = IDLE;
+	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.eDamageType = DAMAGE_NOMAL;
+	m_unitinfo.eArmorType = ARMOR_SMALL;
+	m_unitinfo.damage = 6;
+	m_unitinfo.hp = 40;
+	m_unitinfo.mp = 0;
+	m_unitinfo.fspeed = 60;
+	m_unitinfo.attack_range = 128;
+	m_unitinfo.search_range = 191;
+	m_unitinfo.fog_range = 512;
 
-	int icase = rand()%23 + 15;
-	float fvtx = (float)(icase)/2;
 
 	m_vertex.left = 8.5;
 	m_vertex.right = 8.5;
 	m_vertex.top =  10;
 	m_vertex.bottom = 10;
 
-
-	//m_rect.left = m_vPos.x - m_vertex.left; 
-	//m_rect.right = m_vPos.x + m_vertex.right;
-	//m_rect.top = m_vPos.y - m_vertex.top;
-	//m_rect.bottom = m_vPos.y + m_vertex.bottom;
-
-
-
-	//m_panimation = new CCom_DroneAnim(m_matWorld , m_curtex);
+	//
 
 	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect);
+	m_com_weapon = new CCom_Wmarine(m_unitinfo.damage , DAMAGE_NOMAL);
+	m_com_targetsearch = new CCom_Targetsearch(&m_unitinfo.attack_range , &m_unitinfo.search_range, SEARCH_ONLY_ENEMY);
+	m_com_anim = new CCom_MarineAnim(m_matWorld , m_curtex);
+	m_skill_sp = new CSkill_SP(this , m_com_weapon);
 
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , 512)));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_MarineAnim(m_matWorld , m_curtex)));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );	
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Targetsearch(128 , 256 , SEARCH_ONLY_ENEMY) ) );	
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex)) ) ;	
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , new CCom_Wmarine()) ) ;	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex) ) ) ;	
 
 
-	//m_fspeed = float(rand()%170 + 30);
-	m_fspeed = 70;
+
+
+	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON ,  m_com_weapon )) ;	
+
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
+
+
+	m_select_ui = new CUI_Select(L"Select22" , m_matWorld);
+	m_select_ui->Initialize();
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+
+
 }
 
 void CMarine::Update(void)
 {
 	CObj::idx_update();
+
+	m_select_ui->SetSelect(m_bSelect);
+	m_skill_sp->Update();
+	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -88,36 +121,65 @@ void CMarine::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
+
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
-	m_matshadow = m_matWorld;
-	m_matshadow._41 -= 4;
+
+
+
+	if(IDLE == m_unitinfo.estate)
+	{
+		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
+	}
+	else if(ATTACK == m_unitinfo.estate)
+	{
+		((CCom_Animation*)m_com_anim)->SetAnimation(L"ATTACK");
+	}
+	else if(MOVE == m_unitinfo.estate || COLLISION == m_unitinfo.estate)
+	{
+		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
+	}
+
+	//m_matshadow = m_matWorld;
+	//m_matshadow._41 -= 4;
+
+	//if(ATTACK == m_unitinfo.estate)
+	//{
+	//	CFontMgr::GetInstance()->Setbatch_Font(L"ATTACK" , m_matWorld._41 , m_matWorld._42);
+	//}
+	//else if(MOVE == m_unitinfo.estate)
+	//{
+	//	CFontMgr::GetInstance()->Setbatch_Font(L"MOVE" , m_matWorld._41 , m_matWorld._42);
+	//}
+	//else if(IDLE == m_unitinfo.estate)
+	//{
+	//	CFontMgr::GetInstance()->Setbatch_Font(L"IDLE" , m_matWorld._41 , m_matWorld._42);
+	//}
+
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" ,m_obj_id, m_matWorld._41 , m_matWorld._42);
 }
 
 void CMarine::Render(void)
 {
-	const TEXINFO*	ptemp = NULL;
-	ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , L"Select32");
-
 
 	//m_pSprite->SetTransform(&m_matshadow);
 	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
 	//	, NULL , D3DCOLOR_ARGB(125,0,0,0));
-
-	//if(true == m_bSelect)
-	//{
-	//	D3DXMATRIX matSelect;
-	//	matSelect = m_matWorld;
-	//	/*선택 이미지*/
-	//	matSelect._42 += 13;
-	//	m_pSprite->SetTransform(&matSelect);
-	//	m_pSprite->Draw(ptemp->pTexture , NULL , &D3DXVECTOR3(20,20,0) , NULL , D3DCOLOR_ARGB(255,0,255,255));
-	//}
+	
 
 	m_pSprite->SetTransform(&m_matWorld);
-	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-		, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	if(TEAM_1 == m_eteamnumber)
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,0,0));
+	}
+	else
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
 
+	//m_com_pathfind->Render();
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
@@ -125,24 +187,30 @@ void CMarine::Inputkey_reaction(const int& nkey)
 {
 	if(VK_RBUTTON == nkey)
 	{
-		m_estate = MOVE;
-		m_eorder = ORDER_MOVE;
+		m_unitinfo.estate = MOVE;
+		m_unitinfo.eorder = ORDER_MOVE;
 
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(CTileManager::GetInstance()->GetFlowFiled_GoalPos());
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CTileManager::GetInstance()->GetFlowFiled_Goalidx());
-		((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-		((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+		if(NULL != m_com_pathfind)
+		{
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
+
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
+			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			m_bmagicbox = false;
+		}
 	}
 	if('Q' == nkey)
 	{
 		//m_fspeed = 30;
-		m_eteamnumber = TEAM_0;
+		//m_eteamnumber = TEAM_0;
 	}
 	if('W' == nkey)
 	{
-		//m_fspeed = 120;
 		m_eteamnumber = TEAM_1;
+		m_skill_sp->use();
 	}
 	if('A' == nkey)
 	{		
@@ -156,17 +224,49 @@ void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
-		m_eorder = ORDER_MOVE_ATTACK;
-		m_estate = MOVE;
+		m_unitinfo.eorder = ORDER_MOVE_ATTACK;
+		m_unitinfo.estate = MOVE;
+		//m_eorder = ORDER_MOVE_ATTACK;
+		//m_estate = MOVE;
 
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(CTileManager::GetInstance()->GetFlowFiled_GoalPos());
-		((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CTileManager::GetInstance()->GetFlowFiled_Goalidx());
-		((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-		((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+		if(NULL != m_com_pathfind)
+		{
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+
+
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
+			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			m_bmagicbox = false;
+		}
+
 	}
 }
 
+
+
+void CMarine::SetDestroy(bool bdestroy)
+{
+	m_bdestroy = bdestroy;
+
+	if(true == m_bdestroy)
+	{
+		CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
+		CArea_Mgr::GetInstance()->ReleaseObj_Area256(m_curidx256 , this);
+		CArea_Mgr::GetInstance()->ReleaseObj_Area512(m_curidx512 , this);
+
+		CObj* pobj = new CCorpse(L"MARINEDEAD" , L"MARINEWRECKAGE");
+		pobj->SetPos(m_vPos.x , m_vPos.y);
+		pobj->Initialize();
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_CORPSE);
+	}
+}
 void CMarine::Release(void)
 {
-
+	m_com_pathfind = NULL;
+	m_com_weapon = NULL;
+	Safe_Delete(m_skill_sp);
+	
 }

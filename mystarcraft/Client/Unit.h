@@ -3,13 +3,14 @@
 
 class CAstar;
 
-class CComponent;
 
+class CUI;
 class CUnit :
 	public CObj
 {
 protected:
 	//CComponent*					m_panimation;
+	CComponent*		m_com_anim;
 protected:
 	D3DXMATRIX	m_matshadow;
 protected:
@@ -21,7 +22,9 @@ protected:
 	//CComponent*		m_com_shadowtex;
 	//CComponent*		m_com_generaltex;
 	//CComponent*		m_com_singletex;
-	CComponent*		m_com_pathfind;
+	CUI*			m_select_ui;
+	CUI*			m_miniunit_display;
+
 protected:
 	TEXINFO*						m_curtex;
 public:

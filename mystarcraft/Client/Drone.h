@@ -10,6 +10,7 @@ private:
 	/*배열이나 벡터로 만들 생각이다*/
 	//CComponent*				    m_comfog;		
 	//CComponent*				    m_compathfind;
+	CComponent*						m_com_pathfind;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

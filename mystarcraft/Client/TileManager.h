@@ -17,14 +17,22 @@ private:
 	//list<int>					m_LightOff_List;
 	list<int>					m_CreepOff_List;
 
+	const vector<TEXINFO*>*	m_fogtexvec;
+	vector<int>				m_minifog_onidx;
+	vector<int>				m_minifog_offidx;
 private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;
 	LPDIRECT3DTEXTURE9			m_MapTexture[7][6];
+	LPDIRECT3DTEXTURE9			m_MinimapTexture;
+	LPDIRECT3DTEXTURE9			m_MinifogTexture;
+
+
 	//LPDIRECT3DTEXTURE9			m_fogTexture;
 	//LPDIRECT3DTEXTURE9			m_fogMaskTexture;
 private:
 	D3DXMATRIX					m_matWorld;
+	D3DXMATRIX					m_fogmat;
 	D3DXVECTOR3					m_vTileCenter;
 	int							m_mapsize;
 private:
@@ -57,7 +65,8 @@ public:
 	void Init_eightidx(const int& idx);
 public:
 	void Flowfield_Pathfinding(void);
-	
+public:
+	void MinifogUpdate(void);
 public:
 	bool	GetFogLight(const int& idx);
 	BYTE	GetTileOption(const int& idx);
@@ -67,8 +76,10 @@ public:
 	CREEP_INFO**	GetCreepTile(void);
 	void	GetFlowfield_Path(const int& idx , vector<int>& path);
 	short*   Get_flowfield_node(void);
-	int				GetFlowFiled_Goalidx(void);
-	D3DXVECTOR2		GetFlowFiled_GoalPos(void);
+	LPDIRECT3DTEXTURE9 GetMiniampTexture(void);
+	LPDIRECT3DTEXTURE9 GetMiniFogmapTexture(void);
+	//int				GetFlowFiled_Goalidx(void);
+	//D3DXVECTOR2		GetFlowFiled_GoalPos(void);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
 	void SetFogLight(int idx, float fdistance , float fradius);
@@ -95,6 +106,7 @@ public:
 public:
 	void ReadyTileTexture(void);
 	void ReadyMainMap(void);
+	void ReadyMiniMap(void);
 public:
 	void CopySurface(LPDIRECT3DTEXTURE9 psurface);
 public:

@@ -6,7 +6,7 @@
 #include "MyMath.h"
 #include "TileManager.h"
 
-CCom_fog::CCom_fog(const int& curidx , const int& irange):m_rcuridx32(curidx)
+CCom_fog::CCom_fog(const int& curidx , const int* irange):m_rcuridx32(curidx)
  , m_iSightrange(irange)
 {
 }
@@ -30,6 +30,7 @@ void CCom_fog::Initialize(CObj* pobj)
 void CCom_fog::Update(void)
 {
 	/*m_iSightrange는 픽셀단위 범위, 32배수*/
+
 	if(true == m_sightoffsw)
 		m_fogtime += GETTIME;
 
@@ -48,16 +49,18 @@ void CCom_fog::Update(void)
 			}
 
 			m_Sightoff_List.clear();
+			//printf("안개 끄기\n");
 		}
 		m_fogtime = 0.f;
 		m_sightoffsw = false;
-		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetType());
+		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , *m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetUnitinfo().eMoveType);
+		//printf("안개 지우기\n");
 	}
 
 	if(m_rcuridx32 != m_oldidx32)
 	{
 		m_sightoffsw = true;		
-		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetType());
+		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , *m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj->GetUnitinfo().eMoveType);
 		m_oldidx32 = m_rcuridx32;
 	}
 }
@@ -67,6 +70,15 @@ void CCom_fog::Release(void)
 	m_pobj = NULL;
 	if(!m_Sightoff_List.empty())
 	{
+		list<int>::iterator iter = m_Sightoff_List.begin();
+		list<int>::iterator iter_end = m_Sightoff_List.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			m_fogsearch[(*iter)] = false;
+			CTileManager::GetInstance()->SightOffRender(*iter);
+		}
+
 		m_Sightoff_List.clear();
 	}
 }

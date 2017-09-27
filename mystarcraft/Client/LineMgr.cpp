@@ -75,11 +75,38 @@ void CLineMgr::collisionbox_render(const MYRECT<float>& rc)
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 }
+void CLineMgr::minicambox_render(const MYRECT<float>& rc)
+{
+	D3DXVECTOR2 vpt[5];
+
+	vpt[0].x = rc.left;
+	vpt[0].y = rc.top;
+
+	vpt[1].x = rc.right;
+	vpt[1].y = rc.top;
+
+	vpt[2].x = rc.right;
+	vpt[2].y = rc.bottom;
+
+	vpt[3].x = rc.left;
+	vpt[3].y = rc.bottom;
+
+	vpt[4] = vpt[0];
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+
+	m_pLine->SetWidth(1.0f);
+	m_pLine->Draw(vpt , 5 , D3DCOLOR_ARGB(255,255,255,255));
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+}
 void CLineMgr::Select_unit(void)
 {	
 	D3DXVECTOR2 vMousept;
 
-	vMousept = CMouseMgr::GetvMousePt();
+	vMousept = CMouseMgr::GetAddScrollvMousePt();
 	int idx = CMyMath::Pos_to_index(vMousept.x , vMousept.y , 64);
 
 
@@ -92,10 +119,6 @@ void CLineMgr::Select_unit(void)
 	else
 	{
 		MYRECT<float>	rc;
-		float fX = CScrollMgr::m_fScrollX + CLINETSIZE_X/2;
-		float fY = CScrollMgr::m_fScrollY + CLINETSIZE_Y/2;
-
-		idx = CMyMath::Pos_to_index(fX , fY , 512);
 
 		if(m_RectLine[0].x < m_RectLine[2].x)
 		{
@@ -119,7 +142,7 @@ void CLineMgr::Select_unit(void)
 			rc.bottom = m_RectLine[0].y + CScrollMgr::m_fScrollY;
 		}
 
-		CArea_Mgr::GetInstance()->DragCheck(idx , rc);
+		CArea_Mgr::GetInstance()->DragCheck( rc);
 	}
 	//DragCheck()
 }

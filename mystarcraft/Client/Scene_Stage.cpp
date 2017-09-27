@@ -6,6 +6,7 @@
 #include "KeyMgr.h"
 #include "FontMgr.h"
 #include "LineMgr.h"
+#include "ComanderMgr.h"
 #include "ObjPoolMgr.h"
 #include "Astar.h"
 #include "UnitMgr.h"
@@ -27,6 +28,7 @@ HRESULT CScene_Stage::Initialize(void)
 		
 	CUnitMgr::GetInstance()->Initialize();
 	CTileManager::GetInstance()->Initialize();
+	CComanderMgr::GetInstance()->Initialize();
 	LoadData();
 
 	return S_OK;
@@ -37,9 +39,10 @@ void CScene_Stage::Update(void)
 	CKeyMgr::GetInstance()->Update();
 	CObjMgr::GetInstance()->Update();
 
+	CComanderMgr::GetInstance()->Update();
 	CScrollMgr::update();
 
-	//CArea_Mgr::GetInstance()->Areasize_debugrender(256 , 16);
+	//CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
 }
 void CScene_Stage::Render(void)
 {
@@ -48,15 +51,20 @@ void CScene_Stage::Render(void)
 
 	CTileManager::GetInstance()->RenderFog();
 	//CTileManager::GetInstance()->Render_Flowfield();
-	CLineMgr::GetInstance()->RenderGrid(256 , 16);
+	
 
 	CFontMgr::GetInstance()->FontRender();
+	CLineMgr::GetInstance()->RenderGrid(64 , 64);
 	CLineMgr::GetInstance()->LineRender();
+
+	CComanderMgr::GetInstance()->Render();
 }
 void CScene_Stage::Release(void)
 {
 	CObjPoolMgr::DestroyInstance();
 	CUnitMgr::DestroyInstance();
+	CObjMgr::DestroyInstance();
+	CComanderMgr::DestroyInstance();
 	//CAstar::DestroyInstance();
 }
 

@@ -5,6 +5,7 @@
 #include "GeneralTexture.h"
 #include "SingleTexture.h"
 #include "UnitMultiTexture.h"
+#include "MultiEffTexture.h"
 IMPLEMENT_SINGLETON(CTextureMgr)
 
 CTextureMgr::CTextureMgr(void)
@@ -78,7 +79,24 @@ HRESULT CTextureMgr::Insert_TUnitMultiTex( const wstring& wstrFilePath
 
 	return S_OK;
 }
+HRESULT CTextureMgr::Insert_MultiEffTex(const wstring& wstrFilePath , const wstring& wstrObjKey , const int& iCnt)
+{
+	map<wstring, CTexture*>::iterator	iter = m_MultilEffTex.find(wstrObjKey);
 
+	if(iter == m_MultilEffTex.end()) //키값을 못찾았다면
+	{
+		CTexture*	pTexture = NULL;
+		pTexture = new CMultiEffTexture;
+
+		pTexture->InsertTexture(wstrFilePath , iCnt);
+
+		m_MultilEffTex.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
+	}
+	else
+		iter->second->InsertTexture(wstrFilePath, iCnt);
+
+	return S_OK;
+}
 HRESULT CTextureMgr::Insert_GeneralTex(const wstring& wstrFilePath , const wstring& wstrObjKey , const wstring& wstrStateKey , const int& iCnt)
 {
 	map<wstring, CTexture*>::iterator	iter = m_GeneralTex.find(wstrObjKey);
@@ -146,6 +164,20 @@ void CTextureMgr::Release( void )
 		::Safe_Delete(iter->second);
 	}
 	m_ZergTex.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_TerranTex.begin();
+		iter != m_TerranTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_TerranTex.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_MultilEffTex.begin();
+		iter != m_MultilEffTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_MultilEffTex.clear();
 }
 HRESULT CTextureMgr::Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath)
 {
@@ -191,6 +223,44 @@ HRESULT CTextureMgr::Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR
 	}
 
 	LoadFile.close();
+	return S_OK;
+}
+HRESULT CTextureMgr::Read_MultiEff_ImgPath(const wstring& wstrFilePath ,TCHAR* szPath)
+{
+	wifstream	LoadFile;
+
+	LoadFile.open(wstrFilePath.c_str(), ios::in);
+
+	if(!LoadFile.is_open())
+	{
+		ERR_MSG(L"Read_MultiImgPath ERROR");
+		return E_FAIL;
+	}
+
+	TCHAR	szKind[MIN_STR] = L""; //종족,오브젝트,타일 등을 구분한다
+	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물,이펙트,자원 세부적인걸 구분한다
+	TCHAR	szObjKey[MIN_STR] = L"";
+	TCHAR	szCount[MIN_STR] = L"";
+	TCHAR	szImgPath[MAX_PATH] = L"";
+
+	while(!LoadFile.eof())
+	{
+		LoadFile.getline(szObjKey, MIN_STR, L'|');
+		LoadFile.getline(szCount, MIN_STR, L'|');
+		LoadFile.getline(szImgPath, MAX_PATH);
+
+		int		iCount = _ttoi(szCount);
+
+		//if(!_tcscmp(szKind , L"Tile"))
+		//	Insert_TileMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		//else if(!_tcscmp(szKind , L"ZERG"))
+		//	Insert_ZUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		Insert_MultiEffTex(szImgPath , szObjKey , iCount);
+
+
+		lstrcpy(szPath , szImgPath);
+	}
+
 	return S_OK;
 }
 HRESULT CTextureMgr::Read_GeneralImgPath(const wstring& wstrFilePath , TCHAR*	szPath)
@@ -340,6 +410,7 @@ HRESULT CTextureMgr::Read_StateImgPath(const wstring& wstrFilePath ,TCHAR* szPat
 
 const vector<TEXINFO*>* CTextureMgr::GetTileTexture_vecset(const wstring& wstrObjey, const wstring& wstrStatekey)
 {
+	/*키값과 상태값은 있으나 방향이 없다*/
 	map<wstring , CTexture*>::iterator iter = m_TileTexture.find(wstrObjey);
 	if(m_TileTexture.end() != iter)
 	{
@@ -391,7 +462,7 @@ const TEXINFO* CTextureMgr::GetSingleTexture(const wstring& wstrObjKey , const w
 	else
 		return NULL;
 }
-TEXINFO** CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
+const vector<TEXINFO*>* CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
 {
 	map<wstring , CTexture*>::iterator iter = m_GeneralTex.find(wstrObjKey);
 	if(iter != m_GeneralTex.end())
@@ -403,6 +474,19 @@ TEXINFO** CTextureMgr::GetGeneralTexture(const wstring& wstrObjKey)
 	else
 		return NULL;
 }
+const vector<TEXINFO*>* CTextureMgr::GetMultiEffTexture(const wstring& wstrObjKey , const int& dirdix)
+{
+	map<wstring , CTexture*>::iterator iter = m_MultilEffTex.find(wstrObjKey);
+	if(iter != m_MultilEffTex.end())
+	{
+		CTexture* pTexture = iter->second;
+
+		return ((CMultiEffTexture*)pTexture)->GetMultiEffTex(dirdix);
+	}
+	else
+		return NULL;
+}
+
 bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 {
 	if(Read_SingleImagePath(L"../Data/imgpath/SingleImgPath.txt" , szPath) )
@@ -417,11 +501,17 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 	if(Read_directional_ImgPath(L"../Data/imgpath/directionalImgPath.txt" , szPath) )
 		ERR_MSG(L"유닛텍스쳐 불러오기 실패");
 
+	if(Read_MultiEff_ImgPath(L"../Data/imgpath/MultiEff_ImgPath.txt" , szPath) )
+		ERR_MSG(L"멀티이펙텍스쳐 불러오기 실패");
+
 	lstrcpy(szPath , L"로딩완료");
 
 	return true;
 	//종족별 멀티텍스쳐는 게임 시작전에 따로 부르기
 
 }
+
+
+
 
 

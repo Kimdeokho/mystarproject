@@ -21,6 +21,7 @@ public:
 	void LineRender(void);
 	void Select_unit(void);
 	void collisionbox_render(const MYRECT<float>& rc);
+	void minicambox_render(const MYRECT<float>& rc);
 	void RenderGrid(const int& tilesize , const int& tilecnt);
 public:
 	CLineMgr(void);

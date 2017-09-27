@@ -34,8 +34,6 @@ private:
 	D3DXVECTOR2	m_downpt;
 	D3DXVECTOR2 m_curpt;
 
-	CObj* pObj;
-
 	int objcnt;
 	int m_nkey;
 

@@ -124,6 +124,7 @@ void CDevice::Render_Begin( void )
 	//m_pDevice->Clear(0, NULL
 	//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
 	//	, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
+
 	m_pDevice->BeginScene();
 	m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
 }

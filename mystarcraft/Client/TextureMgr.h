@@ -11,6 +11,7 @@ public:
 private:
 	map<wstring, CTexture*>		m_TileTexture;
 
+	map<wstring, CTexture*>		m_MultilEffTex;
 	map<wstring, CTexture*>		m_GeneralTex;
 	map<wstring, CTexture*>		m_SinglelTex;
 
@@ -19,6 +20,7 @@ private:
 public:
 public:
 	HRESULT	Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
+	HRESULT	Read_MultiEff_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT	Read_StateImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT Read_GeneralImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT Read_SingleImagePath(const wstring& wstrFilePath,TCHAR*	szPath );
@@ -49,12 +51,17 @@ public:
 	HRESULT	Insert_SingleTex(const wstring& wstrFilePath
 		, const wstring& wstrObjKey
 		, const wstring& wstrStateKey);
+
+	HRESULT	Insert_MultiEffTex(const wstring& wstrFilePath
+		, const wstring& wstrObjKey
+		, const int& iCnt);
 public:
 	const vector<TEXINFO*>*	GetTileTexture_vecset(const wstring& wstrObjkey,	const wstring& wstrStatekey);
 	const vector<TEXINFO*>* GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
 	const vector<TEXINFO*>* GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
 	const TEXINFO*			GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);
-	TEXINFO**				GetGeneralTexture(const wstring& wstrObjKey);
+	const vector<TEXINFO*>*	GetGeneralTexture(const wstring& wstrObjKey);
+	const vector<TEXINFO*>* GetMultiEffTexture(const wstring& wstrObjKey , const int& dirdix);
 public:
 	void Release(void);
 

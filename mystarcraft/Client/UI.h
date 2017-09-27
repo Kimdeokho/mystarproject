@@ -1,0 +1,33 @@
+#pragma once
+#include "Include.h"
+
+class CUI
+{
+protected:
+	MYRECT<float>	m_rect;
+	const TCHAR*	m_statekey;
+	const TEXINFO*	m_texinfo;
+	D3DXVECTOR2		m_vpos;
+	D3DXVECTOR3		m_vcenter;
+	D3DXMATRIX		m_matworld;
+	LPD3DXSPRITE	m_pSprite;
+	D3DCOLOR		m_color;
+
+protected:
+	bool			m_bdestroy;
+	bool			m_bselect;
+public:
+	void SetSelect(bool bselect);
+	void SetDestroy(bool bdestroy);
+public:
+	bool GetDestroy(void);
+	const MYRECT<float>& GetMyRect(void);
+public:
+	virtual void Initialize(void);
+	virtual void Update(void);
+	virtual void Render(void);
+	virtual void Release(void);
+public:
+	CUI(void);
+	virtual ~CUI(void);
+};

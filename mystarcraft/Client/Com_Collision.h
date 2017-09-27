@@ -1,16 +1,16 @@
 #pragma once
 #include "component.h"
 
-class CCom_Animation;
 
 class CCom_Collision :
 	public CComponent
 {
 private:
-	CCom_Animation*				m_animation;
+	CComponent*				m_com_pathfind;
 private:
 	float			m_search_time;
-	float*			m_fspeed;
+	const float*	m_fspeed;
+	bool			m_bcollision;
 
 	CObj*						m_collision_target;
 	D3DXVECTOR2&				m_vPos;
@@ -24,6 +24,8 @@ public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);
 	virtual void Release(void);
+public:
+	bool GetCollision(void);
 public:
 	CCom_Collision(D3DXVECTOR2& vpos , MYRECT<float>&	rc , const MYRECT<float>& vtx);
 	~CCom_Collision(void);

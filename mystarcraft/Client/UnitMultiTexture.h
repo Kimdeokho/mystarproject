@@ -4,6 +4,7 @@
 class CUnitMultiTexture :
 	public CTexture
 {
+	//상태와 방향성이 있는것들
 private:
 	map<wstring , vector<TEXINFO*>>	m_multiTex[DIR_CNT];
 public:

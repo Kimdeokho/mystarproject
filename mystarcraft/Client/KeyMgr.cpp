@@ -14,7 +14,9 @@
 #include "TileManager.h"
 #include "UnitMgr.h"
 #include "Marine.h"
+#include "Tank.h"
 
+#include "ComanderMgr.h"
 IMPLEMENT_SINGLETON(CKeyMgr)
 CKeyMgr::CKeyMgr(void)
 {
@@ -173,15 +175,14 @@ void CKeyMgr::MouseOnceKeyDown(const int& nkey)
 
 			m_bOnceKeyDown_complete[nkey] = true;
 
-			//Intputkey_reaction(nkey);/*지형 길을 먼저구해야하기때문에 위에 있어야한다*/
-			//CObjMgr::GetInstance()->Intputkey_reaction(nkey);	
-
+			
+			//첫번째 키다운한 위치 저장
 			m_downpt.x = float(CMouseMgr::GetMousePt().x);
 			m_downpt.y = float(CMouseMgr::GetMousePt().y);
 		}
 		else
 		{
-			//이건 터보키에 넣고
+			//지속적으로 엔드포인트 갱신
 			m_curpt.x = float(CMouseMgr::GetMousePt().x);
 			m_curpt.y = float(CMouseMgr::GetMousePt().y);
 
@@ -224,7 +225,7 @@ void CKeyMgr::DbClick(const int& nkey)
 	{
 		m_dbClick_Timer[nkey] += GETTIME;
 
-		if(m_dbClick_Timer[nkey] > 0.5f)
+		if(m_dbClick_Timer[nkey] > 0.2f)
 		{
 			m_DbClick_ready[nkey] = false;
 			m_dbClick_Timer[nkey] = 0.f;
@@ -257,6 +258,7 @@ void CKeyMgr::Update(void)
 	TurboKeyDown(VK_RIGHT);
 	TurboKeyDown(VK_UP);
 	TurboKeyDown(VK_DOWN);
+	//TurboKeyDown(VK_LBUTTON);
 	TurboKeyDown('1');
 	TurboKeyDown('2');
 	TurboKeyDown('3');
@@ -272,6 +274,8 @@ void CKeyMgr::Update(void)
 	OnceKeyDown('Z');
 	OnceKeyDown('Q');
 	OnceKeyDown('W');
+	OnceKeyDown('T');
+	OnceKeyDown('O');
 
 	MouseOnceKeyDown(VK_LBUTTON);
 	MouseKeyUp(VK_LBUTTON);
@@ -302,18 +306,20 @@ void CKeyMgr::Update(void)
 }
 void CKeyMgr::Intput_oncekey_reaction(void)
 {
+	CObj* pObj;
+
 	if(true == m_bOnceKeyDown_complete[VK_RBUTTON])
 	{
 		m_bOnceKeyDown_complete[VK_RBUTTON] = false;
 
 		CFontMgr::GetInstance()->Set_KeyInput_Font(L"우 클릭" );
 
-		CTileManager::GetInstance()->Flowfield_Pathfinding();
+		if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+		{
+			CUnitMgr::GetInstance()->Calculate_UnitCenterPt();
+			CTileManager::GetInstance()->Flowfield_Pathfinding();
+		}
 		
-		/*일반유닛 길찾기 컴포넌트 ,
-		  공중유닛 길찾기 컴포넌트 ,
-		  일꾼 길찾기 컴포넌트 이런식으로 구분해보자..*/
-
 		CUnitMgr::GetInstance()->Intputkey_reaction(VK_RBUTTON);
 	}
 	if(true == m_bOnceKeyDown_complete[VK_LBUTTON])
@@ -322,7 +328,12 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 
 		if(m_clickwating['A'])
 		{
-			CTileManager::GetInstance()->Flowfield_Pathfinding();
+			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+			{
+				CUnitMgr::GetInstance()->Calculate_UnitCenterPt();
+				CTileManager::GetInstance()->Flowfield_Pathfinding();
+			}
+
 			CUnitMgr::GetInstance()->Intputkey_reaction('A' , VK_LBUTTON);
 			m_clickwating['A'] = false;
 
@@ -341,7 +352,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 
 		//	/*곧 지울것들이다*/
 		pObj = new CMarine;
-		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		pObj->SetPos(CMouseMgr::GetAddScrollvMousePt().x ,  CMouseMgr::GetAddScrollvMousePt().y);
 		pObj->Initialize();
 
 		CObjMgr::GetInstance()->AddObject(pObj , TU_MARINE);
@@ -362,13 +373,13 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			m_clickwating['A'] = true;//공격 마우스띄우기 아이콘
 
 
-		pObj = new CDrone;
-		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
-		pObj->Initialize();
+		//pObj = new CDrone;
+		//pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		//pObj->Initialize();
 
-		CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
-		objcnt += 1;
-		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+		//CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
+		//objcnt += 1;
+		//CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('A');
@@ -384,6 +395,27 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		m_bOnceKeyDown_complete['W'] = false;
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('W');
+	}
+	if(true == m_bOnceKeyDown_complete['T'])
+	{
+		m_bOnceKeyDown_complete['T'] = false;
+
+		pObj = new CTank;
+		CObjMgr::GetInstance()->AddObject(pObj , TU_TANK);
+
+		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		pObj->Initialize();
+
+		objcnt += 1;
+		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('T');
+	}
+	if(true == m_bOnceKeyDown_complete['O'])
+	{
+		m_bOnceKeyDown_complete['O'] = false;
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('O');
 	}
 }
 void CKeyMgr::Intput_turbokey_reaction(void)
@@ -418,7 +450,10 @@ void CKeyMgr::Intput_turbokey_reaction(void)
 	{
 		CScrollMgr::m_fScrollY += GETTIME*fspeed;
 	}
-
+	if( true == m_bTurboKeyDown_complete[VK_LBUTTON])
+	{
+		//CComanderMgr::GetInstance()->SetMinimapCamPos(CMouseMgr::GetvMousePt());
+	}
 
 }
 void CKeyMgr::Intput_dbclick_reaction(void)

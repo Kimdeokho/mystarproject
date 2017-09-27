@@ -13,6 +13,10 @@
 #include "Area_Mgr.h"
 
 #include "Device.h"
+
+#include "UI_MiniUnitDisplay.h"
+#include "ComanderMgr.h"
+
 CUnit::CUnit(void)
 {
 	//m_fogtime = 0.f;
@@ -52,6 +56,9 @@ CUnit::CUnit(void)
 	//m_com_multitex		= NULL;
 	//m_com_generaltex	= NULL;
 	//m_com_singletex		= NULL;
+
+	m_select_ui = NULL;
+	m_miniunit_display = NULL;
 }
 
 CUnit::~CUnit(void)
@@ -62,7 +69,9 @@ CUnit::~CUnit(void)
 
 void CUnit::Initialize(void)
 {
-
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos);
+	m_miniunit_display->Initialize();
+	CComanderMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }
 
 void CUnit::Update(void)
@@ -127,6 +136,12 @@ void CUnit::Render(void)
 void CUnit::Release(void)
 {
 	//Safe_Delete(m_Astar);
+
+	if(NULL != m_miniunit_display)
+		m_miniunit_display->SetDestroy(true);
+
+	if(NULL != m_select_ui)
+		m_select_ui->SetDestroy(true);
 }
 void CUnit::Collision_update(void)
 {
@@ -463,5 +478,3 @@ void CUnit::UnitMoving_update(void)
 	//}
 
 }
-
-

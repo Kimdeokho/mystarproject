@@ -24,3 +24,5 @@ UI|Select110|..\Texture\Single\UI\Select110.png
 UI|Select122|..\Texture\Single\UI\Select122.png
 UI|Select146|..\Texture\Single\UI\Select146.png
 UI|Select224|..\Texture\Single\UI\Select224.png
+UI|minifogmap|..\Texture\Single\UI\minifogmap.png
+UI|main_interface|..\Texture\Single\UI\main_interface.png

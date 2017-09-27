@@ -26,7 +26,7 @@ CMaingame::~CMaingame(void)
 
 HRESULT CMaingame::Initialize(void)
 {
-	//°øÁßÀ¯´ÖÀº Y¼ÒÆÃÀ» ÇÏÁö ¾Ê´Â´Ù ±×³É »ý»êµÈ ¼ø¼­´ë·Î ·»´õ¸¦ ½ÇÇàÇÑ´Ù
+	//ê³µì¤‘ìœ ë‹›ì€ Yì†ŒíŒ…ì„ í•˜ì§€ ì•ŠëŠ”ë‹¤ ê·¸ëƒ¥ ìƒì‚°ëœ ìˆœì„œëŒ€ë¡œ ë Œë”ë¥¼ ì‹¤í–‰í•œë‹¤
 
 	AllocConsole();
 	freopen( "CONOUT$",  "wt", stdout);
@@ -59,7 +59,11 @@ HRESULT CMaingame::Initialize(void)
 
 	float fdot = D3DXVec2Dot(&vnormal1 , &vnormal2);
 
-	printf("³»Àû°ª %f\n" , (180*acos(-1.1f))/PI);
+	printf("ë‚´ì ê°’ %f\n" , (180*acos(-1.1f))/PI);
+
+
+
+
 	return S_OK;
 }
 
@@ -76,6 +80,8 @@ void CMaingame::Render(void)
 	m_pDevice->GetDevice()->Clear(0 , NULL
 		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
 		, D3DCOLOR_XRGB(0,0,255), 1.f , 0);
+
+
 	m_pDevice->Render_Begin();
 
 
@@ -102,13 +108,14 @@ void CMaingame::RenderFPS(void)
 
 void CMaingame::Release(void)
 {
+	CObjMgr::DestroyInstance();
 	CTimeMgr::DestroyInstance();
 	CSceneMgr::DestroyInstance();
 	CFontMgr::DestroyInstance();
 	CDevice::DestroyInstance();
 	CTextureMgr::DestroyInstance();
 	CTileManager::DestroyInstance();
-	CObjMgr::DestroyInstance();
+	
 	CKeyMgr::DestroyInstance();
 	CArea_Mgr::DestroyInstance();
 	CLineMgr::DestroyInstance();

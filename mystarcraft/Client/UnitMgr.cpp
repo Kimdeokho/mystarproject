@@ -6,6 +6,10 @@
 #include "Unit.h"
 
 #include "FontMgr.h"
+#include "MyMath.h"
+#include "MouseMgr.h"
+#include "ScrollMgr.h"
+
 IMPLEMENT_SINGLETON(CUnitMgr)
 CUnitMgr::CUnitMgr(void)
 {
@@ -23,6 +27,12 @@ void CUnitMgr::Initialize(void)
 	{
 		m_troops[i].reserve(12);
 	}
+
+	m_vUnitcenterpt		= D3DXVECTOR2(0,0);
+	m_vGoalPos			= D3DXVECTOR2(0,0);
+	m_vparallel_travel  = D3DXVECTOR2(0,0);
+	m_magicbox_unitcnt	= 0;
+	m_vGoalIdx			= 0;
 }
 
 void CUnitMgr::SetUnit(CObj* pobj)
@@ -53,6 +63,26 @@ void CUnitMgr::Intputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 	}
 }
+void CUnitMgr::clear_destroy_unitlist(CObj* pobj)
+{
+	if(!m_curunitList.empty())
+	{
+		list<CObj*>::iterator iter = m_curunitList.begin();
+		list<CObj*>::iterator iter_end = m_curunitList.end();
+
+		for( ; iter != iter_end; )
+		{
+			if(pobj == (*iter))
+			{
+				iter = m_curunitList.erase(iter);
+				break;
+			}
+			else
+				++iter;
+		}
+	}
+}
+
 void CUnitMgr::Intputkey_reaction(const int& nkey)
 {
 	if(!m_curunitList.empty())
@@ -66,39 +96,52 @@ void CUnitMgr::Intputkey_reaction(const int& nkey)
 		}
 	}
 }
-void CUnitMgr::path_relay(const int& goalidx)
+void CUnitMgr::Calculate_UnitCenterPt(void)
 {
-	//flowfield 경로를 선택된 유닛들에게 전달한다
+	list<CObj*>::iterator iter = m_curunitList.begin();
+	list<CObj*>::iterator iter_end = m_curunitList.end();
 
-	//if(!m_curunitList.empty())
-	//{
-	//	int maxloop = SQ_TILECNTX*SQ_TILECNTY;
+	map<int , CObj*> map_unitidxsort;
 
-	//	CTileManager* tilemgr = CTileManager::GetInstance();
-	//	//FLOW_NODE** flowfield = tilemgr->Get_flowfield_node();
-	//	short* flowfield = tilemgr->Get_flowfield_node();
-	//	CUnit* pobj = NULL;
-	//	short* setflowfield;
 
-	//	list<CObj*>::iterator iter = m_curunitList.begin();
-	//	list<CObj*>::iterator iter_end = m_curunitList.end();
+	int idx = 0;
+	
+	for( ; iter != iter_end; ++iter)
+	{
+		idx = (*iter)->Getcuridx(32);
+		map_unitidxsort.insert(map<int , CObj*>::value_type(idx , (*iter)) );		
+	}
 
-	//	for( ; iter != iter_end; ++iter)
-	//	{
-	//		pobj = ((CUnit*)(*iter));
 
-	//		pobj->SetState(MOVE);
-	//		if(MOVE_AIR == pobj->GetType())//공중이나 건물
-	//			continue;
-	//		
-	//		setflowfield = pobj->getflowfield();
+	map<int , CObj*>::iterator map_iter = map_unitidxsort.begin();
+	CObj* pobj = map_iter->second;
+	m_vUnitcenterpt = D3DXVECTOR2(0,0);
+	m_magicbox_unitcnt = 0;
 
-	//		memcpy(setflowfield , flowfield , sizeof(short)*maxloop);
-			//memcpy(setflowfield , CTileManager::GetInstance()->Get_flowfield_node() , sizeof(short)*maxloop);
+	iter	 = m_curunitList.begin();
+	iter_end = m_curunitList.end();
 
-	//		pobj->make_flowfieldpath(goalidx);
-	//	}
-	//}
+	for( ; iter != iter_end; ++iter) 
+	{
+		if(CMyMath::pos_distance(pobj->GetPos() , (*iter)->GetPos()) < 300*300)
+		{
+			++m_magicbox_unitcnt;
+			m_vUnitcenterpt += (*iter)->GetPos();
+			(*iter)->SetMagicBox(true);
+		}
+		else
+			(*iter)->SetMagicBox(false);
+
+	}
+
+	m_vUnitcenterpt /= float(m_magicbox_unitcnt);
+	m_vGoalPos = CMouseMgr::GetAddScrollvMousePt();
+	m_vGoalIdx = CMyMath::Pos_to_index(m_vGoalPos , 32);
+
+	m_vparallel_travel = m_vGoalPos - m_vUnitcenterpt;
+
+	printf("unit_goal %f , %f\n" , m_vGoalPos.x , m_vGoalPos.y);
+	printf("unit_index %d\n" , m_vGoalIdx);
 }
 
 bool CUnitMgr::GetUnitlistempty(void)
@@ -112,11 +155,27 @@ bool CUnitMgr::GetUnitlistempty(void)
 
 		for( ; iter != iter_end; ++iter)
 		{
-			if(BUILDING == (*iter)->GetKategorie())
+			if(BUILDING == (*iter)->GetCategory())
 				return true;
 		}
 	}
 
 	return false;
+}
+D3DXVECTOR2 CUnitMgr::GetParallel_travel(void)
+{
+	return m_vparallel_travel;
+}
+D3DXVECTOR2 CUnitMgr::GetUnitGoalPos(void)
+{
+	return m_vGoalPos;
+}
+D3DXVECTOR2 CUnitMgr::GetUnitCentterPt(void)
+{
+	return m_vUnitcenterpt;
+}
+int CUnitMgr::GetGoalidx(void)
+{
+	return m_vGoalIdx;
 }
 

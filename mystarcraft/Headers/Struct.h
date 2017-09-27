@@ -197,3 +197,38 @@ typedef struct myline
 		fy2 = _fy2;
 	}
 }MYLINE;
+
+typedef struct tagunitinfo
+{
+	MOVE_TYPE			eMoveType;           /*땅인지 비행인지*/
+	ATTACK_SEARCH_TYPE	eAttackType;     /*땅만공격 하는지 , 공중만 공격하는건지, 아무거나 다하는지*/
+	DAMAGE_TYPE			eDamageType;     /*진동형 노말형 폭발형*/
+	ARMOR_TYPE			eArmorType;
+	STATE				estate; // 상태
+	ORDER				eorder; //받은 명령
+
+	float				fspeed;
+	int					damage;
+	int					hp;
+	int					mp;
+	int					attack_range;
+	int					search_range;
+	int					fog_range;
+
+	tagunitinfo()
+	{
+		eMoveType = MOVE_GROUND;
+		eAttackType = ATTACK_ANYTHING;
+		eDamageType = DAMAGE_NOMAL;
+		eArmorType = ARMOR_MEDIUM;
+		estate = IDLE;
+		eorder = ORDER_NONE;
+		fspeed = 0.f;
+		damage = 0;
+		hp = 1;
+		mp = 0;
+		attack_range = 0;
+		search_range = 0;
+		fog_range = 64;
+	}
+}UNITINFO;

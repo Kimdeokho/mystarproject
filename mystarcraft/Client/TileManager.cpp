@@ -26,9 +26,13 @@ CTileManager::~CTileManager(void)
 }
 void CTileManager::Initialize(void)
 {
+	m_minifog_onidx.reserve(SQ_TILECNTX*SQ_TILECNTX);
+	m_minifog_offidx.reserve(SQ_TILECNTX*SQ_TILECNTX);
+
 	m_heapsort = new CMyHeapSort<FLOW_NODE*>();
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 	D3DXMatrixIdentity(&m_matWorld);
+	D3DXMatrixIdentity(&m_fogmat);
 
 	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
 
@@ -37,13 +41,18 @@ void CTileManager::Initialize(void)
 		for(int j = 0; j < 6; ++j)
 		{
 			D3DXCreateTexture(pdevice , BACKBUFFER_SIZEX, BACKBUFFER_SIZEY, D3DX_DEFAULT, D3DUSAGE_RENDERTARGET
-				,D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_MapTexture[i][j]);
+				,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_MapTexture[i][j]);
 		}
 	}
 
 
-	//m_fogTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Fog" , L"blackfog4096")->pTexture;
-	//m_fogMaskTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Fog" , L"fogmask640")->pTexture;
+	D3DXCreateTexture(pdevice , 128, 128, D3DX_DEFAULT, D3DUSAGE_RENDERTARGET
+		,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_MinimapTexture);
+
+	m_MinifogTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , L"minifogmap")->pTexture;
+
+
+	m_fogtexvec = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
 
 	m_vTileCenter = D3DXVECTOR3(16.f,16.f,0.f);
 	m_TileColor = D3DCOLOR_ARGB(255,255,255,255);	
@@ -160,7 +169,8 @@ void CTileManager::RenderTile(void)
 void CTileManager::RenderFog(void)
 {
 	//여기가 안개 렌더
-	TEXINFO**	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
+	//TEXINFO**	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
+	//const vector<TEXINFO*>*	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
 	int ifogsquence = 1;
 
 	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
@@ -190,7 +200,7 @@ void CTileManager::RenderFog(void)
 				//continue;
 
 			m_pSprite->SetTransform(&m_matWorld);
-			m_pSprite->Draw(ptemp[ifogsquence]->pTexture , NULL , &D3DXVECTOR3(48, 48, 0), NULL
+			m_pSprite->Draw( (*m_fogtexvec)[ifogsquence]->pTexture , NULL , &D3DXVECTOR3(48, 48, 0), NULL
 				,m_fogTile[idx]->fog_color);
 
 			//TCHAR temp[32];
@@ -206,7 +216,8 @@ void CTileManager::RenderFog(void)
 
 void CTileManager::RenderCreep(void)
 {
-	TEXINFO**	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Creep");
+	const vector<TEXINFO*>*	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Creep");
+	//TEXINFO**	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Creep");
 	int icreep_squence = 0;
 
 	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
@@ -341,7 +352,7 @@ void CTileManager::RenderCreep(void)
 				continue;
 
 			m_pSprite->SetTransform(&m_matWorld);
-			m_pSprite->Draw(ptemp[icreep_squence]->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
+			m_pSprite->Draw( (*ptemp)[icreep_squence]->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
 				,D3DCOLOR_ARGB(255,255,255,255));
 		}
 	}
@@ -501,8 +512,10 @@ void CTileManager::SightOffRender(const int& idx)
 		m_fogTile[idx]->bLight = false;
 		m_fogTile[idx]->eSight = FOG_GREY;
 
-		m_fogTile[idx]->fog_color = D3DCOLOR_ARGB(100,0,0,0);
+		m_fogTile[idx]->fog_color = D3DCOLOR_ARGB(40,0,0,0);
 		m_fogTile[idx]->fog_sequence = 1;
+
+		m_minifog_offidx.push_back(idx);
 	}
 }
 void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , MOVE_TYPE etype)
@@ -582,7 +595,61 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& 
 	}
 }
 
+void CTileManager::MinifogUpdate(void)
+{
+	//m_fogmat._11 = 1;
+	//m_fogmat._22 = 1;
+	//m_fogmat._41 = 85;
+	//m_fogmat._42 = 470;
+	//m_pSprite->SetTransform(&m_fogmat);
 
+	//m_pSprite->Draw(m_MinifogTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
+	//	, D3DCOLOR_ARGB(255,255,255,255));
+
+
+	D3DLOCKED_RECT	lrect;
+	LPDIRECT3DSURFACE9	psurface;
+	size_t maxloop;
+
+
+	if(!m_minifog_offidx.empty())
+	{
+		maxloop = m_minifog_offidx.size();
+
+		m_MinifogTexture->GetSurfaceLevel(0 , &psurface);
+		psurface->LockRect(&lrect , NULL , 0);
+		DWORD* pcolor = (DWORD*)lrect.pBits;
+
+		for(size_t i = 0; i < maxloop; ++i)
+		{
+			pcolor[ m_minifog_offidx[i] ] = 0x88000000;
+		}
+		psurface->UnlockRect();
+		psurface->Release();
+
+		m_minifog_offidx.clear();
+	}
+
+	if(!m_minifog_onidx.empty())
+	{
+		maxloop = m_minifog_onidx.size();
+
+		m_MinifogTexture->GetSurfaceLevel(0 , &psurface);
+		psurface->LockRect(&lrect , NULL , 0);
+		DWORD* pcolor = (DWORD*)lrect.pBits;
+
+		for(size_t i = 0; i < maxloop; ++i)
+		{
+			pcolor[ m_minifog_onidx[i] ] = 0x00ffffff;
+		}
+		psurface->UnlockRect();
+		psurface->Release();
+
+		m_minifog_onidx.clear();
+	}
+
+
+}
 void CTileManager::SetFogSquence(int idx , unsigned short sequence)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
@@ -606,6 +673,9 @@ void CTileManager::SetFogLight(int idx , float fdistance , float fradius)
 		return;
 
 	m_fogTile[idx]->fog_color = D3DCOLOR_ARGB(ivalue , 0,0,0 );
+
+	m_minifog_onidx.push_back(idx);
+
 }
 void CTileManager::SetCreepInstall(const int& idx , bool binstall)
 {
@@ -669,6 +739,7 @@ void CTileManager::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
 	pdevice->StretchRect(pBackBuffer , NULL, pSurface ,NULL , D3DTEXF_NONE);
 
 	pBackBuffer->Release();
+	pSurface->Release();
 }
 
 void CTileManager::LoadTileData(HANDLE hFile)
@@ -720,7 +791,9 @@ void CTileManager::LoadTileData(HANDLE hFile)
 	}
 
 
+	
 	ReadyMainMap();
+	ReadyMiniMap();
 }
 void CTileManager::ReadyMainMap(void)
 {
@@ -740,18 +813,26 @@ void CTileManager::ReadyMainMap(void)
 
 
 
+
+	//CDevice::GetInstance()->GetDevice()->Clear(0 , NULL
+	//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
+	//	, D3DCOLOR_XRGB(0,0,255), 1.f , 0);
+
 	for(int Y = 0; Y < 7; ++Y)
 	{
 		for(int X = 0; X < 6; ++X)
 		{
 			istartidx = ((Y*BACKBUFFER_SIZEY)/SQ_TILESIZEY)*SQ_TILECNTX + (X*BACKBUFFER_SIZEX)/SQ_TILESIZEX;
 
+			CDevice::GetInstance()->Render_Begin();
+
 			for(int i = 0; i < 20; ++i)
 			{		
-
+				
 				for(int j = 0; j < 26; ++j)
 				{
-					CDevice::GetInstance()->Render_Begin();
+					//CDevice::GetInstance()->Render_Begin();
+
 					idx = istartidx + i*SQ_TILECNTX + j;
 
 					if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
@@ -784,43 +865,102 @@ void CTileManager::ReadyMainMap(void)
 
 						m_pSprite->Draw(pTexture , NULL , &m_vTileCenter , NULL ,
 							m_TileColor);
-					}
-					CDevice::GetInstance()->Render_End();
-					CopySurface(m_MapTexture[Y][X]);
-
+						
+					}	
+					//CDevice::GetInstance()->Render_End();
+					//CopySurface(m_MapTexture[Y][X]);
 				}
 			}
+
+			CDevice::GetInstance()->Render_End();
+			CopySurface(m_MapTexture[Y][X]);
 		}
 	}
+
+	//CDevice::GetInstance()->GetDevice()->Present(NULL, NULL , NULL , NULL);
 }
-void CTileManager::Release(void)
-{
-	for(int i = 0; i < SQ_TILECNTY*SQ_TILECNTX; ++i)
+void CTileManager::ReadyMiniMap(void)
+{	
+
+	list<TERRAIN_INFO*>::iterator iter;
+	list<TERRAIN_INFO*>::iterator iter_end;
+
+	LPDIRECT3DTEXTURE9 pTexture;
+	BYTE byTerrain_ID = 0;
+	BYTE byGroup_ID = 0;
+	BYTE byGroup_sequence = 0;
+
+	int idx = 0;
+
+	D3DXMATRIX tempmat;
+	D3DXMatrixIdentity(&tempmat);
+
+	//CDevice::GetInstance()->GetDevice()->Clear(0 , NULL
+	//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
+	//	, D3DCOLOR_XRGB(0,0,255), 1.f , 0);
+
+	CDevice::GetInstance()->Render_Begin();
+
+	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
-		list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[i].begin();
-		list<TERRAIN_INFO*>::iterator iter_end = m_terrainInfo_List[i].end();
-		for( ; iter != iter_end; ++iter)
-			Safe_Delete((*iter));
+		
 
-		m_terrainInfo_List[i].clear();
-		Safe_Delete(m_sqTile[i]);
+		for(int j = 0; j < SQ_TILECNTX; ++j)
+		{
+			//CDevice::GetInstance()->Render_Begin();
+
+			idx = i * SQ_TILECNTX + j;
+
+			tempmat._11 = 0.2f;
+			tempmat._22 = 0.15f;
+			tempmat._41 = m_sqTile[idx]->vPos.x * 0.2f;
+			tempmat._42 = m_sqTile[idx]->vPos.y * 0.15f;
+
+
+
+
+			m_pSprite->SetTransform(&tempmat);
+
+			iter = m_terrainInfo_List[idx].begin();
+			iter_end = m_terrainInfo_List[idx].end();
+			for( ; iter != iter_end; ++iter)
+			{
+				byTerrain_ID = (*iter)->byTerrain_ID;
+				byGroup_ID = (*iter)->byGroup_ID;
+				byGroup_sequence = (*iter)->byGroup_sequence;
+
+				if(TERRAIN_DIRT == byTerrain_ID)
+					pTexture = (*m_DirtTex[byGroup_ID])[byGroup_sequence]->pTexture;
+				else if(TERRAIN_HIGHDIRT == byTerrain_ID)
+					pTexture = (*m_HighDirtTex[byGroup_ID])[byGroup_sequence]->pTexture;
+				else if(TERRAIN_WATER == byTerrain_ID)
+					pTexture = (*m_WaterTex[byGroup_ID])[byGroup_sequence]->pTexture;
+				else if(TERRAIN_HILL_R == byTerrain_ID)
+					pTexture = (*m_HillTex[byGroup_ID])[byGroup_sequence]->pTexture;
+				else if(TERRAIN_HILL_L == byTerrain_ID)
+					pTexture = (*m_HillTex[byGroup_ID])[byGroup_sequence]->pTexture;
+
+				m_pSprite->Draw(pTexture , NULL , &D3DXVECTOR3(16, 16 , 0) , NULL ,
+					m_TileColor);
+				
+			}
+			//CDevice::GetInstance()->Render_End();
+
+			//CopySurface(m_MinimapTexture);
+		}
+
 	}
-	m_terrainInfo_List.clear();
 
-	for(int i = 0; i < SQ_TILECNTY*SQ_TILECNTX; ++i)
-	{
-		Safe_Delete(m_fogTile[i]);
-		Safe_Delete(m_creepTile[i]);
-		Safe_Delete(m_flownode[i]);
-	}
+	CDevice::GetInstance()->Render_End();
 
-	vector<list<TERRAIN_INFO*>>().swap(m_terrainInfo_List);
+	CopySurface(m_MinimapTexture);
+	//CDevice::GetInstance()->GetDevice()->Present(NULL, NULL , NULL , NULL);
 
-	//m_LightOff_List.clear();
 
-	Safe_Delete(m_heapsort);
+
+
+
 }
-
 bool CTileManager::GetFogLight(const int& idx)
 {
 	return m_fogTile[idx]->bLight;
@@ -1156,27 +1296,21 @@ void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
 }
 void CTileManager::Flowfield_Pathfinding(void)
 {
-	//D3DXVECTOR2 temp = CMouseMgr::GetvMousePt();
-	//int goalidx = CMyMath::Pos_to_index(temp.x , temp.y);
 
-	//m_flowfield_goalidx = CMouseMgr::GetMousePt_to_idx(32);
-	m_flowfield_goalpos = CMouseMgr::GetvMousePt();
-	m_flowfield_goalidx = CMyMath::Pos_to_index(m_flowfield_goalpos , 32);
-
+	D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+	int			goalidx = CMyMath::Pos_to_index(goalpos , 32);
 
 	for(int i = 0; i < 16384; ++i)
 	{
 		m_flownode[i]->bcheck = false;
-		//m_flowdestidx[i] = -1;
 	}
-	m_flowdestidx[m_flowfield_goalidx] = -1;
+	m_flowdestidx[goalidx] = -1;
 
-	FLOW_NODE* pnode = m_flownode[m_flowfield_goalidx];
+	FLOW_NODE* pnode = m_flownode[goalidx];
 	FLOW_NODE* pushnode = NULL;
 
 	m_heapsort->push_node(pnode);
 	pnode->bcheck = true;
-
 	if(10000 != pnode->iCost)
 		pnode->iCost = 0;
 
@@ -1216,10 +1350,11 @@ void CTileManager::Flowfield_Pathfinding(void)
 			pushnode->idestidx = pnode->index;
 			m_flowdestidx[ m_eight_idx[i] ] = pnode->index;
 
+			//가로 세로 10 , 대각 14
 			if( i <= 4)
-				pushnode->iCost = curcost + 1;
+				pushnode->iCost = curcost + 10;
 			else
-				pushnode->iCost = curcost + 2;
+				pushnode->iCost = curcost + 14;
 
 			if(false == pushnode->bmove)
 				pushnode->iCost += 10000;
@@ -1361,12 +1496,50 @@ short* CTileManager::Get_flowfield_node(void)
 	return m_flowdestidx;
 }
 
-int CTileManager::GetFlowFiled_Goalidx(void)
+void CTileManager::Release(void)
 {
-	return m_flowfield_goalidx;
+	for(int i = 0; i < SQ_TILECNTY*SQ_TILECNTX; ++i)
+	{
+		list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[i].begin();
+		list<TERRAIN_INFO*>::iterator iter_end = m_terrainInfo_List[i].end();
+		for( ; iter != iter_end; ++iter)
+			Safe_Delete((*iter));
+
+		m_terrainInfo_List[i].clear();
+		Safe_Delete(m_sqTile[i]);
+	}
+	m_terrainInfo_List.clear();
+
+	for(int i = 0; i < SQ_TILECNTY*SQ_TILECNTX; ++i)
+	{
+		Safe_Delete(m_fogTile[i]);
+		Safe_Delete(m_creepTile[i]);
+		Safe_Delete(m_flownode[i]);
+	}
+
+	vector<list<TERRAIN_INFO*>>().swap(m_terrainInfo_List);
+
+
+	Safe_Delete(m_heapsort);
+
+	for(int i = 0; i < 7; ++i)
+	{
+		for(int j = 0; j < 6; ++j)
+		{
+			m_MapTexture[i][j]->Release();
+		}
+	}
+	m_MinimapTexture->Release();
 }
 
-D3DXVECTOR2 CTileManager::GetFlowFiled_GoalPos(void)
+LPDIRECT3DTEXTURE9 CTileManager::GetMiniampTexture(void)
 {
-	return m_flowfield_goalpos;
+	return m_MinimapTexture;
 }
+
+LPDIRECT3DTEXTURE9 CTileManager::GetMiniFogmapTexture(void)
+{
+	return m_MinifogTexture;
+}
+
+

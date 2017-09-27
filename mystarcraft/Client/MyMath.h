@@ -9,6 +9,7 @@ public:
 	static D3DXVECTOR2 index_to_Pos(const int& idx ,const int& tilecnt , const int& tilesize);
 
 	static float dgree_to_radian(const float& dgree);
+	static D3DXVECTOR2 dgree_to_dir(const float& dgree);
 	static float radian_to_dgree(const float& rad);
 	static float scala_to_dgree(float& scala);
 	static float idx_distance(const int& idx1 , const int& idx2 , const int& tilecnt, const int& tilesize);

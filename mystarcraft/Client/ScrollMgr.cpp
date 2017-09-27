@@ -10,17 +10,15 @@ CScrollMgr::~CScrollMgr(void)
 {
 }
 
-//bool CScrollMgr::inside_camera(const float& fx , const float& fy)
-//{
-//	/*fx , fy는 스크롤값이 먹여지지 않은 순수 pos값이어야 한다.*/
-//
-//	if(fx < m_fScrollX - 50 || m_fScrollX + CLINETSIZE_X + 50 < fx)
-//		return false;
-//	if(fy < m_fScrollY - 50 || m_fScrollY + CLINETSIZE_Y + 50 < fy)
-//		return false;
-//
-//	return true;
-//}
+bool CScrollMgr::inside_camera(const float& fx , const float& fy)
+{
+	/*fx , fy클라이언트 좌표여야 한다 0~800 , 0~600.*/
+
+	if(fx < 0 || fx > BACKBUFFER_SIZEX || fy < 0 || fy > BACKBUFFER_SIZEY)
+		return false;
+
+	return true;
+}
 void CScrollMgr::update(void)
 {
 	if(0 > m_fScrollX)

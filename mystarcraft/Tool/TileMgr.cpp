@@ -364,12 +364,6 @@ void CTileMgr::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
 
 	ptexturemap->GetSurfaceLevel(0, &pSurface);
 
-	RECT rc;
-	rc.left = 0;
-	rc.right= 1280;
-	rc.top = 0;
-	rc.bottom = 720;
-
 	pdevice->StretchRect(pBackBuffer , NULL, pSurface ,NULL , D3DTEXF_NONE);
 
 	pBackBuffer->Release();

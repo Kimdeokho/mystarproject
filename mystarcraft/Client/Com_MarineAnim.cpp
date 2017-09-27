@@ -3,20 +3,30 @@
 
 #include "TextureMgr.h"
 #include "TimeMgr.h"
+
 CCom_MarineAnim::CCom_MarineAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
 :CCom_Animation(objmat , curtex)
 {
 	m_objname = L"MARINE";
 	m_statkey = L"";
+	//memset(m_statkey , 0 , sizeof(TCHAR)*64);
 	m_tempkey = L"";
-	m_banimplay = false;
-	m_stopanim_time = 0.f;
 	m_attackloop = 0;
 }
 
 CCom_MarineAnim::~CCom_MarineAnim(void)
 {
 }
+
+void CCom_MarineAnim::Initialize(CObj* pobj)
+{
+	SetAnimation(L"IDLE");
+	m_pobj = pobj;
+	m_rotation_speed = 40;
+
+	CCom_Animation::InitTexidx();
+}
+
 void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 {
 	//0 총꺼내기 , 1~2공격 루프3회
@@ -28,16 +38,12 @@ void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 
 	if(m_statkey != statekey)
 	{
-		m_attackloop = 0;
+		if(m_attackloop >= 3)
+			m_attackloop = 0;
+
 		m_statkey = statekey;
-		m_stopanim_time = 0.f;
-		//재생해도 된다
-		m_banimplay = true;
-
 		m_frame.fcurframe = 0;
-
-		//if(statekey == L"ATTACK")
-			//m_statkey = L"ATTACK_READY";
+		//재생해도 된다		
 
 		for(int i = 0; i < DIR_CNT; ++i)
 		{
@@ -49,12 +55,23 @@ void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 
 		if(NULL != m_animtexture[0])
 		{
-			m_frame.umax = m_animtexture[0]->size() - 1;
-			m_frame.fframespeed = (float)m_frame.umax + 1;
+			m_frame.umax = m_animtexture[0]->size();
+			m_frame.fframespeed = (float)m_frame.umax;
 			if(L"ATTACK" == statekey)
-				m_frame.fframespeed *= 2;
+				m_frame.fframespeed *= 8;
 			if(L"MOVE" == statekey)
 				m_frame.fframespeed *= 2;
+		}
+	}
+	else
+	{
+		if( L"ATTACK" == m_statkey /*!lstrcmp(m_statkey , L"ATTACK")*/ )
+		{
+			if(m_attackloop >= 3)
+			{
+				m_attackloop = 0;
+				m_frame.fcurframe = 0;
+			}
 		}
 	}
 
@@ -66,12 +83,6 @@ void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 	 attack_loop = 0;
 	*/
 }
-void CCom_MarineAnim::Initialize(CObj* pobj)
-{
-	SetAnimation(L"IDLE");
-
-	m_pobj = pobj;
-}
 
 void CCom_MarineAnim::Update(void)
 {
@@ -79,26 +90,29 @@ void CCom_MarineAnim::Update(void)
 
 	// ATTACK일경우 무기가 발사준비 완료일때 재생시킨다
 
-	if(L"ATTACK" == m_statkey)
-	{
-		if(m_attackloop >= 3 )
-			return;
-	}
+	if(m_attackloop >= 3 )
+		return;
 
-	if( int(m_frame.fcurframe) > m_frame.umax)
+	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	if( int(m_frame.fcurframe) >= m_frame.umax)
 	{
 
-		if(L"ATTACK" == m_statkey)
+		if( L"ATTACK" == m_statkey)
 			++m_attackloop;
 
 		m_frame.fcurframe = 0;
 	}
-	m_frame.fcurframe += GETTIME*m_frame.fframespeed;	
+		
 
-	const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
+	if(NULL !=  m_animtexture[m_texdiridx] )
+	{
+		const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
 
-	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (*vtemp)[int(m_frame.fcurframe)];
+		if( (int)(m_frame.fcurframe) <= m_frame.umax)
+			m_curtex = (*vtemp)[int(m_frame.fcurframe)];
+	}
+	else
+		m_curtex = NULL;
 
 }
 

@@ -31,3 +31,8 @@ bool CCom_Weapon::GetFire(void)
 {
 	return m_bfire;
 }
+
+void CCom_Weapon::SetAttackDelay(float delay)
+{
+	m_attack_delay = delay;
+}

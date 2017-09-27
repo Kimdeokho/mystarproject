@@ -224,6 +224,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MultiEffTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MultiEffTexture.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MultiTexture.cpp"
 					>
 				</File>
@@ -273,6 +281,14 @@
 				</File>
 				<File
 					RelativePath=".\Astar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ComanderMgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ComanderMgr.h"
 					>
 				</File>
 				<File
@@ -473,14 +489,6 @@
 					<Filter
 						Name="Unit"
 						>
-						<File
-							RelativePath=".\Marine.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\Marine.h"
-							>
-						</File>
 					</Filter>
 				</Filter>
 				<Filter
@@ -529,7 +537,55 @@
 					<Filter
 						Name="Terran"
 						>
+						<File
+							RelativePath=".\BattleCruiser.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\BattleCruiser.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Marine.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Marine.h"
+							>
+						</File>
+						<Filter
+							Name="Tank"
+							>
+							<File
+								RelativePath=".\Tank.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Tank.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Tankbarrel.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Tankbarrel.h"
+								>
+							</File>
+						</Filter>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="Corpse"
+					>
+					<File
+						RelativePath=".\Corpse.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Corpse.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -549,14 +605,6 @@
 				</File>
 				<File
 					RelativePath=".\Com_fog.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_info.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_info.h"
 					>
 				</File>
 				<File
@@ -638,6 +686,38 @@
 						RelativePath=".\Com_MarineAnim.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Com_SiegebarrelAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_SiegebarrelAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_SiegebodyAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_SiegebodyAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TankbarrelAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TankbarrelAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TankbodyAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TankbodyAnim.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Weapon"
@@ -658,7 +738,115 @@
 						RelativePath=".\Com_Wmarine.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Com_WSiege.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WSiege.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WTank.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WTank.h"
+						>
+					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="UI"
+				>
+				<File
+					RelativePath=".\Minimap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Minimap.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_MainInterface.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_MainInterface.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_MiniUnitDisplay.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_MiniUnitDisplay.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Select.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Select.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Skill"
+				>
+				<File
+					RelativePath=".\Skill.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_SP.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_SP.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Effect"
+				>
+				<File
+					RelativePath=".\Effect.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Effect.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GeneraEff.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GeneraEff.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MultiEff.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MultiEff.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

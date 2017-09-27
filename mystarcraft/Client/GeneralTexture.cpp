@@ -13,9 +13,9 @@ CGeneralTexture::~CGeneralTexture(void)
 HRESULT CGeneralTexture::InsertTexture(const wstring& wstrFilePath , const wstring& wstrStateKey /*= L"" */, const int& iCnt /*= 0*/)
 {
 	TCHAR		szFullPath[MAX_PATH] = L"";
-	//m_vecTex.reserve(iCnt);
+	m_vecTex.reserve(iCnt);
 
-	m_vecTex = new TEXINFO*[iCnt];
+	//m_vecTex = new TEXINFO*[iCnt];
 	m_isize = iCnt;
 
 	for(int i = 0; i < iCnt; ++i)
@@ -42,15 +42,15 @@ HRESULT CGeneralTexture::InsertTexture(const wstring& wstrFilePath , const wstri
 			, D3DPOOL_MANAGED
 			, D3DX_DEFAULT
 			, D3DX_DEFAULT
-			, D3DCOLOR_XRGB(0,0,0)/*투명이 되는 D3DCOLOR 의 값 png 비트여야함 */
+			, D3DCOLOR_ARGB(255, 0,0,0)/*투명이 되는 D3DCOLOR 의 값 png 비트여야함 */
 			, &pTexInfo->ImgInfo
 			, NULL
 			, &pTexInfo->pTexture)))
 		{
 			return E_FAIL;
 		}
-		m_vecTex[i] = pTexInfo;
-		//m_vecTex.push_back(pTexInfo);
+		//m_vecTex[i] = pTexInfo;
+		m_vecTex.push_back(pTexInfo);
 	}
 
 	return S_OK;
@@ -63,7 +63,7 @@ void CGeneralTexture::Release(void)
 		m_vecTex[i]->pTexture->Release();
 		Safe_Delete(m_vecTex[i]);
 	}
-	delete[] m_vecTex;
+	m_vecTex.clear();
 	//m_vecTex.clear();
 }
 
@@ -71,7 +71,7 @@ void CGeneralTexture::Release(void)
 //{
 //	return &m_vecTex;
 //}
-TEXINFO** CGeneralTexture::GetGeneralTexture(void)
+const vector<TEXINFO*>* CGeneralTexture::GetGeneralTexture(void)
 {
-	return m_vecTex;
+	return &m_vecTex;
 }

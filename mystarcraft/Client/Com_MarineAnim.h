@@ -6,7 +6,6 @@ class CCom_MarineAnim :
 {
 private:
 	bool	m_banimplay;
-	float	m_stopanim_time;
 	int		m_attackloop;
 	const TCHAR*	m_tempkey;
 public:

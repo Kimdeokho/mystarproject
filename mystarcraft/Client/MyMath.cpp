@@ -91,3 +91,8 @@ bool CMyMath::linecross_check(const MYLINE& line1 , const MYLINE& line2)
 	//else
 	//	return false;
 }
+
+D3DXVECTOR2 CMyMath::dgree_to_dir(const float& dgree)
+{
+	return D3DXVECTOR2( cosf(dgree_to_radian(dgree)) , sinf(dgree_to_radian(dgree)));
+}

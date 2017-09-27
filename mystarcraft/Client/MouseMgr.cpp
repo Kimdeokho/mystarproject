@@ -15,7 +15,7 @@ const int CMouseMgr::GetMousePt_to_idx(const int& tilesize)
 {
 	return CMyMath::Pos_to_index(m_vmousept , tilesize);
 }
-const D3DXVECTOR2& CMouseMgr::GetvMousePt(void)
+const D3DXVECTOR2& CMouseMgr::GetAddScrollvMousePt(void)
 {
 	/*화면 좌표에 스크롤값까지 더한거 범위 0~4096*/
 	GetCursorPos(&m_mousept);
@@ -32,6 +32,18 @@ const POINT& CMouseMgr::GetMousePt(void)
 
 	return m_mousept;
 }
+
+const D3DXVECTOR2& CMouseMgr::GetScreenMousePt(void)
+{
+	GetCursorPos(&m_mousept);
+	ScreenToClient(g_hWnd , &m_mousept);
+
+	m_vmousept.x = float(m_mousept.x);
+	m_vmousept.y = float(m_mousept.y);
+
+	return m_vmousept;
+}
+
 POINT CMouseMgr::m_mousept;
 D3DXVECTOR2 CMouseMgr::m_vmousept;
 //POINT CMouseMgr::GetMousePt(void)
