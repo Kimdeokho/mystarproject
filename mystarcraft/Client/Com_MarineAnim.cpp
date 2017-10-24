@@ -3,6 +3,7 @@
 
 #include "TextureMgr.h"
 #include "TimeMgr.h"
+#include "Obj.h"
 
 CCom_MarineAnim::CCom_MarineAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
 :CCom_Animation(objmat , curtex)
@@ -20,6 +21,8 @@ CCom_MarineAnim::~CCom_MarineAnim(void)
 
 void CCom_MarineAnim::Initialize(CObj* pobj)
 {
+	m_battack_end = true;
+
 	SetAnimation(L"IDLE");
 	m_pobj = pobj;
 	m_rotation_speed = 40;
@@ -29,21 +32,13 @@ void CCom_MarineAnim::Initialize(CObj* pobj)
 
 void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 {
-	//0 총꺼내기 , 1~2공격 루프3회
-
-	/*애니메이션 딜레이가 존재한다
-	예를들어 
-	*/
-
-
 	if(m_statkey != statekey)
 	{
-		if(m_attackloop >= 3)
-			m_attackloop = 0;
+		if(false == m_battack_end)
+			return;
 
 		m_statkey = statekey;
-		m_frame.fcurframe = 0;
-		//재생해도 된다		
+		m_frame.fcurframe = 0;			
 
 		for(int i = 0; i < DIR_CNT; ++i)
 		{
@@ -57,31 +52,12 @@ void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 		{
 			m_frame.umax = m_animtexture[0]->size();
 			m_frame.fframespeed = (float)m_frame.umax;
-			if(L"ATTACK" == statekey)
+			if(L"ATTACK" == m_statkey)
 				m_frame.fframespeed *= 8;
-			if(L"MOVE" == statekey)
+			if(L"MOVE" == m_statkey)
 				m_frame.fframespeed *= 2;
 		}
 	}
-	else
-	{
-		if( L"ATTACK" == m_statkey /*!lstrcmp(m_statkey , L"ATTACK")*/ )
-		{
-			if(m_attackloop >= 3)
-			{
-				m_attackloop = 0;
-				m_frame.fcurframe = 0;
-			}
-		}
-	}
-
-
-	// ATTACK일경우 무기가 발사준비 완료일때 재생시킨다
-
-	//if(무기 발사준비가 완료되면)
-	/*
-	 attack_loop = 0;
-	*/
 }
 
 void CCom_MarineAnim::Update(void)
@@ -90,19 +66,31 @@ void CCom_MarineAnim::Update(void)
 
 	// ATTACK일경우 무기가 발사준비 완료일때 재생시킨다
 
-	if(m_attackloop >= 3 )
-		return;
 
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 	if( int(m_frame.fcurframe) >= m_frame.umax)
 	{
 
 		if( L"ATTACK" == m_statkey)
+		{
 			++m_attackloop;
 
+			if(m_attackloop >= 3)
+			{
+				m_battack_end = true;
+				m_attackloop = 0;
+			}
+		}
 		m_frame.fcurframe = 0;
 	}
-		
+	else
+	{
+		if( L"ATTACK" == m_statkey)
+			m_battack_end = false;
+		else
+			m_battack_end = true;
+	}
+
 
 	if(NULL !=  m_animtexture[m_texdiridx] )
 	{

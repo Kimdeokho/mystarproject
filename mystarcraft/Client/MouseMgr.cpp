@@ -3,9 +3,18 @@
 
 #include "ScrollMgr.h"
 #include "MyMath.h"
+#include "TimeMgr.h"
+#include "KeyMgr.h"
+
+IMPLEMENT_SINGLETON(CMouseMgr)
 
 CMouseMgr::CMouseMgr(void)
 {
+	RECT Clip;
+	GetClientRect(g_hWnd , &Clip);
+	ClientToScreen(g_hWnd ,(LPPOINT)&Clip);
+	ClientToScreen(g_hWnd ,(LPPOINT)(&Clip.right));
+	ClipCursor(&Clip);
 }
 
 CMouseMgr::~CMouseMgr(void)
@@ -44,8 +53,59 @@ const D3DXVECTOR2& CMouseMgr::GetScreenMousePt(void)
 	return m_vmousept;
 }
 
-POINT CMouseMgr::m_mousept;
-D3DXVECTOR2 CMouseMgr::m_vmousept;
+void CMouseMgr::Update(void)
+{
+
+	if(NULL != GetFocus() )
+	{
+		if(false == CKeyMgr::GetInstance()->GetLbdraging())
+		{
+			RECT Clip;
+			GetClientRect(g_hWnd , &Clip);
+			ClientToScreen(g_hWnd ,(LPPOINT)&Clip);
+			ClientToScreen(g_hWnd ,(LPPOINT)(&Clip.right));
+			ClipCursor(&Clip);
+
+			GetCursorPos(&m_mousept);
+			ScreenToClient(g_hWnd , &m_mousept);
+
+			float fspeed = 1500.f;
+			if(m_mousept.x <= 5)
+			{
+				CScrollMgr::m_fScrollX -= GETTIME * fspeed;
+				m_mousept.x = 5;
+			}
+			else if(m_mousept.x >= BACKBUFFER_SIZEX - 5)
+			{
+				CScrollMgr::m_fScrollX += GETTIME * fspeed;
+				m_mousept.x = BACKBUFFER_SIZEX - 5;
+			}
+
+			if( m_mousept.y <= 5)
+			{
+				CScrollMgr::m_fScrollY -= GETTIME * fspeed;
+				m_mousept.y = 5;
+			}
+			else if(m_mousept.y >= BACKBUFFER_SIZEY - 5)
+			{
+				CScrollMgr::m_fScrollY += GETTIME * fspeed;
+				m_mousept.y = BACKBUFFER_SIZEY - 5;
+			}
+		}
+		
+	}
+	else
+	{
+		RECT Clip;
+		GetClientRect(NULL , &Clip);
+		ClientToScreen(NULL ,(LPPOINT)&Clip);
+		ClientToScreen(NULL ,(LPPOINT)(&Clip.right));
+		ClipCursor(&Clip);
+	}
+}
+
+//POINT CMouseMgr::m_mousept;
+//D3DXVECTOR2 CMouseMgr::m_vmousept;
 //POINT CMouseMgr::GetMousePt(void)
 //{
 //	GetCursorPos(&m_mousept);

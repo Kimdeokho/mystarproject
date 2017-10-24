@@ -22,7 +22,7 @@ void CHatchery::Initialize(void)
 	m_irange = 13;
 	m_offset = m_irange >> 1;
 
-	CZerg_Building::Creep_Initialize(false);
+	CZerg_building::Creep_Initialize(false);
 
 	m_sortID = SORT_GROUND;
 }
@@ -30,10 +30,10 @@ void CHatchery::Initialize(void)
 void CHatchery::Update(void)
 {
 
-	CObj::idx_update();
+	//CObj::unit_idx_update();
 
-	CZerg_Building::Creep_expansion();
-	CZerg_Building::Creep_decrase();
+	CZerg_building::Creep_expansion();
+	CZerg_building::Creep_decrase();
 
 
 	//CFontMgr::GetInstance()->Setnumber_combine_Font(L"%d" , 111 , 400 , 300);

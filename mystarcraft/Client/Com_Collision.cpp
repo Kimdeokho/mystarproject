@@ -6,8 +6,10 @@
 #include "Area_Mgr.h"
 #include "TileManager.h"
 #include "Com_Animation.h"
-CCom_Collision::CCom_Collision(D3DXVECTOR2& vpos , MYRECT<float>& rc , const MYRECT<float>& vtx)
-:m_vPos(vpos) , m_rect(rc) , m_vertex(vtx)
+#include "ObjMgr.h"
+
+CCom_Collision::CCom_Collision(D3DXVECTOR2& vpos , MYRECT<float>& rc , const MYRECT<float>& vtx , bool bsearch_collision)
+:m_vPos(vpos) , m_rect(rc) , m_vertex(vtx) , m_bsearch_collision(bsearch_collision)
 {
 }
 
@@ -19,6 +21,7 @@ void CCom_Collision::Initialize(CObj* pobj)
 {
 	m_pobj = pobj;
 
+	m_target_objid = 0;
 	m_search_time = 0.f;
 
 	m_collision_vnormal = D3DXVECTOR2(0,0);
@@ -34,6 +37,8 @@ void CCom_Collision::Initialize(CObj* pobj)
 	m_collision_target = NULL;
 
 	m_com_pathfind = (m_pobj->GetComponent(COM_PATHFINDE));
+
+	
 }
 
 void CCom_Collision::Update(void)
@@ -45,11 +50,10 @@ void CCom_Collision::Update(void)
 	m_rect.bottom = m_vPos.y + m_vertex.bottom;
 
 
-	////충돌여부만 검사하고 충돌한 타겟을 가져온다
-	////타겟을 가져오면 그 타겟과 나자신을 밀어낸다
-	////밀어낼동안엔 충돌여부를 검사하지 않는다
-	////전부 다 밀어내면 충돌 타겟을 NULL로 만든다.
-	////만약 일꾼이 자원을캐는 상태라면 이 검사를 하지 않는다.
+	if(false == m_bsearch_collision)
+		return;
+
+	//충돌되고있을때 ,, 그 해당유닛이 삭제되버리면 힙손상이네!
 
 
 	if(NULL == m_collision_target)
@@ -58,19 +62,22 @@ void CCom_Collision::Update(void)
 
 		if(m_search_time >= 0.2f )
 		{
-			m_collision_target = CArea_Mgr::GetInstance()->Collision_check(m_pobj->Getcuridx(64) , m_pobj );
+			m_collision_target = CArea_Mgr::GetInstance()->Collision_check(m_pobj , m_pobj->Getcuridx(64));
 			if(NULL != m_collision_target)
 			{
 				//printf("충돌! %d \n" , m_obj_id);
-
+				m_target_objid = m_collision_target->GetObjNumber();
 				m_vtargetpos = m_collision_target->GetPos();
 				m_collision_vnormal = m_vtargetpos - m_vPos;
-
 				D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
+
 				if( int(m_collision_vnormal.x) == 0 && int(m_collision_vnormal.y == 0) )
 				{
 					//영벡터일때 임의의 방향벡터를 준다.
-					m_collision_vnormal = OFFSET_DIRVEC;
+					//m_collision_vnormal = OFFSET_DIRVEC;
+
+					m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5) );
+					D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
 				}
 			}
 			else
@@ -82,21 +89,34 @@ void CCom_Collision::Update(void)
 	}
 	else
 	{
+		m_collision_target = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
 		MYRECT<float> temp;
-		if( MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect()) )
+		if(NULL != m_collision_target &&
+			MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect()) )
 		{			
 			//임의
 			TILE** ptilelist = CTileManager::GetInstance()->GetSqTile();
 
 
 			/*타겟과 충돌이 일어나는 중이라면*/
-			if(MOVE_OK == ptilelist[m_pobj->Getcuridx(32)]->byOption)
+			BYTE byop = ptilelist[m_pobj->Getcuridx(32)]->byOption;
+			if(MOVE_OK == byop ||
+				RESOURCE_MINERAL == byop ||
+				RESOURCE_GAS == byop)
 			{
 				m_bcollision = true;
-				//Dir_calculation(-m_collision_vnormal);
+
+				//m_vtargetpos = m_collision_target->GetPos();
+				//m_collision_vnormal = m_vtargetpos - m_vPos;
+
+				//if( int(m_collision_vnormal.x) == 0 && int(m_collision_vnormal.y == 0) )
+				//{
+				//	m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5) );
+				//}
+				//D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
+
 				m_vPos -= GETTIME* (*m_fspeed) *m_collision_vnormal;
 
-				//m_estate = MOVE;
 				m_pobj->Setdir(-m_collision_vnormal);
 				m_pobj->SetState(COLLISION);
 				//충돌중일때 길찾기 멈춰야 할듯..
@@ -118,7 +138,7 @@ void CCom_Collision::Release(void)
 
 }
 
-bool CCom_Collision::GetCollision(void)
+void CCom_Collision::SetCollsearch(bool bcoll_search)
 {
-	return m_bcollision;
+	m_bsearch_collision = bcoll_search;
 }

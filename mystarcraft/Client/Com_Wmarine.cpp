@@ -32,10 +32,13 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 {
 	if(false == m_bfire)
 	{
+		m_pobj->SetState(IDLE);
+		
 		if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
-			m_bfire = true;
 			m_pobj->SetState(ATTACK);
+			m_bfire = true;
+			
 			m_attack_time = 0.f;
 			//총알생성
 			//타겟에게 데미지 ㄱㄱㄱㄱ
@@ -53,11 +56,8 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 	}
 	else
 	{
-		//m_pobj->SetState(IDLE);
-		//if(L"MOVE" == ((CCom_Animation*)m_animation)->GetAnimation())
-		{
-			//((CCom_Animation*)m_animation)->SetAnimation(L"IDLE");
-		}
+		if(MOVE == m_pobj->GetUnitinfo().estate)
+			m_pobj->SetState(IDLE);
 	}
 }
 void CCom_Wmarine::Update(void)

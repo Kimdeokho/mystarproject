@@ -3,7 +3,7 @@
 
 enum LINE_DIR{LINE_LDIR , LINE_RDIR , LINE_END};
 enum UPDOWN_DIR{LINE_UP , LINE_DOWN , UPDOWN_END};
-class CZerg_Building :
+class CZerg_building :
 	public CObj
 {
 protected:
@@ -40,6 +40,6 @@ public:
 	virtual void Render(void);	
 	virtual void Release(void);
 public:
-	CZerg_Building(void);
-	virtual ~CZerg_Building(void);
+	CZerg_building(void);
+	virtual ~CZerg_building(void);
 };

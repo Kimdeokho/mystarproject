@@ -9,6 +9,7 @@ class CKeyMgr
 {
 	DECLARE_SINGLETON(CKeyMgr)
 private:
+	bool	m_TurboKeyPress[MAX_KEY];
 	bool	m_KeyPress[MAX_KEY];
 	bool	m_DbClick_ready[MAX_KEY];
 	bool	m_bKeyUp_ready[MAX_KEY];
@@ -38,6 +39,8 @@ private:
 	int m_nkey;
 
 	bool	m_clickwating[MAX_KEY];
+	bool	m_bwork;
+	bool	m_bdraging;
 public:
 	void TurboKeyDown(const int& nkey);
 	void OnceKeyDown(const int& nkey);
@@ -46,6 +49,7 @@ public:
 	void MouseKeyUp(const int& nkey);
 	void DbClick(const int& nkey);
 	void Update(void);
+	bool GetLbdraging(void);
 public:
 	void Intput_turbokey_reaction(void);
 	void Intput_oncekey_reaction(void);

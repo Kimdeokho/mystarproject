@@ -12,6 +12,9 @@
 #include "UnitMgr.h"
 #include "Effect.h"
 
+#include "MyMath.h"
+
+
 IMPLEMENT_SINGLETON(CObjMgr)
 CObjMgr::CObjMgr(void)
 {
@@ -43,49 +46,15 @@ void CObjMgr::Update(void)
 		}
 	}
 
-
-	for(int i = 0; i < ZB_END; ++i)
+	if(!m_CorpseList.empty())
 	{
-		iter = m_ZBuilding_List[i].begin();
-		iter_end = m_ZBuilding_List[i].end();
-
-		for( ; iter != iter_end; ++iter) 
-		{
-			(*iter)->Update();
-		}
-	}
-
-	for(int i = 0; i < ZU_END; ++i)
-	{
-		iter = m_ZUnit_List[i].begin();
-		iter_end = m_ZUnit_List[i].end();
+		iter = m_CorpseList.begin();
+		iter_end = m_CorpseList.end();
 
 		for( ; iter != iter_end; ++iter)
 		{
 			(*iter)->Update();
-		}
-	}
 
-	for(int i = 0; i < TB_END; ++i)
-	{
-		iter = m_TBuilding_List[i].begin();
-		iter_end = m_TBuilding_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-
-			(*iter)->Update();
-		}
-	}
-
-	for(int i = 0; i < TU_END; ++i)
-	{
-		iter = m_TUnit_List[i].begin();
-		iter_end = m_TUnit_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			(*iter)->Update();
 		}
 	}
 
@@ -121,8 +90,7 @@ void CObjMgr::Destroy_Update(void)
 		{
 			if(true == (*iter)->GetDestroy() )
 			{
-				if( i != OBJ_CORPSE)
-					obj_leave( (*iter)->GetObjID() );
+				obj_leave( (*iter)->GetObjNumber() );
 
 				Safe_Delete(*iter);
 				iter = m_ObjList[i].erase(iter);
@@ -138,100 +106,17 @@ void CObjMgr::Destroy_Update(void)
 			}
 		}
 	}
-
-
-	for(int i = 0; i < ZB_END; ++i)
+	if(!m_CorpseList.empty())
 	{
-		iter = m_ZBuilding_List[i].begin();
-		iter_end = m_ZBuilding_List[i].end();
-
-		for( ; iter != iter_end;)
-		{
-			if(true == (*iter)->GetDestroy() )
-			{
-				obj_leave( (*iter)->GetObjID() );
-				Safe_Delete(*iter);
-				iter = m_ZBuilding_List[i].erase(iter);
-				continue;
-			}
-			else
-			{
-				fy = (*iter)->GetY();
-				sortid = (*iter)->GetsortID();
-				if(true == (*iter)->Be_in_camera()  )
-					m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
-
-				++iter;
-			}
-		}
-	}
-
-	for(int i = 0; i < ZU_END; ++i)
-	{
-		iter = m_ZUnit_List[i].begin();
-		iter_end = m_ZUnit_List[i].end();
-
-		for( ; iter != iter_end; )
-		{		
-
-			if(true == (*iter)->GetDestroy() )
-			{
-				obj_leave( (*iter)->GetObjID() );
-				Safe_Delete(*iter);
-				iter = m_ZUnit_List[i].erase(iter);
-				continue;
-			}
-			else
-			{
-				fy = (*iter)->GetY();
-				sortid = (*iter)->GetsortID();
-				if(true == (*iter)->Be_in_camera()  )
-					m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
-
-				++iter;
-			}
-		}
-	}
-
-	for(int i = 0; i < TB_END; ++i)
-	{
-		iter = m_TBuilding_List[i].begin();
-		iter_end = m_TBuilding_List[i].end();
-
-		for( ; iter != iter_end;)
-		{			
-
-			if(true == (*iter)->GetDestroy() )
-			{
-				obj_leave( (*iter)->GetObjID() );
-				Safe_Delete(*iter);
-				iter = m_TBuilding_List[i].erase(iter);
-				continue;
-			}
-			else
-			{
-				fy = (*iter)->GetY();
-				sortid = (*iter)->GetsortID();
-				if(true == (*iter)->Be_in_camera()  )
-					m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
-
-				++iter;
-			}
-		}
-	}
-
-	for(int i = 0; i < TU_END; ++i)
-	{
-		iter = m_TUnit_List[i].begin();
-		iter_end = m_TUnit_List[i].end();
+		list<CObj*>::iterator iter = m_CorpseList.begin();
+		list<CObj*>::iterator iter_end = m_CorpseList.end();
 
 		for( ; iter != iter_end; )
 		{
 			if(true == (*iter)->GetDestroy() )
 			{
-				obj_leave( (*iter)->GetObjID() );
 				Safe_Delete(*iter);
-				iter = m_TUnit_List[i].erase(iter);
+				iter = m_CorpseList.erase(iter);
 				continue;
 			}
 			else
@@ -351,11 +236,16 @@ void CObjMgr::LoadObj(HANDLE hFile)
 		if(!wcscmp(objname ,L"Mineral"))
 		{
 			pObj = new CMineral;
+			pObj->SetPos(vPos);
+			pObj->Initialize();
 			AddObject(pObj , OBJ_MINERAL);
+			
 		}
 		else if(!wcscmp(objname ,L"Gas"))
 		{
 			pObj = new CGasResource;
+			pObj->SetPos(vPos);
+			pObj->Initialize();
 			AddObject(pObj , OBJ_GAS);
 		}
 		//else if(!wcscmp(objname ,L"Startbase"))
@@ -363,8 +253,7 @@ void CObjMgr::LoadObj(HANDLE hFile)
 		//	pObj = new CStartBase;
 		//	AddObject(pObj , OBJ_STARTBASE);
 		//}
-		pObj->SetPos(vPos.x , vPos.y);
-		pObj->Initialize();
+
 	}
 }
 bool CObjMgr::obj_place(CObj* pobj)
@@ -397,35 +286,19 @@ CObj* CObjMgr::obj_alivecheck(const int& idx)
 }
 void CObjMgr::AddObject(CObj* pObj , OBJID eid)
 {
-	if(OBJ_CORPSE == eid )
+	if(OBJ_FRAGMENT == eid)
+	{
+		pObj->SetObjName(eid);
 		m_ObjList[eid].push_back(pObj);
+	}
 	else
 	{
 		if( true == obj_place(pObj) )
+		{
+			pObj->SetObjName(eid);
 			m_ObjList[eid].push_back(pObj);
+		}
 	}
-}
-void CObjMgr::AddObject(CObj* pObj , ZERG_BUILDING_ID eid)
-{
-	if(true == obj_place(pObj))
-	m_ZBuilding_List[eid].push_back(pObj);
-}
-void CObjMgr::AddObject(CObj* pObj , ZERG_UNIT_ID eid)
-{
-	if(true == obj_place(pObj))
-	m_ZUnit_List[eid].push_back(pObj);
-}
-
-void CObjMgr::AddObject(CObj* pObj , TERRAN_BUILDING_ID eid)
-{
-	if(true == obj_place(pObj))
-	m_TBuilding_List[eid].push_back(pObj);
-}
-
-void CObjMgr::AddObject(CObj* pObj , TERRAN_UNIT_ID eid)
-{
-	if(true == obj_place(pObj))
-	m_TUnit_List[eid].push_back(pObj);
 }
 void CObjMgr::AddSelect_UI(CUI* pui)
 {
@@ -436,13 +309,6 @@ void CObjMgr::AddEffect(CObj* peff)
 	m_Effect_List.push_back(peff);
 }
 
-void CObjMgr::DestroyObj(TERRAN_UNIT_ID eid)
-{
-	CObj* pobj = m_TUnit_List[eid].back();
-	pobj->SetDestroy(true);
-	//Safe_Delete(pobj);
-	//m_TUnit_List[eid].pop_back();
-}
 void CObjMgr::Release()
 {	
 	list<CObj*>::iterator iter;
@@ -462,63 +328,12 @@ void CObjMgr::Release()
 	}
 
 
+	iter = m_CorpseList.begin();
+	iter_end = m_CorpseList.end();
 
-	for(int i = 0; i < ZB_END; ++i)
-	{
-		if(m_ZBuilding_List[i].empty())
-			continue;
-		iter = m_ZBuilding_List[i].begin();
-		iter_end = m_ZBuilding_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			Safe_Delete(*iter);
-		}
-		m_ZBuilding_List[i].clear();
-	}
-
-	for(int i = 0; i < ZU_END; ++i)
-	{
-		if(m_ZUnit_List[i].empty())
-			continue;
-		iter = m_ZUnit_List[i].begin();
-		iter_end = m_ZUnit_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			Safe_Delete(*iter);
-		}
-		m_ZUnit_List[i].clear();
-	}
-
-
-	for(int i = 0; i < TU_END; ++i)
-	{
-		if(m_TUnit_List[i].empty())
-			continue;
-		iter = m_TUnit_List[i].begin();
-		iter_end = m_TUnit_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			Safe_Delete(*iter);
-		}
-		m_TUnit_List[i].clear();
-	}
-
-	for(int i = 0; i < TB_END; ++i)
-	{
-		if(m_TBuilding_List[i].empty())
-			continue;
-		iter = m_TBuilding_List[i].begin();
-		iter_end = m_TBuilding_List[i].end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			Safe_Delete(*iter);
-		}
-		m_TBuilding_List[i].clear();
-	}
+	for( ; iter != iter_end; ++iter)
+		Safe_Delete(*iter);
+	m_CorpseList.clear();
 
 
 	for(int i = 0; i < SORT_END; ++i)
@@ -546,6 +361,45 @@ void CObjMgr::Release()
 		Safe_Delete(*iter_eff);
 
 	m_Effect_List.clear();
+
+
+
+}
+
+void CObjMgr::AddCorpse(CObj* pObj)
+{
+	m_CorpseList.push_back(pObj);
+}
+
+CObj* CObjMgr::GetCoreBuilding(CObj* pself)
+{
+	float fminval = 10000000;
+	CObj* pbuilding = NULL;
+
+	if(!m_ObjList[OBJ_COMMAND].empty())
+	{
+		list<CObj*>::iterator iter = m_ObjList[OBJ_COMMAND].begin();
+		list<CObj*>::iterator iter_end = m_ObjList[OBJ_COMMAND].end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			if(pself->GetTeamNumber() == (*iter)->GetTeamNumber())
+			{
+				if( BUILD == (*iter)->GetUnitinfo().estate)
+					continue;
+
+				float idistance = CMyMath::pos_distance(pself->GetPos() , (*iter)->GetPos() );
+
+				if( fminval > idistance )
+				{
+					fminval= idistance;
+					pbuilding = (*iter);
+				}
+			}
+		}
+	}
+
+	return pbuilding;
 }
 
 

@@ -28,6 +28,7 @@ private: //유닛사이 이동 AStar
 private:
 	PATH_NODE*					m_unitpath_pool;
 	int							m_pathpool_idx;
+	int							m_maxnodecnt;
 private:
 	D3DXVECTOR2				m_vNode_pos;
 	D3DXVECTOR2				m_vStart_pos;
@@ -61,6 +62,7 @@ private:
 	bool					m_bweightG;
 
 	const CObj*					m_ptarget;
+	int						m_targetid;
 public:
 	void Initialize(CObj* pobj);
 	void Init_eightidx(const int& idx);
@@ -69,8 +71,8 @@ public:
 public:
 	//void TerrainPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos);
 	//void TerrainPath_calculation_Update(const D3DXVECTOR2& goalpos);
-	void UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos, const int& stepsize ,const CObj* ptarget, bool weightG);
-	void UnitPath_calculation_Update(const MYRECT<float>& rect , vector<D3DXVECTOR2>& vecpath);
+	void UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos, const int& stepsize , bool weightG);
+	void UnitPath_calculation_Update(const MYRECT<float>& rect , vector<D3DXVECTOR2>& vecpath , const CObj* ptarget);
 	void Path_Render(void);
 	bool Check_CloseList(const D3DXVECTOR2& vpos);
 	bool Check_OpenList(const D3DXVECTOR2& idxpos, PATH_NODE* parentnode);

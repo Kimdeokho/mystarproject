@@ -2,6 +2,8 @@
 #include "FontMgr.h"
 #include "Device.h"
 
+#include "TimeMgr.h"
+
 IMPLEMENT_SINGLETON(CFontMgr)
 CFontMgr::CFontMgr(void)
 {
@@ -92,6 +94,30 @@ void CFontMgr::FontRender(void)
 		}
 		m_vecbatchfont.clear();
 	}
+
+	if(!m_list_noticefont.empty())
+	{
+		list<FONT_INFO>::iterator iter = m_list_noticefont.begin();
+		list<FONT_INFO>::iterator iter_end = m_list_noticefont.end();
+
+		for( ; iter != iter_end; )
+		{
+			(*iter).fnotice_time += GETTIME;
+
+			if( (*iter).fnotice_time > 5.0f)
+			{
+				iter = m_list_noticefont.erase(iter);
+			}
+			else
+			{
+				m_matfont._41 = (*iter).fX - lstrlen((*iter).font)/2*10;
+				m_matfont._42 = (*iter).fY;
+				m_pSprite->SetTransform(&m_matfont);
+				m_pFont->DrawTextW(m_pSprite, (*iter).font , lstrlen((*iter).font) , &rc , DT_NOCLIP , (*iter).font_color );
+				++iter;
+			}
+		}
+	}
 }
 void CFontMgr::Setnumber_combine_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
@@ -170,8 +196,32 @@ void CFontMgr::SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCO
 
 	m_render_fontlist.push_back(ptemp);
 }
+void CFontMgr::SetNoticeFont(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
+{
+	FONT_INFO ptemp;
 
+	ptemp.fX = posX;
+	ptemp.fY = posY;
+	ptemp.font_color = _color;
+
+	lstrcpy(ptemp.font , szfont);
+
+	m_list_noticefont.push_back(ptemp);
+}
+void CFontMgr::SetNoticeFont(const TCHAR* szfont , const int& fontnumber, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
+{
+	FONT_INFO ptemp;
+
+	ptemp.fX = posX;
+	ptemp.fY = posY;
+	ptemp.font_color = _color;
+
+	wsprintf(ptemp.font , szfont , fontnumber);
+
+	m_list_noticefont.push_back(ptemp);
+}
 void CFontMgr::Release(void)
 {
 	m_render_fontlist.clear();
 }
+

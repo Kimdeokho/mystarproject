@@ -26,22 +26,22 @@ protected:
 
 	D3DXMATRIX&					m_objmat;
 
-	int							m_rotation_dir;
 	float						m_frotation_time;
-
+	float						m_rotation_speed;
 	float						m_newdgree;
+	int							m_rotation_dir;
 
 	D3DXVECTOR3					m_newdirvec;
 	D3DXVECTOR3					m_olddirvec;
 	D3DXVECTOR3					m_vout;
 
 	int							m_olddiridx;
-	float						m_rotation_speed;
+	
 
 	bool						m_brotationcomplete;
-
-	bool						m_bsw;
 	bool						m_banim_end;
+	bool						m_battack_sync;
+	bool						m_battack_end;
 public:
 	void DirIdxCalculation(void);
 	void AIR_DirIdxCalculation(void);
@@ -57,6 +57,8 @@ public:
 	bool			GetRotationComplete(void);
 	bool			GetAnimation_end(void);
 	int				GetCurDirIdx(void);
+	bool			GetAttackSync(void);
+	bool			GetAttack_end(void);
 public:
 	//virtual void SetState(void);
 public:

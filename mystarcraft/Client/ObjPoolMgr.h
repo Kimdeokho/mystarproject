@@ -10,8 +10,8 @@ class CObjPoolMgr
 	DECLARE_SINGLETON(CObjPoolMgr)
 private:
 private:
-	boost::object_pool<CDrone>*	m_ZUnitpool[ZU_END];
-	boost::object_pool<CHatchery>*	m_ZBuildingpool[ZB_END];
+	//boost::object_pool<CDrone>*	m_ZUnitpool[ZU_END];
+	//boost::object_pool<CHatchery>*	m_ZBuildingpool[ZB_END];
 
 public:
 	static 	int					m_Obj_Cnt;

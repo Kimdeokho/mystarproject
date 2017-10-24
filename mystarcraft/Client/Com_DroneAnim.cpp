@@ -2,6 +2,7 @@
 #include "Com_DroneAnim.h"
 
 #include "TimeMgr.h"
+#include "TextureMgr.h"
 CCom_DroneAnim::CCom_DroneAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
 : CCom_Animation(objmat , curtex) 
 {
@@ -20,8 +21,7 @@ void CCom_DroneAnim::Initialize(CObj* pobj)
 	SetAnimation(L"IDLE");
 
 	m_pobj = pobj;
-
-		CCom_Animation::InitTexidx();
+	CCom_Animation::InitTexidx();
 }
 
 void CCom_DroneAnim::Update(void)
@@ -49,4 +49,28 @@ void CCom_DroneAnim::Render(void)
 void CCom_DroneAnim::Release(void)
 {
 
+}
+
+void CCom_DroneAnim::SetAnimation(const TCHAR* statekey)
+{
+	if(m_statkey != statekey)/*새로 들어오는 상태가 기존들어오는 상태와 다른상태여야 한다.*/
+	{
+		m_statkey = statekey;
+
+		m_frame.fcurframe = 0;
+
+		for(int i = 0; i < DIR_CNT; ++i)
+		{
+			/* [i]는 방향 , DRONE, MOVE의 사진집합 */
+			m_animtexture[i] = CTextureMgr::GetInstance()->GetZUnitTexture(m_objname , statekey , i);
+			if(NULL == m_animtexture[i])
+				break;
+		}
+
+		if(NULL != m_animtexture[0])
+		{
+			m_frame.umax = m_animtexture[0]->size() - 1;
+			m_frame.fframespeed = (float)m_frame.umax;
+		}
+	}
 }

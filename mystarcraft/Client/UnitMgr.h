@@ -26,12 +26,13 @@ public:
 	D3DXVECTOR2	GetUnitGoalPos(void);
 	D3DXVECTOR2 GetUnitCentterPt(void);
 	int			GetGoalidx(void);
-	void		Calculate_UnitCenterPt(void);
+	void		Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos , CObj* ptarget);
 public:
 	void Initialize(void);
 	void discharge_unit(void);
 	void Intputkey_reaction(const int& nkey);
 	void Intputkey_reaction(const int& firstkey , const int& secondkey);
+	void order_reaction(ORDER eorder);
 	void clear_destroy_unitlist(CObj* pobj);
 public:
 	CUnitMgr(void);

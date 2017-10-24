@@ -11,6 +11,7 @@ public:
 	virtual void Update(void);
 	virtual void Render(void);
 	virtual void Release(void);
+	virtual void SetAnimation(const TCHAR* statekey);
 public:
 	CCom_DroneAnim(D3DXMATRIX& objmat , TEXINFO*& curtex);
 	~CCom_DroneAnim(void);

@@ -9,10 +9,7 @@ private:
 	bool				m_bsiegemode;
 	bool				m_btransform_ready;
 
-	CObj*				m_tankbody;
 	CObj*				m_tankbarrel;
-	CComponent*			m_com_pathfind;
-
 
 public:
 	virtual void Initialize(void);
@@ -21,7 +18,9 @@ public:
 	virtual void Release(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
-	virtual void SetDestroy(bool bdestroy);
+
+	virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
+	virtual void Dead(void);
 public:
 	void barrel_sync(void);
 	bool GetTransformReady(void);

@@ -7,7 +7,7 @@
 #include "ObjMgr.h"
 #include "GeneraEff.h"
 #include "MultiEff.h"
-
+#include "Tankbarrel.h"
 CCom_WTank::CCom_WTank(const int& damage , DAMAGE_TYPE edamagetype)
 {
 	m_damage = damage;
@@ -29,6 +29,18 @@ void CCom_WTank::Initialize(CObj* pobj /*= NULL*/)
 	m_bfire = false;
 
 }
+void CCom_WTank::Update(void)
+{
+	if(m_bfire)
+	{
+		m_attack_time += GETTIME;
+		if(m_attack_time > m_attack_delay) //½ºÆÀ»¡¸é ÀÌ°Ô ÁÙ°ÚÁö
+		{
+			m_attack_time = 0.f;
+			m_bfire = false;
+		}
+	}
+}
 
 void CCom_WTank::fire(CObj*& ptarget)
 {
@@ -47,7 +59,7 @@ void CCom_WTank::fire(CObj*& ptarget)
 
 			peff = new CMultiEff(L"TANKFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() , 7);
 
-			peff->SetPos(m_pobj->GetPos());
+			peff->SetPos(((CTankbarrel*)m_pobj)->GetbarrelPos());
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 			
@@ -57,26 +69,13 @@ void CCom_WTank::fire(CObj*& ptarget)
 	}
 	else
 	{
-		//if(L"MOVE" == ((CCom_Animation*)m_animation)->GetAnimation())
-		{
-			//((CCom_Animation*)m_animation)->SetAnimation(L"IDLE");
-		}
+		if(MOVE == m_pobj->GetUnitinfo().estate)
+			m_pobj->SetState(IDLE);
 	}
 }
 
 
-void CCom_WTank::Update(void)
-{
-	if(m_bfire)
-	{
-		m_attack_time += GETTIME;
-		if(m_attack_time > m_attack_delay) //½ºÆÀ»¡¸é ÀÌ°Ô ÁÙ°ÚÁö
-		{
-			m_attack_time = 0.f;
-			m_bfire = false;
-		}
-	}
-}
+
 
 void CCom_WTank::Render(void)
 {

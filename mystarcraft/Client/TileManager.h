@@ -2,6 +2,12 @@
 
 #include "Include.h"
 
+const int MAP_TEXTURECNTX = 4096/BACKBUFFER_SIZEX + 1;
+const int MAP_TEXTURECNTY = 4096/BACKBUFFER_SIZEY + 1;
+
+const int CULLINGCNTX = BACKBUFFER_SIZEX/SQ_TILESIZEX + 1;
+const int CULLINGCNTY = BACKBUFFER_SIZEY/SQ_TILESIZEY + 2;
+
 template<typename T>class CMyHeapSort;
 class CTileManager
 {
@@ -23,7 +29,7 @@ private:
 private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;
-	LPDIRECT3DTEXTURE9			m_MapTexture[7][6];
+	LPDIRECT3DTEXTURE9			m_MapTexture[MAP_TEXTURECNTY][MAP_TEXTURECNTX];
 	LPDIRECT3DTEXTURE9			m_MinimapTexture;
 	LPDIRECT3DTEXTURE9			m_MinifogTexture;
 
@@ -64,20 +70,20 @@ public:
 	void Initialize(void);
 	void Init_eightidx(const int& idx);
 public:
-	void Flowfield_Pathfinding(void);
+	void Flowfield_Pathfinding(const D3DXVECTOR2& goalpos);
 public:
 	void MinifogUpdate(void);
 public:
-	bool	GetFogLight(const int& idx);
-	BYTE	GetTileOption(const int& idx);
-	bool	GetCreepInstall(const int& idx);
-	bool	GetFogSearch(const int& idx);
-	TILE**	GetSqTile(void);
-	CREEP_INFO**	GetCreepTile(void);
-	void	GetFlowfield_Path(const int& idx , vector<int>& path);
-	short*   Get_flowfield_node(void);
-	LPDIRECT3DTEXTURE9 GetMiniampTexture(void);
-	LPDIRECT3DTEXTURE9 GetMiniFogmapTexture(void);
+	FOGSIGHT_OPTION		GetFogSightOp(const int& idx);
+	bool				GetFogLight(const int& idx);
+	BYTE				GetTileOption(const int& idx);
+	bool				GetCreepInstall(const int& idx);
+	TILE**				GetSqTile(void);
+	CREEP_INFO**		GetCreepTile(void);
+	void				GetFlowfield_Path(const int& idx , vector<int>& path);
+	short*				Get_flowfield_node(void);
+	LPDIRECT3DTEXTURE9	GetMiniampTexture(void);
+	LPDIRECT3DTEXTURE9	GetMiniFogmapTexture(void);
 	//int				GetFlowFiled_Goalidx(void);
 	//D3DXVECTOR2		GetFlowFiled_GoalPos(void);
 public:
@@ -87,7 +93,6 @@ public:
 	void SetCreepInstall(const int& idx , bool binstall);
 
 	void SetFogoverlap_cnt(const int& idx);
-	void SetFogSearch(const int& idx,bool bsearch);
 public:
 	bool CheckFogFloor(int myidx , int destidx);
 	bool CheckCreepFloor(int myidx , int destidx);

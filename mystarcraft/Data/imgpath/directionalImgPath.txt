@@ -9,3 +9,6 @@ TERRAN|UNIT|TANKBODY|MOVE|27|..\Texture\Multi\Terran\Unit\tank\tankbody\move\tan
 TERRAN|UNIT|TANKBARREL|IDLE|9|..\Texture\Multi\Terran\Unit\tank\tankbarrel\idle\tankbarrel_idle%d.png
 TERRAN|UNIT|SIEGEBODY|IDLE|1|..\Texture\Multi\Terran\Unit\tank\siegebody\siegebody_idle%d.png
 TERRAN|UNIT|SIEGEBARREL|IDLE|9|..\Texture\Multi\Terran\Unit\tank\siegebarrel\siegebarrel_idle%d.png
+TERRAN|UNIT|SCV|IDLE|9|..\Texture\Multi\Terran\Unit\scv\scv_idle\scv_idle%d.png
+TERRAN|UNIT|SCV|MOVE|9|..\Texture\Multi\Terran\Unit\scv\scv_move\scv_move%d.png
+TERRAN|UNIT|SCV|ATTACK|27|..\Texture\Multi\Terran\Unit\scv\scv_attack\scv_attack%d.png

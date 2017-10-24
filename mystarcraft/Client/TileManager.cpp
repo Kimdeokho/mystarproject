@@ -14,8 +14,8 @@ IMPLEMENT_SINGLETON(CTileManager)
 
 CTileManager::CTileManager(void)
 {
-	for(int i = 0; i < 7; ++i)
-		for(int j = 0; j < 6; ++j)
+	for(int i = 0; i < MAP_TEXTURECNTY; ++i)
+		for(int j = 0; j < MAP_TEXTURECNTX; ++j)
 			m_MapTexture[i][j] = NULL;
 ;
 }
@@ -36,9 +36,9 @@ void CTileManager::Initialize(void)
 
 	LPDIRECT3DDEVICE9 pdevice = CDevice::GetInstance()->GetDevice();
 
-	for(int i = 0; i < 7; ++i)
+	for(int i = 0; i < MAP_TEXTURECNTY; ++i)
 	{
-		for(int j = 0; j < 6; ++j)
+		for(int j = 0; j < MAP_TEXTURECNTX; ++j)
 		{
 			D3DXCreateTexture(pdevice , BACKBUFFER_SIZEX, BACKBUFFER_SIZEY, D3DX_DEFAULT, D3DUSAGE_RENDERTARGET
 				,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_MapTexture[i][j]);
@@ -114,30 +114,30 @@ void CTileManager::RenderTile(void)
 
 
 	/*타일 옵션 디버그 확인용*/
-	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
-	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
-	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
-	int idx;
-	for(int i = 0; i < 20; ++i)
-	{
-		for(int j = 0; j < 26; ++j)
-		{
-			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
-			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
-				continue;
+	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+	//int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
+	//int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
+	//int idx;
+	//for(int i = 0; i < CULLINGCNTY; ++i)
+	//{
+	//	for(int j = 0; j < CULLINGCNTX; ++j)
+	//	{
+	//		idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
+	//		if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
+	//			continue;
 
-			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
-			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+	//		m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
+	//		m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
 
-			if(MOVE_OK == m_sqTile[idx]->byOption)
-				continue;
+	//		if(MOVE_OK == m_sqTile[idx]->byOption)
+	//			continue;
 
 
-			m_pSprite->SetTransform(&m_matWorld);
-			m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
-				,D3DCOLOR_ARGB(255,0,0,0));
-		}
-	}
+	//		m_pSprite->SetTransform(&m_matWorld);
+	//		m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
+	//			,D3DCOLOR_ARGB(255,0,0,0));
+	//	}
+	//}
 
 
 	//CreepAlgorithm();
@@ -180,9 +180,9 @@ void CTileManager::RenderFog(void)
 
 	int fCenterX = 0;
 	int fCenterY = 0;
-	for(int i = 0; i < 20; ++i)
+	for(int i = 0; i < CULLINGCNTY; ++i)
 	{
-		for(int j = 0; j < 26; ++j)
+		for(int j = 0; j < CULLINGCNTX; ++j)
 		{
 			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
 			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
@@ -230,16 +230,16 @@ void CTileManager::RenderCreep(void)
 
 	CREEP_INFO*	pCreep_temp = NULL;
 
-	for(int i = 0; i < 20; ++i)
+	for(int i = 0; i < CULLINGCNTY; ++i)
 	{
-		for(int j = 0; j < 26; ++j)
+		for(int j = 0; j < CULLINGCNTX; ++j)
 		{
 			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
 			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
 				continue;
 
-			if(FOG_BLACK == m_fogTile[idx]->eSight)
-				continue;
+			//if(FOG_BLACK == m_fogTile[idx]->eSight) //이게 뜬금없이 왜있지??
+			//	continue;
 
 			if(false == m_creepTile[idx]->bcreep_install)
 				continue;
@@ -522,16 +522,10 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& 
 {
 	//range는 가급적 홀수
 
-	//int fradius = irange/2*32;
+	//int fradius = irange/2*32; irange는 픽셀
 	int fradius = (irange/2);
 
-	int half_range = fradius / SQ_TILESIZEX; //irange/2;
-
-	int LUvtx_idx = idx - SQ_TILECNTX*half_range - half_range;
-	int RUvtx_idx = idx - SQ_TILECNTX*half_range + half_range;
-	int LDvtx_idx = idx + SQ_TILECNTX*half_range - half_range;
-	int RDvtx_idx = idx + SQ_TILECNTX*half_range + half_range;
-
+	int half_range = fradius / SQ_TILESIZEX; //halfrange는 타일갯수차이
 
 	int startIdx = idx;
 	int destidx = 0;
@@ -546,29 +540,39 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& 
 	}
 
 
-	if( idx % SQ_TILECNTX - half_range < 0)
+	int LUvtx_idx;// = idx - SQ_TILECNTX*half_range - half_range;
+	int RUvtx_idx;// = idx - SQ_TILECNTX*half_range + half_range;
+	int LDvtx_idx;// = idx + SQ_TILECNTX*half_range - half_range;
+	int RDvtx_idx;// = idx + SQ_TILECNTX*half_range + half_range;
+
+
+	int topidx = (idx - half_range*SQ_TILECNTX)/SQ_TILECNTX;
+	int bottomidx = (idx + half_range*SQ_TILECNTX)/SQ_TILECNTX;
+	int leftidx = (idx - half_range)%SQ_TILECNTX;
+	int rightidx = (idx + half_range)%SQ_TILECNTX;
+
+	if( idx / SQ_TILECNTX <= half_range) //인덱스가 위쪽을 초과할때
 	{
-		LUvtx_idx = LUvtx_idx - (idx % SQ_TILECNTX - half_range);
-		LDvtx_idx = LDvtx_idx - (idx % SQ_TILECNTX - half_range);
+		topidx = (idx -  (idx / SQ_TILECNTX) * SQ_TILECNTX)/ SQ_TILECNTX; //위쪽끝으로 붙인다
+	}
+	if( SQ_TILECNTX - idx / SQ_TILECNTX <= half_range ) //아래를 초과할때
+	{
+		bottomidx = (idx + (SQ_TILECNTX - 1 - (idx / SQ_TILECNTX)) * SQ_TILECNTX) / SQ_TILECNTX;
+	}
+	if( idx % SQ_TILECNTX <= half_range) //인덱스가 왼쪽을 넘어갈때
+	{
+		leftidx = (idx - (idx % SQ_TILECNTX)) % SQ_TILECNTX;
+	}
+	if( SQ_TILECNTX - (idx % SQ_TILECNTX) <= half_range)//인덱스가 오른쪽을 넘어갈때
+	{
+		rightidx = (idx + ( SQ_TILECNTX - 1 - (idx % SQ_TILECNTX) ) ) % SQ_TILECNTX;
 	}
 
-	if( idx % SQ_TILECNTX + half_range >= SQ_TILECNTX)
-	{
-		RUvtx_idx -= RUvtx_idx % SQ_TILECNTX + 1;
-		RDvtx_idx -= RDvtx_idx % SQ_TILECNTX + 1;
-	}
+	LUvtx_idx = topidx * SQ_TILECNTX + leftidx;
+	LDvtx_idx = bottomidx * SQ_TILECNTX + leftidx;
+	RUvtx_idx = topidx * SQ_TILECNTX + rightidx;
+	RDvtx_idx = bottomidx * SQ_TILECNTX + rightidx;
 
-	if( LUvtx_idx < 0)
-		LUvtx_idx += abs(LUvtx_idx - SQ_TILECNTX)/SQ_TILECNTX * SQ_TILECNTX;
-
-	if( RUvtx_idx < 0 )
-		RUvtx_idx += abs(RUvtx_idx - SQ_TILECNTX)/SQ_TILECNTX * SQ_TILECNTX;
-
-	if( idx + half_range*SQ_TILECNTX >= SQ_TILECNTX*SQ_TILECNTY)
-	{
-		LDvtx_idx -= (LDvtx_idx/SQ_TILECNTX - SQ_TILECNTX + 1)*SQ_TILECNTX;
-		RDvtx_idx -= (RDvtx_idx/SQ_TILECNTX - SQ_TILECNTX + 1)*SQ_TILECNTX;
-	}
 
 	for(int j = LUvtx_idx; j <= RUvtx_idx; ++j) //윗줄 
 	{
@@ -725,6 +729,7 @@ BYTE CTileManager::GetTileOption(const int& idx)
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
 		return -1;
 
+	//enum TILE_OPTION값 참조
 	return m_sqTile[idx]->byOption;
 }
 void CTileManager::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
@@ -762,6 +767,7 @@ void CTileManager::LoadTileData(HANDLE hFile)
 		ReadFile(hFile, tempTile, sizeof(TILE), &dwbyte, NULL);
 
 		m_sqTile[i] = tempTile;
+
 	}
 
 	for(int i = 0; i < mapsize; ++i)
@@ -811,25 +817,22 @@ void CTileManager::ReadyMainMap(void)
 	int rowidx = 0;
 	int colidx = 0;
 
-
-
-
 	//CDevice::GetInstance()->GetDevice()->Clear(0 , NULL
 	//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
 	//	, D3DCOLOR_XRGB(0,0,255), 1.f , 0);
 
-	for(int Y = 0; Y < 7; ++Y)
+	for(int Y = 0; Y < MAP_TEXTURECNTY; ++Y)
 	{
-		for(int X = 0; X < 6; ++X)
+		for(int X = 0; X < MAP_TEXTURECNTX; ++X)
 		{
 			istartidx = ((Y*BACKBUFFER_SIZEY)/SQ_TILESIZEY)*SQ_TILECNTX + (X*BACKBUFFER_SIZEX)/SQ_TILESIZEX;
 
 			CDevice::GetInstance()->Render_Begin();
 
-			for(int i = 0; i < 20; ++i)
+			for(int i = 0; i < CULLINGCNTY; ++i)
 			{		
 				
-				for(int j = 0; j < 26; ++j)
+				for(int j = 0; j < CULLINGCNTX; ++j)
 				{
 					//CDevice::GetInstance()->Render_Begin();
 
@@ -956,16 +959,15 @@ void CTileManager::ReadyMiniMap(void)
 	CopySurface(m_MinimapTexture);
 	//CDevice::GetInstance()->GetDevice()->Present(NULL, NULL , NULL , NULL);
 
-
-
-
-
 }
 bool CTileManager::GetFogLight(const int& idx)
 {
 	return m_fogTile[idx]->bLight;
 }
-
+FOGSIGHT_OPTION CTileManager::GetFogSightOp(const int& idx)
+{
+	return m_fogTile[idx]->eSight;
+}
 bool CTileManager::GetCreepInstall(const int& idx)
 {
 	return m_creepTile[idx]->bcreep_install;
@@ -988,16 +990,6 @@ void CTileManager::SetFogoverlap_cnt(const int& idx)
 
 }
 
-void CTileManager::SetFogSearch(const int& idx, bool bsearch)
-{
-	//지워도 될듯
-	m_fogTile[idx]->bsearch = bsearch;
-}
-bool CTileManager::GetFogSearch(const int& idx)
-{
-	//지워도 될듯
-	return m_fogTile[idx]->bsearch;
-}
 void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype)
 {
 	int iWidth = int(vDest.x - vStart.x);
@@ -1141,7 +1133,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 					}
 					if(ishade_range >= 0.8f)
 					{
-						SetFogSquence(idx , 0);
+						SetFogSquence(idx , 1);
 						SetFogLight(idx , X + Y , float(fRadius*fRadius));
 					}
 					else
@@ -1294,10 +1286,10 @@ void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
 
 	}	
 }
-void CTileManager::Flowfield_Pathfinding(void)
+void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 {
 
-	D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+	//D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 	int			goalidx = CMyMath::Pos_to_index(goalpos , 32);
 
 	for(int i = 0; i < 16384; ++i)
@@ -1375,9 +1367,9 @@ void CTileManager::Render_Flowfield(void)
 	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
 	int idx = 0;
 
-	for(int i = 0; i < 20; ++i)
+	for(int i = 0; i < CULLINGCNTY; ++i)
 	{
-		for(int j = 0; j < 26; ++j)
+		for(int j = 0; j < CULLINGCNTX; ++j)
 		{
 			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
 
@@ -1522,9 +1514,9 @@ void CTileManager::Release(void)
 
 	Safe_Delete(m_heapsort);
 
-	for(int i = 0; i < 7; ++i)
+	for(int i = 0; i < MAP_TEXTURECNTY; ++i)
 	{
-		for(int j = 0; j < 6; ++j)
+		for(int j = 0; j < MAP_TEXTURECNTX; ++j)
 		{
 			m_MapTexture[i][j]->Release();
 		}
@@ -1541,5 +1533,6 @@ LPDIRECT3DTEXTURE9 CTileManager::GetMiniFogmapTexture(void)
 {
 	return m_MinifogTexture;
 }
+
 
 

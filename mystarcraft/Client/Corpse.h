@@ -11,7 +11,6 @@ private:
 	const TEXINFO*	m_curtex;
 	const TCHAR*	m_texname;
 	const TCHAR*	m_wreckage_name;
-	float			m_duration;
 
 	bool			m_bwreckage;
 public:

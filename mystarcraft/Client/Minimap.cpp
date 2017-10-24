@@ -25,8 +25,11 @@ void CMinimap::Initialize(void)
 	m_MinimapTexture = CTileManager::GetInstance()->GetMiniampTexture();
 	m_MinifogTexture = CTileManager::GetInstance()->GetMiniFogmapTexture();
 	
-	m_matworld._41 = 85;
-	m_matworld._42 = 470;
+	m_vweight.x = (BACKBUFFER_SIZEX - 640)/2 + 5;
+	m_vweight.y = BACKBUFFER_SIZEY - 130;
+
+	m_matworld._41 = m_vweight.x;  //85 , 5;
+	m_matworld._42 = m_vweight.y; //470 , 350;
 
 	m_rect.left = m_matworld._41;
 	m_rect.top = m_matworld._42;
@@ -56,12 +59,6 @@ void CMinimap::Update(void)
 
 void CMinimap::Render(void)
 {
-
-	m_matworld._11 = 1.f;
-	m_matworld._22 = 1.f;
-
-	m_matworld._41 = 85;//85 , 5;
-	m_matworld._42 = 470;//470 , 350;
 
 	m_pSprite->SetTransform(&m_matworld);
 	m_pSprite->Draw(m_MinimapTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
@@ -101,7 +98,6 @@ void CMinimap::Render(void)
 	cam_rect.bottom = (CScrollMgr::m_fScrollY + BACKBUFFER_SIZEY) * 0.03125f + m_matworld._42;
 	CLineMgr::GetInstance()->minicambox_render(cam_rect);
 
-	CLineMgr::GetInstance()->minicambox_render(m_rect);
 }
 
 void CMinimap::Release(void)
@@ -112,4 +108,47 @@ void CMinimap::Release(void)
 void CMinimap::Setminiunit(CUI* pui)
 {
 	m_miniunit_display.push_back(pui);
+}
+
+void CMinimap::SetMinimapCamPos(const D3DXVECTOR2& vmousepos)
+{
+	D3DXVECTOR2 vpt = vmousepos;
+	if(true == MyPtInrect(vmousepos , &m_rect))
+	{
+		vpt.x -= m_vweight.x;
+		vpt.y -= m_vweight.y;
+
+		vpt.x *= 32;
+		vpt.y *= 32;
+
+		vpt.x = vpt.x - BACKBUFFER_SIZEX/2;
+		vpt.y = vpt.y - BACKBUFFER_SIZEY/2;
+
+		if(0 > vpt.x)
+			vpt.x = 0;
+		else if(4096 - BACKBUFFER_SIZEX <= vpt.x)
+			vpt.x = 4096 - BACKBUFFER_SIZEX;
+
+		if(0 > vpt.y)
+			vpt.y = 0;
+		else if(4096 - BACKBUFFER_SIZEY <= vpt.y)
+			vpt.y = 4096 - BACKBUFFER_SIZEY;
+
+		CScrollMgr::m_fScrollX = vpt.x;
+		CScrollMgr::m_fScrollY = vpt.y;
+	}
+}
+void CMinimap::Minimappos_to_screen(D3DXVECTOR2& vmousept)
+{
+
+	//if(true == MyPtInrect(vpt , &m_rect))
+	{
+
+		vmousept.x -= m_vweight.x; //vweight ¹Ì´Ï¸Ê À§Ä¡
+		vmousept.y -= m_vweight.y;
+
+		vmousept.x *= 32;
+		vmousept.y *= 32;
+	}
+	
 }

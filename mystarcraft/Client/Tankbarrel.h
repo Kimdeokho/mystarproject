@@ -7,10 +7,10 @@ class CTankbarrel :
 {
 private:
 	CObj*	m_tankbody;
-	CComponent*	m_com_targetsearch;
 	CComponent* m_com_weapon;
 	bool	m_bsiegemode;
 	bool	m_btransform_ready;
+	D3DXVECTOR2	m_vbarrelpos;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
@@ -22,6 +22,8 @@ public:
 	void	SetTransformReady(bool btransform);
 	void	TransformSiegebarrel(void);
 	void	TransformTankbarrel(void);
+	void    SetbarrelPos(const D3DXVECTOR2& vpos , const D3DXVECTOR2& vbarrelpos);
+	const D3DXVECTOR2&	GetbarrelPos(void);
 public:
 	CTankbarrel(void);
 	CTankbarrel(CObj* tankbody);

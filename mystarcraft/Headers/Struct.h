@@ -98,12 +98,14 @@ struct MYRECT
 
 typedef struct fontinfo
 {
+	float fnotice_time;
 	float fX;
 	float fY;
 	D3DCOLOR font_color;
 	TCHAR font[260];
 	fontinfo()
 	{
+		fnotice_time = 0.f;
 		fX = 0.f;
 		fY = 0.f;
 		font_color = D3DCOLOR_ARGB(255,0,255,0);
@@ -207,8 +209,11 @@ typedef struct tagunitinfo
 	STATE				estate; // 상태
 	ORDER				eorder; //받은 명령
 
+	float				fbuildtime;
 	float				fspeed;
 	int					damage;
+	int					maxhp;
+	int					maxmp;
 	int					hp;
 	int					mp;
 	int					attack_range;
@@ -224,11 +229,29 @@ typedef struct tagunitinfo
 		estate = IDLE;
 		eorder = ORDER_NONE;
 		fspeed = 0.f;
+		fbuildtime = 0.f;
 		damage = 0;
-		hp = 1;
+		hp = 10000;
 		mp = 0;
 		attack_range = 0;
-		search_range = 0;
+		search_range = 0;		
 		fog_range = 64;
 	}
 }UNITINFO;
+
+typedef struct tag_preivew
+{
+	const TCHAR* objname;
+	D3DXVECTOR2	 vpos;
+	D3DXVECTOR2	 vcenter_pos;
+	BUILD_TECH	 ebuild;
+	int			 icol;
+	int			 irow;
+	tag_preivew()
+	{
+		icol = 0;
+		irow = 0;
+		ebuild = BUILD_NONE;
+		objname = NULL;
+	}
+}PREVIEW_INFO;

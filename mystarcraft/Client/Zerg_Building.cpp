@@ -7,18 +7,18 @@
 #include "TimeMgr.h"
 #include "MyMath.h"
 #include "ScrollMgr.h"
-CZerg_Building::CZerg_Building(void)
+CZerg_building::CZerg_building(void)
 {
 }
 
-CZerg_Building::~CZerg_Building(void)
+CZerg_building::~CZerg_building(void)
 {
 }
 
-void CZerg_Building::Initialize(void)
+void CZerg_building::Initialize(void)
 {
 }
-void CZerg_Building::Creep_Initialize(bool bcomplete)
+void CZerg_building::Creep_Initialize(bool bcomplete)
 {
 	m_creepoff_timer = 0.f;
 	m_creeptimer = 0.f;
@@ -210,22 +210,22 @@ void CZerg_Building::Creep_Initialize(bool bcomplete)
 
 }
 
-void CZerg_Building::Update(void)
+void CZerg_building::Update(void)
 {
 
 }
 
-void CZerg_Building::Render(void)
+void CZerg_building::Render(void)
 {
 
 }
 
-void CZerg_Building::Release(void)
+void CZerg_building::Release(void)
 {
 
 }
 
-void CZerg_Building::Creep_expansion(void)
+void CZerg_building::Creep_expansion(void)
 {
 	if(true == m_bcreep_complete || true == m_bdestroy)
 		return;
@@ -254,7 +254,7 @@ void CZerg_Building::Creep_expansion(void)
 	if(m_creep_list.empty())
 		m_bcreep_complete = true;
 }
-void CZerg_Building::Creep_decrase(void)
+void CZerg_building::Creep_decrase(void)
 {
 	if(m_creepoff_list.empty() || false == m_bdestroy)
 		return;
@@ -273,7 +273,7 @@ void CZerg_Building::Creep_decrase(void)
 		CTileManager::GetInstance()->Creep_decrease_autotile(idx);
 	}
 }
-void CZerg_Building::SetDestroy(void)
+void CZerg_building::SetDestroy(void)
 {
 	m_bdestroy = true;
 }

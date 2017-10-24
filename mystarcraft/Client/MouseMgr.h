@@ -3,14 +3,17 @@
 #include "Include.h"
 class CMouseMgr
 {
+	DECLARE_SINGLETON(CMouseMgr)
 private:
-	static POINT m_mousept;
-	static D3DXVECTOR2 m_vmousept;
+	POINT m_mousept;
+	D3DXVECTOR2 m_vmousept;
 public:
-	static const POINT& GetMousePt(void);
-	static const D3DXVECTOR2& GetAddScrollvMousePt(void);
-	static const D3DXVECTOR2& GetScreenMousePt(void);
-	static const int GetMousePt_to_idx(const int& tilesize);
+	void Update(void);
+public:
+	 const POINT& GetMousePt(void);
+	 const D3DXVECTOR2& GetAddScrollvMousePt(void);
+	 const D3DXVECTOR2& GetScreenMousePt(void);
+	 const int GetMousePt_to_idx(const int& tilesize);
 public:
 	CMouseMgr(void);
 	~CMouseMgr(void);

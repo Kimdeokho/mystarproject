@@ -15,11 +15,17 @@
 #include "UnitMgr.h"
 #include "Marine.h"
 #include "Tank.h"
+#include "SCV.h"
+#include "Comandcenter.h"
+#include "T_gas.h"
+
+#include "Area_Mgr.h"
 
 #include "ComanderMgr.h"
 IMPLEMENT_SINGLETON(CKeyMgr)
 CKeyMgr::CKeyMgr(void)
 {
+	memset(m_TurboKeyPress , 0 , sizeof(bool)*MAX_KEY);
 	memset(m_KeyPress , 0 , sizeof(bool)*MAX_KEY);
 	memset(m_DbClick_ready , 0 , sizeof(bool)*MAX_KEY);
 	memset(m_clickCnt , 0 , sizeof(m_clickCnt));
@@ -28,7 +34,8 @@ CKeyMgr::CKeyMgr(void)
 
 	m_bCombine = false;
 	m_bDbClick_ready = false;
-	
+	m_bwork = false;
+	m_bdraging = false;
 
 	memset(&m_downpt , 0 , sizeof(POINT));
 	memset(&m_curpt , 0 , sizeof(POINT));
@@ -53,6 +60,8 @@ CKeyMgr::CKeyMgr(void)
 
 
 	memset(m_clickwating , 0 , sizeof(m_clickwating));
+
+	
 }
 
 CKeyMgr::~CKeyMgr(void)
@@ -66,16 +75,13 @@ void CKeyMgr::TurboKeyDown(const int& nkey)
 
 	if(GetAsyncKeyState(nkey) & 0x8000)
 	{
-		m_KeyPress[nkey] = true;
-		//여기에 nkey를 현재선택된 오브젝트에 보내서 메세지 반응하게한다.
+		m_TurboKeyPress[nkey] = true;
 
 		m_bTurboKeyDown_complete[nkey] = true;
-		//플레이어 입장에서 입력한것
-		//Intputkey_reaction(nkey);
 	}
 	else
 	{
-		m_KeyPress[nkey] = false;
+		m_TurboKeyPress[nkey] = false;
 		m_bTurboKeyDown_complete[nkey] = false;
 	}
 
@@ -174,21 +180,22 @@ void CKeyMgr::MouseOnceKeyDown(const int& nkey)
 			++m_clickCnt[nkey];
 
 			m_bOnceKeyDown_complete[nkey] = true;
-
 			
 			//첫번째 키다운한 위치 저장
-			m_downpt.x = float(CMouseMgr::GetMousePt().x);
-			m_downpt.y = float(CMouseMgr::GetMousePt().y);
+			m_downpt = CMouseMgr::GetInstance()->GetScreenMousePt();
 		}
 		else
 		{
 			//지속적으로 엔드포인트 갱신
-			m_curpt.x = float(CMouseMgr::GetMousePt().x);
-			m_curpt.y = float(CMouseMgr::GetMousePt().y);
+
+			m_curpt = CMouseMgr::GetInstance()->GetScreenMousePt();
 
 			///*드래그 이미지에 관한 함수들이다.*/
-			CLineMgr::GetInstance()->SetRectPoint(m_downpt , m_curpt);
-			CLineMgr::GetInstance()->SetRenderSwitch(true);
+			//if(false == CComanderMgr::GetInstance()->intersect_minimap_mousept(m_downpt))
+			{
+				CLineMgr::GetInstance()->SetRectPoint(m_downpt , m_curpt);
+				CLineMgr::GetInstance()->SetRenderSwitch(true);
+			}
 		}
 	}
 	else
@@ -196,6 +203,7 @@ void CKeyMgr::MouseOnceKeyDown(const int& nkey)
 		m_bOnceKeyDown_complete[nkey] = false;
 		m_KeyPress[nkey] = false;
 	}
+
 }
 void CKeyMgr::MouseKeyUp(const int& nkey)
 {
@@ -258,7 +266,7 @@ void CKeyMgr::Update(void)
 	TurboKeyDown(VK_RIGHT);
 	TurboKeyDown(VK_UP);
 	TurboKeyDown(VK_DOWN);
-	//TurboKeyDown(VK_LBUTTON);
+	TurboKeyDown(VK_LBUTTON);
 	TurboKeyDown('1');
 	TurboKeyDown('2');
 	TurboKeyDown('3');
@@ -270,12 +278,37 @@ void CKeyMgr::Update(void)
 	TurboKeyDown('9');
 	TurboKeyDown('0');
 
-	OnceKeyDown('A');
-	OnceKeyDown('Z');
-	OnceKeyDown('Q');
-	OnceKeyDown('W');
-	OnceKeyDown('T');
-	OnceKeyDown('O');
+
+	for(int i = 'A'; i <= 'Z'; ++i)
+	{
+		OnceKeyDown(i);
+	}
+	//OnceKeyDown('A');
+	//OnceKeyDown('B');
+	//OnceKeyDown('C');
+	//OnceKeyDown('D');
+	//OnceKeyDown('E');
+	//OnceKeyDown('F');
+	//OnceKeyDown('G');
+	//OnceKeyDown('H');
+	//OnceKeyDown('I');
+	//OnceKeyDown('J');
+	//OnceKeyDown('K');
+	//OnceKeyDown('L');
+	//OnceKeyDown('N');
+	//OnceKeyDown('M');
+	//OnceKeyDown('O');
+	//OnceKeyDown('P');
+	//OnceKeyDown('Q');
+	//OnceKeyDown('R');
+	//OnceKeyDown('S');
+	//OnceKeyDown('T');
+	//OnceKeyDown('U');
+	//OnceKeyDown('V');
+	//OnceKeyDown('W');
+	//OnceKeyDown('X');
+	//OnceKeyDown('Y');
+	//OnceKeyDown('Z');
 
 	MouseOnceKeyDown(VK_LBUTTON);
 	MouseKeyUp(VK_LBUTTON);
@@ -316,94 +349,263 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 
 		if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
 		{
-			CUnitMgr::GetInstance()->Calculate_UnitCenterPt();
-			CTileManager::GetInstance()->Flowfield_Pathfinding();
+			CObj* ptarget = NULL;
+			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+
+			if(true == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+			{
+				CComanderMgr::GetInstance()->Minimappos_to_screen(vmousept);
+			}
+			else
+			{
+				//우클릭된 유닛을 구한다.
+				vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+			}			
+
+			CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept , ptarget);
+			CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);
+
+
+			CUnitMgr::GetInstance()->Intputkey_reaction(VK_RBUTTON);
+			
 		}
-		
-		CUnitMgr::GetInstance()->Intputkey_reaction(VK_RBUTTON);
 	}
 	if(true == m_bOnceKeyDown_complete[VK_LBUTTON])
 	{
 		m_bOnceKeyDown_complete[VK_LBUTTON] = false;		
 
+		D3DXVECTOR2 vmousept;
 		if(m_clickwating['A'])
-		{
+		{			
+			m_clickwating['A'] = false;
 			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
 			{
-				CUnitMgr::GetInstance()->Calculate_UnitCenterPt();
-				CTileManager::GetInstance()->Flowfield_Pathfinding();
+				CObj* ptarget = NULL;
+				vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+
+				if(true == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+				{
+					CComanderMgr::GetInstance()->Minimappos_to_screen(vmousept);
+					//어택땅을 미니맵에 클릭시 미니맵 위치를 화면위치로 바꿔준다
+				}
+				else
+				{
+					//클릭된 유닛을 구한다.
+					vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+					CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+				}			
+
+				//부대유닛들의 중점을 구하고 선택된 타겟이 있으면 전달한다.
+				CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept , ptarget);
+				CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);	
+
+				CUnitMgr::GetInstance()->Intputkey_reaction('A' , VK_LBUTTON);
+			
 			}
 
-			CUnitMgr::GetInstance()->Intputkey_reaction('A' , VK_LBUTTON);
-			m_clickwating['A'] = false;
-
 			CFontMgr::GetInstance()->Set_KeyInput_Font(L"A + 좌 클릭" );
+			m_bwork = true;
 		}
+		//else if(m_clickwating['C'])
+		//{
+		//	m_clickwating['C'] = false;
+		//	if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+		//	{
+		//		CUnitMgr::GetInstance()->Intputkey_reaction('C' , VK_LBUTTON);
+		//	}
+		//}
 		else
 		{
+			vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+
 			CUnitMgr::GetInstance()->Intputkey_reaction(VK_LBUTTON);
 			CFontMgr::GetInstance()->Set_KeyInput_Font(L"좌 클릭" );
+
+			m_bwork = false;
 		}
 	}
-	if(true == m_bOnceKeyDown_complete['Z'])
-	{
-		m_bOnceKeyDown_complete['Z'] = false;
-		CFontMgr::GetInstance()->Set_KeyInput_Font(L"Z 입력" );
-
-		//	/*곧 지울것들이다*/
-		pObj = new CMarine;
-		pObj->SetPos(CMouseMgr::GetAddScrollvMousePt().x ,  CMouseMgr::GetAddScrollvMousePt().y);
-		pObj->Initialize();
-
-		CObjMgr::GetInstance()->AddObject(pObj , TU_MARINE);
-		objcnt += 1;
-		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
-		CUnitMgr::GetInstance()->Intputkey_reaction('Z');
 
 
-	}
 	if(true == m_bOnceKeyDown_complete['A'])
 	{
 		m_bOnceKeyDown_complete['A'] = false;
 
-		//유닛이 선택된 상태일시 어택명령 대기한다 건물이면 안됨..
-		if(CUnitMgr::GetInstance()->GetUnitlistempty())
-			m_clickwating['A'] = false;
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'A');
+
+			m_clickwating['B'] = false;
+		}
 		else
-			m_clickwating['A'] = true;//공격 마우스띄우기 아이콘
+		{
+			//유닛이 선택된 상태일시 어택명령 대기한다 건물이면 안됨..
+			if(CUnitMgr::GetInstance()->GetUnitlistempty())
+				m_clickwating['A'] = false;
+			else
+				m_clickwating['A'] = true;//공격 마우스띄우기 아이콘
 
+			CUnitMgr::GetInstance()->Intputkey_reaction('A');
+		}
 
-		//pObj = new CDrone;
-		//pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
-		//pObj->Initialize();
-
-		//CObjMgr::GetInstance()->AddObject(pObj , ZU_DRONE);
-		//objcnt += 1;
-		//CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
-
-
-		CUnitMgr::GetInstance()->Intputkey_reaction('A');
 	}
+
+	if(true == m_bOnceKeyDown_complete['B'])
+	{
+		m_bOnceKeyDown_complete['B'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'B');
+
+			m_clickwating['B'] = false;
+		}
+		else
+		{
+			if(CUnitMgr::GetInstance()->GetUnitlistempty())
+				m_clickwating['B'] = false;
+			else
+				m_clickwating['B'] = true;//공격 마우스띄우기 아이콘
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('B');
+		}
+	}
+
+	if(true == m_bOnceKeyDown_complete['C'])
+	{
+		m_bOnceKeyDown_complete['C'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'C');
+
+			m_clickwating['B'] = false;
+		}
+		else
+		{
+			//if(CUnitMgr::GetInstance()->GetUnitlistempty())
+			//	m_clickwating['C'] = false;
+			//else
+			//	m_clickwating['C'] = true;
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('C');
+		}
+	}
+
+	if(true == m_bOnceKeyDown_complete['F'])
+	{
+		m_bOnceKeyDown_complete['F'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'F');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'F');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			//if(CUnitMgr::GetInstance()->GetUnitlistempty())
+			//	m_clickwating['C'] = false;
+			//else
+			//	m_clickwating['C'] = true;
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('F');
+		}
+	}
+
+	if(true == m_bOnceKeyDown_complete['L'])
+	{
+		m_bOnceKeyDown_complete['L'] = false;
+
+		m_clickwating['L'] = true;
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('L');
+	}
+
+	if(true == m_bOnceKeyDown_complete['N'])
+	{
+		m_bOnceKeyDown_complete['N'] = false;
+
+		m_clickwating['N'] = true;
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('N');
+	}
+
 	if(true == m_bOnceKeyDown_complete['Q'])
 	{
 		m_bOnceKeyDown_complete['Q'] = false;
 
+
 		CUnitMgr::GetInstance()->Intputkey_reaction('Q');
 	}
-	if(true == m_bOnceKeyDown_complete['W'])
+	if(true == m_bOnceKeyDown_complete['R'])
 	{
-		m_bOnceKeyDown_complete['W'] = false;
+		m_bOnceKeyDown_complete['R'] = false;
 
-		CUnitMgr::GetInstance()->Intputkey_reaction('W');
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'R');
+
+			m_clickwating['B'] = false;
+		}
+		else
+		{
+			CUnitMgr::GetInstance()->Intputkey_reaction('R');
+		}
 	}
+
+	if(true == m_bOnceKeyDown_complete['S'])
+	{
+		m_bOnceKeyDown_complete['S'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'R');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'S');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			CUnitMgr::GetInstance()->Intputkey_reaction('S');
+		}
+
+		pObj = new CSCV;
+		CObjMgr::GetInstance()->AddObject(pObj , OBJ_SCV);
+		pObj->SetPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
+		pObj->Initialize();
+		objcnt += 1;
+		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+	}
+
 	if(true == m_bOnceKeyDown_complete['T'])
 	{
 		m_bOnceKeyDown_complete['T'] = false;
 
 		pObj = new CTank;
-		CObjMgr::GetInstance()->AddObject(pObj , TU_TANK);
+		CObjMgr::GetInstance()->AddObject(pObj , OBJ_TANK);
 
-		pObj->SetPos(CMouseMgr::GetMousePt().x + CScrollMgr::m_fScrollX ,  CMouseMgr::GetMousePt().y + CScrollMgr::m_fScrollY);
+		pObj->SetPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
 		pObj->Initialize();
 
 		objcnt += 1;
@@ -411,11 +613,61 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('T');
 	}
+
+	if(true == m_bOnceKeyDown_complete['W'])
+	{
+		m_bOnceKeyDown_complete['W'] = false;
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('W');
+	}
+
+
+
 	if(true == m_bOnceKeyDown_complete['O'])
 	{
 		m_bOnceKeyDown_complete['O'] = false;
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('O');
+	}
+
+	if(true == m_bOnceKeyDown_complete['V'])
+	{
+		m_bOnceKeyDown_complete['V'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'V');
+
+			m_clickwating['B'] = false;
+		}
+		else
+		{
+			if(CUnitMgr::GetInstance()->GetUnitlistempty())
+				m_clickwating['V'] = false;
+			else
+				m_clickwating['V'] = true;
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('V');
+		}
+	}
+
+	if(true == m_bOnceKeyDown_complete['Z'])
+	{
+		m_bOnceKeyDown_complete['Z'] = false;
+		CFontMgr::GetInstance()->Set_KeyInput_Font(L"Z 입력" );
+
+		//	/*곧 지울것들이다*/
+		pObj = new CMarine;
+		pObj->SetPos( CMouseMgr::GetInstance()->GetAddScrollvMousePt() );
+		pObj->Initialize();
+
+		CObjMgr::GetInstance()->AddObject(pObj , OBJ_MARINE);
+		objcnt += 1;
+		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+		CUnitMgr::GetInstance()->Intputkey_reaction('Z');
+
+
 	}
 }
 void CKeyMgr::Intput_turbokey_reaction(void)
@@ -452,7 +704,8 @@ void CKeyMgr::Intput_turbokey_reaction(void)
 	}
 	if( true == m_bTurboKeyDown_complete[VK_LBUTTON])
 	{
-		//CComanderMgr::GetInstance()->SetMinimapCamPos(CMouseMgr::GetvMousePt());
+		if(false == m_bwork && true == CComanderMgr::GetInstance()->intersect_minimap_mousept(m_downpt))
+			CComanderMgr::GetInstance()->SetMinimapCamPos(m_curpt/*CMouseMgr::GetInstance()->GetScreenMousePt()*/);
 	}
 
 }
@@ -469,9 +722,12 @@ void CKeyMgr::Intput_keyup_reaction(void)
 	if(true == m_bKeyUp_complete[VK_LBUTTON])
 	{
 		m_bKeyUp_complete[VK_LBUTTON] = false;
-		CFontMgr::GetInstance()->Set_KeyInput_Font(L"좌 클릭 UP" );
 
-		CLineMgr::GetInstance()->Select_unit();
+		if(false == m_bwork)
+		{
+			CFontMgr::GetInstance()->Set_KeyInput_Font(L"좌 클릭 UP" );
+			CLineMgr::GetInstance()->Select_unit();
+		}
 	}
 }
 
@@ -521,5 +777,10 @@ void CKeyMgr::Intput_combine_reaction(void)
 
 		CFontMgr::GetInstance()->Set_KeyInput_Font(L"control + 5" );
 	}
+}
+
+bool CKeyMgr::GetLbdraging(void)
+{
+	return m_TurboKeyPress[VK_LBUTTON];
 }
 

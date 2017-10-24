@@ -12,12 +12,10 @@ protected:
 	D3DXMATRIX		m_matworld;
 	LPD3DXSPRITE	m_pSprite;
 	D3DCOLOR		m_color;
-
 protected:
 	bool			m_bdestroy;
-	bool			m_bselect;
+
 public:
-	void SetSelect(bool bselect);
 	void SetDestroy(bool bdestroy);
 public:
 	bool GetDestroy(void);

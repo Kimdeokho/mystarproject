@@ -8,10 +8,11 @@
 #include "GeneraEff.h"
 #include "MultiEff.h"
 #include "ObjMgr.h"
-
+#include "Tankbarrel.h"
 CCom_WSiege::CCom_WSiege(const int& damage , DAMAGE_TYPE edamagetype)
 {
-
+	m_damage = damage;
+	m_edamagetype = edamagetype;
 }
 
 CCom_WSiege::~CCom_WSiege(void)
@@ -45,15 +46,15 @@ void CCom_WSiege::fire(CObj*& ptarget)
 			//m_targetpos.x += float(rand()%20 - 10);
 			//m_targetpos.y += float(rand()%20 - 10);
 
-			CObj* peff = new CGeneraEff(L"SIEGEBOOM" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 2.5f);
+			CObj* peff = new CGeneraEff(L"SIEGEBOOM" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 1.2f);
 
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
-			peff = new CMultiEff(L"SIEGEFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() ,3);
+			peff = new CMultiEff(L"SIEGEFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() ,2.0f);
 
 			D3DXVECTOR2 vdir = m_pobj->GetcurDir();
-			D3DXVECTOR2 vpos = m_pobj->GetPos();
+			D3DXVECTOR2 vpos = ((CTankbarrel*)m_pobj)->GetbarrelPos();
 
 			vpos += vdir*35;
 			peff->SetPos(vpos);			
@@ -63,6 +64,11 @@ void CCom_WSiege::fire(CObj*& ptarget)
 			(ptarget)->SetDamage(m_damage , m_edamagetype);
 		}
 
+	}
+	else
+	{
+		if(MOVE == m_pobj->GetUnitinfo().estate)
+			m_pobj->SetState(IDLE);
 	}
 }
 void CCom_WSiege::Update(void)

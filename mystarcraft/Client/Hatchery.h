@@ -2,7 +2,7 @@
 #include "Zerg_Building.h"
 
 class CHatchery :
-	public CZerg_Building
+	public CZerg_building
 {
 private:
 	//int m_top_line[LINE_END];

@@ -30,6 +30,7 @@ CCom_Animation::CCom_Animation(D3DXMATRIX& objmat , TEXINFO*& curtex)
 
 	m_generaltex = NULL;
 	m_statkey = L"";
+	m_battack_end = true;
 }
 
 CCom_Animation::~CCom_Animation(void)
@@ -162,85 +163,85 @@ void CCom_Animation::DirIdxCalculation(void)
 }
 void CCom_Animation::AIR_DirIdxCalculation(void)
 {
-	float       fdot;
+	//float       fdot;
 
 
-	D3DXVECTOR2	curdir = m_pobj->GetcurDir(); 
-	fdot = D3DXVec2Dot(&curdir , &OFFSET_DIRVEC);
+	//D3DXVECTOR2	curdir = m_pobj->GetcurDir(); 
+	//fdot = D3DXVec2Dot(&curdir , &OFFSET_DIRVEC);
 
-	m_newdgree = CMyMath::scala_to_dgree(fdot);
+	//m_newdgree = CMyMath::scala_to_dgree(fdot);
 
-	if(m_pobj->GetcurDir().x < 0)
-		m_newdgree = 360 - m_newdgree;
+	//if(m_pobj->GetcurDir().x < 0)
+	//	m_newdgree = 360 - m_newdgree;
 
-	m_newdiridx = (int)( (m_newdgree/11.25f) + 0.5f) % 32;
-
-
-	if(m_newdiridx != (int)m_curdiridx)
-	{
-		float cur_radian = CMyMath::dgree_to_radian(m_curdiridx*11.25f);
-		float new_radian = CMyMath::dgree_to_radian(m_newdiridx*11.25f);
-
-		m_olddirvec.x = cosf(cur_radian);
-		m_olddirvec.y = sinf(cur_radian);
-
-		m_newdirvec.x = cosf(new_radian);
-		m_newdirvec.y = sinf(new_radian);
-
-		D3DXVec3Cross(&m_vout , &m_olddirvec , &m_newdirvec);
-		//왼손기준 z가 양수면 시계방향
-
-		if(m_vout.z > 0)
-		{
-			m_rotation_dir = 1;
-			//printf("시계방향\n");
-		}
-		else
-		{
-			m_rotation_dir = -1;
-			//printf("반시계방향\n");
-		}
-
-		m_bsw = true;
-	}
-
-	if((int)m_curdiridx != m_newdiridx)
-	{
-		float rotation_speed = GETTIME*m_rotation_dir*m_rotation_speed;
-		if(rotation_speed > 1.f)
-			rotation_speed = 1;
-
-		m_curdiridx += rotation_speed;
-
-		if(m_curdiridx < 0)
-			m_curdiridx = 31.99f;
-		else if(m_curdiridx >= 32)
-			m_curdiridx = 0;
-
-		m_brotationcomplete = false;
-	}
-	else
-	{
-		//방향 전부 돌림
-		if(m_bsw)
-		{
-			m_bsw = false;
-			m_brotationcomplete = true;
-		}
-	}
-
-	m_texdiridx = (int)m_curdiridx;
-
-	if(m_texdiridx > 16)
-	{
-		m_texdiridx = 32 - m_texdiridx;
-		m_objmat._11 = -1;
-	}
-	else
-		m_objmat._11 = 1;
+	//m_newdiridx = (int)( (m_newdgree/11.25f) + 0.5f) % 32;
 
 
-	m_pobj->Setdiridx( m_texdiridx );
+	//if(m_newdiridx != (int)m_curdiridx)
+	//{
+	//	float cur_radian = CMyMath::dgree_to_radian(m_curdiridx*11.25f);
+	//	float new_radian = CMyMath::dgree_to_radian(m_newdiridx*11.25f);
+
+	//	m_olddirvec.x = cosf(cur_radian);
+	//	m_olddirvec.y = sinf(cur_radian);
+
+	//	m_newdirvec.x = cosf(new_radian);
+	//	m_newdirvec.y = sinf(new_radian);
+
+	//	D3DXVec3Cross(&m_vout , &m_olddirvec , &m_newdirvec);
+	//	//왼손기준 z가 양수면 시계방향
+
+	//	if(m_vout.z > 0)
+	//	{
+	//		m_rotation_dir = 1;
+	//		//printf("시계방향\n");
+	//	}
+	//	else
+	//	{
+	//		m_rotation_dir = -1;
+	//		//printf("반시계방향\n");
+	//	}
+
+	//	m_bsw = true;
+	//}
+
+	//if((int)m_curdiridx != m_newdiridx)
+	//{
+	//	float rotation_speed = GETTIME*m_rotation_dir*m_rotation_speed;
+	//	if(rotation_speed > 1.f)
+	//		rotation_speed = 1;
+
+	//	m_curdiridx += rotation_speed;
+
+	//	if(m_curdiridx < 0)
+	//		m_curdiridx = 31.99f;
+	//	else if(m_curdiridx >= 32)
+	//		m_curdiridx = 0;
+
+	//	m_brotationcomplete = false;
+	//}
+	//else
+	//{
+	//	//방향 전부 돌림
+	//	if(m_bsw)
+	//	{
+	//		m_bsw = false;
+	//		m_brotationcomplete = true;
+	//	}
+	//}
+
+	//m_texdiridx = (int)m_curdiridx;
+
+	//if(m_texdiridx > 16)
+	//{
+	//	m_texdiridx = 32 - m_texdiridx;
+	//	m_objmat._11 = -1;
+	//}
+	//else
+	//	m_objmat._11 = 1;
+
+
+	//m_pobj->Setdiridx( m_texdiridx );
 
 }
 void CCom_Animation::Render(void)
@@ -280,4 +281,14 @@ int CCom_Animation::GetCurDirIdx(void)
 bool CCom_Animation::GetAnimation_end(void)
 {
 	return m_banim_end;
+}
+
+bool CCom_Animation::GetAttackSync(void)
+{
+	return m_battack_sync;
+}
+
+bool CCom_Animation::GetAttack_end(void)
+{
+	return m_battack_end;
 }

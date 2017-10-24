@@ -19,14 +19,17 @@ private:
 
 	MYRECT<float>&				m_rect;
 	const MYRECT<float>&		m_vertex;
+
+	int				m_target_objid;
+	bool			m_bsearch_collision;
 	
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);
 	virtual void Release(void);
 public:
-	bool GetCollision(void);
+	void SetCollsearch(bool bcoll_search);
 public:
-	CCom_Collision(D3DXVECTOR2& vpos , MYRECT<float>&	rc , const MYRECT<float>& vtx);
+	CCom_Collision(D3DXVECTOR2& vpos , MYRECT<float>&	rc , const MYRECT<float>& vtx , bool bsearch_collision = true);
 	~CCom_Collision(void);
 };

@@ -20,7 +20,7 @@ void CUI_MainInterface::Initialize(void)
 	m_color = D3DCOLOR_ARGB(255,255 , 255 , 255);
 
 	m_vpos.x = BACKBUFFER_SIZEX/2;
-	m_vpos.y = 360; //¿ø·¡ À§Ä¡ //600ÀÏ¶© 360 // 480ÀÏ¶© 240
+	m_vpos.y = BACKBUFFER_SIZEY/2 + (BACKBUFFER_SIZEY/2 - m_vcenter.y); //¿ø·¡ À§Ä¡ //600ÀÏ¶© 360 // 480ÀÏ¶© 240
 	m_matworld._41 = m_vpos.x;
 	m_matworld._42 = m_vpos.y;
 }

@@ -41,13 +41,13 @@ private:
 	int						m_igoalidx;
 	int						m_curterrain_pathidx;
 	int						m_realpathidx;
-	int						m_stepsize;
+	int						m_mainstep;
+	int						m_substep;
 	int						m_arrivalrange;
 	int						m_target_oldidx;
 	int						m_refindcnt;
 	float					m_collisionmove_time;
 	float					m_stoptime;
-	float					m_stoptime_offset;
 	float					m_fchase_time;
 
 public:
@@ -66,6 +66,6 @@ public:
 	void SetFlowField(void);
 	void Target_chase(void);
 public:
-	CCom_Pathfind(D3DXVECTOR2& vpos , MYRECT<float>&	rc);
+	CCom_Pathfind(D3DXVECTOR2& vpos , MYRECT<float>&	rc, const int& mainstep , const int& substep);
 	~CCom_Pathfind(void);
 };

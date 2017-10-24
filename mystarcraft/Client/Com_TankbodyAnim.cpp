@@ -62,8 +62,8 @@ void CCom_TankbodyAnim::SetAnimation(const TCHAR* statekey)
 {
 	if(m_statkey != statekey)/*새로 들어오는 상태가 기존들어오는 상태와 다른상태여야 한다.*/
 	{
-		if(statekey == L"MOVE")
-			return;
+		//if(statekey == L"MOVE")
+		//	return;
 
 		m_statkey = statekey;
 

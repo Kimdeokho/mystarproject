@@ -12,11 +12,12 @@ public:
 	DECLARE_SINGLETON(CObjMgr)
 private:
 	list<CObj*>		m_ObjList[OBJ_END];
-	list<CObj*>		m_ZBuilding_List[ZB_END];
-	list<CObj*>		m_ZUnit_List[ZU_END];
+	list<CObj*>		m_CorpseList;
+	//list<CObj*>		m_ZBuilding_List[ZB_END];
+	//list<CObj*>		m_ZUnit_List[ZU_END];
 
-	list<CObj*>		m_TBuilding_List[TB_END];
-	list<CObj*>		m_TUnit_List[TU_END];
+	//list<CObj*>		m_TBuilding_List[TB_END];
+	//list<CObj*>		m_TUnit_List[TU_END];
 	multimap<float , CObj*> m_rendersort[SORT_END];
 
 
@@ -31,16 +32,14 @@ public:
 	CObj* obj_alivecheck(const int& idx);
 public:
 	void AddObject(CObj* pObj , OBJID eid);
-	void AddObject(CObj* pObj , ZERG_BUILDING_ID eid);
-	void AddObject(CObj* pObj , ZERG_UNIT_ID eid);
+	void AddCorpse(CObj* pObj );
 
-	void AddObject(CObj* pObj , TERRAN_BUILDING_ID eid);
-	void AddObject(CObj* pObj , TERRAN_UNIT_ID eid);
 
 	void AddSelect_UI(CUI* pui);
 	void AddEffect(CObj* peff);
 
-	void DestroyObj(TERRAN_UNIT_ID eid);
+	//void DestroyObj(TERRAN_UNIT_ID eid);
+	CObj* GetCoreBuilding(CObj* pself);
 public:
 	void LoadObj(HANDLE hFile);
 public:

@@ -1,6 +1,10 @@
 #include "StdAfx.h"
 #include "BattleCruiser.h"
 
+#include "Area_Mgr.h"
+#include "UnitMgr.h"
+#include "MyMath.h"
+
 CBattleCruiser::CBattleCruiser(void)
 {
 }
@@ -57,12 +61,9 @@ void CBattleCruiser::Inputkey_reaction(const int& firstkey , const int& secondke
 
 }
 
-void CBattleCruiser::SetDestroy(bool bdestroy)
-{
-
-}
-
 void CBattleCruiser::Release(void)
 {
+	CObj::area_release();
 
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }

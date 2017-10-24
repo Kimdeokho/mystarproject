@@ -10,8 +10,12 @@ private:
 
 	list<CUI*>			m_miniunit_display;
 	float				m_fupdatetime;
+
+	D3DXVECTOR2			m_vweight;
 public:
 	void Setminiunit(CUI* pui);
+	void SetMinimapCamPos(const D3DXVECTOR2& vmousepos);
+	void Minimappos_to_screen(D3DXVECTOR2& vmousept);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

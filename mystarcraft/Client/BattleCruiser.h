@@ -10,7 +10,7 @@ public:
 	virtual void Render(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
-	virtual void SetDestroy(bool bdestroy);
+	
 	virtual void Release(void);
 public:
 	CBattleCruiser(void);

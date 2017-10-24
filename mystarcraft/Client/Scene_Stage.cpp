@@ -8,6 +8,8 @@
 #include "LineMgr.h"
 #include "ComanderMgr.h"
 #include "ObjPoolMgr.h"
+#include "MouseMgr.h"
+
 #include "Astar.h"
 #include "UnitMgr.h"
 
@@ -37,12 +39,13 @@ HRESULT CScene_Stage::Initialize(void)
 void CScene_Stage::Update(void)
 {
 	CKeyMgr::GetInstance()->Update();
+	CMouseMgr::GetInstance()->Update();
 	CObjMgr::GetInstance()->Update();
 
 	CComanderMgr::GetInstance()->Update();
 	CScrollMgr::update();
 
-	//CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
+	CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
 }
 void CScene_Stage::Render(void)
 {
@@ -54,7 +57,7 @@ void CScene_Stage::Render(void)
 	
 
 	CFontMgr::GetInstance()->FontRender();
-	CLineMgr::GetInstance()->RenderGrid(64 , 64);
+	CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
 	CLineMgr::GetInstance()->LineRender();
 
 	CComanderMgr::GetInstance()->Render();
@@ -65,12 +68,13 @@ void CScene_Stage::Release(void)
 	CUnitMgr::DestroyInstance();
 	CObjMgr::DestroyInstance();
 	CComanderMgr::DestroyInstance();
+	CMouseMgr::DestroyInstance();
 	//CAstar::DestroyInstance();
 }
 
 void CScene_Stage::LoadData(void)
 {
-	HANDLE hFile = CreateFile(L"../Data/map/test2.dat" , 
+	HANDLE hFile = CreateFile(L"../Data/map/test3.dat" , 
 		GENERIC_READ , 0 , NULL , OPEN_EXISTING , 0 , NULL);
 
 	CTileManager::GetInstance()->LoadTileData(hFile);

@@ -6,6 +6,7 @@
 #include "ScrollMgr.h"
 #include "MyMath.h"
 #include "MouseMgr.h"
+#include "ComanderMgr.h"
 IMPLEMENT_SINGLETON(CLineMgr)
 CLineMgr::CLineMgr(void)
 {
@@ -104,9 +105,13 @@ void CLineMgr::minicambox_render(const MYRECT<float>& rc)
 }
 void CLineMgr::Select_unit(void)
 {	
+	if(true == CComanderMgr::GetInstance()->GetPreview_Active())
+		return;
+
+
 	D3DXVECTOR2 vMousept;
 
-	vMousept = CMouseMgr::GetAddScrollvMousePt();
+	vMousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 	int idx = CMyMath::Pos_to_index(vMousept.x , vMousept.y , 64);
 
 

@@ -86,23 +86,6 @@ void CCom_SiegebodyAnim::Update(void)
 			m_curtex = (*m_generaltex)[int(m_frame.fcurframe)];
 
 		}
-		else
-		{
-			//if(m_frame.fcurframe >= m_frame.umax)
-			//{
-			//	m_frame.fcurframe = 0;
-			//}
-
-			//if( NULL !=  m_animtexture[0] )
-			//{
-			//	const vector<TEXINFO*>* vtemp = m_animtexture[0];
-
-			//	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-			//		m_curtex = (*vtemp)[int(m_frame.fcurframe)];
-			//}
-			//else
-			//	m_curtex = NULL;
-		}
 	}
 
 

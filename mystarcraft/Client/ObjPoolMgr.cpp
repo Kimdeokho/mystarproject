@@ -70,16 +70,16 @@ CObjPoolMgr::~CObjPoolMgr(void)
 //}
 void CObjPoolMgr::Release(void)
 {
-	for(int i = 0; i < ZU_END; ++i)
-	{
-		//if( NULL != m_ZUnitpool[i])
-			Safe_Delete(m_ZUnitpool[i]);
-	}
+	//for(int i = 0; i < ZU_END; ++i)
+	//{
+	//	//if( NULL != m_ZUnitpool[i])
+	//		Safe_Delete(m_ZUnitpool[i]);
+	//}
 
-	for(int i = 0; i < ZB_END; ++i)
-	{
-		Safe_Delete(m_ZBuildingpool[i]);
-	}
+	//for(int i = 0; i < ZB_END; ++i)
+	//{
+	//	Safe_Delete(m_ZBuildingpool[i]);
+	//}
 }
 
 int CObjPoolMgr::m_Obj_Cnt(0);

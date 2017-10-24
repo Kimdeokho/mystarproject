@@ -7,8 +7,11 @@
 #include "Device.h"
 #include "Component.h"
 #include "UnitMgr.h"
+#include "UI_Select.h"
+
 CObj::CObj(void)
 {
+	m_select_ui = NULL;
 	m_pSprite = NULL;
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 
@@ -22,8 +25,6 @@ CObj::CObj(void)
 	m_oldidx64 = -1;	
 	m_curidx64 = -1;
 
-	m_oldidx256 = -1;
-	m_curidx256 = -1;
 
 	m_bdestroy = false;
 	m_bSelect = false;
@@ -33,6 +34,7 @@ CObj::CObj(void)
 	m_vcurdir = OFFSET_DIRVEC;
 
 	m_curdiridx = 0;
+	m_obj_id = 0;
 	m_bmagicbox = false;
 
 }
@@ -43,84 +45,49 @@ CObj::~CObj(void)
 }
 
 void CObj::Initialize(void)
+{	
+}
+void CObj::unit_area_Initialize(void)
 {
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
-	m_curidx256 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 256);
-	m_curidx512 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 512);
 
 	m_oldidx64 = m_curidx64;
-	m_oldidx256 = m_curidx256;
-	m_oldidx512 = m_curidx512;
 
-	//CArea_Mgr::GetInstance()->SetObj_Area512(m_curidx512 , m_curidx512 , this);
-	//CArea_Mgr::GetInstance()->SetObj_Area256(m_curidx256 , m_curidx256 , this);
-	CArea_Mgr::GetInstance()->SetObj_Area64(m_curidx64 , m_curidx64 , this);
-	
+	CArea_Mgr::GetInstance()->SetObj_Area64(m_curidx64 , m_curidx64 , this );
 }
-
-void CObj::Update(void)
-{
-
-}
-void CObj::idx_update(void)
+void CObj::area_update(void)
 {
 	//ÀÌ°Å ¹¹¾ß???????
 
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
-	//m_curidx256 = CMyMath::Pos_to_index(m_vPos , 256);
-	//m_curidx512 = CMyMath::Pos_to_index(m_vPos , 512);
 
 	if(m_oldidx32 != m_curidx32)
 		m_oldidx32 = m_curidx32;
 
 	if(m_oldidx64 != m_curidx64)
 	{
-		CArea_Mgr::GetInstance()->SetObj_Area64(m_curidx64 , m_oldidx64 , this);
+		CArea_Mgr::GetInstance()->SetObj_Area64(m_curidx64 , m_oldidx64 , this );
 		m_oldidx64 = m_curidx64;
+
 	}
-
-	//if(m_oldidx256 != m_curidx256)
-	//{
-	//	CArea_Mgr::GetInstance()->SetObj_Area256(m_curidx256 , m_oldidx256 , this);
-	//	m_oldidx256 = m_curidx256;
-	//}
-
-	//if(m_oldidx512 != m_curidx512)
-	//{
-	//	CArea_Mgr::GetInstance()->SetObj_Area512(m_curidx512 , m_oldidx512 , this);
-	//	m_oldidx512 = m_curidx512;
-	//}
 }
-void CObj::SetDestroy(bool bdestroy)
+void CObj::area_release(void)
 {
-	if(true == bdestroy && false == m_bdestroy)
-	{
-		m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
-		m_curidx256 = CMyMath::Pos_to_index(m_vPos , 256);
-		m_curidx512 = CMyMath::Pos_to_index(m_vPos , 512);
-
-		CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+	if(m_curidx64 != CMyMath::Pos_to_index(m_vPos , 64))
 		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
-		CArea_Mgr::GetInstance()->ReleaseObj_Area256(m_curidx256 , this);
-		CArea_Mgr::GetInstance()->ReleaseObj_Area512(m_curidx512 , this);
-
-		m_bdestroy = bdestroy;
-	}
-
-	//if(true == m_bdestroy)
-	//{
-	//	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
-	//	m_curidx256 = CMyMath::Pos_to_index(m_vPos , 256);
-	//	m_curidx512 = CMyMath::Pos_to_index(m_vPos , 512);
-
-	//	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-	//	CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
-	//	CArea_Mgr::GetInstance()->ReleaseObj_Area256(m_curidx256 , this);
-	//	CArea_Mgr::GetInstance()->ReleaseObj_Area512(m_curidx512 , this);
-	//}
+	else
+		CArea_Mgr::GetInstance()->ReleaseObj_Area64(CMyMath::Pos_to_index(m_vPos , 64) , this);
 }
+
+
+void CObj::Update(void)
+{
+
+}
+
+
 void CObj::Render(void)
 {
 }
@@ -151,6 +118,9 @@ void CObj::SetPos(const float x , const float y, OBJ_POS_KIND ekind /*= STATIC_O
 void CObj::SetPos(const D3DXVECTOR2& vpos)
 {
 	m_vPos = vpos;
+
+	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 }
 
 bool CObj::Be_in_camera(void)
@@ -214,7 +184,7 @@ void CObj::Inputkey_reaction(const int& firstkey , const int& secondkey)
 //	return m_eType;
 //}
 
-int CObj::GetObjID(void)
+int CObj::GetObjNumber(void)
 {
 	return m_obj_id;
 }
@@ -229,20 +199,17 @@ TEAM_NUMBER CObj::GetTeamNumber(void)
 	return m_eteamnumber;
 }
 
-void CObj::SetSelect(bool bselect)
+void CObj::SetSelect(SELECT_FLAG eflag ,D3DCOLOR ecolor)
 {
-	m_bSelect = bselect;
+	if(NULL != m_select_ui)
+	{
+		((CUI_Select*)m_select_ui)->SetSelect(eflag , ecolor);
+	}
 }
 void CObj::SetState(STATE estate)
 {
-	//m_estate = estate;
 	m_unitinfo.estate = estate;
 }
-
-//STATE CObj::GetState(void)
-//{
-//	return m_estate;
-//}
 
 CATEGORY CObj::GetCategory(void)
 {
@@ -281,14 +248,6 @@ int CObj::Getcuridx(const int& tilesize)
 	else if(64 ==  tilesize)
 	{
 		return m_curidx64;
-	}
-	else if(256 ==  tilesize)
-	{
-		return m_curidx256;
-	}
-	else if(512 ==  tilesize)
-	{ 
-		return m_curidx512;
 	}
 
 	return -1;
@@ -350,7 +309,10 @@ void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 	m_unitinfo.hp -= (int)tempdamage;
 
 	if(m_unitinfo.hp <= 0)
-		SetDestroy(true);
+	{
+		m_bdestroy = true;
+		Dead();
+	}
 }
 
 // int CObj::GetHP(void)
@@ -381,6 +343,26 @@ void CObj::SetTeamNumber(TEAM_NUMBER eteamnum)
 void CObj::SetMagicBox(bool bmagicbox)
 {
 	m_bmagicbox = bmagicbox;
+}
+
+void CObj::SetObjName(OBJID eobjname)
+{
+	m_eOBJ_NAME = eobjname;
+}
+
+void CObj::Dead(void)
+{
+
+}
+
+OBJID CObj::GetOBJNAME(void)
+{
+	return m_eOBJ_NAME;
+}
+
+void CObj::SetDestroy(bool bdestroy)
+{
+	m_bdestroy = bdestroy;
 }
 
 int CObj::m_globalobj_id;

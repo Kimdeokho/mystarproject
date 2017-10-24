@@ -12,7 +12,7 @@
 #include "TextureMgr.h"
 #include "ScrollMgr.h"
 #include "Obj.h"
-
+#include "ObjMgr.h"
 //IMPLEMENT_SINGLETON(CAstar);
 CAstar::CAstar(void)
 {
@@ -54,6 +54,8 @@ CAstar::CAstar(void)
 	m_unit_diagonalstep = 0.f;
 
 	m_bweightG = true;
+
+	m_targetid = 0;
 }
 CAstar::~CAstar(void)
 {
@@ -248,8 +250,17 @@ void CAstar::InitPos(const float& addx , const float& addy , const D3DXVECTOR2& 
 	m_vNode_pos.x += addx;
 	m_vNode_pos.y += addy;
 }
-void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const int& stepsize  ,const CObj* ptarget, bool weightG)
+void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const int& stepsize  , bool weightG)
 {
+	//if(16 == stepsize)
+	//{
+	//	m_maxnodecnt = MAXPATH_IDX / 2;
+	//}
+	//else if(32 == stepsize)
+	//{
+	//	m_maxnodecnt = MAXPATH_IDX;
+	//}
+
 	Release_unit_closelist();
 	Release_unit_openlist();
 
@@ -257,7 +268,11 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 
 	//m_objid = objid;
 	m_unit_stepsize = stepsize;
-	m_unit_diagonalstep = (sqrtf((float)(stepsize*stepsize + stepsize*stepsize)));
+	if(16 == m_unit_stepsize)
+		m_unit_diagonalstep = 22.f;
+	else if(32 == m_unit_stepsize)
+		m_unit_diagonalstep = 45.f;
+
 	m_tilecnt = int(SQ_TILECNTX*(float)SQ_TILESIZEX/(float)stepsize);
 
 	m_accumulate = 0;
@@ -287,20 +302,20 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 
 
 	m_dummynode = pnode;
-
-	m_ptarget = ptarget;
 }
-void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3DXVECTOR2>& vecpath)
+void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3DXVECTOR2>& vecpath , const CObj* ptarget)
 {
 
 	PATH_NODE* pnode;
 
-	//MYRECT<float>	vtx;
 	MYRECT<float> temprect;
+	float gdistance = 0;
 	
+
+	m_ptarget = ptarget;
+
 	clock_t tbegin , tend;
 	tbegin = clock();
-
 	while(true)
 	{
 		tend = clock();
@@ -314,7 +329,7 @@ void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3D
 
 		if(NULL == pnode || m_pathpool_idx >= MAXPATH_IDX - 1)
 		{
-			//m_pathpool_idx = 0;
+			m_pathpool_idx = 0;
 			//printf("²ËÂü\n");
 			while(NULL != m_dummynode)
 			{
@@ -355,7 +370,7 @@ void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3D
 
 		Init_eightpos_rect(pnode->vPos , temprect , m_unit_stepsize);
 
-		float gdistance = 0;
+		
 		int idx = 0;
 		for(int i = 1; i < ASTAR_DIR_END; ++i)
 		{
@@ -367,7 +382,7 @@ void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3D
 			if( Check_TileOption(m_eight_vpos[i]) &&
 				Check_CloseList(m_eight_vpos[i]) &&	
 				Check_OpenList(m_eight_vpos[i] , pnode) &&
-				m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , m_eight_rect[CENTER] , m_eight_vpos[CENTER] , m_unit_stepsize , m_pObj , m_ptarget , (ASTAR_DIR)i))
+				m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , m_eight_rect[CENTER] , m_eight_vpos[CENTER] , m_unit_stepsize , m_pObj , m_ptarget ))
 			{
 				Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
 			}

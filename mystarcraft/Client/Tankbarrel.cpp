@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Tankbarrel.h"
 
-#include "Com_Targetsearch.h"
+#include "Com_Distancesearch.h"
 #include "Com_WTank.h"
 #include "Com_TankbarrelAnim.h"
 #include "Com_SiegebarrelAnim.h"
@@ -10,6 +10,8 @@
 #include "ScrollMgr.h"
 #include "MyMath.h"
 #include "Tank.h"
+#include "Area_Mgr.h"
+
 CTankbarrel::CTankbarrel(void)
 {
 }
@@ -47,7 +49,7 @@ void CTankbarrel::Initialize(void)
 	m_unitinfo.search_range = 300;
 	m_unitinfo.fog_range = 512;
 
-	m_com_targetsearch = new CCom_Targetsearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY);
+	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY , m_tankbody);
 	m_com_anim = new CCom_TankbarrelAnim(m_matWorld , m_curtex);
 	m_com_weapon = new CCom_WTank(m_unitinfo.damage , DAMAGE_BOOM);
 
@@ -61,7 +63,8 @@ void CTankbarrel::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-	((CCom_Targetsearch*)m_com_targetsearch)->Initialize(this , m_tankbody);
+
+	m_vbarrelpos = D3DXVECTOR2(0,0);
 }
 
 void CTankbarrel::Update(void)
@@ -69,8 +72,8 @@ void CTankbarrel::Update(void)
 
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
-	m_curidx256 = CMyMath::Pos_to_index(m_vPos , 256);
-	m_curidx512 = CMyMath::Pos_to_index(m_vPos , 512);
+	//m_curidx256 = CMyMath::Pos_to_index(m_vPos , 256);
+	//m_curidx512 = CMyMath::Pos_to_index(m_vPos , 512);
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -78,8 +81,6 @@ void CTankbarrel::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
-	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	if(IDLE == m_unitinfo.estate)
 	{
@@ -141,6 +142,9 @@ void CTankbarrel::Update(void)
 
 void CTankbarrel::Render(void)
 {
+	m_matWorld._41 = m_vbarrelpos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vbarrelpos.y - CScrollMgr::m_fScrollY;
+
 	m_pSprite->SetTransform(&m_matWorld);
 	if(TEAM_1 == m_eteamnumber)
 	{
@@ -177,7 +181,13 @@ void CTankbarrel::Inputkey_reaction(const int& nkey)
 
 void CTankbarrel::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
-
+	if('A' == firstkey && VK_LBUTTON == secondkey)
+	{
+		if(TRANSFORMING != m_unitinfo.estate)
+		{
+			((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
+		}
+	}
 }
 
 bool CTankbarrel::GetTransformReady(void)
@@ -213,7 +223,7 @@ void CTankbarrel::TransformTankbarrel(void)
 
 	m_componentlist.clear();
 
-	m_com_targetsearch = new CCom_Targetsearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY);
+	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY , m_tankbody);
 	m_com_anim = new CCom_TankbarrelAnim(m_matWorld , m_curtex);
 	m_com_weapon = new CCom_WTank(m_unitinfo.damage , DAMAGE_BOOM);
 
@@ -226,8 +236,6 @@ void CTankbarrel::TransformTankbarrel(void)
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
-
-	((CCom_Targetsearch*)m_com_targetsearch)->Initialize(this , m_tankbody);
 }
 void CTankbarrel::TransformSiegebarrel(void)
 {
@@ -248,7 +256,7 @@ void CTankbarrel::TransformSiegebarrel(void)
 	m_componentlist.clear();
 
 
-	m_com_targetsearch = new CCom_Targetsearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY);
+	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY , m_tankbody);
 	m_com_anim = new CCom_SiegebarrelAnim(m_matWorld , m_curtex);
 	m_com_weapon = new CCom_WSiege(m_unitinfo.damage , DAMAGE_BOOM);
 
@@ -264,11 +272,20 @@ void CTankbarrel::TransformSiegebarrel(void)
 		iter->second->Initialize(this);
 
 
-	((CCom_Targetsearch*)m_com_targetsearch)->Initialize(this , m_tankbody);
-
 	m_btransform_ready = false;
 
 	//float fdgree = 10*22.5f;
 	//m_vcurdir.x = cosf(CMyMath::dgree_to_radian(fdgree));
 	//m_vcurdir.y = sinf(CMyMath::dgree_to_radian(fdgree));
+}
+
+void CTankbarrel::SetbarrelPos(const D3DXVECTOR2& vpos , const D3DXVECTOR2& vbarrelpos)
+{
+	m_vPos = vpos;
+	m_vbarrelpos = vbarrelpos;
+}
+
+const D3DXVECTOR2& CTankbarrel::GetbarrelPos(void)
+{
+	return m_vbarrelpos;
 }

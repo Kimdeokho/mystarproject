@@ -1,5 +1,6 @@
 DebugTile|White|..\Texture\Single\DebugTile\white.png
 DebugTile|tile8x8|..\Texture\Single\DebugTile\tile8x8.png
+DebugTile|tile2x2|..\Texture\Single\DebugTile\tile2x2.png
 ETC|Startbase|..\Texture\Single\ETC\startbase.png
 Fog|fogmask300|..\Texture\Single\Fog\fogmask300.png
 Fog|fogmask100|..\Texture\Single\Fog\fogmask100.png

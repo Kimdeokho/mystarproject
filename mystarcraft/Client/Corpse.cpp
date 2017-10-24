@@ -9,7 +9,6 @@ CCorpse::CCorpse(const TCHAR* texname , const TCHAR* wreckagename)
 {
 	m_texname = texname;
 	m_wreckage_name = wreckagename;
-	m_duration = 0;
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 	m_bwreckage = false;
 }
@@ -20,16 +19,23 @@ CCorpse::~CCorpse(void)
 
 void CCorpse::Initialize(void)
 {
-	m_generaltex = CTextureMgr::GetInstance()->GetGeneralTexture(m_texname);
-	m_curtex = (*m_generaltex)[0];
-	m_vcenter = D3DXVECTOR3( float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2) , 0 );
+	if(L"" != m_texname)
+	{
+		m_generaltex = CTextureMgr::GetInstance()->GetGeneralTexture(m_texname);
+		m_curtex = (*m_generaltex)[0];
+		m_frame.umax = m_generaltex->size();
+		m_frame.fframespeed = float(m_frame.umax + 1);
+		m_vcenter = D3DXVECTOR3( float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2) , 0 );
+	}
+	else
+	{
+		m_frame.fframespeed = 1;
+		m_frame.umax = 0;
+	}
 
 	m_frame.fcurframe = 0.f;
-	m_frame.umax = m_generaltex->size();
-	m_frame.fframespeed = float(m_frame.umax + 1);
 
 	m_sortID = SORT_CORPSE;
-	m_duration = 0;
 }
 
 void CCorpse::Update(void)
@@ -58,6 +64,7 @@ void CCorpse::Update(void)
 
 			m_frame.umax = m_generaltex->size();
 			m_frame.fframespeed = 0.08f;
+			m_vcenter = D3DXVECTOR3( float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2) , 0 );
 		}
 		else
 		{
@@ -65,7 +72,7 @@ void CCorpse::Update(void)
 		}
 
 		m_frame.fcurframe = 0;
-		return;
+		//return;
 	}
 	//else
 	//{

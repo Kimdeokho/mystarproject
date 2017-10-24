@@ -10,6 +10,8 @@
 #include "MouseMgr.h"
 #include "ScrollMgr.h"
 
+#include "Com_Targetsearch.h"
+
 IMPLEMENT_SINGLETON(CUnitMgr)
 CUnitMgr::CUnitMgr(void)
 {
@@ -46,7 +48,7 @@ void CUnitMgr::discharge_unit(void)
 	list<CObj*>::iterator iter_end = m_curunitList.end();
 
 	for( ; iter != iter_end; ++iter)
-		(*iter)->SetSelect(false);
+		(*iter)->SetSelect(NONE_SELECT);
 
 	m_curunitList.clear();
 }
@@ -96,34 +98,23 @@ void CUnitMgr::Intputkey_reaction(const int& nkey)
 		}
 	}
 }
-void CUnitMgr::Calculate_UnitCenterPt(void)
+void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos , CObj* ptarget)
 {
 	list<CObj*>::iterator iter = m_curunitList.begin();
 	list<CObj*>::iterator iter_end = m_curunitList.end();
 
-	map<int , CObj*> map_unitidxsort;
 
-
-	int idx = 0;
-	
-	for( ; iter != iter_end; ++iter)
-	{
-		idx = (*iter)->Getcuridx(32);
-		map_unitidxsort.insert(map<int , CObj*>::value_type(idx , (*iter)) );		
-	}
-
-
-	map<int , CObj*>::iterator map_iter = map_unitidxsort.begin();
-	CObj* pobj = map_iter->second;
+	CObj* pobj = m_curunitList.front();
 	m_vUnitcenterpt = D3DXVECTOR2(0,0);
 	m_magicbox_unitcnt = 0;
 
 	iter	 = m_curunitList.begin();
 	iter_end = m_curunitList.end();
 
+	CComponent* com_targetsearch = NULL;
 	for( ; iter != iter_end; ++iter) 
 	{
-		if(CMyMath::pos_distance(pobj->GetPos() , (*iter)->GetPos()) < 300*300)
+		if(CMyMath::pos_distance(pobj->GetPos() , (*iter)->GetPos()) < 400*400)
 		{
 			++m_magicbox_unitcnt;
 			m_vUnitcenterpt += (*iter)->GetPos();
@@ -132,16 +123,20 @@ void CUnitMgr::Calculate_UnitCenterPt(void)
 		else
 			(*iter)->SetMagicBox(false);
 
+		com_targetsearch = (*iter)->GetComponent(COM_TARGET_SEARCH);
+		if(NULL != com_targetsearch)
+		{
+			((CCom_Targetsearch*)com_targetsearch)->SetTarget(ptarget);
+		}
+
 	}
 
 	m_vUnitcenterpt /= float(m_magicbox_unitcnt);
-	m_vGoalPos = CMouseMgr::GetAddScrollvMousePt();
+	m_vGoalPos = vgoalpos;
 	m_vGoalIdx = CMyMath::Pos_to_index(m_vGoalPos , 32);
 
 	m_vparallel_travel = m_vGoalPos - m_vUnitcenterpt;
 
-	printf("unit_goal %f , %f\n" , m_vGoalPos.x , m_vGoalPos.y);
-	printf("unit_index %d\n" , m_vGoalIdx);
 }
 
 bool CUnitMgr::GetUnitlistempty(void)
@@ -150,14 +145,14 @@ bool CUnitMgr::GetUnitlistempty(void)
 		return true;
 	else
 	{
-		list<CObj*>::iterator iter = m_curunitList.begin();
-		list<CObj*>::iterator iter_end = m_curunitList.end();
+		//list<CObj*>::iterator iter = m_curunitList.begin();
+		//list<CObj*>::iterator iter_end = m_curunitList.end();
 
-		for( ; iter != iter_end; ++iter)
-		{
-			if(BUILDING == (*iter)->GetCategory())
-				return true;
-		}
+		//for( ; iter != iter_end; ++iter)
+		//{
+		//	if(BUILDING == (*iter)->GetCategory())
+		//		return true;
+		//}
 	}
 
 	return false;
@@ -178,4 +173,5 @@ int CUnitMgr::GetGoalidx(void)
 {
 	return m_vGoalIdx;
 }
+
 

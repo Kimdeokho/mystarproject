@@ -40,7 +40,7 @@ void CGeneraEff::Update(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
-	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	m_frame.fcurframe += GETTIME*m_frame.fframespeed*m_ftimespeed;
 
 	if(m_frame.fcurframe >= m_frame.umax)
 	{

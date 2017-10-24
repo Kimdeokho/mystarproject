@@ -9,7 +9,7 @@
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
 #include "Com_multitexture.h"
-#include "Com_Targetsearch.h"
+#include "Com_Distancesearch.h"
 #include "Com_singletexture.h"
 #include "Com_DroneAnim.h"
 
@@ -31,7 +31,7 @@ CDrone::~CDrone(void)
 
 void CDrone::Initialize(void)
 {
-	CObj::Initialize();
+	CObj::unit_area_Initialize();
 	CUnit::Initialize();
 	m_curtex = NULL;
 
@@ -69,12 +69,12 @@ void CDrone::Initialize(void)
 
 	//m_panimation = new CCom_DroneAnim(m_matWorld , m_curtex);
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_DroneAnim(m_matWorld , m_curtex)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );	
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Targetsearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY) ) );	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY) ) );	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex)) ) ;	
 
 
@@ -86,14 +86,14 @@ void CDrone::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-	m_select_ui = new CUI_Select(L"Select32" , m_matWorld);
+	m_select_ui = new CUI_Select(L"Select32" , m_vPos , 13);
 	m_select_ui->Initialize();
 	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
 }
 
 void CDrone::Update(void)
 {
-	CObj::idx_update();
+	CObj::area_update();
 
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -102,10 +102,9 @@ void CDrone::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
-	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
-	m_matshadow = m_matWorld;
-	m_matshadow._42 += 7;
+	m_select_ui->Update();
+
+
 
 
 	if(IDLE == m_unitinfo.estate)
@@ -124,7 +123,10 @@ void CDrone::Update(void)
 
 void CDrone::Render(void)
 {
-
+	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
+	m_matshadow = m_matWorld;
+	m_matshadow._42 += 7;
 	//오브젝트 내에서 소팅할 수 있는 렌더러가 필요하겠다
 	const TEXINFO*	ptemp = NULL;
 	ptemp = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , L"Select32");
@@ -211,5 +213,7 @@ void CDrone::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 void CDrone::Release(void)
 {
+	CObj::area_release();
+
 	m_select_ui->SetDestroy(true);
 }

@@ -24,10 +24,9 @@
 #include "GeneraEff.h"
 #include "Area_Mgr.h"
 #include "ObjMgr.h"
-
+#include "UI_Select.h"
 CTank::CTank(void)
 {
-	m_tankbody = NULL;
 	m_tankbarrel = NULL;
 
 }
@@ -41,13 +40,13 @@ void CTank::Initialize(void)
 {
 	m_vcurdir = CMyMath::dgree_to_dir(2*22.5f);
 
-	CObj::Initialize();
+	CObj::unit_area_Initialize();
 	CUnit::Initialize();
 
 	m_sortID = SORT_GROUND;	
-
 	m_ecategory = UNIT;
 	m_eteamnumber = TEAM_0;
+
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = IDLE;
@@ -74,11 +73,12 @@ void CTank::Initialize(void)
 
 
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 16);
+	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex , true);
 	m_com_anim = new CCom_TankbodyAnim(m_matWorld , m_curtex);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex) ) ) ;	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , m_com_collision ) ) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );
 
@@ -90,11 +90,15 @@ void CTank::Initialize(void)
 
 
 	m_tankbarrel->Initialize();//포신은 제일 마지막에 초기화
+
+	m_select_ui = new CUI_Select(L"Select62" , m_vPos , 8);
+	m_select_ui->Initialize();
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
 }
 
 void CTank::Update(void)
 {
-	CObj::idx_update();
+	CObj::area_update();
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -102,8 +106,9 @@ void CTank::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
-	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
+	m_select_ui->Update();
+
+
 
 
 	if(IDLE == m_unitinfo.estate)
@@ -178,6 +183,9 @@ void CTank::Update(void)
 void CTank::Render(void)
 {
 
+	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
+
 	if(NULL == m_curtex)
 		return;
 
@@ -197,8 +205,8 @@ void CTank::Render(void)
 
 	m_tankbarrel->Render();
 
-
-
+	if(NULL != m_com_pathfind)
+		m_com_pathfind->Render();
 }
 void CTank::Transform(void)
 {
@@ -217,13 +225,15 @@ void CTank::Transform_Tankbody(void)
 	m_com_anim->Initialize(this);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32, 16);
 	m_com_pathfind->Initialize(this);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE , m_com_pathfind));
 
+	((CCom_Collision*)m_com_collision)->SetCollsearch(true);
+
 	//변신 끝
 	m_btransform_ready = false;
-
+	
 }
 
 void CTank::Transform_Siegebody(void)
@@ -240,6 +250,8 @@ void CTank::Transform_Siegebody(void)
 	m_com_anim = new CCom_SiegebodyAnim(m_matWorld , m_curtex);
 	m_com_anim->Initialize(this);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));
+
+	((CCom_Collision*)m_com_collision)->SetCollsearch(false);
 }
 
 void CTank::barrel_sync(void)
@@ -286,7 +298,7 @@ void CTank::barrel_sync(void)
 	}
 
 	vbarrelpos += m_vPos;
-	m_tankbarrel->SetPos(vbarrelpos.x , vbarrelpos.y);
+	((CTankbarrel*)m_tankbarrel)->SetbarrelPos(m_vPos , vbarrelpos);
 
 }
 void CTank::Inputkey_reaction(const int& nkey)
@@ -304,7 +316,6 @@ void CTank::Inputkey_reaction(const int& nkey)
 			}
 		}
 
-		m_tankbarrel->Inputkey_reaction('O');
 	}
 	if( 'W' == nkey)
 	{
@@ -318,24 +329,30 @@ void CTank::Inputkey_reaction(const int& nkey)
 		}
 		else
 		{
-			m_unitinfo.estate = MOVE;
-			m_unitinfo.eorder = ORDER_MOVE;
-			m_tankbarrel->SetOrder(ORDER_MOVE);
-			m_tankbarrel->SetState(MOVE);
-
-			if(NULL != m_com_pathfind)
+			if(TRANSFORMING != m_unitinfo.estate)
 			{
-				D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+				m_unitinfo.estate = MOVE;
+				m_unitinfo.eorder = ORDER_MOVE;
+				m_tankbarrel->SetOrder(ORDER_MOVE);
+				m_tankbarrel->SetState(MOVE);
+
+				if(NULL != m_com_pathfind)
+				{
+					D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
-				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
-				m_bmagicbox = false;
+					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+					((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
+					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
+					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+					m_bmagicbox = false;
+				}
 			}
+
 		}
 	}
+
+	m_tankbarrel->Inputkey_reaction(nkey);
 }
 
 void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
@@ -348,41 +365,32 @@ void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 		else
 		{
-			m_unitinfo.eorder = ORDER_MOVE_ATTACK;
-			m_unitinfo.estate = MOVE;
-			m_tankbarrel->SetOrder(ORDER_MOVE_ATTACK);
-			m_tankbarrel->SetState(MOVE);
-
-			if(NULL != m_com_pathfind)
+			if(TRANSFORMING != m_unitinfo.estate)
 			{
-				D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+				m_unitinfo.eorder = ORDER_MOVE_ATTACK;
+				m_unitinfo.estate = MOVE;
+				m_tankbarrel->SetOrder(ORDER_MOVE_ATTACK);
+				m_tankbarrel->SetState(MOVE);
+				
+
+				if(NULL != m_com_pathfind)
+				{
+					D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
-				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
-				m_bmagicbox = false;
+					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+					((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
+					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
+					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+					m_bmagicbox = false;
+				}
 			}
+
 		}
 
 	}
-}
-void CTank::SetDestroy(bool bdestroy)
-{
-	m_bdestroy = bdestroy;
 
-	if(true == m_bdestroy)
-	{
-		CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
-		CArea_Mgr::GetInstance()->ReleaseObj_Area256(m_curidx256 , this);
-		CArea_Mgr::GetInstance()->ReleaseObj_Area512(m_curidx512 , this);
-
-		CObj* pobj = new CGeneraEff(L"LargeBang" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
-		pobj->Initialize();
-		CObjMgr::GetInstance()->AddEffect(pobj);
-	}
+	m_tankbarrel->Inputkey_reaction(firstkey , secondkey);
 }
 bool CTank::GetTransformReady(void)
 {
@@ -394,7 +402,34 @@ void CTank::SetTransformReady(bool btransform_ready)
 }
 void CTank::Release(void)
 {
-	//Safe_Delete(m_tankbody);
+	CObj::area_release();
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
 	Safe_Delete(m_tankbarrel);
+}
+
+CComponent* CTank::GetComponent(COMPONENT_LIST ecom_name)
+{
+	if(COM_TARGET_SEARCH == ecom_name)
+		return m_tankbarrel->GetComponent(ecom_name);
+	else
+	{
+		COMPONENT_PAIR::iterator iter;
+		iter = m_componentlist.find(ecom_name);
+
+		if(iter != m_componentlist.end())
+			return iter->second;
+
+		return NULL;
+	}
+}
+
+void CTank::Dead(void)
+{
+
+	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
 }
 

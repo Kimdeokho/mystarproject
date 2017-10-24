@@ -480,36 +480,116 @@
 					>
 				</File>
 				<Filter
-					Name="Terran"
-					>
-					<Filter
-						Name="Building"
-						>
-					</Filter>
-					<Filter
-						Name="Unit"
-						>
-					</Filter>
-				</Filter>
-				<Filter
 					Name="Building"
 					>
 					<File
-						RelativePath=".\Hatchery.cpp"
+						RelativePath=".\GasBuilding.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Hatchery.h"
+						RelativePath=".\GasBuilding.h"
 						>
 					</File>
-					<File
-						RelativePath=".\Zerg_Building.cpp"
+					<Filter
+						Name="Zerg"
 						>
-					</File>
-					<File
-						RelativePath=".\Zerg_Building.h"
+						<File
+							RelativePath=".\Hatchery.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Hatchery.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Zerg_building.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Zerg_building.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Terran"
 						>
-					</File>
+						<File
+							RelativePath=".\Comandcenter.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Comandcenter.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Factory.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Factory.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Starport.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Starport.h"
+							>
+						</File>
+						<File
+							RelativePath=".\T_gas.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\T_gas.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Terran_building.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Terran_building.h"
+							>
+						</File>
+						<Filter
+							Name="Part"
+							>
+							<File
+								RelativePath=".\Comset.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Comset.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Factory_addon.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Factory_addon.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Nuclear_part.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Nuclear_part.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Star_addon.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Star_addon.h"
+								>
+							</File>
+						</Filter>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="Unit"
@@ -520,6 +600,14 @@
 					</File>
 					<File
 						RelativePath=".\Unit.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Workman.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Workman.h"
 						>
 					</File>
 					<Filter
@@ -551,6 +639,14 @@
 						</File>
 						<File
 							RelativePath=".\Marine.h"
+							>
+						</File>
+						<File
+							RelativePath=".\SCV.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\SCV.h"
 							>
 						</File>
 						<Filter
@@ -587,6 +683,26 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Fragment"
+					>
+					<File
+						RelativePath=".\Gas_frag.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Gas_frag.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Mineral_frag.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Mineral_frag.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Component"
@@ -605,22 +721,6 @@
 				</File>
 				<File
 					RelativePath=".\Com_fog.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_Pathfind.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_Pathfind.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_Targetsearch.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Com_Targetsearch.h"
 					>
 				</File>
 				<File
@@ -687,6 +787,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_PartAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_PartAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_SCVAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_SCVAnim.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_SiegebarrelAnim.cpp"
 						>
 					</File>
@@ -703,6 +819,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_T_gasAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_T_gasAnim.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_TankbarrelAnim.cpp"
 						>
 					</File>
@@ -716,6 +840,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_TankbodyAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TBuildingAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TBuildingAnim.h"
 						>
 					</File>
 				</Filter>
@@ -739,6 +871,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_WSCV.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WSCV.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_WSiege.cpp"
 						>
 					</File>
@@ -755,10 +895,82 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="TargetSearch"
+					>
+					<File
+						RelativePath=".\Com_Airsearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Airsearch.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Distancesearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Distancesearch.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Meleesearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Meleesearch.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Targetsearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Targetsearch.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Worksearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Worksearch.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Pathfind"
+					>
+					<File
+						RelativePath=".\Com_AirPathfind.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_AirPathfind.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Pathfind.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Pathfind.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="UI"
 				>
+				<File
+					RelativePath=".\Building_Preview.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Building_Preview.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Minimap.cpp"
 					>

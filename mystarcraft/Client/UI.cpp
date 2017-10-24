@@ -34,12 +34,7 @@ void CUI::Release(void)
 {
 
 }
-
-void CUI::SetSelect(bool bselect)
-{
-	m_bselect = bselect;
-}
-void CUI::SetDestroy(bool bdestroy)
+void CUI::SetDestroy(bool bdestroy )
 {
 	m_bdestroy = bdestroy;
 }

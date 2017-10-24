@@ -10,8 +10,9 @@ public:
 
 private:
 	map<wstring, CTexture*>		m_TileTexture;
+	map<wstring, CTexture*>		m_StateTexture; // 방향은 없지만 상태가 있는 텍스쳐들
 
-	map<wstring, CTexture*>		m_MultilEffTex;
+	map<wstring, CTexture*>		m_MultilEffTex; //방향은 있지만 상태가 없는 텍스쳐들
 	map<wstring, CTexture*>		m_GeneralTex;
 	map<wstring, CTexture*>		m_SinglelTex;
 
@@ -29,6 +30,11 @@ public:
 	bool	Read_Texture(TCHAR*	szPath);
 public:
 	HRESULT	Insert_TileMultiTex(const wstring& wstrFilePath
+		, const wstring& wstrObjKey
+		, const wstring& wstrStateKey
+		, const int& iCnt);
+
+	HRESULT	Insert_StateMultiTex(const wstring& wstrFilePath
 		, const wstring& wstrObjKey
 		, const wstring& wstrStateKey
 		, const int& iCnt);
@@ -57,6 +63,7 @@ public:
 		, const int& iCnt);
 public:
 	const vector<TEXINFO*>*	GetTileTexture_vecset(const wstring& wstrObjkey,	const wstring& wstrStatekey);
+	const vector<TEXINFO*>*	GetStateTexture_vecset(const wstring& wstrObjkey,	const wstring& wstrStatekey);
 	const vector<TEXINFO*>* GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
 	const vector<TEXINFO*>* GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
 	const TEXINFO*			GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);

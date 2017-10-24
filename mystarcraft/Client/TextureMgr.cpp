@@ -37,6 +37,28 @@ HRESULT CTextureMgr::Insert_TileMultiTex( const wstring& wstrFilePath
 
 	return S_OK;
 }
+HRESULT CTextureMgr::Insert_StateMultiTex( const wstring& wstrFilePath 
+										 , const wstring& wstrObjKey 
+										 , const wstring& wstrStateKey /*= L"" */
+										 , const int& iCnt /*= 0*/ )
+{
+	map<wstring, CTexture*>::iterator	iter = m_StateTexture.find(wstrObjKey);
+
+	if(iter == m_StateTexture.end()) //키값을 못찾았다면
+	{
+		CTexture*	pTexture = NULL;
+		pTexture = new CMultiTexture;
+
+		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
+
+		m_StateTexture.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
+	}
+	else
+		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
+
+	return S_OK;
+}
+
 HRESULT CTextureMgr::Insert_ZUnitMultiTex( const wstring& wstrFilePath 
 										 , const wstring& wstrObjKey 
 										 , const wstring& wstrStateKey /*= L"" */
@@ -143,6 +165,14 @@ void CTextureMgr::Release( void )
 		::Safe_Delete(iter->second);
 	}
 	m_TileTexture.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_StateTexture.begin();
+		iter != m_StateTexture.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_StateTexture.clear();
+
 
 	for(map<wstring, CTexture*>::iterator iter = m_SinglelTex.begin();
 		iter != m_SinglelTex.end(); ++iter)
@@ -398,6 +428,9 @@ HRESULT CTextureMgr::Read_StateImgPath(const wstring& wstrFilePath ,TCHAR* szPat
 
 		if(!_tcscmp(szKind , L"Tile"))
 			Insert_TileMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		else
+			Insert_StateMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+
 
 
 		lstrcpy(szPath , szImgPath);
@@ -413,6 +446,20 @@ const vector<TEXINFO*>* CTextureMgr::GetTileTexture_vecset(const wstring& wstrOb
 	/*키값과 상태값은 있으나 방향이 없다*/
 	map<wstring , CTexture*>::iterator iter = m_TileTexture.find(wstrObjey);
 	if(m_TileTexture.end() != iter)
+	{
+		/*키 값을 찾았다.*/
+		CTexture* pTexture = iter->second;
+
+		return ((CMultiTexture*)pTexture)->GetTextureSet(wstrStatekey);
+	}
+	else
+		return NULL;
+}
+const vector<TEXINFO*>* CTextureMgr::GetStateTexture_vecset(const wstring& wstrObjey, const wstring& wstrStatekey)
+{
+	/*키값과 상태값은 있으나 방향이 없다*/
+	map<wstring , CTexture*>::iterator iter = m_StateTexture.find(wstrObjey);
+	if(m_StateTexture.end() != iter)
 	{
 		/*키 값을 찾았다.*/
 		CTexture* pTexture = iter->second;
