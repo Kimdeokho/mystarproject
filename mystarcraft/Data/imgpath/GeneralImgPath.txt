@@ -25,3 +25,5 @@ BUILDING|NONE|COMSET_LINK|4|..\Texture\General\terran_build\comset_link\comset_l
 BUILDING|NONE|NC_LINK|5|..\Texture\General\terran_build\nc_link\nc_link%d.png
 BUILDING|NONE|FACTORY_LINK|4|..\Texture\General\terran_build\factory_link\factory_link%d.png
 BUILDING|NONE|STAR_LINK|5|..\Texture\General\terran_build\star_link\star_link%d.png
+BUILDING|NONE|GHOST_LINK|5|..\Texture\General\terran_build\ghost_link\ghost_link%d.png
+BUILDING|NONE|BATTLE_LINK|5|..\Texture\General\terran_build\battle_link\battle_link%d.png

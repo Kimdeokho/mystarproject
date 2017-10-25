@@ -5,6 +5,7 @@
 #include "ComanderMgr.h"
 #include "Mineral.h"
 
+#include "Building_Preview.h"
 CWorkman::CWorkman(void)
 {
 	m_select_ui = NULL;
@@ -18,10 +19,13 @@ CWorkman::CWorkman(void)
 	m_charge_building = NULL;
 
 	m_is_preview = false;
+
+	m_main_preview = new CBuilding_Preview;
 }
 
 CWorkman::~CWorkman(void)
 {
+	Safe_Delete(m_main_preview);
 	Release();
 }
 

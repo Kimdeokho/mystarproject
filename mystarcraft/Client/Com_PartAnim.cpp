@@ -31,6 +31,9 @@ void CCom_PartAnim::Initialize(CObj* pobj)
 	m_fbuildtime = m_pobj->GetUnitinfo().fbuildtime;
 
 	SetAnimation(L"BUILD");
+
+	m_curtex = (*m_generaltex)[0];
+	//m_linktex = (*m_subgeneral_tex)[0];
 }
 
 void CCom_PartAnim::Update(void)

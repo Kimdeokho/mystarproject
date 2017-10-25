@@ -496,6 +496,35 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		}
 	}
 
+	if(true == m_bOnceKeyDown_complete['E'])
+	{
+		m_bOnceKeyDown_complete['E'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'E');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'E');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			//if(CUnitMgr::GetInstance()->GetUnitlistempty())
+			//	m_clickwating['C'] = false;
+			//else
+			//	m_clickwating['C'] = true;
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('E');
+		}
+	}
+
 	if(true == m_bOnceKeyDown_complete['F'])
 	{
 		m_bOnceKeyDown_complete['F'] = false;
@@ -524,12 +553,35 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Intputkey_reaction('F');
 		}
 	}
+	if(true == m_bOnceKeyDown_complete['I'])
+	{
+		m_bOnceKeyDown_complete['I'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'I');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'I');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			CUnitMgr::GetInstance()->Intputkey_reaction('I');
+		}
+	}
 
 	if(true == m_bOnceKeyDown_complete['L'])
 	{
 		m_bOnceKeyDown_complete['L'] = false;
 
-		m_clickwating['L'] = true;
+		//m_clickwating['L'] = true;
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('L');
 	}
@@ -538,9 +590,34 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 	{
 		m_bOnceKeyDown_complete['N'] = false;
 
-		m_clickwating['N'] = true;
+		//m_clickwating['N'] = true;
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('N');
+	}
+
+	if(true == m_bOnceKeyDown_complete['P'])
+	{
+		m_bOnceKeyDown_complete['P'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'P');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'P');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			CUnitMgr::GetInstance()->Intputkey_reaction('P');
+		}
+
 	}
 
 	if(true == m_bOnceKeyDown_complete['Q'])

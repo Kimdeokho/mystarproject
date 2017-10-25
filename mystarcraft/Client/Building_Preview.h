@@ -25,8 +25,8 @@ public:
 	void SetActive(bool bactive);
 	void SetPreviewInfo(const TCHAR* objkey , BUILD_TECH ebuild , const int& icol , const int& irow , CObj* pobj);
 	bool GetActive(void);
-	bool Install_check(const PREVIEW_INFO& previewinfo , CObj* pobj);
-	const PREVIEW_INFO& GetPreviewInfo(void);
+	bool Install_check(void);
+	const PREVIEW_INFO GetPreviewInfo(void);
 	
 public:
 	virtual void Initialize(void);

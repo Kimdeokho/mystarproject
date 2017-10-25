@@ -514,6 +514,14 @@
 						Name="Terran"
 						>
 						<File
+							RelativePath=".\Barrack.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Barrack.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Comandcenter.cpp"
 							>
 						</File>
@@ -522,11 +530,27 @@
 							>
 						</File>
 						<File
+							RelativePath=".\Engineering.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Engineering.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Factory.cpp"
 							>
 						</File>
 						<File
 							RelativePath=".\Factory.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Sience.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Sience.h"
 							>
 						</File>
 						<File
@@ -557,6 +581,14 @@
 							Name="Part"
 							>
 							<File
+								RelativePath=".\Battle_addon.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Battle_addon.h"
+								>
+							</File>
+							<File
 								RelativePath=".\Comset.cpp"
 								>
 							</File>
@@ -570,6 +602,14 @@
 							</File>
 							<File
 								RelativePath=".\Factory_addon.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Ghost_addon.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Ghost_addon.h"
 								>
 							</File>
 							<File

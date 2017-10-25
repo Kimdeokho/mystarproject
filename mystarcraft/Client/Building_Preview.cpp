@@ -62,12 +62,13 @@ void CBuilding_Preview::Update(void)
 	//m_preview_info.vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 	//m_preview_info.vpos = CMyMath::index_to_Pos( CMyMath::Pos_to_index(m_preview_info.vpos , 32)  , 128 , 32);
 
-	m_preview_info.vcenter_pos = m_preview_info.vpos + m_weight;
+	//m_preview_info.vcenter_pos = m_preview_info.vpos + m_weight;
 
 }
 void CBuilding_Preview::SetPos(const D3DXVECTOR2& vpos)
 {
 	m_preview_info.vpos = CMyMath::index_to_Pos( CMyMath::Pos_to_index(vpos , 32)  , 128 , 32);
+	m_preview_info.vcenter_pos = m_preview_info.vpos + m_weight;
 }
 void CBuilding_Preview::Render(void)
 {
@@ -151,19 +152,18 @@ bool CBuilding_Preview::GetActive(void)
 {
 	return m_active;
 }
-bool CBuilding_Preview::Install_check(const PREVIEW_INFO& previewinfo , CObj* pobj)
+bool CBuilding_Preview::Install_check(void)
 {
-
 	int idx32 = 0;
 	int idx64 = 0;
-	D3DXVECTOR2 vtemp = previewinfo.vpos;
+	D3DXVECTOR2 vtemp = m_preview_info.vpos;
 	MYRECT<float>	temprc;
-	for(int i = 0; i < previewinfo.icol; ++i)
+	for(int i = 0; i < m_preview_info.icol; ++i)
 	{
-		vtemp.y = previewinfo.vpos.y + i*32;
-		for(int j = 0; j < previewinfo.irow; ++j)
+		vtemp.y = m_preview_info.vpos.y + i*32;
+		for(int j = 0; j < m_preview_info.irow; ++j)
 		{
-			vtemp.x = previewinfo.vpos.x + j*32;
+			vtemp.x = m_preview_info.vpos.x + j*32;
 			idx32 = CMyMath::Pos_to_index(vtemp  , 32);
 			idx64 = CMyMath::Pos_to_index(vtemp , 64);
 
@@ -172,13 +172,10 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& previewinfo , CObj* po
 			temprc.top = vtemp.y - 16;
 			temprc.bottom = vtemp.y + 16;
 
-			m_tempmat._41 = vtemp.x - CScrollMgr::m_fScrollX;
-			m_tempmat._42 = vtemp.y - CScrollMgr::m_fScrollY;
-			m_pSprite->SetTransform(&m_tempmat);
 			BYTE op = CTileManager::GetInstance()->GetTileOption(idx32);
 			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogSightOp(idx32);
 
-			if(T_GAS == previewinfo.ebuild )
+			if(T_GAS == m_preview_info.ebuild )
 			{
 				if(RESOURCE_GAS != op || FOG_BLACK == fog_sight)
 				{
@@ -189,7 +186,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& previewinfo , CObj* po
 			}
 			else
 			{
-				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( pobj  , idx64 , temprc) &&
+				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
 					MOVE_OK == op &&
 					FOG_BLACK != fog_sight)
 				{
@@ -207,7 +204,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& previewinfo , CObj* po
 	return true;
 }
 
-const PREVIEW_INFO& CBuilding_Preview::GetPreviewInfo(void)
+const PREVIEW_INFO CBuilding_Preview::GetPreviewInfo(void)
 {
 	return m_preview_info;
 }

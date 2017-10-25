@@ -100,7 +100,12 @@ void CObjMgr::Destroy_Update(void)
 				fy = (*iter)->GetY();
 				sortid = (*iter)->GetsortID();
 				if(true == (*iter)->Be_in_camera()  )
-					m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+				{
+					if(SORT_AIR == sortid)
+						m_air_rendersort.push_back( (*iter) );
+					else
+						m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+				}
 
 				++iter;
 			}
@@ -215,6 +220,20 @@ void CObjMgr::Render(void)
 
 		m_rendersort[i].clear();
 	}
+
+
+	if(!m_air_rendersort.empty())
+	{
+		list<CObj*>::iterator iter = m_air_rendersort.begin();
+		list<CObj*>::iterator iter_end = m_air_rendersort.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Render();
+		}
+		m_air_rendersort.clear();
+	}
+
 }
 void CObjMgr::LoadObj(HANDLE hFile)
 {

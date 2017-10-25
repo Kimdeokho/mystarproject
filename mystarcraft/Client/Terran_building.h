@@ -1,6 +1,7 @@
 #pragma once
 #include "obj.h"
 
+class CUI;
 class CTerran_building :
 	public CObj
 {
@@ -29,11 +30,14 @@ protected:
 	bool			m_is_partinstall; //착지시 부속건물 설치할꺼임?
 	bool			m_is_autoinstall;
 
-	PREVIEW_INFO	m_preview_info;
-	PREVIEW_INFO	m_subpreview_info;
+	//PREVIEW_INFO	m_preview_info;
+	//PREVIEW_INFO	m_subpreview_info;
 
 	CObj*			m_mainbuilding;
 	CObj*			m_partbuilding;
+
+	CUI*	m_main_preview;
+CUI*	m_sub_preview;
 public:
 	void building_area_Initialize(const int& col , const int& row);
 	void building_pos_Initialize(const int& col , const int& row);
@@ -45,7 +49,7 @@ public:
 
 	
 	void TakeOff(void);
-	void Landing_move(D3DXVECTOR2& vpos);
+	void Landing_move(D3DXVECTOR2 vpos);
 	void SetPartBuilding(CObj* pobj);
 public:
 	virtual void Initialize(void);

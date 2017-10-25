@@ -24,6 +24,9 @@ BUILDING|None|T_FACTORY|AIR|3|..\Texture\Multi\Terran\Building\factory\air\facto
 BUILDING|None|T_STARPORT|IDLE|1|..\Texture\Multi\Terran\Building\starport\idle\star_idle%d.png
 BUILDING|None|T_STARPORT|BUILD|4|..\Texture\Multi\Terran\Building\starport\build\star_build%d.png
 BUILDING|None|T_STARPORT|AIR|3|..\Texture\Multi\Terran\Building\starport\air\star_air%d.png
+BUILDING|None|T_SIENCE|IDLE|1|..\Texture\Multi\Terran\Building\sience\idle\sience_idle%d.png
+BUILDING|None|T_SIENCE|BUILD|4|..\Texture\Multi\Terran\Building\sience\build\sience_build%d.png
+BUILDING|None|T_SIENCE|AIR|4|..\Texture\Multi\Terran\Building\sience\air\sience_air%d.png
 BUILDING|None|T_GAS|IDLE|1|..\Texture\Multi\Terran\Building\gas\idle\T_gas_idle%d.png
 BUILDING|None|T_GAS|BUILD|4|..\Texture\Multi\Terran\Building\gas\build\T_gas_build%d.png
 BUILDING|None|T_COMSET|BUILD|4|..\Texture\Multi\Terran\Building\comset\build\comset_build%d.png
@@ -35,3 +38,14 @@ BUILDING|None|T_STAR_ADDON|BUILD|4|..\Texture\Multi\Terran\Building\star_addon\b
 BUILDING|None|T_STAR_ADDON|IDLE|1|..\Texture\Multi\Terran\Building\star_addon\idle\star_addon_idle%d.png
 BUILDING|None|T_NC_PART|IDLE|1|..\Texture\Multi\Terran\Building\nuclear_part\idle\nc_idle%d.png
 BUILDING|None|T_NC_PART|BUILD|4|..\Texture\Multi\Terran\Building\nuclear_part\build\nc_build%d.png
+BUILDING|None|T_GHOST_ADDON|IDLE|1|..\Texture\Multi\Terran\Building\ghost_addon\idle\ghost_idle%d.png
+BUILDING|None|T_GHOST_ADDON|BUILD|4|..\Texture\Multi\Terran\Building\ghost_addon\build\ghost_build%d.png
+BUILDING|None|T_BATTLE_ADDON|IDLE|1|..\Texture\Multi\Terran\Building\battle_addon\idle\battle_idle%d.png
+BUILDING|None|T_BATTLE_ADDON|BUILD|4|..\Texture\Multi\Terran\Building\battle_addon\build\battle_build%d.png
+BUILDING|None|T_BARRACK|IDLE|1|..\Texture\Multi\Terran\Building\barrack\idle\barrack_idle%d.png
+BUILDING|None|T_BARRACK|BUILD|4|..\Texture\Multi\Terran\Building\barrack\build\barrack_build%d.png
+BUILDING|None|T_BARRACK|AIR|3|..\Texture\Multi\Terran\Building\barrack\air\barrack_air%d.png
+BUILDING|None|T_BARRACK|WORK|2|..\Texture\Multi\Terran\Building\barrack\work\barrack_work%d.png
+BUILDING|None|T_EB|BUILD|4|..\Texture\Multi\Terran\Building\engineering\build\eb_build%d.png
+BUILDING|None|T_EB|AIR|2|..\Texture\Multi\Terran\Building\engineering\air\eb_air%d.png
+BUILDING|None|T_EB|IDLE|1|..\Texture\Multi\Terran\Building\engineering\idle\eb_idle%d.png

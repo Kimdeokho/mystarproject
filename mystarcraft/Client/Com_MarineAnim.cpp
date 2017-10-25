@@ -28,6 +28,7 @@ void CCom_MarineAnim::Initialize(CObj* pobj)
 	m_rotation_speed = 40;
 
 	CCom_Animation::InitTexidx();
+
 }
 
 void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)

@@ -5,7 +5,6 @@
 #include "Com_PartAnim.h"
 #include "Com_Collision.h"
 #include "Com_fog.h"
-#include "Com_AirPathfind.h"
 
 #include "ScrollMgr.h"
 #include "MyMath.h"
@@ -41,8 +40,8 @@ void CFactory_addon::Initialize(void)
 
 	m_vertex.left = 32.f;//원래 37이던데 이유는 흠...
 	m_vertex.right = 32.f;
-	m_vertex.top =  16.f;
-	m_vertex.bottom = 26.f;
+	m_vertex.top =  24.f;
+	m_vertex.bottom = 25.f;
 
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;

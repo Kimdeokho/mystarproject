@@ -105,8 +105,8 @@ void CLineMgr::minicambox_render(const MYRECT<float>& rc)
 }
 void CLineMgr::Select_unit(void)
 {	
-	if(true == CComanderMgr::GetInstance()->GetPreview_Active())
-		return;
+	//if(true == CComanderMgr::GetInstance()->GetPreview_Active())
+	//	return;
 
 
 	D3DXVECTOR2 vMousept;

@@ -6,6 +6,8 @@
 #include "Area_Mgr.h"
 #include "Component.h"
 #include "Com_AirPathfind.h"
+
+#include "Building_Preview.h"
 CTerran_building::CTerran_building(void)
 {
 	D3DXMatrixIdentity(&m_matshadow);
@@ -17,6 +19,9 @@ CTerran_building::CTerran_building(void)
 	m_is_autoinstall = false;
 
 	m_partbuilding = NULL;
+
+	m_main_preview = new CBuilding_Preview;
+	m_sub_preview = new CBuilding_Preview;
 }
 
 CTerran_building::~CTerran_building(void)
@@ -27,6 +32,9 @@ CTerran_building::~CTerran_building(void)
 
 	vector<int>().swap(m_areaidx_vec);
 	vector<int>().swap(m_old_areaidx_vec);
+
+	Safe_Delete(m_main_preview);
+	Safe_Delete(m_sub_preview);
 }
 
 void CTerran_building::Initialize(void)
@@ -171,7 +179,7 @@ void CTerran_building::TakeOff(void)
 		((CTerran_building*)m_partbuilding)->Setlink(false);
 	}
 }
-void CTerran_building::Landing_move(D3DXVECTOR2& vpos)
+void CTerran_building::Landing_move(D3DXVECTOR2 vpos)
 {
 	m_unitinfo.eorder = ORDER_LANDING_MOVE;
 	m_vgroundpos.y = vpos.y + m_weight.y;

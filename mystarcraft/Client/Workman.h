@@ -26,6 +26,7 @@ protected:
 	CObj*			m_charge_building;//짓고있는 건물
 
 	bool			m_is_preview;
+	CUI*			m_main_preview;
 protected:
 	TEXINFO*						m_curtex;
 public:

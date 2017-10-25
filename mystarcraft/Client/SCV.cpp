@@ -27,6 +27,9 @@
 #include "Factory.h"
 #include "Starport.h"
 #include "T_gas.h"
+#include "Sience.h"
+#include "Barrack.h"
+#include "Engineering.h"
 
 #include "Building_Preview.h"
 #include "TileManager.h"
@@ -214,13 +217,17 @@ void CSCV::Update(void)
 
 	if(true == m_is_preview)
 	{
-		CComanderMgr::GetInstance()->SetPreviewPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
+		((CBuilding_Preview*)m_main_preview)->SetPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
+		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
+		//CComanderMgr::GetInstance()->SetPreviewPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
 	}
 
 }
 
 void CSCV::Render(void)
 {
+	if(NULL == m_curtex)
+		return;
 	if(BOARDING == m_unitinfo.estate)
 		return;
 
@@ -259,22 +266,20 @@ void CSCV::Inputkey_reaction(const int& nkey)
 	m_is_preview = false;
 	if(VK_LBUTTON == nkey)
 	{
-		CUI* preview = CComanderMgr::GetInstance()->GetPreview();
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 
-		PREVIEW_INFO previewinfo =  ((CBuilding_Preview*)preview)->GetPreviewInfo();
 
-		if(true == ((CBuilding_Preview*)preview)->GetActive())
+		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
 		{
 			m_is_preview = true;
-			if(true == ((CBuilding_Preview*)preview)->Install_check(previewinfo , this))
+			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
 			{				
 				COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_TARGET_SEARCH);
 				iter->second = m_com_worksearch;
 				((CCom_Targetsearch*)m_com_worksearch)->SetTarget(ptarget);
 
 				m_unitinfo.eorder = ORDER_MOVE_BUILD;
-				m_preview_info = ((CBuilding_Preview*)preview)->GetPreviewInfo();
+				m_preview_info = ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo();
 
 				CTileManager::GetInstance()->Flowfield_Pathfinding(m_preview_info.vcenter_pos);
 				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(m_preview_info.vcenter_pos);
@@ -282,7 +287,7 @@ void CSCV::Inputkey_reaction(const int& nkey)
 				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(false);
 
-				((CBuilding_Preview*)preview)->SetActive(false);
+				((CBuilding_Preview*)m_main_preview)->SetActive(false);
 
 				//위치에 도착하면 건물생성
 			}
@@ -290,8 +295,7 @@ void CSCV::Inputkey_reaction(const int& nkey)
 	}
 	if(VK_RBUTTON == nkey)
 	{
-		CUI* preview = CComanderMgr::GetInstance()->GetPreview();
-		((CBuilding_Preview*)preview)->SetActive(false);
+		((CBuilding_Preview*)m_main_preview)->SetActive(false);
 
 		m_unitinfo.estate = MOVE;
 		m_unitinfo.eorder = ORDER_MOVE;
@@ -351,7 +355,6 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		return;
 
 	m_is_preview = false;
-	CUI* preview = CComanderMgr::GetInstance()->GetPreview();
 
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
@@ -379,27 +382,37 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	if('B' == firstkey && 'B' == secondkey)
 	{
 		m_is_preview = true;
-		//CComanderMgr::GetInstance()->OnBuilding_Preview(L"COMMANDCENTER" , 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BARRACK" , T_BARRACK , 3 , 4 , this);
 	}
 	if('B' == firstkey && 'C' == secondkey)
 	{
 		m_is_preview = true;
-		((CBuilding_Preview*)preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);
+	}
+	if('B' == firstkey && 'E' == secondkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_EB", T_EB , 3 , 4 , this);
 	}
 	if('B' == firstkey && 'R' == secondkey)
 	{
 		m_is_preview = true;
-		((CBuilding_Preview*)preview)->SetPreviewInfo(L"T_GAS" ,T_GAS, 2 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_GAS" ,T_GAS, 2 , 4 , this);
 	}
 	if('V' == firstkey && 'F' == secondkey)
 	{
 		m_is_preview = true;
-		((CBuilding_Preview*)preview)->SetPreviewInfo(L"T_FACTORY" ,T_FACTORY, 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_FACTORY" ,T_FACTORY, 3 , 4 , this);
+	}
+	if('V' == firstkey && 'I' == secondkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_SIENCE" ,T_SIENCE, 3 , 4 , this);
 	}
 	if('V' == firstkey && 'S' == secondkey)
 	{
 		m_is_preview = true;
-		((CBuilding_Preview*)preview)->SetPreviewInfo(L"T_STARPORT" ,T_STARPORT, 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_STARPORT" ,T_STARPORT, 3 , 4 , this);
 	}
 }
 
@@ -454,6 +467,27 @@ void CSCV::Create_Building(void)
 			pobj->SetPos(m_preview_info.vpos );
 			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_STARPORT);
+		}
+		else if(T_SIENCE == m_preview_info.ebuild)
+		{
+			pobj = new CSience;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_SIENCE);
+		}
+		else if(T_BARRACK == m_preview_info.ebuild)
+		{
+			pobj = new CBarrack;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_BARRACK);
+		}
+		else if(T_EB == m_preview_info.ebuild)
+		{
+			pobj = new CEngineering;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_EB);
 		}
 
 		m_charge_building = pobj;

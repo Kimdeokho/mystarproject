@@ -124,73 +124,63 @@ void CComandcenter::Update(void)
 				m_is_autoinstall = false;
 				m_is_partinstall = true;
 
-				Landing_move(m_subpreview_info.vpos);
+				Landing_move( ((CBuilding_Preview*)m_sub_preview)->GetPreviewInfo().vpos );
 			}
 		}
 	}
 	else if(LANDING == m_unitinfo.estate)
 	{
-		CUI* preview = CComanderMgr::GetInstance()->GetPreview();
-		CUI* subpreview = CComanderMgr::GetInstance()->GetSubPreview();
+		m_vPos.y += GETTIME*20;
 
-		if(true == ((CBuilding_Preview*)preview)->Install_check(m_preview_info , this) &&
-			true == ((CBuilding_Preview*)subpreview)->Install_check(m_subpreview_info , this))
+		if(m_vgroundpos.y <= m_vPos.y)
 		{
-			m_vPos.y += GETTIME*20;
-
-			if(m_vgroundpos.y <= m_vPos.y)
+			//설치해야 한다면..
+			if(true == m_is_partinstall)
 			{
-				//설치해야 한다면..
-				if(true == m_is_partinstall)
+				CObj* pobj = NULL;
+				m_is_partinstall = false;
+				if(T_COMSET ==  ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild)
 				{
-					CObj* pobj = NULL;
-					m_is_partinstall = false;
-					if(T_COMSET == m_preview_info.ebuild)
-					{
-						pobj = new CComset(this/*아니면 오브젝트 아이디*/);
-						pobj->SetPos(m_preview_info.vpos);
-						pobj->Initialize();				
-						CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMSET);
-					}
-					else if(T_NC_PART == m_preview_info.ebuild)
-					{
-						pobj = new CNuclear_part(this/*아니면 오브젝트 아이디*/);
-						pobj->SetPos(m_preview_info.vpos);
-						pobj->Initialize();				
-						CObjMgr::GetInstance()->AddObject(pobj , OBJ_NUCLEAR);
-
-					}
-					m_partbuilding = pobj;
-					((CTerran_building*)m_partbuilding)->Setlink(true);
+					pobj = new CComset(this/*아니면 오브젝트 아이디*/);
+					pobj->SetPos( ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos );
+					pobj->Initialize();				
+					CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMSET);
 				}
+				else if(T_NC_PART == ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild)
+				{
+					pobj = new CNuclear_part(this/*아니면 오브젝트 아이디*/);
+					pobj->SetPos( ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos );
+					pobj->Initialize();				
+					CObjMgr::GetInstance()->AddObject(pobj , OBJ_NUCLEAR);
+
+				}
+				m_partbuilding = pobj;
+				((CTerran_building*)m_partbuilding)->Setlink(true);
+			}
+			else
+			{
+				int partidx = m_curidx32 + 3 + SQ_TILECNTX;
+				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_COMSET);
+				if(NULL != m_partbuilding)
+					((CTerran_building*)m_partbuilding)->Setlink(true);
 				else
 				{
-					int partidx = m_curidx32 + 3 + SQ_TILECNTX;
-					m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_COMSET);
-					if(NULL != m_partbuilding)
-						((CTerran_building*)m_partbuilding)->Setlink(true);
-					//뉴클리어....
 					m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_NUCLEAR);
 					if(NULL != m_partbuilding)
 						((CTerran_building*)m_partbuilding)->Setlink(true);
 				}
-
-				m_is_take_off = false;
-				m_vPos.y = m_vgroundpos.y;
-				m_unitinfo.eMoveType = MOVE_GROUND;
-				m_sortID = SORT_GROUND;
-				m_unitinfo.eorder = ORDER_NONE;
-				m_unitinfo.estate = IDLE;
-
-				CTerran_building::building_area_Initialize(3, 4);
-				COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
-				m_componentlist.erase(iter);
 			}
-		}
-		else
-		{
-			m_unitinfo.estate = AIR_IDLE;
+
+			m_is_take_off = false;
+			m_vPos.y = m_vgroundpos.y;
+			m_unitinfo.eMoveType = MOVE_GROUND;
+			m_sortID = SORT_GROUND;
 			m_unitinfo.eorder = ORDER_NONE;
+			m_unitinfo.estate = IDLE;
+
+			CTerran_building::building_area_Initialize(3, 4);
+			COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
+			m_componentlist.erase(iter);
 		}
 	}
 
@@ -199,8 +189,37 @@ void CComandcenter::Update(void)
 	{
 		if(true == ((CCom_AirPathfind*)m_com_pathfind)->Getarrive() ) 
 		{
-			m_unitinfo.estate = LANDING;
-			m_unitinfo.eorder = ORDER_NONE;
+			if(true == m_is_partinstall)
+			{
+				if(true == ((CBuilding_Preview*)m_main_preview)->Install_check() &&
+					true == ((CBuilding_Preview*)m_sub_preview)->Install_check())
+				{
+					m_unitinfo.estate = LANDING;
+					m_unitinfo.eorder = ORDER_NONE;
+				}
+				else
+				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
+					m_unitinfo.estate = AIR_IDLE;
+					m_unitinfo.eorder = ORDER_NONE;
+				}
+			}
+			else
+			{
+				if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
+				{
+					m_unitinfo.estate = LANDING;
+					m_unitinfo.eorder = ORDER_NONE;
+				}
+				else
+				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
+					m_unitinfo.estate = AIR_IDLE;
+					m_unitinfo.eorder = ORDER_NONE;
+				}
+			}
 		}
 	}
 	
@@ -209,10 +228,12 @@ void CComandcenter::Update(void)
 	if(true == m_is_preview)
 	{
 		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-		CComanderMgr::GetInstance()->SetPreviewPos(vpos);
+		((CBuilding_Preview*)m_main_preview)->SetPos(vpos);
 		vpos.x -= m_irow*32;
 		vpos.y -= m_weight.y;
-		CComanderMgr::GetInstance()->SetSubPreviewPos(vpos);
+		((CBuilding_Preview*)m_sub_preview)->SetPos(vpos);
+		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
+		CComanderMgr::GetInstance()->SetPreview(m_sub_preview);
 	}
 
 	//vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
@@ -274,10 +295,8 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 	if('C' == nkey)
 	{
 		m_is_preview = true;
-		CUI* preview = CComanderMgr::GetInstance()->GetPreview();
-		CUI* subpreview = CComanderMgr::GetInstance()->GetSubPreview();
-		((CBuilding_Preview*)preview)->SetPreviewInfo(L"T_COMSET", T_COMSET , 2 , 2 , this);
-		((CBuilding_Preview*)subpreview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_COMSET", T_COMSET , 2 , 2 , this);
+		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);
 	}
 	if('L' == nkey)
 	{
@@ -290,42 +309,32 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 		{
 			//착륙 프리뷰를 킨다
 			m_is_preview = true;
-			CUI* preview = CComanderMgr::GetInstance()->GetPreview();
-			((CBuilding_Preview*)preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);			
+			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);			
 		}		
 	}
 	if('N' == nkey)
 	{
 		m_is_preview = true;
-		CUI* preview = CComanderMgr::GetInstance()->GetPreview();
-		CUI* subpreview = CComanderMgr::GetInstance()->GetSubPreview();
-		((CBuilding_Preview*)preview)->SetPreviewInfo(L"T_NC_PART", T_NC_PART , 2 , 2 , this);
-		((CBuilding_Preview*)subpreview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_NC_PART", T_NC_PART , 2 , 2 , this);
+		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);
 	}
 	if(VK_LBUTTON == nkey)
 	{
-		//m_is_partinstall = false;
-		CUI* preview = CComanderMgr::GetInstance()->GetPreview();
-		CUI* subpreview = CComanderMgr::GetInstance()->GetSubPreview();
-
-		m_preview_info = ((CBuilding_Preview*)preview)->GetPreviewInfo();
-		m_subpreview_info = ((CBuilding_Preview*)subpreview)->GetPreviewInfo();
-
-		if(true == ((CBuilding_Preview*)preview)->GetActive() &&
-			true == ((CBuilding_Preview*)subpreview)->GetActive())
+		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive() &&
+			true == ((CBuilding_Preview*)m_sub_preview)->GetActive())
 		{
-			if(true == ((CBuilding_Preview*)preview)->Install_check(m_preview_info , this) &&
-				true == ((CBuilding_Preview*)subpreview)->Install_check(m_subpreview_info , this))
+			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check() &&
+				true == ((CBuilding_Preview*)m_sub_preview)->Install_check())
 			{
 
-				((CBuilding_Preview*)preview)->SetActive(false);
-				((CBuilding_Preview*)subpreview)->SetActive(false);
+				((CBuilding_Preview*)m_main_preview)->SetActive(false);
+				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
 
 				if(true == m_is_take_off)
 				{
 					//공중에서 부속품 설치
 					m_is_partinstall = true;
-					CTerran_building::Landing_move(m_subpreview_info.vpos);
+					CTerran_building::Landing_move( ((CBuilding_Preview*)m_sub_preview)->GetPreviewInfo().vpos);
 
 					//m_preview_info = preview_info;
 				}
@@ -342,26 +351,24 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 						m_is_partinstall = true;
 
 						CTerran_building::TakeOff();
-
-						//m_preview_info = preview_info; //클릭된 프리뷰정보 따로 저장
-						//m_subpreview_info = subpreview_info;
 						
 					}
 					else
 					{
 						CObj* pobj = NULL;
-						if(T_COMSET == m_preview_info.ebuild)
+						BUILD_TECH ebuild = ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild;
+						if(T_COMSET == ebuild)
 						{
 							pobj = new CComset(this/*아니면 오브젝트 아이디*/);
-							pobj->SetPos(m_preview_info.vpos);
+							pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
 							pobj->Initialize();				
 							CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMSET);
 							
 						}
-						else if(T_NC_PART == m_preview_info.ebuild)
+						else if(T_NC_PART == ebuild)
 						{
 							pobj = new CNuclear_part(this/*아니면 오브젝트 아이디*/);
-							pobj->SetPos(m_preview_info.vpos);
+							pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
 							pobj->Initialize();				
 							CObjMgr::GetInstance()->AddObject(pobj , OBJ_NUCLEAR);
 							
@@ -376,13 +383,13 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
 			}
 		}
-		else if(true == ((CBuilding_Preview*)preview)->GetActive())
+		else if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
 		{
 			//착륙 분기
-			if(true == ((CBuilding_Preview*)preview)->Install_check(m_preview_info , this))
+			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
 			{
-				((CBuilding_Preview*)preview)->SetActive(false);
-				((CBuilding_Preview*)subpreview)->SetActive(false);
+				((CBuilding_Preview*)m_main_preview)->SetActive(false);
+				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
 
 				m_unitinfo.eorder = ORDER_LANDING_MOVE;
 				D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
@@ -390,9 +397,6 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 				vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
 				CTerran_building::Landing_move(vclickpos);		
 
-				((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(vclickpos);	
-
-				m_subpreview_info = m_preview_info;//프리뷰가 한개만 켜졌을땐 동기화 시킨다
 			}
 			else
 			{
@@ -402,11 +406,8 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 	}
 	if(VK_RBUTTON == nkey)
 	{
-		CUI* preview = CComanderMgr::GetInstance()->GetPreview();
-		CUI* subpreview = CComanderMgr::GetInstance()->GetSubPreview();
-
-		((CBuilding_Preview*)preview)->SetActive(false);
-		((CBuilding_Preview*)subpreview)->SetActive(false);
+		((CBuilding_Preview*)m_main_preview)->SetActive(false);
+		((CBuilding_Preview*)m_sub_preview)->SetActive(false);
 
 		if(AIR_IDLE == m_unitinfo.estate)
 		{

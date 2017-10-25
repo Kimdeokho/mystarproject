@@ -19,6 +19,7 @@ private:
 	//list<CObj*>		m_TBuilding_List[TB_END];
 	//list<CObj*>		m_TUnit_List[TU_END];
 	multimap<float , CObj*> m_rendersort[SORT_END];
+	list<CObj*>				m_air_rendersort;
 
 
 	list<CUI*>		m_SelectUI_List;

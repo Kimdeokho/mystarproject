@@ -135,6 +135,8 @@ void CMarine::Update(void)
 
 void CMarine::Render(void)
 {
+	if(NULL == m_curtex)
+		return;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;

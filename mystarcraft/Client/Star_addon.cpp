@@ -39,9 +39,9 @@ void CStar_addon::Initialize(void)
 	CTerran_building::building_pos_Initialize(2 , 2);
 
 	m_vertex.left = 32.f;//원래 37이던데 이유는 흠...
-	m_vertex.right = 32.f;
-	m_vertex.top =  16.f;
-	m_vertex.bottom = 26.f;
+	m_vertex.right = 29.f;
+	m_vertex.top =  24.f;
+	m_vertex.bottom = 23.f;
 
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
