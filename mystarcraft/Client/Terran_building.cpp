@@ -8,6 +8,7 @@
 #include "Com_AirPathfind.h"
 
 #include "Building_Preview.h"
+#include "Com_TBuildingAnim.h"
 CTerran_building::CTerran_building(void)
 {
 	D3DXMatrixIdentity(&m_matshadow);
@@ -166,7 +167,9 @@ void CTerran_building::Setlink(bool blink)
 void CTerran_building::TakeOff(void)
 {
 	m_is_take_off = true;
-	m_vairpos = m_vPos; //이륙하기전 기존 위치 저장			
+	m_vairpos = m_vPos; //이륙하기전 기존 위치 저장
+	((CCom_TBuildingAnim*)m_com_anim)->SetAirpos(m_vairpos);
+
 	m_unitinfo.estate = TAKE_OFF;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_sortID = SORT_AIR;
@@ -182,7 +185,9 @@ void CTerran_building::TakeOff(void)
 void CTerran_building::Landing_move(D3DXVECTOR2 vpos)
 {
 	m_unitinfo.eorder = ORDER_LANDING_MOVE;
-	m_vgroundpos.y = vpos.y + m_weight.y;
+	m_vgroundpos.y = vpos.y + m_weight.y;//착륙하기전 착륙위치 저장
+	((CCom_TBuildingAnim*)m_com_anim)->SetGroundpos(m_vgroundpos);
+
 	vpos.x += m_weight.x;
 	((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(vpos);
 }

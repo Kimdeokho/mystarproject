@@ -7,6 +7,12 @@ class CCom_TBuildingAnim :
 private:
 	const vector<TEXINFO*>*	m_bigbuild_tex;
 	float					m_fbuildtime;
+
+	D3DXVECTOR2				m_vairpos;
+	D3DXVECTOR2				m_vgroundpos;
+public:
+	void SetAirpos(const D3DXVECTOR2& vpos);
+	void SetGroundpos(const D3DXVECTOR2& vpos);
 public:
 	virtual void Initialize(CObj* pobj);
 	virtual void Update(void);

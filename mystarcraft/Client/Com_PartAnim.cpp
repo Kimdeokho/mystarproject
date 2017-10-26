@@ -76,7 +76,17 @@ void CCom_PartAnim::sub_update(void)
 
 void CCom_PartAnim::Render(void)
 {
+	m_pSprite->SetTransform(&m_objmat);
 
+	if(NULL != m_linktex)
+	{
+		m_pSprite->Draw(m_linktex->pTexture , NULL , &D3DXVECTOR3(float(m_linktex->ImgInfo.Width/2) , float(m_linktex->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
+
+
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+		, NULL , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CCom_PartAnim::Release(void)

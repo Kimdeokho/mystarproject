@@ -12,7 +12,6 @@
 CObj::CObj(void)
 {
 	m_select_ui = NULL;
-	m_pSprite = NULL;
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 
 	D3DXMatrixIdentity(&m_matWorld);

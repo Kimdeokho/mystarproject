@@ -8,6 +8,7 @@ class CObj;
 class CCom_Animation : public CComponent
 {
 protected:
+	LPD3DXSPRITE				m_pSprite;
 	FRAME						m_frame;
 
 	const vector<TEXINFO*>* 	m_animtexture[DIR_CNT];/*[]는 방향(각도)을 뜻한다*/
@@ -25,6 +26,7 @@ protected:
 
 
 	D3DXMATRIX&					m_objmat;
+	D3DXMATRIX					m_objshadow_mat;
 
 	float						m_frotation_time;
 	float						m_rotation_speed;

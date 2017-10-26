@@ -233,26 +233,25 @@ void CSCV::Render(void)
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
-	m_matshadow = m_matWorld;
-	m_matshadow._42 += 8;
 
 
-	m_pSprite->SetTransform(&m_matshadow);
-	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
-		, NULL , D3DCOLOR_ARGB(150,0,0,0));
+	m_com_anim->Render();
+	//m_pSprite->SetTransform(&m_matshadow);
+	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
+	//	, NULL , D3DCOLOR_ARGB(150,0,0,0));
 
 
-	m_pSprite->SetTransform(&m_matWorld);
-	if(TEAM_1 == m_eteamnumber)
-	{
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
-			, NULL , D3DCOLOR_ARGB(255,255,0,0));
-	}
-	else
-	{
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
-			, NULL , D3DCOLOR_ARGB(255,255,255,255));
-	}
+	//m_pSprite->SetTransform(&m_matWorld);
+	//if(TEAM_1 == m_eteamnumber)
+	//{
+	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
+	//		, NULL , D3DCOLOR_ARGB(255,255,0,0));
+	//}
+	//else
+	//{
+	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
+	//		, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	//}
 
 	m_com_pathfind->Render();
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
@@ -260,10 +259,12 @@ void CSCV::Render(void)
 
 void CSCV::Inputkey_reaction(const int& nkey)
 {
+	m_is_preview = false;
+
 	if(BOARDING == m_unitinfo.estate)
 		return;
 
-	m_is_preview = false;
+	
 	if(VK_LBUTTON == nkey)
 	{
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
@@ -351,10 +352,10 @@ void CSCV::Inputkey_reaction(const int& nkey)
 }
 void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
-	if(BOARDING == m_unitinfo.estate)
-		return;
-
 	m_is_preview = false;
+
+	if(BOARDING == m_unitinfo.estate)
+		return;	
 
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{

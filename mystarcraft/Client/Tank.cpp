@@ -191,17 +191,19 @@ void CTank::Render(void)
 	if(NULL == m_curtex)
 		return;
 
-	m_pSprite->SetTransform(&m_matWorld);
-	if(TEAM_1 == m_eteamnumber)
-	{
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-			, NULL , D3DCOLOR_ARGB(255,255,0,0));
-	}
-	else
-	{
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-			, NULL , D3DCOLOR_ARGB(255,255,255,255));
-	}
+	m_com_anim->Render();
+
+	//m_pSprite->SetTransform(&m_matWorld);
+	//if(TEAM_1 == m_eteamnumber)
+	//{
+	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+	//		, NULL , D3DCOLOR_ARGB(255,255,0,0));
+	//}
+	//else
+	//{
+	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+	//		, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	//}
 
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
 

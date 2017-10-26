@@ -4,6 +4,7 @@
 #include "TextureMgr.h"
 #include "TimeMgr.h"
 #include "Obj.h"
+#include "ScrollMgr.h"
 
 CCom_TBuildingAnim::CCom_TBuildingAnim(const TCHAR* objname ,D3DXMATRIX& objmat , TEXINFO*& curtex)
 :CCom_Animation(objmat , curtex)
@@ -49,7 +50,37 @@ void CCom_TBuildingAnim::Update(void)
 
 void CCom_TBuildingAnim::Render(void)
 {
+	m_objshadow_mat = m_objmat;
+	if(AIR_IDLE == m_pobj->GetUnitinfo().estate)
+	{
+		m_objshadow_mat._42 += 48;
+		m_pSprite->SetTransform(&m_objshadow_mat);
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
+	}
+	else if(TAKE_OFF == m_pobj->GetUnitinfo().estate)
+	{
+		m_objshadow_mat._42 = m_vairpos.y - CScrollMgr::m_fScrollY;
+		m_pSprite->SetTransform(&m_objshadow_mat);
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
+	}
+	else if(LANDING == m_pobj->GetUnitinfo().estate)
+	{
+		m_objshadow_mat._42 = m_vgroundpos.y - CScrollMgr::m_fScrollY;
+		m_pSprite->SetTransform(&m_objshadow_mat);
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
+	}
+	else
+	{
+		m_objshadow_mat._41 -= 8;
+		m_objshadow_mat._42 -= 8;
 
+		m_pSprite->SetTransform(&m_objshadow_mat);
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
+	}
+
+	m_pSprite->SetTransform(&m_objmat);
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+		, NULL , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CCom_TBuildingAnim::Release(void)
@@ -77,4 +108,14 @@ void CCom_TBuildingAnim::SetAnimation(const TCHAR* statekey)
 				m_frame.fframespeed = (float)m_frame.umax;
 		}
 	}
+}
+
+void CCom_TBuildingAnim::SetAirpos(const D3DXVECTOR2& vpos)
+{
+	m_vairpos = vpos;
+}
+
+void CCom_TBuildingAnim::SetGroundpos(const D3DXVECTOR2& vpos)
+{
+	m_vgroundpos = vpos;
 }

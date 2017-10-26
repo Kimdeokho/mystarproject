@@ -12,7 +12,6 @@ protected:
 	CComponent*		m_com_pathfind;
 	CComponent*		m_com_collision;
 protected:
-	D3DXMATRIX	m_matshadow;
 protected:
 
 	CUI*			m_miniunit_display;

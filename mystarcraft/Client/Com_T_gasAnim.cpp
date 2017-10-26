@@ -45,7 +45,16 @@ void CCom_T_gasAnim::Update(void)
 
 void CCom_T_gasAnim::Render(void)
 {
+	m_objshadow_mat = m_objmat;
+	m_objshadow_mat._41 -= 8;
+	m_objshadow_mat._42 -= 8;
 
+	m_pSprite->SetTransform(&m_objshadow_mat);
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
+
+	m_pSprite->SetTransform(&m_objmat);
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+		, NULL , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CCom_T_gasAnim::Release(void)

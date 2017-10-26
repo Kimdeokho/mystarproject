@@ -3,7 +3,7 @@
 
 #include "TimeMgr.h"
 #include "TextureMgr.h"
-
+#include "Obj.h"
 CCom_SCVAnim::CCom_SCVAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
 :CCom_Animation(objmat , curtex)
 {
@@ -69,7 +69,25 @@ void CCom_SCVAnim::Update(void)
 
 void CCom_SCVAnim::Render(void)
 {
+	m_objshadow_mat = m_objmat;
+	m_objshadow_mat._42 += 8;
 
+	m_pSprite->SetTransform(&m_objshadow_mat);
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
+		, NULL , D3DCOLOR_ARGB(150,0,0,0));
+
+
+	m_pSprite->SetTransform(&m_objmat);
+	if(TEAM_1 == m_pobj->GetTeamNumber())
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,0,0));
+	}
+	else
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
 }
 
 void CCom_SCVAnim::Release(void)

@@ -113,16 +113,17 @@ void CT_gas::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
-	m_matshadow = m_matWorld;
-	m_matshadow._41 -= 8;
-	m_matshadow._42 -= 8;
+	m_com_anim->Render();
+	//m_matshadow = m_matWorld;
+	//m_matshadow._41 -= 8;
+	//m_matshadow._42 -= 8;
 
-	m_pSprite->SetTransform(&m_matshadow);
-	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
+	//m_pSprite->SetTransform(&m_matshadow);
+	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
 
-	m_pSprite->SetTransform(&m_matWorld);
-	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-		, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	//m_pSprite->SetTransform(&m_matWorld);
+	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+	//	, NULL , D3DCOLOR_ARGB(255,255,255,255));
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }

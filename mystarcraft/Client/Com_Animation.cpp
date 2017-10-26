@@ -6,9 +6,13 @@
 #include "MyMath.h"
 #include "TimeMgr.h"
 #include "FontMgr.h"
+#include "Device.h"
 CCom_Animation::CCom_Animation(D3DXMATRIX& objmat , TEXINFO*& curtex)
 :m_objmat(objmat) , m_curtex(curtex)
 {
+	D3DXMatrixIdentity(&m_objshadow_mat);
+	m_pSprite = CDevice::GetInstance()->GetSprite();
+
 	m_texdiridx = 0;
 	m_curdiridx = 0;
 	m_newdiridx = 0;

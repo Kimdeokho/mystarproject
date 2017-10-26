@@ -123,7 +123,7 @@ void CStarport::Update(void)
 				m_is_autoinstall = false;
 				m_is_partinstall = true;
 
-				Landing_move( ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos );
+				Landing_move( ((CBuilding_Preview*)m_sub_preview)->GetPreviewInfo().vpos );
 			}
 		}
 	}
@@ -223,38 +223,7 @@ void CStarport::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
-	m_matshadow = m_matWorld;
-
-	if(AIR_IDLE == m_unitinfo.estate)
-	{
-		m_matshadow._42 += 48;
-		m_pSprite->SetTransform(&m_matshadow);
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	}
-	else if(TAKE_OFF == m_unitinfo.estate)
-	{
-		m_matshadow._42 = m_vairpos.y - CScrollMgr::m_fScrollY;
-		m_pSprite->SetTransform(&m_matshadow);
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	}
-	else if(LANDING == m_unitinfo.estate)
-	{
-		m_matshadow._42 = m_vgroundpos.y - CScrollMgr::m_fScrollY;
-		m_pSprite->SetTransform(&m_matshadow);
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	}
-	else
-	{
-		m_matshadow._41 -= 8;
-		m_matshadow._42 -= 8;
-
-		m_pSprite->SetTransform(&m_matshadow);
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	}
-
-	m_pSprite->SetTransform(&m_matWorld);
-	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-		, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	m_com_anim->Render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
@@ -338,7 +307,6 @@ void CStarport::Inputkey_reaction(const int& nkey)
 				{
 					//공중에서 부속품 설치
 					m_is_partinstall = true;
-					//CTerran_building::Landing_move(m_subpreview_info.vpos);
 					CTerran_building::Landing_move( ((CBuilding_Preview*)m_sub_preview)->GetPreviewInfo().vpos );
 
 				}
