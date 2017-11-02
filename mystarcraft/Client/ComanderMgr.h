@@ -32,6 +32,7 @@ public:
 	bool	intersect_minimap_mousept(const D3DXVECTOR2& vmouse);
 
 	void	SetPreview(CUI* building_preview);
+	void	ClearPreview(void);
 public:
 	CComanderMgr(void);
 	~CComanderMgr(void);

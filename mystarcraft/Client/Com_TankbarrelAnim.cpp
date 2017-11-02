@@ -6,8 +6,8 @@
 #include "FontMgr.h"
 #include "Obj.h"
 
-CCom_TankbarrelAnim::CCom_TankbarrelAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
-:CCom_Animation(objmat , curtex)
+CCom_TankbarrelAnim::CCom_TankbarrelAnim(D3DXMATRIX& objmat )
+:CCom_Animation(objmat )
 {
 	m_objname = L"TANKBARREL";
 	m_statkey = L"";

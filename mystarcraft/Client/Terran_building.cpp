@@ -9,8 +9,16 @@
 
 #include "Building_Preview.h"
 #include "Com_TBuildingAnim.h"
+
+#include "UnitMgr.h"
+#include "ComanderMgr.h"
+#include "LoopEff.h"
 CTerran_building::CTerran_building(void)
 {
+	m_pfire_eff1 = NULL;
+	m_pfire_eff2 = NULL;
+	m_pfire_eff3 = NULL;
+
 	D3DXMatrixIdentity(&m_matshadow);
 	m_curtex = NULL;
 	m_linktex = NULL;
@@ -18,6 +26,7 @@ CTerran_building::CTerran_building(void)
 	m_is_preview = false;
 	m_is_partinstall = false;
 	m_is_autoinstall = false;
+	m_is_fire_render = false;
 
 	m_partbuilding = NULL;
 
@@ -28,14 +37,6 @@ CTerran_building::CTerran_building(void)
 CTerran_building::~CTerran_building(void)
 {
 	Release();
-	m_areaidx_vec.clear();
-	m_old_areaidx_vec.clear();
-
-	vector<int>().swap(m_areaidx_vec);
-	vector<int>().swap(m_old_areaidx_vec);
-
-	Safe_Delete(m_main_preview);
-	Safe_Delete(m_sub_preview);
 }
 
 void CTerran_building::Initialize(void)
@@ -132,6 +133,28 @@ void CTerran_building::Release(void)
 {
 	if(NULL != m_select_ui)
 		m_select_ui->SetDestroy(true);
+
+	if(m_curidx64 != CMyMath::Pos_to_index(m_vPos , 64))
+		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
+	else
+		CArea_Mgr::GetInstance()->ReleaseObj_Area64(CMyMath::Pos_to_index(m_vPos , 64) , this);
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	m_areaidx_vec.clear();
+	m_old_areaidx_vec.clear();
+
+	vector<int>().swap(m_areaidx_vec);
+	vector<int>().swap(m_old_areaidx_vec);
+
+	CComanderMgr::GetInstance()->ClearPreview();
+	Safe_Delete(m_main_preview);
+	Safe_Delete(m_sub_preview);
+
+	Safe_Delete(m_pfire_eff1);
+	Safe_Delete(m_pfire_eff2);
+	Safe_Delete(m_pfire_eff3);
+
+
 }
 
 void CTerran_building::Dead(void)
@@ -159,9 +182,8 @@ void CTerran_building::Inputkey_reaction(const int& firstkey , const int& second
 
 }
 
-void CTerran_building::Setlink(bool blink)
+void CTerran_building::Setlink(bool blink , CObj* pobj)
 {
-
 }
 
 void CTerran_building::TakeOff(void)
@@ -179,7 +201,7 @@ void CTerran_building::TakeOff(void)
 	m_oldidx64 = -1;
 	if(NULL != m_partbuilding)
 	{
-		((CTerran_building*)m_partbuilding)->Setlink(false);
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
 	}
 }
 void CTerran_building::Landing_move(D3DXVECTOR2 vpos)
@@ -195,4 +217,57 @@ void CTerran_building::Landing_move(D3DXVECTOR2 vpos)
 void CTerran_building::SetPartBuilding(CObj* pobj)
 {
 	m_partbuilding = pobj;
+}
+
+void CTerran_building::fire_eff_initialize(void)
+{
+	m_is_fire_render = false;
+	m_pfire_eff1 = new CLoopEff(L"FIRE_A" , m_vPos , D3DXVECTOR2(1,1) , SORT_GROUND);
+	m_pfire_eff2 = new CLoopEff(L"FIRE_C" , m_vPos , D3DXVECTOR2(1,1) , SORT_GROUND);
+	m_pfire_eff3 = new CLoopEff(L"FIRE_B" , m_vPos , D3DXVECTOR2(1,1) , SORT_GROUND);
+
+	m_pfire_eff1->Initialize();
+	m_pfire_eff2->Initialize();
+	m_pfire_eff3->Initialize();
+}
+
+void CTerran_building::fire_eff_update(void)
+{
+	float fhp_ratio = float(m_unitinfo.hp) / float(m_unitinfo.maxhp);
+	if( fhp_ratio <= 0.4f )
+	{
+		((CLoopEff*)m_pfire_eff1)->SetTexname(L"BIGFIRE_A");
+		((CLoopEff*)m_pfire_eff2)->SetTexname(L"BIGFIRE_C");
+		((CLoopEff*)m_pfire_eff3)->SetTexname(L"BIGFIRE_B");
+		m_is_fire_render = true;
+	}
+	else if( fhp_ratio <= 0.7f )
+	{
+		m_is_fire_render = true;
+	}
+	else
+	{
+		m_is_fire_render = false;
+	}
+
+	if(true == m_is_fire_render)
+	{
+		m_pfire_eff1->Update();
+		m_pfire_eff2->Update();
+		m_pfire_eff3->Update();
+
+		m_pfire_eff1->SetPos(m_vPos.x - m_vertex.left/2 ,m_vPos.y - m_vertex.top/2);
+		m_pfire_eff2->SetPos(m_vPos.x , m_vPos.y - m_vertex.top/2);
+		m_pfire_eff3->SetPos(m_vPos.x + m_vertex.right/2 ,m_vPos.y - m_vertex.top/2);
+	}
+}
+
+void CTerran_building::fire_eff_render(void)
+{
+	if(true == m_is_fire_render)
+	{
+		m_pfire_eff1->Render();
+		m_pfire_eff2->Render();
+		m_pfire_eff3->Render();
+	}
 }

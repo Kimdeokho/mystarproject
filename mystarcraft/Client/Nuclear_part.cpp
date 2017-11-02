@@ -64,7 +64,7 @@ void CNuclear_part::Initialize(void)
 	m_unitinfo.fbuildtime = 1.f;
 
 
-	m_com_anim = new CCom_PartAnim(L"T_NC_PART" , L"NC_LINK", m_matWorld , m_curtex ,m_linktex);
+	m_com_anim = new CCom_PartAnim(L"T_NC_PART" , L"NC_LINK", m_matWorld);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));		
@@ -79,6 +79,8 @@ void CNuclear_part::Initialize(void)
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 13);
 	m_select_ui->Initialize();
 	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+
+	CTerran_building::fire_eff_initialize();
 }
 
 void CNuclear_part::Update(void)
@@ -106,6 +108,8 @@ void CNuclear_part::Update(void)
 	vpos.y -= CScrollMgr::m_fScrollY;
 	CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
 		m_vPos.y - CScrollMgr::m_fScrollY);
+
+	CTerran_building::fire_eff_update();
 }
 
 void CNuclear_part::Render(void)
@@ -114,18 +118,8 @@ void CNuclear_part::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	m_com_anim->Render();
-	//if(NULL != m_linktex)
-	//{
-	//	//m_matWorld._41 += 100;
-	//	m_pSprite->SetTransform(&m_matWorld);
-	//	m_pSprite->Draw(m_linktex->pTexture , NULL , &D3DXVECTOR3(float(m_linktex->ImgInfo.Width/2) , float(m_linktex->ImgInfo.Height/2 ) , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,255,255));
-	//}
 
-	//m_pSprite->SetTransform(&m_matWorld);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//	, NULL , D3DCOLOR_ARGB(255,255,255,255));
-
+	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }

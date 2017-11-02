@@ -3,8 +3,8 @@
 
 #include "TimeMgr.h"
 #include "TextureMgr.h"
-CCom_DroneAnim::CCom_DroneAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
-: CCom_Animation(objmat , curtex) 
+CCom_DroneAnim::CCom_DroneAnim(D3DXMATRIX& objmat )
+: CCom_Animation(objmat ) 
 {
 	m_objname = L"DRONE";
 	m_statkey = L"";

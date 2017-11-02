@@ -6,6 +6,7 @@
 #include "SingleTexture.h"
 #include "UnitMultiTexture.h"
 #include "MultiEffTexture.h"
+#include "MultiTexture32.h"
 IMPLEMENT_SINGLETON(CTextureMgr)
 
 CTextureMgr::CTextureMgr(void)
@@ -101,6 +102,43 @@ HRESULT CTextureMgr::Insert_TUnitMultiTex( const wstring& wstrFilePath
 
 	return S_OK;
 }
+HRESULT CTextureMgr::Insert_MultiTex(const wstring& wstrFilePath , const wstring& wstrObjKey , const wstring& wstrStateKey /*= L"" */ , const int& iCnt /*= 0*/)
+{
+	map<wstring, CTexture*>::iterator	iter = m_MultiTex.find(wstrObjKey);
+
+	if(iter == m_MultiTex.end()) //키값을 못찾았다면
+	{
+		CTexture*	pTexture = NULL;
+		pTexture = new CUnitMultiTexture;
+
+		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
+
+		m_MultiTex.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
+	}
+	else
+		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
+
+	return S_OK;
+}
+
+HRESULT CTextureMgr::Insert_MultiTex32(const wstring& wstrFilePath , const wstring& wstrObjKey , const wstring& wstrStateKey /*= L"" */ , const int& iCnt /*= 0*/)
+{
+	map<wstring, CTexture*>::iterator	iter = m_MultiTex32.find(wstrObjKey);
+
+	if(iter == m_MultiTex32.end()) //키값을 못찾았다면
+	{
+		CTexture*	pTexture = NULL;
+		pTexture = new CMultiTexture32;
+
+		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
+
+		m_MultiTex32.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
+	}
+	else
+		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
+
+	return S_OK;
+}
 HRESULT CTextureMgr::Insert_MultiEffTex(const wstring& wstrFilePath , const wstring& wstrObjKey , const int& iCnt)
 {
 	map<wstring, CTexture*>::iterator	iter = m_MultilEffTex.find(wstrObjKey);
@@ -157,58 +195,8 @@ HRESULT CTextureMgr::Insert_SingleTex(const wstring& wstrFilePath , const wstrin
 	return S_OK;
 }
 
-void CTextureMgr::Release( void )
-{
-	for(map<wstring, CTexture*>::iterator iter = m_TileTexture.begin();
-		iter != m_TileTexture.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_TileTexture.clear();
-
-	for(map<wstring, CTexture*>::iterator iter = m_StateTexture.begin();
-		iter != m_StateTexture.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_StateTexture.clear();
 
 
-	for(map<wstring, CTexture*>::iterator iter = m_SinglelTex.begin();
-		iter != m_SinglelTex.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_SinglelTex.clear();
-
-	for(map<wstring, CTexture*>::iterator iter = m_GeneralTex.begin();
-		iter != m_GeneralTex.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_GeneralTex.clear();
-
-	for(map<wstring, CTexture*>::iterator iter = m_ZergTex.begin();
-		iter != m_ZergTex.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_ZergTex.clear();
-
-	for(map<wstring, CTexture*>::iterator iter = m_TerranTex.begin();
-		iter != m_TerranTex.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_TerranTex.clear();
-
-	for(map<wstring, CTexture*>::iterator iter = m_MultilEffTex.begin();
-		iter != m_MultilEffTex.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_MultilEffTex.clear();
-}
 HRESULT CTextureMgr::Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath)
 {
 	wifstream	LoadFile;
@@ -248,6 +236,47 @@ HRESULT CTextureMgr::Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR
 			Insert_ZUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
 		else if(!_tcscmp(szKind , L"TERRAN"))
 			Insert_TUnitMultiTex(szImgPath, szObjKey, szStateKey, iCount);
+		else
+			Insert_MultiTex(szImgPath, szObjKey, szStateKey, iCount);
+
+		lstrcpy(szPath , szImgPath);
+	}
+
+	LoadFile.close();
+	return S_OK;
+}
+HRESULT CTextureMgr::Read_directional32_ImgPath(const wstring& wstrFilePath ,TCHAR* szPath)
+{
+	wifstream	LoadFile;
+
+	LoadFile.open(wstrFilePath.c_str(), ios::in);
+
+	if(!LoadFile.is_open())
+	{
+		ERR_MSG(L"Read_MultiImgPath32 ERROR");
+		return E_FAIL;
+	}
+
+	TCHAR	szKind[MIN_STR] = L""; //종족,오브젝트,타일 등을 구분한다
+	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물,이펙트,자원 세부적인걸 구분한다
+	TCHAR	szObjKey[MIN_STR] = L"";
+	TCHAR	szStateKey[MIN_STR] = L"";
+	TCHAR	szCount[MIN_STR] = L"";
+	TCHAR	szImgPath[MAX_PATH] = L"";
+
+	while(!LoadFile.eof())
+	{
+		LoadFile.getline(szKind, MIN_STR, L'|');
+		LoadFile.getline(szSystem, MIN_STR, L'|');
+		LoadFile.getline(szObjKey, MIN_STR, L'|');
+		LoadFile.getline(szStateKey, MIN_STR, L'|');
+		LoadFile.getline(szCount, MIN_STR, L'|');
+		LoadFile.getline(szImgPath, MAX_PATH);
+
+		int		iCount = _ttoi(szCount);
+
+
+		Insert_MultiTex32(szImgPath, szObjKey, szStateKey, iCount);
 
 		lstrcpy(szPath , szImgPath);
 	}
@@ -497,6 +526,35 @@ const vector<TEXINFO*>* CTextureMgr::GetTUnitTexture(const wstring& wstrobjkey ,
 	else
 		return NULL;
 }
+const vector<TEXINFO*>* CTextureMgr::GetMultiTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+{
+	map<wstring , CTexture*>::iterator iter = m_MultiTex.find(wstrobjkey);
+
+	if(m_MultiTex.end() != iter)
+	{
+		/*키 값을 찾았다.*/
+		CTexture* pTexture = iter->second;
+
+		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey , diridx);
+	}
+	else
+		return NULL;
+}
+
+const vector<TEXINFO*>* CTextureMgr::GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+{
+	map<wstring , CTexture*>::iterator iter = m_MultiTex32.find(wstrobjkey);
+
+	if(m_MultiTex32.end() != iter)
+	{
+		/*키 값을 찾았다.*/
+		CTexture* pTexture = iter->second;
+
+		return ((CMultiTexture32*)pTexture)->GetMultiTex32(wstrstatekey , diridx);
+	}
+	else
+		return NULL;
+}
 const TEXINFO* CTextureMgr::GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey)
 {
 	map<wstring , CTexture*>::iterator iter = m_SinglelTex.find(wstrObjKey);
@@ -548,6 +606,9 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 	if(Read_directional_ImgPath(L"../Data/imgpath/directionalImgPath.txt" , szPath) )
 		ERR_MSG(L"유닛텍스쳐 불러오기 실패");
 
+	if(Read_directional32_ImgPath(L"../Data/imgpath/directional32ImgPath.txt" , szPath) )
+		ERR_MSG(L"32방향텍스쳐 불러오기 실패");
+
 	if(Read_MultiEff_ImgPath(L"../Data/imgpath/MultiEff_ImgPath.txt" , szPath) )
 		ERR_MSG(L"멀티이펙텍스쳐 불러오기 실패");
 
@@ -559,6 +620,75 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 }
 
 
+void CTextureMgr::Release( void )
+{
+	for(map<wstring, CTexture*>::iterator iter = m_TileTexture.begin();
+		iter != m_TileTexture.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_TileTexture.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_StateTexture.begin();
+		iter != m_StateTexture.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_StateTexture.clear();
+
+
+	for(map<wstring, CTexture*>::iterator iter = m_SinglelTex.begin();
+		iter != m_SinglelTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_SinglelTex.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_GeneralTex.begin();
+		iter != m_GeneralTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_GeneralTex.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_ZergTex.begin();
+		iter != m_ZergTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_ZergTex.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_TerranTex.begin();
+		iter != m_TerranTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_TerranTex.clear();
+
+	if(!m_MultiTex.empty())
+	{
+		for(map<wstring, CTexture*>::iterator iter = m_MultiTex.begin();
+			iter != m_TerranTex.end(); ++iter)
+		{
+			::Safe_Delete(iter->second);
+		}
+		m_MultiTex.clear();
+	}
+
+	for(map<wstring, CTexture*>::iterator iter = m_MultiTex32.begin();
+		iter != m_MultiTex32.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_MultiTex32.clear();
+
+	for(map<wstring, CTexture*>::iterator iter = m_MultilEffTex.begin();
+		iter != m_MultilEffTex.end(); ++iter)
+	{
+		::Safe_Delete(iter->second);
+	}
+	m_MultilEffTex.clear();
+}
 
 
 

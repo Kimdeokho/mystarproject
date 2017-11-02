@@ -6,6 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Headers", "Headers", "{FB499E53-873A-47D5-B49E-BBDDCE6532A1}"
 	ProjectSection(SolutionItems) = preProject
 		Headers\Define.h = Headers\Define.h
+		directional32ImgPath.txt = directional32ImgPath.txt
 		Data\imgpath\directionalImgPath.txt = Data\imgpath\directionalImgPath.txt
 		Headers\Enum.h = Headers\Enum.h
 		Headers\Function.h = Headers\Function.h

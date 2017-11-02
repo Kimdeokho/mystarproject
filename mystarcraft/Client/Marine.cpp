@@ -61,7 +61,9 @@ void CMarine::Initialize(void)
 	m_unitinfo.eArmorType = ARMOR_SMALL;
 	m_unitinfo.damage = 6;
 	m_unitinfo.hp = 40;
+	m_unitinfo.maxhp = m_unitinfo.hp;
 	m_unitinfo.mp = 0;
+	m_unitinfo.maxmp = 0;
 	m_unitinfo.fspeed = 60;
 	m_unitinfo.attack_range = 128;
 	m_unitinfo.search_range = 255;
@@ -78,7 +80,7 @@ void CMarine::Initialize(void)
 	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
 	m_com_weapon = new CCom_Wmarine(m_unitinfo.damage , DAMAGE_NOMAL);
 	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range, SEARCH_ONLY_ENEMY);
-	m_com_anim = new CCom_MarineAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_MarineAnim(m_matWorld);
 	m_skill_sp = new CSkill_SP(this , m_com_weapon);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex);
 
@@ -135,28 +137,14 @@ void CMarine::Update(void)
 
 void CMarine::Render(void)
 {
-	if(NULL == m_curtex)
+	if( BOARDING == m_unitinfo.estate ||
+		ORDER_BUNKER_BOARDING == m_unitinfo.eorder)
 		return;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
-	//m_pSprite->SetTransform(&m_matshadow);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//	, NULL , D3DCOLOR_ARGB(125,0,0,0));
-	
 
 	m_com_anim->Render();
-	//m_pSprite->SetTransform(&m_matWorld);
-	//if(TEAM_1 == m_eteamnumber)
-	//{
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,0,0));
-	//}
-	//else
-	//{
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,255,255));
-	//}
 
 	m_com_pathfind->Render();
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
@@ -164,18 +152,23 @@ void CMarine::Render(void)
 
 void CMarine::Inputkey_reaction(const int& nkey)
 {
+	if( BOARDING == m_unitinfo.estate )
+		return;
+
 	if(VK_RBUTTON == nkey)
 	{
 		m_unitinfo.estate = MOVE;
 		m_unitinfo.eorder = ORDER_MOVE;
 
+		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
+
+		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
+
 		if(NULL != m_com_pathfind)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
-
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 			m_bmagicbox = false;
@@ -201,12 +194,13 @@ void CMarine::Inputkey_reaction(const int& nkey)
 
 void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
+	if( BOARDING == m_unitinfo.estate )
+		return;
+
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
 		m_unitinfo.eorder = ORDER_MOVE_ATTACK;
 		m_unitinfo.estate = MOVE;
-		//m_eorder = ORDER_MOVE_ATTACK;
-		//m_estate = MOVE;
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
 
 		if(NULL != m_com_pathfind)
@@ -215,7 +209,6 @@ void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 			m_bmagicbox = false;
@@ -226,9 +219,7 @@ void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 void CMarine::Release(void)
 {
-
-	CUnit::area_release();
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+	CObj::area_release();
 
 	m_com_pathfind = NULL;
 	m_com_weapon = NULL;

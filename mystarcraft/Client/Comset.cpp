@@ -21,6 +21,8 @@
 #include "TimeMgr.h"
 #include "ComanderMgr.h"
 #include "Comandcenter.h"
+
+#include "LoopEff.h"
 CComset::CComset(CObj* command)
 {
 	m_mainbuilding = command;
@@ -54,7 +56,8 @@ void CComset::Initialize(void)
 	m_unitinfo.eDamageType = DAMAGE_NOMAL;
 	m_unitinfo.eArmorType = ARMOR_SMALL;
 	m_unitinfo.damage = 0;
-	m_unitinfo.hp = 1;
+	m_unitinfo.hp = 100;
+	m_unitinfo.maxhp = m_unitinfo.hp;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.attack_range = 0;
@@ -63,7 +66,7 @@ void CComset::Initialize(void)
 
 
 
-	m_com_anim = new CCom_PartAnim(L"T_COMSET" , L"COMSET_LINK", m_matWorld , m_curtex ,m_linktex);
+	m_com_anim = new CCom_PartAnim(L"T_COMSET" , L"COMSET_LINK", m_matWorld);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));		
@@ -78,6 +81,8 @@ void CComset::Initialize(void)
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 13);
 	m_select_ui->Initialize();
 	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+
+	CTerran_building::fire_eff_initialize();
 }
 
 void CComset::Update(void)
@@ -105,6 +110,9 @@ void CComset::Update(void)
 	vpos.y -= CScrollMgr::m_fScrollY;
 	CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
 		m_vPos.y - CScrollMgr::m_fScrollY);
+
+
+	CTerran_building::fire_eff_update();
 }
 
 void CComset::Render(void)
@@ -113,18 +121,8 @@ void CComset::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	m_com_anim->Render();
-	//if(NULL != m_linktex)
-	//{
-	//	//m_matWorld._41 += 100;
-	//	m_pSprite->SetTransform(&m_matWorld);
-	//	m_pSprite->Draw(m_linktex->pTexture , NULL , &D3DXVECTOR3(float(m_linktex->ImgInfo.Width/2) , float(m_linktex->ImgInfo.Height/2 ) , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,255,255));
-	//}
 
-	//m_pSprite->SetTransform(&m_matWorld);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//	, NULL , D3DCOLOR_ARGB(255,255,255,255));
-
+	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
@@ -146,7 +144,8 @@ void CComset::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
+	if(NULL != m_mainbuilding)
+		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
 
 }
 
@@ -160,14 +159,16 @@ void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 }
 
-void CComset::Setlink(bool blink)
+void CComset::Setlink(bool blink , CObj* pobj)
 {
 	if(true == blink)
 	{
+		m_mainbuilding = pobj;
 		((CCom_PartAnim*)m_com_anim)->play_direction(1);
 	}
 	else
 	{
+		m_mainbuilding = NULL;
 		((CCom_PartAnim*)m_com_anim)->play_direction(-1);
 	}
 }

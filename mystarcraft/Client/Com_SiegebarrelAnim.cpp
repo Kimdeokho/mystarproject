@@ -5,8 +5,8 @@
 #include "TimeMgr.h"
 #include "MyMath.h"
 #include "Obj.h"
-CCom_SiegebarrelAnim::CCom_SiegebarrelAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
-:CCom_Animation(objmat , curtex)
+CCom_SiegebarrelAnim::CCom_SiegebarrelAnim(D3DXMATRIX& objmat)
+:CCom_Animation(objmat)
 {
 	m_banim_end = false;
 	m_btransforming = false;
@@ -115,7 +115,17 @@ void CCom_SiegebarrelAnim::Update(void)
 
 void CCom_SiegebarrelAnim::Render(void)
 {
-
+	m_pSprite->SetTransform(&m_objmat);
+	if(TEAM_1 == m_pobj->GetTeamNumber())
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,0,0));
+	}
+	else
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
 }
 
 void CCom_SiegebarrelAnim::SetAnimation(const TCHAR* statekey)

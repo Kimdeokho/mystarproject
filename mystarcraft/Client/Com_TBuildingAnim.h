@@ -20,6 +20,6 @@ public:
 	virtual void Release(void);
 	virtual void SetAnimation(const TCHAR* statekey);
 public:
-	CCom_TBuildingAnim(const TCHAR* objname , D3DXMATRIX& objmat , TEXINFO*& curtex);
+	CCom_TBuildingAnim(const TCHAR* objname , D3DXMATRIX& objmat);
 	~CCom_TBuildingAnim(void);
 };

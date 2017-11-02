@@ -65,7 +65,7 @@ void CEngineering::Initialize(void)
 	m_unitinfo.fog_range = 512;
 	m_unitinfo.fbuildtime = 1.f;
 
-	m_com_anim = new CCom_TBuildingAnim(L"T_EB",m_matWorld , m_curtex );
+	m_com_anim = new CCom_TBuildingAnim(L"T_EB",m_matWorld );
 	m_com_pathfind = new CCom_AirPathfind(m_vPos);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
@@ -83,6 +83,8 @@ void CEngineering::Initialize(void)
 	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
 
 	m_is_take_off = false;
+
+	CTerran_building::fire_eff_initialize();
 }
 
 void CEngineering::Update(void)
@@ -173,6 +175,8 @@ void CEngineering::Update(void)
 		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
 		CComanderMgr::GetInstance()->SetPreview(m_sub_preview);
 	}
+
+	CTerran_building::fire_eff_update();
 }
 
 void CEngineering::Render(void)
@@ -181,38 +185,8 @@ void CEngineering::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	m_com_anim->Render();
-	//m_matshadow = m_matWorld;
 
-	//if(AIR_IDLE == m_unitinfo.estate)
-	//{
-	//	m_matshadow._42 += 48;
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-	//else if(TAKE_OFF == m_unitinfo.estate)
-	//{
-	//	m_matshadow._42 = m_vairpos.y - CScrollMgr::m_fScrollY;
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-	//else if(LANDING == m_unitinfo.estate)
-	//{
-	//	m_matshadow._42 = m_vgroundpos.y - CScrollMgr::m_fScrollY;
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-	//else
-	//{
-	//	m_matshadow._41 -= 8;
-	//	m_matshadow._42 -= 8;
-
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-
-	//m_pSprite->SetTransform(&m_matWorld);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//	, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
@@ -245,7 +219,7 @@ void CEngineering::Dead(void)
 
 	if(NULL != m_partbuilding)
 	{
-		((CTerran_building*)m_partbuilding)->Setlink(false);
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
 		m_partbuilding = NULL;
 	}
 }

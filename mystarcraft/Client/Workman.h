@@ -27,7 +27,6 @@ protected:
 	bool			m_is_preview;
 	CUI*			m_main_preview;
 protected:
-	TEXINFO*						m_curtex;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

@@ -43,12 +43,14 @@ void CCom_Collision::Initialize(CObj* pobj)
 
 void CCom_Collision::Update(void)
 {
-
 	m_rect.left = m_vPos.x - m_vertex.left; 
 	m_rect.right = m_vPos.x + m_vertex.right;
 	m_rect.top = m_vPos.y - m_vertex.top;
 	m_rect.bottom = m_vPos.y + m_vertex.bottom;
 
+	if( BOARDING == m_pobj->GetUnitinfo().estate ||
+		ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+		return;
 
 	if(false == m_bsearch_collision)
 		return;

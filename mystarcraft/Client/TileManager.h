@@ -77,6 +77,7 @@ public:
 	FOGSIGHT_OPTION		GetFogSightOp(const int& idx);
 	bool				GetFogLight(const int& idx);
 	BYTE				GetTileOption(const int& idx);
+	BYTE				GetTileFloor(const int& idx);
 	bool				GetCreepInstall(const int& idx);
 	TILE**				GetSqTile(void);
 	CREEP_INFO**		GetCreepTile(void);

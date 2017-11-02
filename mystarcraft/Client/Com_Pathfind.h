@@ -30,6 +30,7 @@ private:
 	D3DXVECTOR2				m_goalpos;
 	D3DXVECTOR2				m_vprepos;
 	D3DXVECTOR2				m_vtargetpos;
+	D3DXVECTOR2				m_vgap;
 
 	bool					m_pathfind_pause;
 	bool					m_multithread;
@@ -56,13 +57,14 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
+	void gap_initialize(void);
 	void StartPathfinding(bool bmagicbox);
 	void SetPathfindPause(bool bpause);
 	void SetTargetObjID(const int& objid);
 	void ClearPath(void);
 	void UnitMoving_update(void);
 	void SetGoalPos(const D3DXVECTOR2& vgoalpos);
-	void SetGoalidx(const int& idx);
+
 	void SetFlowField(void);
 	void Target_chase(void);
 public:

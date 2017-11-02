@@ -62,7 +62,7 @@ void CT_gas::Initialize(void)
 
 	float buildtime = 1.f;
 
-	m_com_anim = new CCom_T_gasAnim(m_matWorld , m_curtex , buildtime);
+	m_com_anim = new CCom_T_gasAnim(m_matWorld , buildtime);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));		
@@ -77,6 +77,7 @@ void CT_gas::Initialize(void)
 	m_select_ui = new CUI_Select(L"Select122" , m_vPos , 13);
 	m_select_ui->Initialize();
 	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+
 }
 
 void CT_gas::Update(void)
@@ -106,6 +107,8 @@ void CT_gas::Update(void)
 	vpos.x -= CScrollMgr::m_fScrollX;
 	vpos.y -= CScrollMgr::m_fScrollY;
 	CFontMgr::GetInstance()->Setbatch_Font(L"@" , vpos.x , vpos.y);
+
+
 }
 
 void CT_gas::Render(void)
@@ -114,16 +117,6 @@ void CT_gas::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	m_com_anim->Render();
-	//m_matshadow = m_matWorld;
-	//m_matshadow._41 -= 8;
-	//m_matshadow._42 -= 8;
-
-	//m_pSprite->SetTransform(&m_matshadow);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-
-	//m_pSprite->SetTransform(&m_matWorld);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//	, NULL , D3DCOLOR_ARGB(255,255,255,255));
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }

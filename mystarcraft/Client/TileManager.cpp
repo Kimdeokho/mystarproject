@@ -732,6 +732,14 @@ BYTE CTileManager::GetTileOption(const int& idx)
 	//enum TILE_OPTION값 참조
 	return m_sqTile[idx]->byOption;
 }
+BYTE CTileManager::GetTileFloor(const int& idx)
+{
+	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
+		return -1;
+
+	//enum TILE_OPTION값 참조
+	return m_sqTile[idx]->byFloor;
+}
 void CTileManager::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
 {
 	LPDIRECT3DSURFACE9 pBackBuffer , pSurface;

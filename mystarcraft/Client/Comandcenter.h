@@ -4,7 +4,7 @@
 class CComandcenter :
 	public CTerran_building
 {
-public:
+private:
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

@@ -49,3 +49,14 @@ BUILDING|None|T_BARRACK|WORK|2|..\Texture\Multi\Terran\Building\barrack\work\bar
 BUILDING|None|T_EB|BUILD|4|..\Texture\Multi\Terran\Building\engineering\build\eb_build%d.png
 BUILDING|None|T_EB|AIR|2|..\Texture\Multi\Terran\Building\engineering\air\eb_air%d.png
 BUILDING|None|T_EB|IDLE|1|..\Texture\Multi\Terran\Building\engineering\idle\eb_idle%d.png
+BUILDING|None|T_SUPPLY|BUILD|4|..\Texture\Multi\Terran\Building\supply\build\supply_build%d.png
+BUILDING|None|T_SUPPLY|IDLE|1|..\Texture\Multi\Terran\Building\supply\idle\supply_idle%d.png
+BUILDING|None|T_ACADEMY|BUILD|4|..\Texture\Multi\Terran\Building\academy\build\academy_build%d.png
+BUILDING|None|T_ACADEMY|IDLE|1|..\Texture\Multi\Terran\Building\academy\idle\academy_idle%d.png
+BUILDING|None|T_ARMOURY|BUILD|4|..\Texture\Multi\Terran\Building\armoury\build\armoury_build%d.png
+BUILDING|None|T_ARMOURY|IDLE|1|..\Texture\Multi\Terran\Building\armoury\idle\armoury_idle%d.png
+BUILDING|None|T_BUNKER|BUILD|4|..\Texture\Multi\Terran\Building\bunker\build\bunker_build%d.png
+BUILDING|None|T_BUNKER|IDLE|1|..\Texture\Multi\Terran\Building\bunker\idle\bunker_idle%d.png
+BUILDING|None|T_TURRETBODY|IDLE|1|..\Texture\Multi\Terran\Building\turret_body\idle\turret_idle%d.png
+BUILDING|None|T_TURRETBODY|BUILD|2|..\Texture\Multi\Terran\Building\turret_body\build\turret_build%d.png
+BUILDING|None|T_TURRET_PREVIEW|IDLE|1|..\Texture\Multi\Terran\Building\turret_preview\idle\turret_preview%d.png

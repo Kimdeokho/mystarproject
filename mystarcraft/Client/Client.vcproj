@@ -240,6 +240,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MultiTexture32.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MultiTexture32.h"
+					>
+				</File>
+				<File
 					RelativePath=".\SingleTexture.cpp"
 					>
 				</File>
@@ -514,11 +522,35 @@
 						Name="Terran"
 						>
 						<File
+							RelativePath=".\Academy.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Academy.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Armoury.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Armoury.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Barrack.cpp"
 							>
 						</File>
 						<File
 							RelativePath=".\Barrack.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Bunker.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Bunker.h"
 							>
 						</File>
 						<File
@@ -562,6 +594,14 @@
 							>
 						</File>
 						<File
+							RelativePath=".\Supplydepot.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Supplydepot.h"
+							>
+						</File>
+						<File
 							RelativePath=".\T_gas.cpp"
 							>
 						</File>
@@ -575,6 +615,22 @@
 						</File>
 						<File
 							RelativePath=".\Terran_building.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Turret.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Turret.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Turret_head.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Turret_head.h"
 							>
 						</File>
 						<Filter
@@ -743,6 +799,42 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Effect"
+					>
+					<File
+						RelativePath=".\Effect.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Effect.h"
+						>
+					</File>
+					<File
+						RelativePath=".\GeneraEff.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\GeneraEff.h"
+						>
+					</File>
+					<File
+						RelativePath=".\LoopEff.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\LoopEff.h"
+						>
+					</File>
+					<File
+						RelativePath=".\MultiEff.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MultiEff.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Component"
@@ -859,6 +951,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_SupplyAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_SupplyAnim.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_T_gasAnim.cpp"
 						>
 					</File>
@@ -888,6 +988,22 @@
 					</File>
 					<File
 						RelativePath=".\Com_TBuildingAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TurretAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TurretAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TurretheadAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_TurretheadAnim.h"
 						>
 					</File>
 				</Filter>
@@ -932,6 +1048,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_WTank.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WTurret.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WTurret.h"
 						>
 					</File>
 				</Filter>
@@ -1069,34 +1193,6 @@
 				</File>
 				<File
 					RelativePath=".\Skill_SP.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Effect"
-				>
-				<File
-					RelativePath=".\Effect.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Effect.h"
-					>
-				</File>
-				<File
-					RelativePath=".\GeneraEff.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\GeneraEff.h"
-					>
-				</File>
-				<File
-					RelativePath=".\MultiEff.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\MultiEff.h"
 					>
 				</File>
 			</Filter>

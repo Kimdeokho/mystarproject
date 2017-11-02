@@ -1,0 +1,2 @@
+TERRAN|BUILDING|T_TURRET_HEAD|IDLE|17|..\Texture\Multi\Terran\Building\turret_head\turret_head%d.png
+TERRAN|BUILDING|T_TURRET_HEAD|ATTACK|17|..\Texture\Multi\Terran\Building\turret_head\turret_head%d.png

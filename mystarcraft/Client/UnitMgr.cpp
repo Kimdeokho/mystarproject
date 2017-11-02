@@ -32,7 +32,6 @@ void CUnitMgr::Initialize(void)
 
 	m_vUnitcenterpt		= D3DXVECTOR2(0,0);
 	m_vGoalPos			= D3DXVECTOR2(0,0);
-	m_vparallel_travel  = D3DXVECTOR2(0,0);
 	m_magicbox_unitcnt	= 0;
 	m_vGoalIdx			= 0;
 }
@@ -98,7 +97,7 @@ void CUnitMgr::Intputkey_reaction(const int& nkey)
 		}
 	}
 }
-void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos , CObj* ptarget)
+void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptarget*/)
 {
 	list<CObj*>::iterator iter = m_curunitList.begin();
 	list<CObj*>::iterator iter_end = m_curunitList.end();
@@ -123,11 +122,11 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos , CObj* ptarge
 		else
 			(*iter)->SetMagicBox(false);
 
-		com_targetsearch = (*iter)->GetComponent(COM_TARGET_SEARCH);
-		if(NULL != com_targetsearch)
-		{
-			((CCom_Targetsearch*)com_targetsearch)->SetTarget(ptarget);
-		}
+		//com_targetsearch = (*iter)->GetComponent(COM_TARGET_SEARCH);
+		//if(NULL != com_targetsearch)
+		//{
+		//	((CCom_Targetsearch*)com_targetsearch)->SetTarget(ptarget);
+		//}
 
 	}
 
@@ -135,7 +134,6 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos , CObj* ptarge
 	m_vGoalPos = vgoalpos;
 	m_vGoalIdx = CMyMath::Pos_to_index(m_vGoalPos , 32);
 
-	m_vparallel_travel = m_vGoalPos - m_vUnitcenterpt;
 
 }
 
@@ -156,10 +154,6 @@ bool CUnitMgr::GetUnitlistempty(void)
 	}
 
 	return false;
-}
-D3DXVECTOR2 CUnitMgr::GetParallel_travel(void)
-{
-	return m_vparallel_travel;
 }
 D3DXVECTOR2 CUnitMgr::GetUnitGoalPos(void)
 {

@@ -1,2 +1,3 @@
 TANKFIRE|9|..\Texture\Multi\Effect\tankfire\tankfire%d.png
 SIEGEFIRE|63|..\Texture\Multi\Effect\siegefire\siegefire%d.png
+BUNKERFIRE|18|..\Texture\Multi\Effect\bunkerfire\bunker_fire%d.png

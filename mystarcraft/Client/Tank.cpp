@@ -75,7 +75,7 @@ void CTank::Initialize(void)
 
 	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 16);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex , true);
-	m_com_anim = new CCom_TankbodyAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_TankbodyAnim(m_matWorld);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , m_com_collision ) ) ;	
@@ -182,30 +182,11 @@ void CTank::Update(void)
 
 void CTank::Render(void)
 {
-	if(NULL == m_curtex)
-		return;
-
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
-	if(NULL == m_curtex)
-		return;
 
 	m_com_anim->Render();
-
-	//m_pSprite->SetTransform(&m_matWorld);
-	//if(TEAM_1 == m_eteamnumber)
-	//{
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,0,0));
-	//}
-	//else
-	//{
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,255,255));
-	//}
-
-	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
 
 	m_tankbarrel->Render();
 
@@ -225,7 +206,7 @@ void CTank::Transform_Tankbody(void)
 	m_componentlist.erase(iter);
 
 
-	m_com_anim = new CCom_TankbodyAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_TankbodyAnim(m_matWorld);
 	m_com_anim->Initialize(this);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));
 
@@ -251,7 +232,7 @@ void CTank::Transform_Siegebody(void)
 	Safe_Delete(m_com_pathfind);
 	Safe_Delete(m_com_anim);
 
-	m_com_anim = new CCom_SiegebodyAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_SiegebodyAnim(m_matWorld );
 	m_com_anim->Initialize(this);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));
 
@@ -346,7 +327,6 @@ void CTank::Inputkey_reaction(const int& nkey)
 
 
 					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-					((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 					m_bmagicbox = false;
@@ -383,7 +363,6 @@ void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 
 					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-					((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 					m_bmagicbox = false;
@@ -431,7 +410,6 @@ CComponent* CTank::GetComponent(COMPONENT_LIST ecom_name)
 
 void CTank::Dead(void)
 {
-
 	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

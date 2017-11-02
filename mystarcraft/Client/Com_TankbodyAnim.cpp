@@ -5,8 +5,8 @@
 #include "TextureMgr.h"
 #include "Obj.h"
 #include "MyMath.h"
-CCom_TankbodyAnim::CCom_TankbodyAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
-:CCom_Animation(objmat , curtex)
+CCom_TankbodyAnim::CCom_TankbodyAnim(D3DXMATRIX& objmat)
+:CCom_Animation(objmat)
 {
 	m_objname = L"TANKBODY";
 	m_statkey = L"";
@@ -18,6 +18,8 @@ CCom_TankbodyAnim::~CCom_TankbodyAnim(void)
 
 void CCom_TankbodyAnim::Initialize(CObj* pobj)
 {
+	m_curtex = NULL;
+
 	SetAnimation(L"IDLE");
 	m_pobj = pobj;
 
@@ -50,6 +52,9 @@ void CCom_TankbodyAnim::Update(void)
 
 void CCom_TankbodyAnim::Render(void)
 {
+	if(NULL == m_curtex)
+		return;
+
 	m_pSprite->SetTransform(&m_objmat);
 	if(TEAM_1 == m_pobj->GetTeamNumber())
 	{

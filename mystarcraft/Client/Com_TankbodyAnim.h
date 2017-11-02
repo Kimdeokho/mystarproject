@@ -11,6 +11,6 @@ public:
 	virtual void Release(void);
 	virtual void SetAnimation(const TCHAR* statekey);
 public:
-	CCom_TankbodyAnim(D3DXMATRIX& objmat , TEXINFO*& curtex);
+	CCom_TankbodyAnim(D3DXMATRIX& objmat);
 	~CCom_TankbodyAnim(void);
 };

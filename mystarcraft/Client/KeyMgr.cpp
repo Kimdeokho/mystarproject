@@ -349,7 +349,6 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 
 		if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
 		{
-			CObj* ptarget = NULL;
 			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
 
 			if(true == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
@@ -363,7 +362,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
 			}			
 
-			CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept , ptarget);
+			CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
 			CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);
 
 
@@ -381,7 +380,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			m_clickwating['A'] = false;
 			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
 			{
-				CObj* ptarget = NULL;
+				//CObj* ptarget = NULL;
 				vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
 
 				if(true == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
@@ -397,7 +396,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				}			
 
 				//부대유닛들의 중점을 구하고 선택된 타겟이 있으면 전달한다.
-				CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept , ptarget);
+				CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
 				CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);	
 
 				CUnitMgr::GetInstance()->Intputkey_reaction('A' , VK_LBUTTON);
@@ -438,6 +437,13 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'A');
 
 			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'A');
+
+			m_clickwating['V'] = false;
 		}
 		else
 		{
@@ -651,7 +657,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		if(m_clickwating['B'])
 		{
 			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
-				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'R');
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'S');
 
 			m_clickwating['B'] = false;
 		}
@@ -667,11 +673,19 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Intputkey_reaction('S');
 		}
 
-		pObj = new CSCV;
-		CObjMgr::GetInstance()->AddObject(pObj , OBJ_SCV);
-		pObj->SetPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
-		pObj->Initialize();
-		objcnt += 1;
+		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		for(int i = 0; i < 10; ++i)
+		{
+			vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			vpos.x += rand()%50 - 25;
+			vpos.y += rand()%50 - 25;
+			pObj = new CSCV;
+			CObjMgr::GetInstance()->AddObject(pObj , OBJ_SCV);
+			pObj->SetPos(vpos);
+			pObj->Initialize();
+			objcnt += 1;
+		}
+
 		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 	}
 
@@ -679,16 +693,65 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 	{
 		m_bOnceKeyDown_complete['T'] = false;
 
-		pObj = new CTank;
-		CObjMgr::GetInstance()->AddObject(pObj , OBJ_TANK);
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'T');
 
-		pObj->SetPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
-		pObj->Initialize();
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'T');
 
-		objcnt += 1;
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			CUnitMgr::GetInstance()->Intputkey_reaction('T');
+		}
+
+
+		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		for(int i = 0; i < 10; ++i)
+		{
+			vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			vpos.x += rand()%50 - 25;
+			vpos.y += rand()%50 - 25;
+			pObj = new CTank;
+			CObjMgr::GetInstance()->AddObject(pObj , OBJ_TANK);
+			pObj->SetPos(vpos);
+			pObj->Initialize();
+			objcnt += 1;
+		}
 		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 
-		CUnitMgr::GetInstance()->Intputkey_reaction('T');
+	}
+
+	if(true == m_bOnceKeyDown_complete['U'])
+	{
+		m_bOnceKeyDown_complete['U'] = false;
+
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'U');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'U');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			CUnitMgr::GetInstance()->Intputkey_reaction('U');
+		}		
 	}
 
 	if(true == m_bOnceKeyDown_complete['W'])
@@ -735,12 +798,19 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		CFontMgr::GetInstance()->Set_KeyInput_Font(L"Z 입력" );
 
 		//	/*곧 지울것들이다*/
-		pObj = new CMarine;
-		pObj->SetPos( CMouseMgr::GetInstance()->GetAddScrollvMousePt() );
-		pObj->Initialize();
+		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		for(int i = 0; i < 10; ++i)
+		{
+			vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			vpos.x += rand()%50 - 25;
+			vpos.y += rand()%50 - 25;
+			pObj = new CMarine;
+			CObjMgr::GetInstance()->AddObject(pObj , OBJ_MARINE);
+			pObj->SetPos(vpos);
+			pObj->Initialize();
+			objcnt += 1;
+		}
 
-		CObjMgr::GetInstance()->AddObject(pObj , OBJ_MARINE);
-		objcnt += 1;
 		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 		CUnitMgr::GetInstance()->Intputkey_reaction('Z');
 

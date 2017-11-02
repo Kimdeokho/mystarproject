@@ -27,3 +27,10 @@ BUILDING|NONE|FACTORY_LINK|4|..\Texture\General\terran_build\factory_link\factor
 BUILDING|NONE|STAR_LINK|5|..\Texture\General\terran_build\star_link\star_link%d.png
 BUILDING|NONE|GHOST_LINK|5|..\Texture\General\terran_build\ghost_link\ghost_link%d.png
 BUILDING|NONE|BATTLE_LINK|5|..\Texture\General\terran_build\battle_link\battle_link%d.png
+BUILDING|NONE|SUPPLY_PART|6|..\Texture\General\terran_build\supply_part\supply_part%d.png
+EFFECT|FIRE_A|FIRE_A|12|..\Texture\General\Effect\terran_fire\fireA\fire_A%d.png
+EFFECT|BIGFIRE_A|BIGFIRE_A|12|..\Texture\General\Effect\terran_fire\fireA\bigfire_A%d.png
+EFFECT|FIRE_B|FIRE_B|12|..\Texture\General\Effect\terran_fire\fireB\fire_B%d.png
+EFFECT|BIGFIRE_B|BIGFIRE_B|12|..\Texture\General\Effect\terran_fire\fireB\bigfire_B%d.png
+EFFECT|FIRE_C|FIRE_C|12|..\Texture\General\Effect\terran_fire\fireC\fire_C%d.png
+EFFECT|BIGFIRE_C|BIGFIRE_C|12|..\Texture\General\Effect\terran_fire\fireC\bigfire_C%d.png

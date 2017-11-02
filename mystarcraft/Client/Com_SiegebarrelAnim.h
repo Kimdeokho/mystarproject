@@ -15,6 +15,6 @@ public:
 	virtual void SetAnimation(const TCHAR* statekey);
 public:
 public:
-	CCom_SiegebarrelAnim(D3DXMATRIX& objmat , TEXINFO*& curtex);
+	CCom_SiegebarrelAnim(D3DXMATRIX& objmat );
 	~CCom_SiegebarrelAnim(void);
 };

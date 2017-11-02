@@ -15,18 +15,16 @@ private:
 
 	D3DXVECTOR2		m_vUnitcenterpt;
 	D3DXVECTOR2		m_vGoalPos;
-	D3DXVECTOR2		m_vparallel_travel;//평행이동
 	int				m_vGoalIdx;
 	int				m_magicbox_unitcnt;
 public:
 	void SetUnit(CObj* pobj);
 public:
 	bool		GetUnitlistempty(void);
-	D3DXVECTOR2	GetParallel_travel(void);
 	D3DXVECTOR2	GetUnitGoalPos(void);
 	D3DXVECTOR2 GetUnitCentterPt(void);
 	int			GetGoalidx(void);
-	void		Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos , CObj* ptarget);
+	void		Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptarget*/);
 public:
 	void Initialize(void);
 	void discharge_unit(void);

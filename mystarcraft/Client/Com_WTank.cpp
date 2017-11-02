@@ -57,8 +57,8 @@ void CCom_WTank::fire(CObj*& ptarget)
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
-			peff = new CMultiEff(L"TANKFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() , 7);
 
+			peff = new CMultiEff(L"TANKFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() , 7);
 			peff->SetPos(((CTankbarrel*)m_pobj)->GetbarrelPos());
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);

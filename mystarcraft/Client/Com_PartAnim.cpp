@@ -5,8 +5,8 @@
 #include "TimeMgr.h"
 #include "Obj.h"
 
-CCom_PartAnim::CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3DXMATRIX& objmat , TEXINFO*& curtex ,TEXINFO*& linktex)
-:CCom_Animation(objmat , curtex) , m_linktex(linktex)
+CCom_PartAnim::CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3DXMATRIX& objmat )
+:CCom_Animation(objmat)
 {
 	m_objname = objkey;
 	m_link_texkey = linktexkey;

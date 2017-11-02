@@ -45,7 +45,7 @@ void CScene_Stage::Update(void)
 	CComanderMgr::GetInstance()->Update();
 	CScrollMgr::update();
 
-	CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
+	//CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
 }
 void CScene_Stage::Render(void)
 {
@@ -57,7 +57,7 @@ void CScene_Stage::Render(void)
 	
 
 	CFontMgr::GetInstance()->FontRender();
-	CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
+	//CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
 	CLineMgr::GetInstance()->LineRender();
 
 	CComanderMgr::GetInstance()->Render();

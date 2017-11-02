@@ -4,8 +4,8 @@
 #include "Obj.h"
 #include "TimeMgr.h"
 #include "TextureMgr.h"
-CCom_T_gasAnim::CCom_T_gasAnim(D3DXMATRIX& objmat , TEXINFO*& curtex , float fbuildtime)
-:CCom_Animation(objmat , curtex)
+CCom_T_gasAnim::CCom_T_gasAnim(D3DXMATRIX& objmat , float fbuildtime)
+:CCom_Animation(objmat)
 {
 	m_objname = L"T_GAS";
 

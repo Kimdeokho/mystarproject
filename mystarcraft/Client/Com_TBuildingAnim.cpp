@@ -6,8 +6,8 @@
 #include "Obj.h"
 #include "ScrollMgr.h"
 
-CCom_TBuildingAnim::CCom_TBuildingAnim(const TCHAR* objname ,D3DXMATRIX& objmat , TEXINFO*& curtex)
-:CCom_Animation(objmat , curtex)
+CCom_TBuildingAnim::CCom_TBuildingAnim(const TCHAR* objname ,D3DXMATRIX& objmat)
+:CCom_Animation(objmat)
 {
 	m_objname = objname;
 

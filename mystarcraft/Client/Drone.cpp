@@ -72,7 +72,7 @@ void CDrone::Initialize(void)
 	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range)));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_DroneAnim(m_matWorld , m_curtex)));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_DroneAnim(m_matWorld)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY) ) );	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex)) ) ;	
@@ -166,7 +166,6 @@ void CDrone::Inputkey_reaction(const int& nkey)
 
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 			m_bmagicbox = false;
@@ -204,7 +203,6 @@ void CDrone::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 			m_bmagicbox = false;

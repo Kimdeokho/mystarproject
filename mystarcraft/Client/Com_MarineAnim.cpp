@@ -5,8 +5,8 @@
 #include "TimeMgr.h"
 #include "Obj.h"
 
-CCom_MarineAnim::CCom_MarineAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
-:CCom_Animation(objmat , curtex)
+CCom_MarineAnim::CCom_MarineAnim(D3DXMATRIX& objmat)
+:CCom_Animation(objmat)
 {
 	m_objname = L"MARINE";
 	m_statkey = L"";

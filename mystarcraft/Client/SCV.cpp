@@ -30,6 +30,11 @@
 #include "Sience.h"
 #include "Barrack.h"
 #include "Engineering.h"
+#include "Supplydepot.h"
+#include "Academy.h"
+#include "Armoury.h"
+#include "Bunker.h"
+#include "Turret.h"
 
 #include "Building_Preview.h"
 #include "TileManager.h"
@@ -74,7 +79,7 @@ void CSCV::Initialize(void)
 	m_vertex.bottom = 11.5;
 
 	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 32);
-	m_com_anim = new CCom_SCVAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_SCVAnim(m_matWorld);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex);
 	m_com_targetsearch = new CCom_Meleesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range, SEARCH_ONLY_ENEMY);
 	m_com_worksearch = new CCom_Worksearch(&m_unitinfo.attack_range , &m_unitinfo.search_range, SEARCH_ONLY_ENEMY);
@@ -226,8 +231,6 @@ void CSCV::Update(void)
 
 void CSCV::Render(void)
 {
-	if(NULL == m_curtex)
-		return;
 	if(BOARDING == m_unitinfo.estate)
 		return;
 
@@ -236,22 +239,6 @@ void CSCV::Render(void)
 
 
 	m_com_anim->Render();
-	//m_pSprite->SetTransform(&m_matshadow);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
-	//	, NULL , D3DCOLOR_ARGB(150,0,0,0));
-
-
-	//m_pSprite->SetTransform(&m_matWorld);
-	//if(TEAM_1 == m_eteamnumber)
-	//{
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,0,0));
-	//}
-	//else
-	//{
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3( 36.f , 36.f , 0)
-	//		, NULL , D3DCOLOR_ARGB(255,255,255,255));
-	//}
 
 	m_com_pathfind->Render();
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
@@ -283,8 +270,8 @@ void CSCV::Inputkey_reaction(const int& nkey)
 				m_preview_info = ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo();
 
 				CTileManager::GetInstance()->Flowfield_Pathfinding(m_preview_info.vcenter_pos);
+				CUnitMgr::GetInstance()->Calculate_UnitCenterPt(m_preview_info.vcenter_pos);
 				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(m_preview_info.vcenter_pos);
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(m_preview_info.vcenter_pos ,32));
 				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(false);
 
@@ -338,7 +325,6 @@ void CSCV::Inputkey_reaction(const int& nkey)
 
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 			m_bmagicbox = false;
@@ -373,12 +359,17 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalidx(CMyMath::Pos_to_index(goalpos ,32));
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
 			m_bmagicbox = false;
 		}
 		CWorkman::SetMineral_mark(NULL);
+	}
+
+	if('B' == firstkey && 'A' == secondkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_ACADEMY" , T_ACADEMY , 2 , 3 , this);
 	}
 	if('B' == firstkey && 'B' == secondkey)
 	{
@@ -400,6 +391,28 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		m_is_preview = true;
 		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_GAS" ,T_GAS, 2 , 4 , this);
 	}
+	if('B' == firstkey && 'S' == secondkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_SUPPLY" , T_SUPPLY , 2 , 3 , this);
+	}
+	if('B' == firstkey && 'T' == secondkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_TURRET_PREVIEW" , T_TURRET , 2 , 2 , this);
+	}
+
+	if('B' == firstkey && 'U' == secondkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BUNKER" ,T_BUNKER, 2 , 3 , this);
+	}
+
+	if('V' == firstkey && 'A' == secondkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_ARMOURY" ,T_ARMOURY, 2 , 3 , this);
+	}
 	if('V' == firstkey && 'F' == secondkey)
 	{
 		m_is_preview = true;
@@ -420,9 +433,6 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 void CSCV::Release(void)
 {
 	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
 
 	if(NULL != m_com_targetsearch)
 		Safe_Delete(m_com_targetsearch);
@@ -489,6 +499,41 @@ void CSCV::Create_Building(void)
 			pobj->SetPos(m_preview_info.vpos );
 			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_EB);
+		}
+		else if(T_SUPPLY == m_preview_info.ebuild)
+		{
+			pobj = new CSupplydepot;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_SUPPLY);
+		}
+		else if(T_ACADEMY == m_preview_info.ebuild)
+		{
+			pobj = new CAcademy;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_ACADEMY);
+		}
+		else if(T_ARMOURY == m_preview_info.ebuild)
+		{
+			pobj = new CArmoury;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_ARMOURY);
+		}
+		else if(T_BUNKER == m_preview_info.ebuild)
+		{
+			pobj = new CBunker;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_BUNKER);
+		}
+		else if(T_TURRET == m_preview_info.ebuild)
+		{
+			pobj = new CTurret;
+			pobj->SetPos(m_preview_info.vpos );
+			pobj->Initialize();
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_TURRET);
 		}
 
 		m_charge_building = pobj;

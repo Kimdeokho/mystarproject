@@ -16,6 +16,6 @@ public:
 public:
 	//bool	GetTransform(void);
 public:
-	CCom_SiegebodyAnim(D3DXMATRIX& objmat , TEXINFO*& curtex);
+	CCom_SiegebodyAnim(D3DXMATRIX& objmat);
 	~CCom_SiegebodyAnim(void);
 };

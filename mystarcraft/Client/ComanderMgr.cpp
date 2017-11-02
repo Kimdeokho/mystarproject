@@ -101,28 +101,7 @@ void CComanderMgr::SetPreview(CUI* building_preview)
 {
 	m_vec_preview.push_back(building_preview);
 }
-
-//CUI* CComanderMgr::GetPreview(void)
-//{
-//	//return m_preview_building;
-//}
-//
-//CUI* CComanderMgr::GetSubPreview(void)
-//{
-//	//return m_sub_preview_building;
-//}
-//
-//void CComanderMgr::SetPreviewPos(const D3DXVECTOR2& vpos)
-//{
-//	//((CBuilding_Preview*)m_preview_building)->SetPos(vpos);
-//}
-//
-//void CComanderMgr::SetSubPreviewPos(const D3DXVECTOR2& vpos)
-//{
-//	//((CBuilding_Preview*)m_sub_preview_building)->SetPos(vpos);
-//}
-//
-//bool CComanderMgr::GetPreview_Active(void)
-//{
-//	//return ((CBuilding_Preview*)m_preview_building)->GetActive();
-//}
+void CComanderMgr::ClearPreview(void)
+{
+	m_vec_preview.clear();
+}

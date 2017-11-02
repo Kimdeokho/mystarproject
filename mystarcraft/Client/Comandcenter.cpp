@@ -25,6 +25,8 @@
 #include "MouseMgr.h"
 #include "Comset.h"
 #include "Nuclear_part.h"
+#include "LoopEff.h"
+
 CComandcenter::CComandcenter(void)
 {
 }
@@ -57,7 +59,8 @@ void CComandcenter::Initialize(void)
 	m_unitinfo.eDamageType = DAMAGE_NOMAL;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.damage = 0;
-	m_unitinfo.hp = 1;
+	m_unitinfo.hp = 100;
+	m_unitinfo.maxhp = m_unitinfo.hp;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 28;
 	m_unitinfo.attack_range = 0;
@@ -66,7 +69,7 @@ void CComandcenter::Initialize(void)
 	m_unitinfo.fbuildtime = 1.f;
 
 
-	m_com_anim = new CCom_TBuildingAnim(L"COMMANDCENTER",m_matWorld , m_curtex);
+	m_com_anim = new CCom_TBuildingAnim(L"COMMANDCENTER",m_matWorld );
 	m_com_pathfind = new CCom_AirPathfind(m_vPos);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
@@ -84,6 +87,8 @@ void CComandcenter::Initialize(void)
 	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
 
 	m_is_take_off = false;
+
+	CTerran_building::fire_eff_initialize();
 }
 
 void CComandcenter::Update(void)
@@ -155,19 +160,19 @@ void CComandcenter::Update(void)
 
 				}
 				m_partbuilding = pobj;
-				((CTerran_building*)m_partbuilding)->Setlink(true);
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
 			}
 			else
 			{
 				int partidx = m_curidx32 + 3 + SQ_TILECNTX;
 				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_COMSET);
 				if(NULL != m_partbuilding)
-					((CTerran_building*)m_partbuilding)->Setlink(true);
+					((CTerran_building*)m_partbuilding)->Setlink(true , this);
 				else
 				{
 					m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_NUCLEAR);
 					if(NULL != m_partbuilding)
-						((CTerran_building*)m_partbuilding)->Setlink(true);
+						((CTerran_building*)m_partbuilding)->Setlink(true , this);
 				}
 			}
 
@@ -241,6 +246,9 @@ void CComandcenter::Update(void)
 	//vpos.y -= CScrollMgr::m_fScrollY;
 	//CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
 	//	m_vPos.y - CScrollMgr::m_fScrollY);
+
+
+	CTerran_building::fire_eff_update();
 }
 
 void CComandcenter::Render(void)
@@ -249,40 +257,10 @@ void CComandcenter::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	m_com_anim->Render();
-	//m_matshadow = m_matWorld;
 
-	//if(AIR_IDLE == m_unitinfo.estate)
-	//{
-	//	m_matshadow._42 += 48;
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-	//else if(TAKE_OFF == m_unitinfo.estate)
-	//{
-	//	m_matshadow._42 = m_vairpos.y - CScrollMgr::m_fScrollY;
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-	//else if(LANDING == m_unitinfo.estate)
-	//{
-	//	m_matshadow._42 = m_vgroundpos.y - CScrollMgr::m_fScrollY;
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-	//else
-	//{
-	//	m_matshadow._41 -= 8;
-	//	m_matshadow._42 -= 8;
 
-	//	m_pSprite->SetTransform(&m_matshadow);
-	//	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
-	//}
-
-	//m_pSprite->SetTransform(&m_matWorld);
-	//m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-	//	, NULL , D3DCOLOR_ARGB(255,255,255,255));
-
-	CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	CTerran_building::fire_eff_render();
+	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
 void CComandcenter::Inputkey_reaction(const int& nkey)
@@ -375,7 +353,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 							
 						}
 						m_partbuilding = pobj;
-						((CTerran_building*)m_partbuilding)->Setlink(true);
+						((CTerran_building*)m_partbuilding)->Setlink(true , this);
 					}
 				}
 			}
@@ -435,6 +413,8 @@ void CComandcenter::Release(void)
 	{
 		m_componentlist.erase(iter);
 	}
+
+
 }
 
 void CComandcenter::Dead(void)
@@ -451,7 +431,7 @@ void CComandcenter::Dead(void)
 
 	if(NULL != m_partbuilding)
 	{
-		((CTerran_building*)m_partbuilding)->Setlink(false);
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
 		m_partbuilding = NULL;
 	}
 }

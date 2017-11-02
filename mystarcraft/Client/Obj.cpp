@@ -57,7 +57,9 @@ void CObj::unit_area_Initialize(void)
 }
 void CObj::area_update(void)
 {
-	//ÀÌ°Å ¹¹¾ß???????
+	if(BOARDING == m_unitinfo.estate ||
+		ORDER_BUNKER_BOARDING == m_unitinfo.eorder)
+		return;
 
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
@@ -74,6 +76,8 @@ void CObj::area_update(void)
 }
 void CObj::area_release(void)
 {
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
 	if(m_curidx64 != CMyMath::Pos_to_index(m_vPos , 64))
 		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
 	else

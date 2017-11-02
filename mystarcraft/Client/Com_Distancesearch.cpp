@@ -8,6 +8,7 @@
 
 #include "Com_Weapon.h"
 #include "Com_Pathfind.h"
+#include "Bunker.h"
 CCom_Distancesearch::CCom_Distancesearch(const int* attack_range , const int* search_range , TARGET_SEARCH_TYPE esearch_type , CObj* otherobj)
 {
 	m_pattack_range = attack_range;
@@ -40,7 +41,8 @@ void CCom_Distancesearch::Initialize(CObj* pobj /*= NULL*/)
 void CCom_Distancesearch::Update(void)
 {
 	if(/*COLLISION == m_pobj->GetUnitinfo().estate ||*/
-		TRANSFORMING == m_pobj->GetUnitinfo().estate)
+		TRANSFORMING == m_pobj->GetUnitinfo().estate ||
+		BOARDING == m_pobj->GetUnitinfo().estate)
 		return;
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
@@ -69,39 +71,90 @@ void CCom_Distancesearch::Update(void)
 		//강제타겟이 있을 경우
 		if(RESOURCE != m_ptarget->GetCategory())
 		{
-			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
-			{			
-				//공격 범위에 들어오면
-				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
-
-				ATTACK_SEARCH_TYPE emy_attacktype = m_pobj->GetUnitinfo().eAttackType;
-				MOVE_TYPE	etarget_movetype = m_ptarget->GetUnitinfo().eMoveType;
-
-				if( ATTACK_ONLY_AIR == emy_attacktype)
+			if(OBJ_BUNKER == m_ptarget->GetOBJNAME() &&
+				ORDER_MOVE == m_pobj->GetUnitinfo().eorder ||
+				ORDER_NONE == m_pobj->GetUnitinfo().eorder)
+			{
+				m_myrc= m_pobj->GetMyRect();
+				m_myrc.left -= 2;
+				m_myrc.right += 2;
+				m_myrc.top -= 2;
+				m_myrc.bottom += 2;
+				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
 				{
-					if(MOVE_GROUND == etarget_movetype)
-						return;
+					m_bforced_target = false;
+
+					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+					if(OBJ_MARINE == m_pobj->GetOBJNAME())
+					{
+						if( true == ((CBunker*)m_ptarget)->UnitEnter_Bunker(m_pobj) )
+						{
+							m_pobj->SetSelect(NONE_SELECT);
+							m_pobj->area_release();
+							m_pobj->SetState(IDLE); 
+							m_pobj->SetOrder(ORDER_BUNKER_BOARDING);
+
+						}
+						else
+						{
+							m_pobj->SetState(IDLE);
+							m_pobj->SetOrder(ORDER_NONE);
+						}
+						m_ptarget = NULL;
+						m_target_objid = 0;
+					}
+
+					
+					if(NULL != m_com_pathfind)
+					{
+						((CCom_Pathfind*)m_com_pathfind)->ClearPath();
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+					}
 				}
-				else if( ATTACK_ONLY_GROUND == emy_attacktype)
+				else
 				{
-					if(MOVE_AIR == etarget_movetype)
-						return;
-				}
-
-				if(NULL != m_com_weapon)
-					((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
-
-
-				if(NULL != m_com_pathfind)
-				{
-					((CCom_Pathfind*)m_com_pathfind)->ClearPath();
-					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+					if(NULL != m_com_pathfind)
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}
 			}
 			else
 			{
-				if(NULL != m_com_pathfind)
-					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
+				{			
+					//공격 범위에 들어오면
+					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+					ATTACK_SEARCH_TYPE emy_attacktype = m_pobj->GetUnitinfo().eAttackType;
+					MOVE_TYPE	etarget_movetype = m_ptarget->GetUnitinfo().eMoveType;
+
+					if( ATTACK_ONLY_AIR == emy_attacktype)
+					{
+						if(MOVE_GROUND == etarget_movetype)
+							return;
+					}
+					else if( ATTACK_ONLY_GROUND == emy_attacktype)
+					{
+						if(MOVE_AIR == etarget_movetype)
+							return;
+					}
+
+
+					if(NULL != m_com_weapon)
+						((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
+
+
+					if(NULL != m_com_pathfind)
+					{
+						((CCom_Pathfind*)m_com_pathfind)->ClearPath();
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+					}
+				}
+				else
+				{
+					if(NULL != m_com_pathfind)
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+				}
 			}
 		}
 
@@ -133,7 +186,9 @@ void CCom_Distancesearch::Update(void)
 			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
 			{			
 				//공격 범위에 들어오면
-				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+				m_pobj->Setdir( m_ptarget->GetPos() - m_pobj->GetPos());
+
+				//m_pobj->SetState(ATTACK);//임시방편
 
 				if(NULL != m_com_weapon)
 					((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
@@ -159,6 +214,12 @@ void CCom_Distancesearch::Update(void)
 			{
 				//공격범위 밖, 추적범위 안이면
 				//공격 후딜이 다 끝나고 추적
+
+				if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+				{
+					m_ptarget = NULL;
+					m_target_objid = 0;
+				}
 				//m_target_objid = 0;
 
 				//m_pobj->SetState(MOVE);
@@ -169,6 +230,13 @@ void CCom_Distancesearch::Update(void)
 					if(NULL != m_com_pathfind)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}
+			}
+		}
+		else
+		{
+			if(OBJ_TURRET == m_pobj->GetOBJNAME())
+			{
+				m_pobj->SetState(IDLE);
 			}
 		}
 	}

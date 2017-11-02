@@ -6,6 +6,7 @@
 #include "TimeMgr.h"
 #include "ObjMgr.h"
 #include "GeneraEff.h"
+#include "MultiEff.h"
 CCom_Wmarine::CCom_Wmarine(const int& damage , DAMAGE_TYPE edamagetype)
 {
 	m_damage = damage;
@@ -46,13 +47,24 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 			m_targetpos.x += float(rand()%20 - 10);
 			m_targetpos.y += float(rand()%20 - 10);
 
-			CObj* peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 2.5f);
+			CObj* peff = NULL;
 
+			if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+			{
+				D3DXVECTOR2 vpos = m_pobj->GetPos() + m_pobj->GetcurDir()*17;
+				vpos.y -= 15;
+				peff = new CMultiEff(L"BUNKERFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() ,6.0f , 4);
+				peff->SetPos(vpos);
+				peff->Initialize();
+				CObjMgr::GetInstance()->AddEffect(peff);
+			}
+
+			peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 2.5f);
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
+
 			(ptarget)->SetDamage(m_damage , m_edamagetype);
 		}
-
 	}
 	else
 	{

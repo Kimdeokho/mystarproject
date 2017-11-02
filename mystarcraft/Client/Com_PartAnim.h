@@ -10,7 +10,7 @@ private:
 	
 
 	const vector<TEXINFO*>* m_subgeneral_tex;
-	TEXINFO*&				m_linktex;
+	TEXINFO*				m_linktex;
 	FRAME					m_subframe;
 	int						m_playdir;
 	bool					m_sub_on;
@@ -26,6 +26,6 @@ public:
 	virtual void Release(void);
 	virtual void SetAnimation(const TCHAR* statekey);
 public:
-	CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3DXMATRIX& objmat , TEXINFO*& curtex ,TEXINFO*& linktex);
+	CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3DXMATRIX& objmat );
 	~CCom_PartAnim(void);
 };

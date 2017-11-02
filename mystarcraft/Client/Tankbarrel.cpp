@@ -42,7 +42,7 @@ void CTankbarrel::Initialize(void)
 	m_unitinfo.eDamageType = DAMAGE_BOOM;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.damage = 30;
-	m_unitinfo.hp = 150;
+	m_unitinfo.hp = 0;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.attack_range = 224;
@@ -50,7 +50,7 @@ void CTankbarrel::Initialize(void)
 	m_unitinfo.fog_range = 512;
 
 	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY , m_tankbody);
-	m_com_anim = new CCom_TankbarrelAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_TankbarrelAnim(m_matWorld );
 	m_com_weapon = new CCom_WTank(m_unitinfo.damage , DAMAGE_BOOM);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
@@ -116,10 +116,8 @@ void CTankbarrel::Update(void)
 					//¸öÅë ¿ªº¯ ½ÅÈ£º¸³¿..
 					((CTank*)m_tankbody)->SetTransformReady(true);
 					((CTank*)m_tankbody)->Transform();
-				}
-				
-			}
-			
+				}				
+			}			
 		}
 		else
 		{
@@ -225,7 +223,7 @@ void CTankbarrel::TransformTankbarrel(void)
 	m_componentlist.clear();
 
 	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY , m_tankbody);
-	m_com_anim = new CCom_TankbarrelAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_TankbarrelAnim(m_matWorld );
 	m_com_weapon = new CCom_WTank(m_unitinfo.damage , DAMAGE_BOOM);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
@@ -258,7 +256,7 @@ void CTankbarrel::TransformSiegebarrel(void)
 
 
 	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY , m_tankbody);
-	m_com_anim = new CCom_SiegebarrelAnim(m_matWorld , m_curtex);
+	m_com_anim = new CCom_SiegebarrelAnim(m_matWorld);
 	m_com_weapon = new CCom_WSiege(m_unitinfo.damage , DAMAGE_BOOM);
 
 

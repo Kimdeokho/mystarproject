@@ -65,7 +65,7 @@ void CFactory::Initialize(void)
 	m_unitinfo.fog_range = 512;
 	m_unitinfo.fbuildtime = 1.f;
 
-	m_com_anim = new CCom_TBuildingAnim(L"T_FACTORY",m_matWorld , m_curtex );
+	m_com_anim = new CCom_TBuildingAnim(L"T_FACTORY",m_matWorld );
 	m_com_pathfind = new CCom_AirPathfind(m_vPos);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
@@ -83,6 +83,8 @@ void CFactory::Initialize(void)
 	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
 
 	m_is_take_off = false;
+
+	CTerran_building::fire_eff_initialize();
 }
 
 void CFactory::Update(void)
@@ -146,14 +148,14 @@ void CFactory::Update(void)
 					CObjMgr::GetInstance()->AddObject(pobj , OBJ_FAC_ADDON);
 				}
 				m_partbuilding = pobj;
-				((CTerran_building*)m_partbuilding)->Setlink(true);
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
 			}
 			else
 			{
 				int partidx = m_curidx32 + 3 + SQ_TILECNTX;
 				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_FAC_ADDON);
 				if(NULL != m_partbuilding)
-					((CTerran_building*)m_partbuilding)->Setlink(true);
+					((CTerran_building*)m_partbuilding)->Setlink(true , this);
 			}
 
 			m_is_take_off = false;
@@ -223,6 +225,8 @@ void CFactory::Update(void)
 	//vpos.y -= CScrollMgr::m_fScrollY;
 	//CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
 	//	m_vPos.y - CScrollMgr::m_fScrollY);
+
+	CTerran_building::fire_eff_update();
 }
 
 void CFactory::Render(void)
@@ -231,6 +235,8 @@ void CFactory::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	m_com_anim->Render();
+
+	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
@@ -263,7 +269,7 @@ void CFactory::Dead(void)
 
 	if(NULL != m_partbuilding)
 	{
-		((CTerran_building*)m_partbuilding)->Setlink(false);
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
 		m_partbuilding = NULL;
 	}
 }
@@ -341,7 +347,7 @@ void CFactory::Inputkey_reaction(const int& nkey)
 							CObjMgr::GetInstance()->AddObject(pobj , OBJ_FAC_ADDON);
 						}
 						m_partbuilding = pobj;
-						((CTerran_building*)m_partbuilding)->Setlink(true);
+						((CTerran_building*)m_partbuilding)->Setlink(true , this);
 					}
 				}
 			}

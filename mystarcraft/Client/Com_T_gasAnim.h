@@ -14,6 +14,6 @@ public:
 	virtual void Release(void);
 	virtual void SetAnimation(const TCHAR* statekey);
 public:
-	CCom_T_gasAnim(D3DXMATRIX& objmat , TEXINFO*& curtex , float fbuildtime);
+	CCom_T_gasAnim(D3DXMATRIX& objmat , float fbuildtime);
 	~CCom_T_gasAnim(void);
 };

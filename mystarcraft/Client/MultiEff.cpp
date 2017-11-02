@@ -4,11 +4,12 @@
 #include "TextureMgr.h"
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
-CMultiEff::CMultiEff(const TCHAR* texkey , const int& curdiridx ,const float& framespped)
+CMultiEff::CMultiEff(const TCHAR* texkey , const int& curdiridx ,const float& framespped ,const int& loopcnt)
 {
 	m_texkey = texkey;
 	m_curdiridx = curdiridx;
 	m_ftimespeed = framespped;
+	m_end_loopcnt = loopcnt;
 }
 
 CMultiEff::~CMultiEff(void)
@@ -17,6 +18,7 @@ CMultiEff::~CMultiEff(void)
 
 void CMultiEff::Initialize(void)
 {
+	m_cur_loopcnt = 0;
 	m_curtex = NULL;
 	m_sortID = SORT_GROUND_EFF;
 	//for(int i = 0; i < DIR_CNT; ++i)
@@ -46,22 +48,27 @@ void CMultiEff::Initialize(void)
 
 void CMultiEff::Update(void)
 {
-	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
-	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
-
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 
 	if(m_frame.fcurframe >= m_frame.umax)
 	{
 		m_frame.fcurframe = 0.f;
-		m_bdestroy = true;
-		return;
+		++m_cur_loopcnt;
+
+		if(m_cur_loopcnt >= m_end_loopcnt)
+		{
+			m_bdestroy = true;
+			return;
+		}
 	}
 	m_curtex = (*m_multiefftex)[ int(m_frame.fcurframe) ];
 }
 
 void CMultiEff::Render(void)
 {
+	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
+
 	m_pSprite->SetTransform(&m_matWorld);
 	m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
 

@@ -12,6 +12,6 @@ public:
 	virtual void Release(void);
 	virtual void SetAnimation(const TCHAR* statekey);
 public:
-	CCom_SCVAnim(D3DXMATRIX& objmat , TEXINFO*& curtex);
+	CCom_SCVAnim(D3DXMATRIX& objmat);
 	~CCom_SCVAnim(void);
 };

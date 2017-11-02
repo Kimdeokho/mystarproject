@@ -12,6 +12,7 @@ protected:
 	FRAME						m_frame;
 
 	const vector<TEXINFO*>* 	m_animtexture[DIR_CNT];/*[]는 방향(각도)을 뜻한다*/
+	const vector<TEXINFO*>* 	m_animtexture32[DIR_CNT17];/*[]는 방향(각도)을 뜻한다*/
 	const vector<TEXINFO*>*		m_generaltex;
 
 	const TCHAR*				m_objname;
@@ -22,7 +23,7 @@ protected:
 	int							m_texdiridx; //텍스쳐에 쓰일 방향인덱스
 	int							m_newdiridx;
 
-	TEXINFO*&					m_curtex;
+	TEXINFO*					m_curtex;
 
 
 	D3DXMATRIX&					m_objmat;
@@ -46,7 +47,7 @@ protected:
 	bool						m_battack_end;
 public:
 	void DirIdxCalculation(void);
-	void AIR_DirIdxCalculation(void);
+	void DirIdxCalculation32(void);
 public:
 	virtual void Initialize(CObj* pobj) = 0;
 	virtual void Update(void);
@@ -64,6 +65,6 @@ public:
 public:
 	//virtual void SetState(void);
 public:
-	CCom_Animation(D3DXMATRIX& objmat , TEXINFO*& curtex);
+	CCom_Animation(D3DXMATRIX& objmat);
 	virtual ~CCom_Animation(void);
 };

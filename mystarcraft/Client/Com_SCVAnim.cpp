@@ -4,8 +4,8 @@
 #include "TimeMgr.h"
 #include "TextureMgr.h"
 #include "Obj.h"
-CCom_SCVAnim::CCom_SCVAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
-:CCom_Animation(objmat , curtex)
+CCom_SCVAnim::CCom_SCVAnim(D3DXMATRIX& objmat )
+:CCom_Animation(objmat )
 {
 	m_objname = L"SCV";
 	m_statkey = L"";

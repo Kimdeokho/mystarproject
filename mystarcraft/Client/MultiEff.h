@@ -11,12 +11,15 @@ private:
 	int				m_curdiridx;
 	TEXINFO*						m_curtex;
 	D3DXVECTOR3		m_vcenter;
+
+	int				m_cur_loopcnt;
+	int				m_end_loopcnt;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CMultiEff(const TCHAR*	texkey , const int& curdiridx ,const float& framespped = 1.f);
+	CMultiEff(const TCHAR*	texkey , const int& curdiridx , const float& framespped = 1.f ,const int& loopcnt = 1);
 	~CMultiEff(void);
 };

@@ -25,6 +25,7 @@ CWorkman::CWorkman(void)
 
 CWorkman::~CWorkman(void)
 {
+	CComanderMgr::GetInstance()->ClearPreview();
 	Safe_Delete(m_main_preview);
 	Release();
 }

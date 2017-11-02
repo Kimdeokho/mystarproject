@@ -18,9 +18,13 @@ private:
 
 	map<wstring, CTexture*>		m_ZergTex;
 	map<wstring, CTexture*>		m_TerranTex;
+	map<wstring, CTexture*>		m_MultiTex;
+
+	map<wstring, CTexture*>		m_MultiTex32; //32πÊ«‚
 public:
 public:
 	HRESULT	Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
+	HRESULT	Read_directional32_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT	Read_MultiEff_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT	Read_StateImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT Read_GeneralImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
@@ -49,6 +53,16 @@ public:
 		, const wstring& wstrStateKey /*= L"" */
 		, const int& iCnt /*= 0*/ );
 
+	HRESULT Insert_MultiTex( const wstring& wstrFilePath 
+		, const wstring& wstrObjKey 
+		, const wstring& wstrStateKey /*= L"" */
+		, const int& iCnt /*= 0*/ );
+
+	HRESULT Insert_MultiTex32( const wstring& wstrFilePath 
+		, const wstring& wstrObjKey 
+		, const wstring& wstrStateKey /*= L"" */
+		, const int& iCnt /*= 0*/ );
+
 	HRESULT	Insert_GeneralTex(const wstring& wstrFilePath
 		, const wstring& wstrObjKey
 		, const wstring& wstrStateKey
@@ -66,6 +80,8 @@ public:
 	const vector<TEXINFO*>*	GetStateTexture_vecset(const wstring& wstrObjkey,	const wstring& wstrStatekey);
 	const vector<TEXINFO*>* GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
 	const vector<TEXINFO*>* GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
+	const vector<TEXINFO*>* GetMultiTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
+	const vector<TEXINFO*>* GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
 	const TEXINFO*			GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);
 	const vector<TEXINFO*>*	GetGeneralTexture(const wstring& wstrObjKey);
 	const vector<TEXINFO*>* GetMultiEffTexture(const wstring& wstrObjKey , const int& dirdix);

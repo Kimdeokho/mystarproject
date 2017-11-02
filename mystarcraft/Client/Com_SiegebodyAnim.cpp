@@ -2,9 +2,10 @@
 #include "Com_SiegebodyAnim.h"
 #include "TextureMgr.h"
 #include "TimeMgr.h"
+#include "Obj.h"
 
-CCom_SiegebodyAnim::CCom_SiegebodyAnim(D3DXMATRIX& objmat , TEXINFO*& curtex)
-: CCom_Animation(objmat , curtex)
+CCom_SiegebodyAnim::CCom_SiegebodyAnim(D3DXMATRIX& objmat )
+: CCom_Animation(objmat )
 {
 	m_banim_end = false;
 	m_bsiegemode = false;
@@ -18,6 +19,7 @@ CCom_SiegebodyAnim::~CCom_SiegebodyAnim(void)
 
 void CCom_SiegebodyAnim::Initialize(CObj* pobj)
 {
+	m_curtex = NULL;
 	m_pobj = pobj;
 
 	SetAnimation(L"SIEGEBODY_TRANS");
@@ -46,6 +48,7 @@ void CCom_SiegebodyAnim::Update(void)
 			}
 			else
 				m_banim_end = false;
+
 			m_curtex = (*m_generaltex)[int(m_frame.fcurframe)];
 
 		}
@@ -93,7 +96,20 @@ void CCom_SiegebodyAnim::Update(void)
 
 void CCom_SiegebodyAnim::Render(void)
 {
+	//if(NULL == m_curtex)
+	//	return;
 
+	m_pSprite->SetTransform(&m_objmat);
+	if(TEAM_1 == m_pobj->GetTeamNumber())
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,0,0));
+	}
+	else
+	{
+		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
 }
 
 void CCom_SiegebodyAnim::SetAnimation(const TCHAR* statekey)
@@ -122,6 +138,7 @@ void CCom_SiegebodyAnim::SetAnimation(const TCHAR* statekey)
 				m_frame.fcurframe = float(m_frame.umax - 1);
 				m_btransforming = false;
 			}
+			m_curtex = (*m_generaltex)[0];
 		}
 		else
 		{

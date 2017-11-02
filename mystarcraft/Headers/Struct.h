@@ -232,6 +232,8 @@ typedef struct tagunitinfo
 		fbuildtime = 0.f;
 		damage = 0;
 		hp = 10000;
+		maxhp = 0;
+		maxmp = 0;
 		mp = 0;
 		attack_range = 0;
 		search_range = 0;		
