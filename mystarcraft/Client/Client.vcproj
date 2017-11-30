@@ -316,10 +316,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\KeyMgr.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\KeyMgr.h"
 					>
 				</File>
@@ -722,11 +718,15 @@
 						Name="Terran"
 						>
 						<File
-							RelativePath=".\BattleCruiser.cpp"
+							RelativePath=".\Firebat.cpp"
 							>
 						</File>
 						<File
-							RelativePath=".\BattleCruiser.h"
+							RelativePath=".\Firebat.h"
+							>
+						</File>
+						<File
+							RelativePath=".\KeyMgr.cpp"
 							>
 						</File>
 						<File
@@ -735,6 +735,14 @@
 						</File>
 						<File
 							RelativePath=".\Marine.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Medic.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Medic.h"
 							>
 						</File>
 						<File
@@ -762,6 +770,54 @@
 							</File>
 							<File
 								RelativePath=".\Tankbarrel.h"
+								>
+							</File>
+						</Filter>
+						<Filter
+							Name="Goliath"
+							>
+							<File
+								RelativePath=".\Goliath.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Goliath.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Goliath_part.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Goliath_part.h"
+								>
+							</File>
+						</Filter>
+						<Filter
+							Name="Air"
+							>
+							<File
+								RelativePath=".\BattleCruiser.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\BattleCruiser.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Dropship.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Dropship.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Wraith.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Wraith.h"
 								>
 							</File>
 						</Filter>
@@ -835,10 +891,70 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="bullet"
+					>
+					<File
+						RelativePath=".\Battle_bim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Battle_bim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Goliath_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Goliath_Bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Turret_bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Turret_bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Wraith_Bim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Wraith_Bim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Wraith_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Wraith_Bullet.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Component"
 				>
+				<File
+					RelativePath=".\Com_AirCollision.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_AirCollision.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Com_Collision.cpp"
 					>
@@ -903,6 +1019,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_BattleAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_BattleAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_bulletAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_bulletAnim.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_DroneAnim.cpp"
 						>
 					</File>
@@ -911,11 +1043,59 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_DropAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_DropAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_FirebatAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_FirebatAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_GolarmAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_GolarmAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_GollegAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_GollegAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_LaserAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_LaserAnim.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_MarineAnim.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Com_MarineAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_MedicAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_MedicAnim.h"
 						>
 					</File>
 					<File
@@ -1006,10 +1186,26 @@
 						RelativePath=".\Com_TurretheadAnim.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Com_WraithAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WraithAnim.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Weapon"
 					>
+					<File
+						RelativePath=".\Com_WBattle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WBattle.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Com_Weapon.cpp"
 						>
@@ -1019,11 +1215,35 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_WFirebat.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WFirebat.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WGoliath.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WGoliath.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_Wmarine.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Com_Wmarine.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WMedic.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WMedic.h"
 						>
 					</File>
 					<File
@@ -1058,6 +1278,14 @@
 						RelativePath=".\Com_WTurret.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Com_WWraith.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WWraith.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="TargetSearch"
@@ -1076,6 +1304,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_Distancesearch.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Medicsearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Medicsearch.h"
 						>
 					</File>
 					<File

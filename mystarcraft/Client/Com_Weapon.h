@@ -6,16 +6,22 @@ class CCom_Weapon :
 	public CComponent
 {
 protected:
+	WEAPON_INFO	m_weapon_info;
+
 	float	m_attack_delay;
+	float	m_air_attack_delay;
+
 	float	m_attack_time;
+	float	m_air_attack_time;
+
 	bool	m_bfire;
-	int		m_damage;
-	DAMAGE_TYPE	m_edamagetype;
+	bool	m_bair_fire;
 
 	CComponent*		m_animation;
 	D3DXVECTOR2		m_targetpos;
 public:
 	void SetAttackDelay(float delay);
+	const WEAPON_INFO& GetWeapon_info(void);
 public:
 	virtual void fire(CObj*&	ptarget) = 0;
 public:

@@ -15,21 +15,24 @@ HRESULT CUnitMultiTexture::InsertTexture(const wstring& wstrFilePath , const wst
 {
 	TCHAR		szFullPath[MAX_PATH] = L"";
 
-	vector<TEXINFO*>		vecTexture;
+	//vector<TEXINFO*>		vecTexture;
 
-	int reservecnt = int((iCnt)/DIR_CNT);
-	vecTexture.reserve(reservecnt);
+	//int reservecnt = int((iCnt)/DIR_CNT);
+	//vecTexture.reserve(reservecnt);
 
-	for(int i = 0; i < DIR_CNT; ++i)
+
+	vector<TEXINFO*>*	vecTexture = new vector<TEXINFO*>[DIR_CNT17];
+
+	for(int i = 0; i < DIR_CNT17; ++i)
 	{
-		m_multiTex[i].insert(make_pair(wstrStateKey , vecTexture));
+		vecTexture[i].reserve(iCnt/DIR_CNT17);
 	}
 
 	map<wstring , vector<TEXINFO*>>::iterator iter;
 
 	for(int i = 0; i < iCnt; ++i)
 	{
-		iter = m_multiTex[i%DIR_CNT].find(wstrStateKey);
+		//iter = m_multiTex[i%DIR_CNT].find(wstrStateKey);
 
 		/*L"../Texture/Tile/Tile%d.png"*/
 		wsprintf(szFullPath, wstrFilePath.c_str(), i);
@@ -62,42 +65,47 @@ HRESULT CUnitMultiTexture::InsertTexture(const wstring& wstrFilePath , const wst
 			return E_FAIL;
 		}
 
-		iter->second.push_back(pTexInfo);
+		vecTexture[i%DIR_CNT17].push_back(pTexInfo);
+		//iter->second.push_back(pTexInfo);
 		//vecTexture.push_back(pTexInfo);
 
 	}
 
-	//m_multiTex.insert(map<wstring , vector<TEXINFO*>>::value_type(wstrStateKey , vecTexture));
+	m_multiTex.insert(map<wstring , vector<TEXINFO*>*>::value_type(wstrStateKey , vecTexture));
 	return S_OK;
 }
 
 void CUnitMultiTexture::Release(void)
 {
-	for(int i = 0; i < DIR_CNT; ++i)
+	map<wstring,vector<TEXINFO*>*>::iterator iter = m_multiTex.begin();
+	map<wstring,vector<TEXINFO*>*>::iterator iter_end = m_multiTex.end();
+	vector<TEXINFO*> vectex;
+	size_t vecsize;
+	for( ; iter != iter_end; ++iter)
 	{
-		map<wstring,vector<TEXINFO*>>::iterator iter = m_multiTex[i].begin();
-		map<wstring,vector<TEXINFO*>>::iterator iter_end = m_multiTex[i].end();
-
-		for( ; iter != iter_end; ++iter)
+		for(int i = 0; i < DIR_CNT17; ++i)
 		{
-			for(size_t j = 0; j < iter->second.size(); ++j)
+			vectex = iter->second[i];
+			vecsize = vectex.size();
+			for(size_t j = 0; j < vecsize; ++j)
 			{
-				iter->second[j]->pTexture->Release();
-				Safe_Delete(iter->second[j]);
+				vectex[j]->pTexture->Release();
+				Safe_Delete(vectex[j]);
 			}
-			iter->second.clear();
+			vectex.clear();
 		}
-		m_multiTex[i].clear();
+		delete[]iter->second;
+		iter->second = NULL;
 	}
+	m_multiTex.clear();
 }
 
-const vector<TEXINFO*>* CUnitMultiTexture::GetUnitMultiTex(const wstring& wstrstatekey , const int& diridx)
+const vector<TEXINFO*>* CUnitMultiTexture::GetUnitMultiTex(const wstring& wstrstatekey)
 {
-	map<wstring , vector<TEXINFO*>>::iterator iter = m_multiTex[diridx].find(wstrstatekey);
+	map<wstring , vector<TEXINFO*>*>::iterator iter = m_multiTex.find(wstrstatekey);
 
-	if(iter == m_multiTex[diridx].end())
+	if(iter == m_multiTex.end())
 		return NULL;
 	else
-		return &(iter->second);
-
+		return (iter->second);
 }

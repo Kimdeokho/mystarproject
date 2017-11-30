@@ -22,8 +22,8 @@ CCom_SiegebarrelAnim::~CCom_SiegebarrelAnim(void)
 void CCom_SiegebarrelAnim::Initialize(CObj* pobj)
 {
 	m_pobj = pobj;
-	m_rotation_speed = 20;
-	m_curdiridx = 14;
+	m_rotation_speed = 40;
+	m_curdiridx = 0;
 
 	SetAnimation(L"SIEGEBARREL_TRANS");
 
@@ -44,15 +44,14 @@ void CCom_SiegebarrelAnim::Update(void)
 				m_banim_end = true;
 				m_bsiegemode = true;
 				SetAnimation(L"IDLE");
-				//m_pobj->SetState(IDLE);
+				m_pobj->SetState(IDLE);
 
 
-				float fdgree = 10*22.5f;
-				D3DXVECTOR2	vdir;
-				vdir.x = cosf(CMyMath::dgree_to_radian(fdgree));
-				vdir.y = sinf(CMyMath::dgree_to_radian(fdgree));
-				m_pobj->Setdir(vdir);
+				//여기서 0은 수학좌표계 +X축에 해당한다
+				// 16은 -X축
 
+				m_pobj->Setdir(CMyMath::dgree_to_dir(20*11.25f));
+				m_curdiridx = 28;
 				return;
 			}
 			else
@@ -69,16 +68,8 @@ void CCom_SiegebarrelAnim::Update(void)
 				m_frame.fcurframe = 0;
 			}
 
-
-			if(NULL !=  m_animtexture[m_texdiridx] )
-			{
-				const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
-
-				if( (int)(m_frame.fcurframe) <= m_frame.umax)
-					m_curtex = (*vtemp)[int(m_frame.fcurframe)];
-			}
-			else
-				m_curtex = NULL;
+			if( (int)(m_frame.fcurframe) <= m_frame.umax)
+				m_curtex = m_animtexture[m_texdiridx][int(m_frame.fcurframe)];
 		}
 	}
 	else
@@ -107,8 +98,11 @@ void CCom_SiegebarrelAnim::Update(void)
 		}
 		else
 		{
+			//여기서 0은 수학좌표계 +X축에 해당한다
+			// 16은 -X축
+
 			m_pobj->SetState(TRANSFORMING);
-			m_pobj->Setdir(CMyMath::dgree_to_dir(2*22.5f));
+			m_pobj->Setdir(CMyMath::dgree_to_dir(4*11.25f));
 		}
 	}
 }
@@ -156,17 +150,17 @@ void CCom_SiegebarrelAnim::SetAnimation(const TCHAR* statekey)
 		}
 		else
 		{
-			for(int i = 0; i < DIR_CNT; ++i)
-			{
+			//for(int i = 0; i < DIR_CNT; ++i)
+			//{
 				/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-				m_animtexture[i] = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey , i);
-				if(NULL == m_animtexture[i])
-					break;
-			}
+				m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey );
+				//if(NULL == m_animtexture[i])
+					//break;
+			//}
 
-			if(NULL != m_animtexture[0])
+			if(NULL != m_animtexture)
 			{
-				m_frame.umax = m_animtexture[0]->size();
+				m_frame.umax = m_animtexture[0].size();
 				m_frame.fframespeed = (float)m_frame.umax;
 			}
 		}

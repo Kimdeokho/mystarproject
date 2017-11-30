@@ -46,23 +46,21 @@ void CTurret_head::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = IDLE;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eDamageType = DAMAGE_BOOM;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
-	m_unitinfo.damage = 20;
 	m_unitinfo.hp = 1;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
-	m_unitinfo.attack_range = 224;
+	m_unitinfo.air_attack_range = 7*32;
+	m_unitinfo.attack_range = 7*32;
 	m_unitinfo.search_range = 224;
 	m_unitinfo.fog_range = 512;
 	m_unitinfo.fbuildtime = 1.f;
 
 	m_com_anim = new CCom_TurretheadAnim(m_matWorld );
 
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,new CCom_Distancesearch( &m_unitinfo.attack_range ,
-		&m_unitinfo.search_range, SEARCH_ONLY_ENEMY)));		
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,new CCom_Distancesearch(SEARCH_ONLY_ENEMY)));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));		
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , new CCom_WTurret(m_unitinfo.damage , m_unitinfo.eDamageType)));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , new CCom_WTurret()));
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();

@@ -23,7 +23,7 @@ void CCom_SCVAnim::Initialize(CObj* pobj)
 	m_pobj = pobj;
 	CCom_Animation::InitTexidx();
 
-	m_rotation_speed = 40.f;
+	m_rotation_speed = 80.f;
 }
 
 void CCom_SCVAnim::Update(void)
@@ -61,10 +61,10 @@ void CCom_SCVAnim::Update(void)
 			m_battack_sync = false;
 	}
 
-	const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
+	const vector<TEXINFO*> vtemp = m_animtexture[m_texdiridx];
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (*vtemp)[int(m_frame.fcurframe)];
+		m_curtex = (vtemp)[int(m_frame.fcurframe)];
 }
 
 void CCom_SCVAnim::Render(void)
@@ -105,17 +105,13 @@ void CCom_SCVAnim::SetAnimation(const TCHAR* statekey)
 		m_statkey = statekey;
 		m_frame.fcurframe = 0;
 
-		for(int i = 0; i < DIR_CNT; ++i)
-		{
-			/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-			m_animtexture[i] = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey , i);
-			if(NULL == m_animtexture[i])
-				break;
-		}
 
-		if(NULL != m_animtexture[0])
+			/* [i]는 방향 , DRONE, MOVE의 사진집합 */
+		m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey );
+
+		if(NULL != m_animtexture)
 		{
-			m_frame.umax = m_animtexture[0]->size();
+			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
 		}
 

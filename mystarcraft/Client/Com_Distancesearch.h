@@ -12,6 +12,6 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CCom_Distancesearch(const int* attack_range , const int* search_range , TARGET_SEARCH_TYPE esearch_type , CObj* otherobj = NULL);
+	CCom_Distancesearch(TARGET_SEARCH_TYPE esearch_type , CObj* otherobj = NULL);
 	~CCom_Distancesearch(void);
 };

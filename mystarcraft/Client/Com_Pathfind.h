@@ -50,6 +50,7 @@ private:
 	float					m_collisionmove_time;
 	float					m_stoptime;
 	float					m_fchase_time;
+	float					m_refind_time; //어택땅할때 최종목표로 다시 길찾기하는 텀
 
 public:
 	virtual void Initialize(CObj* pobj = NULL);
@@ -57,13 +58,13 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	void gap_initialize(void);
-	void StartPathfinding(bool bmagicbox);
+	void gap_initialize(bool bmagicbox);
+	void StartPathfinding(void);
 	void SetPathfindPause(bool bpause);
 	void SetTargetObjID(const int& objid);
 	void ClearPath(void);
 	void UnitMoving_update(void);
-	void SetGoalPos(const D3DXVECTOR2& vgoalpos);
+	void SetGoalPos(const D3DXVECTOR2& vgoalpos , bool bmagicbox);
 
 	void SetFlowField(void);
 	void Target_chase(void);

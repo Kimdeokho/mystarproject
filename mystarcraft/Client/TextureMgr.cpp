@@ -498,7 +498,7 @@ const vector<TEXINFO*>* CTextureMgr::GetStateTexture_vecset(const wstring& wstrO
 	else
 		return NULL;
 }
-const vector<TEXINFO*>* CTextureMgr::GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+const vector<TEXINFO*>* CTextureMgr::GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey)
 {
 	map<wstring , CTexture*>::iterator iter = m_ZergTex.find(wstrobjkey);
 
@@ -507,12 +507,12 @@ const vector<TEXINFO*>* CTextureMgr::GetZUnitTexture(const wstring& wstrobjkey ,
 		/*키 값을 찾았다.*/
 		CTexture* pTexture = iter->second;
 
-		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey , diridx);
+		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey);
 	}
 	else
 		return NULL;
 }
-const vector<TEXINFO*>* CTextureMgr::GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+const vector<TEXINFO*>* CTextureMgr::GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey )
 {
 	map<wstring , CTexture*>::iterator iter = m_TerranTex.find(wstrobjkey);
 
@@ -521,12 +521,12 @@ const vector<TEXINFO*>* CTextureMgr::GetTUnitTexture(const wstring& wstrobjkey ,
 		/*키 값을 찾았다.*/
 		CTexture* pTexture = iter->second;
 
-		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey , diridx);
+		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey);
 	}
 	else
 		return NULL;
 }
-const vector<TEXINFO*>* CTextureMgr::GetMultiTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+const vector<TEXINFO*>* CTextureMgr::GetMultiTexture(const wstring& wstrobjkey , const wstring& wstrstatekey )
 {
 	map<wstring , CTexture*>::iterator iter = m_MultiTex.find(wstrobjkey);
 
@@ -535,13 +535,13 @@ const vector<TEXINFO*>* CTextureMgr::GetMultiTexture(const wstring& wstrobjkey ,
 		/*키 값을 찾았다.*/
 		CTexture* pTexture = iter->second;
 
-		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey , diridx);
+		return ((CUnitMultiTexture*)pTexture)->GetUnitMultiTex(wstrstatekey );
 	}
 	else
 		return NULL;
 }
 
-const vector<TEXINFO*>* CTextureMgr::GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx)
+const vector<TEXINFO*>* CTextureMgr::GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey )
 {
 	map<wstring , CTexture*>::iterator iter = m_MultiTex32.find(wstrobjkey);
 
@@ -550,7 +550,7 @@ const vector<TEXINFO*>* CTextureMgr::GetMultiTexture32(const wstring& wstrobjkey
 		/*키 값을 찾았다.*/
 		CTexture* pTexture = iter->second;
 
-		return ((CMultiTexture32*)pTexture)->GetMultiTex32(wstrstatekey , diridx);
+		return ((CMultiTexture32*)pTexture)->GetMultiTex32(wstrstatekey);
 	}
 	else
 		return NULL;

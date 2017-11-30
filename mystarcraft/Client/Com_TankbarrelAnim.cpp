@@ -21,7 +21,7 @@ void CCom_TankbarrelAnim::Initialize(CObj* pobj)
 {
 	SetAnimation(L"IDLE");
 	m_pobj = pobj;
-	m_rotation_speed = 20;
+	m_rotation_speed = 50;
 	m_curdiridx = 6;
 
 	CCom_Animation::InitTexidx();
@@ -36,15 +36,15 @@ void CCom_TankbarrelAnim::Update(void)
 		m_frame.fcurframe = 0;
 
 
-	if(NULL !=  m_animtexture[m_texdiridx] )
-	{
-		const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
+	//if(NULL !=  m_animtexture[m_texdiridx] )
+	//{
+		//const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
 
 		if( (int)(m_frame.fcurframe) <= m_frame.umax)
-			m_curtex = (*vtemp)[int(m_frame.fcurframe)];
-	}
-	else
-		m_curtex = NULL;
+			m_curtex = m_animtexture[m_texdiridx][int(m_frame.fcurframe)];
+	//}
+	//else
+		//m_curtex = NULL;
 
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d",m_texdiridx , m_pobj->GetMat()._41 , m_pobj->GetMat()._42);
 }
@@ -76,18 +76,18 @@ void CCom_TankbarrelAnim::SetAnimation(const TCHAR* statekey)
 
 		m_frame.fcurframe = 0;
 
-		for(int i = 0; i < DIR_CNT; ++i)
-		{
+		//for(int i = 0; i < DIR_CNT; ++i)
+		//{
 			/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-			m_animtexture[i] = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey , i);
-			if(NULL == m_animtexture[i])
-				break;
-		}
+			m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey );
+			//if(NULL == m_animtexture[i])
+				//break;
+		//}
 
-		if(NULL != m_animtexture[0])
-		{
-			m_frame.umax = m_animtexture[0]->size();
+		//if(NULL != m_animtexture[0])
+		//{
+			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
-		}
+		//}
 	}
 }

@@ -16,6 +16,6 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CCom_Worksearch(const int* attack_range , const int* search_range , TARGET_SEARCH_TYPE esearch_type );
+	CCom_Worksearch();
 	~CCom_Worksearch(void);
 };

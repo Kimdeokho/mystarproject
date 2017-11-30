@@ -6,8 +6,6 @@ class CCom_Collision :
 	public CComponent
 {
 private:
-	CComponent*				m_com_pathfind;
-private:
 	float			m_search_time;
 	const float*	m_fspeed;
 	bool			m_bcollision;
@@ -22,6 +20,7 @@ private:
 
 	int				m_target_objid;
 	bool			m_bsearch_collision;
+	float			m_nuckback_time;
 	
 public:
 	virtual void Initialize(CObj* pobj = NULL);

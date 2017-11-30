@@ -7,7 +7,6 @@ class CCom_MarineAnim :
 private:
 	bool	m_banimplay;
 	int		m_attackloop;
-	const TCHAR*	m_tempkey;
 public:
 	virtual void Initialize(CObj* pobj);
 	virtual void Update(void);

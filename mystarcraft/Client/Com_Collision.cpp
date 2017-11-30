@@ -36,9 +36,7 @@ void CCom_Collision::Initialize(CObj* pobj)
 
 	m_collision_target = NULL;
 
-	m_com_pathfind = (m_pobj->GetComponent(COM_PATHFINDE));
-
-	
+	m_nuckback_time = 0.f;
 }
 
 void CCom_Collision::Update(void)
@@ -82,8 +80,6 @@ void CCom_Collision::Update(void)
 					D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
 				}
 			}
-			else
-				m_bcollision = false;
 
 			m_search_time = 0.f;
 		}
@@ -91,14 +87,15 @@ void CCom_Collision::Update(void)
 	}
 	else
 	{
+		m_nuckback_time += GETTIME;
 		m_collision_target = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
 		MYRECT<float> temp;
 		if(NULL != m_collision_target &&
-			MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect()) )
+			/*MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect()) */
+			m_nuckback_time < 0.4f)
 		{			
 			//임의
 			TILE** ptilelist = CTileManager::GetInstance()->GetSqTile();
-
 
 			/*타겟과 충돌이 일어나는 중이라면*/
 			BYTE byop = ptilelist[m_pobj->Getcuridx(32)]->byOption;
@@ -106,17 +103,6 @@ void CCom_Collision::Update(void)
 				RESOURCE_MINERAL == byop ||
 				RESOURCE_GAS == byop)
 			{
-				m_bcollision = true;
-
-				//m_vtargetpos = m_collision_target->GetPos();
-				//m_collision_vnormal = m_vtargetpos - m_vPos;
-
-				//if( int(m_collision_vnormal.x) == 0 && int(m_collision_vnormal.y == 0) )
-				//{
-				//	m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5) );
-				//}
-				//D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
-
 				m_vPos -= GETTIME* (*m_fspeed) *m_collision_vnormal;
 
 				m_pobj->Setdir(-m_collision_vnormal);
@@ -126,7 +112,7 @@ void CCom_Collision::Update(void)
 		}
 		else
 		{
-			m_bcollision = false;
+			m_nuckback_time = 0.f;
 			m_collision_target = NULL;
 			//현재 받고있는 명령에따라 상태를 해준다.
 			m_pobj->SetState(IDLE);

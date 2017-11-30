@@ -11,8 +11,8 @@ protected:
 	LPD3DXSPRITE				m_pSprite;
 	FRAME						m_frame;
 
-	const vector<TEXINFO*>* 	m_animtexture[DIR_CNT];/*[]는 방향(각도)을 뜻한다*/
-	const vector<TEXINFO*>* 	m_animtexture32[DIR_CNT17];/*[]는 방향(각도)을 뜻한다*/
+	const vector<TEXINFO*>* 	m_animtexture;/*[]는 방향(각도)을 뜻한다*/
+	const vector<TEXINFO*>* 	m_animtexture32;/*[]는 방향(각도)을 뜻한다*/
 	const vector<TEXINFO*>*		m_generaltex;
 
 	const TCHAR*				m_objname;
@@ -46,6 +46,7 @@ protected:
 	bool						m_battack_sync;
 	bool						m_battack_end;
 public:
+	void Dir_Initialize(void);
 	void DirIdxCalculation(void);
 	void DirIdxCalculation32(void);
 public:

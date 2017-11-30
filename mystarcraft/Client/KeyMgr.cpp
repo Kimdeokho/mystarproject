@@ -16,6 +16,13 @@
 #include "Marine.h"
 #include "Tank.h"
 #include "SCV.h"
+#include "Firebat.h"
+#include "Medic.h"
+#include "Goliath.h"
+#include "BattleCruiser.h"
+#include "Wraith.h"
+#include "Dropship.h"
+
 #include "Comandcenter.h"
 #include "T_gas.h"
 
@@ -283,32 +290,6 @@ void CKeyMgr::Update(void)
 	{
 		OnceKeyDown(i);
 	}
-	//OnceKeyDown('A');
-	//OnceKeyDown('B');
-	//OnceKeyDown('C');
-	//OnceKeyDown('D');
-	//OnceKeyDown('E');
-	//OnceKeyDown('F');
-	//OnceKeyDown('G');
-	//OnceKeyDown('H');
-	//OnceKeyDown('I');
-	//OnceKeyDown('J');
-	//OnceKeyDown('K');
-	//OnceKeyDown('L');
-	//OnceKeyDown('N');
-	//OnceKeyDown('M');
-	//OnceKeyDown('O');
-	//OnceKeyDown('P');
-	//OnceKeyDown('Q');
-	//OnceKeyDown('R');
-	//OnceKeyDown('S');
-	//OnceKeyDown('T');
-	//OnceKeyDown('U');
-	//OnceKeyDown('V');
-	//OnceKeyDown('W');
-	//OnceKeyDown('X');
-	//OnceKeyDown('Y');
-	//OnceKeyDown('Z');
 
 	MouseOnceKeyDown(VK_LBUTTON);
 	MouseKeyUp(VK_LBUTTON);
@@ -400,10 +381,11 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);	
 
 				CUnitMgr::GetInstance()->Intputkey_reaction('A' , VK_LBUTTON);
-			
+
+				CFontMgr::GetInstance()->Set_KeyInput_Font(L"A + 좌 클릭" );
 			}
 
-			CFontMgr::GetInstance()->Set_KeyInput_Font(L"A + 좌 클릭" );
+			
 			m_bwork = true;
 		}
 		//else if(m_clickwating['C'])
@@ -474,7 +456,22 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			if(CUnitMgr::GetInstance()->GetUnitlistempty())
 				m_clickwating['B'] = false;
 			else
-				m_clickwating['B'] = true;//공격 마우스띄우기 아이콘
+				m_clickwating['B'] = true;
+
+			D3DXVECTOR2 vpos;
+			for(int i = 0; i < 1; ++i)
+			{
+				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vpos.x += rand()%50 - 25;
+				vpos.y += rand()%50 - 25;
+				pObj = new CBattleCruiser;
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_BATTLE);
+				pObj->SetPos(vpos);
+				pObj->Initialize();
+				objcnt += 1;
+			}
+
+			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 
 			CUnitMgr::GetInstance()->Intputkey_reaction('B');
 		}
@@ -498,7 +495,66 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			//else
 			//	m_clickwating['C'] = true;
 
+			D3DXVECTOR2 vpos;
+			for(int i = 0; i < 10; ++i)
+			{
+				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vpos.x += rand()%50 - 25;
+				vpos.y += rand()%50 - 25;
+				pObj = new CMedic;
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_MEDIC);
+				pObj->SetPos(vpos);
+				pObj->Initialize();
+				objcnt += 1;
+			}
+
+			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+
 			CUnitMgr::GetInstance()->Intputkey_reaction('C');
+		}
+	}
+
+	if(true == m_bOnceKeyDown_complete['D'])
+	{
+		m_bOnceKeyDown_complete['D'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'D');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'D');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			//if(CUnitMgr::GetInstance()->GetUnitlistempty())
+			//	m_clickwating['D'] = false;
+			//else
+			//	m_clickwating['D'] = true;
+
+			D3DXVECTOR2 vpos;
+			for(int i = 0; i < 10; ++i)
+			{
+				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vpos.x += rand()%50 - 25;
+				vpos.y += rand()%50 - 25;
+				pObj = new CDropship;
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_DROPSHIP);
+				pObj->SetPos(vpos);
+				pObj->Initialize();
+				objcnt += 1;
+			}
+
+			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('D');
 		}
 	}
 
@@ -556,6 +612,20 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			//else
 			//	m_clickwating['C'] = true;
 
+			D3DXVECTOR2 vpos;
+			for(int i = 0; i < 10; ++i)
+			{
+				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vpos.x += rand()%50 - 25;
+				vpos.y += rand()%50 - 25;
+				pObj = new CFirebat;
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_FIREBAT);
+				pObj->SetPos(vpos);
+				pObj->Initialize();
+				objcnt += 1;
+			}
+
+			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 			CUnitMgr::GetInstance()->Intputkey_reaction('F');
 		}
 	}
@@ -580,6 +650,44 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		else
 		{
 			CUnitMgr::GetInstance()->Intputkey_reaction('I');
+		}
+	}
+	if(true == m_bOnceKeyDown_complete['G'])
+	{
+		m_bOnceKeyDown_complete['G'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'G');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'G');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			D3DXVECTOR2 vpos;
+			for(int i = 0; i < 10; ++i)
+			{
+				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vpos.x += rand()%50 - 25;
+				vpos.y += rand()%50 - 25;
+				pObj = new CGoliath;
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_FIREBAT);
+				pObj->SetPos(vpos);
+				pObj->Initialize();
+				objcnt += 1;
+			}
+
+			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('G');
 		}
 	}
 
@@ -758,7 +866,39 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 	{
 		m_bOnceKeyDown_complete['W'] = false;
 
-		CUnitMgr::GetInstance()->Intputkey_reaction('W');
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'W');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'W');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			D3DXVECTOR2 vpos;
+			for(int i = 0; i < 1; ++i)
+			{
+				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vpos.x += rand()%50 - 25;
+				vpos.y += rand()%50 - 25;
+				pObj = new CWraith;
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_WRAITH);
+				pObj->SetPos(vpos);
+				pObj->Initialize();
+				objcnt += 1;
+			}
+
+			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('W');
+		}
 	}
 
 

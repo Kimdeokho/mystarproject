@@ -20,10 +20,12 @@ private:
 	//list<CObj*>		m_TUnit_List[TU_END];
 	multimap<float , CObj*> m_rendersort[SORT_END];
 	list<CObj*>				m_air_rendersort;
+	list<CObj*>				m_groundeff_renderlist;
+	list<CObj*>				m_aireff_renderlist;
 
 
 	list<CUI*>		m_SelectUI_List;
-	list<CObj*>	m_Effect_List;
+	list<CObj*>		m_Effect_List;
 	CObj*			m_obj_alive[MAX_OBJCNT];
 public:
 	void Release();

@@ -53,14 +53,11 @@ void CComset::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eDamageType = DAMAGE_NOMAL;
 	m_unitinfo.eArmorType = ARMOR_SMALL;
-	m_unitinfo.damage = 0;
 	m_unitinfo.hp = 100;
 	m_unitinfo.maxhp = m_unitinfo.hp;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
-	m_unitinfo.attack_range = 0;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
 

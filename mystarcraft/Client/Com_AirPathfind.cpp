@@ -5,6 +5,8 @@
 #include "MyMath.h"
 #include "Obj.h"
 #include "ObjMgr.h"
+#include "UnitMgr.h"
+
 CCom_AirPathfind::CCom_AirPathfind(D3DXVECTOR2& vpos)
 : m_vpos(vpos)
 {
@@ -43,13 +45,13 @@ void CCom_AirPathfind::TargetChase(void)
 {
 	if(NULL != m_pTarget)
 	{
-		m_fchase_time += GETTIME;
+		//m_fchase_time += GETTIME;
 
-		if(m_fchase_time >= 0.2f)
+		//if(m_fchase_time >= 0.2f)
 		{
 			m_fchase_time = 0.f;
 
-			int target_curidx = CMyMath::Pos_to_index(m_pTarget->GetPos() , 16);
+			int target_curidx = CMyMath::Pos_to_index(m_pTarget->GetPos() , 32);
 			if(target_curidx != m_target_oldidx)
 			{
 				m_target_oldidx = target_curidx;
@@ -118,11 +120,14 @@ void CCom_AirPathfind::SetDestPos(const D3DXVECTOR2& vdestpos)
 	m_is_moveupdate = true;
 	m_vcurdest_pos = vdestpos;
 }
-void CCom_AirPathfind::SetGoalPos(const D3DXVECTOR2& vgoalpos)
+void CCom_AirPathfind::SetGoalPos(const D3DXVECTOR2& vgoalpos , bool is_magicbox)
 {
 	m_is_moveupdate = true;
-	m_vcurdest_pos = vgoalpos;
-	m_vgoalpos = vgoalpos;
+	
+
+	gap_initialize(is_magicbox);
+	m_vgoalpos = vgoalpos + m_vgap;
+	m_vcurdest_pos = vgoalpos + m_vgap; 
 }
 
 void CCom_AirPathfind::SetTargetObjID(const int& objid)
@@ -134,5 +139,11 @@ bool CCom_AirPathfind::Getarrive(void)
 {
 	return m_is_arrive;
 }
-
+void CCom_AirPathfind::gap_initialize(bool is_magicbox)
+{
+	if(true == is_magicbox)
+		m_vgap = m_pobj->GetPos() - CUnitMgr::GetInstance()->GetUnitCentterPt();
+	else
+		m_vgap = D3DXVECTOR2(0.f, 0.f);
+}
 

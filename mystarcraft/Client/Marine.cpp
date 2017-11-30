@@ -27,7 +27,6 @@
 #include "UnitMgr.h"
 #include "Area_Mgr.h"
 
-
 #include "MyMath.h"
 
 CMarine::CMarine(void)
@@ -57,16 +56,15 @@ void CMarine::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = IDLE;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eDamageType = DAMAGE_NOMAL;
 	m_unitinfo.eArmorType = ARMOR_SMALL;
-	m_unitinfo.damage = 6;
 	m_unitinfo.hp = 40;
 	m_unitinfo.maxhp = m_unitinfo.hp;
 	m_unitinfo.mp = 0;
 	m_unitinfo.maxmp = 0;
-	m_unitinfo.fspeed = 60;
-	m_unitinfo.attack_range = 128;
-	m_unitinfo.search_range = 255;
+	m_unitinfo.fspeed = 68;
+	m_unitinfo.attack_range = 4*32;
+	m_unitinfo.air_attack_range = 4*32;
+	m_unitinfo.search_range = 5*32;
 	m_unitinfo.fog_range = 512;
 
 
@@ -75,11 +73,9 @@ void CMarine::Initialize(void)
 	m_vertex.top =  10;
 	m_vertex.bottom = 10;
 
-	//
-
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
-	m_com_weapon = new CCom_Wmarine(m_unitinfo.damage , DAMAGE_NOMAL);
-	m_com_targetsearch = new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range, SEARCH_ONLY_ENEMY);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
+	m_com_weapon = new CCom_Wmarine();
+	m_com_targetsearch = new CCom_Distancesearch(SEARCH_ONLY_ENEMY);
 	m_com_anim = new CCom_MarineAnim(m_matWorld);
 	m_skill_sp = new CSkill_SP(this , m_com_weapon);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex);
@@ -147,7 +143,7 @@ void CMarine::Render(void)
 	m_com_anim->Render();
 
 	m_com_pathfind->Render();
-	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
 void CMarine::Inputkey_reaction(const int& nkey)
@@ -161,16 +157,15 @@ void CMarine::Inputkey_reaction(const int& nkey)
 		m_unitinfo.eorder = ORDER_MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
-
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		if(NULL != m_com_pathfind)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
 	}
@@ -182,7 +177,7 @@ void CMarine::Inputkey_reaction(const int& nkey)
 	if('W' == nkey)
 	{
 		m_eteamnumber = TEAM_1;
-		m_skill_sp->use();
+		//m_skill_sp->use();
 	}
 	if('A' == nkey)
 	{		
@@ -208,12 +203,11 @@ void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
-
 	}
 }
 
@@ -229,7 +223,6 @@ void CMarine::Release(void)
 
 void CMarine::Dead(void)
 {
-
 	CObj* pobj = new CCorpse(L"MARINEDEAD" , L"MARINEWRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

@@ -20,6 +20,6 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CMultiEff(const TCHAR*	texkey , const int& curdiridx , const float& framespped = 1.f ,const int& loopcnt = 1);
+	CMultiEff(const TCHAR*	texkey , const int& curdiridx , const float& framespped ,const int& loopcnt , SORT_ID esortid);
 	~CMultiEff(void);
 };

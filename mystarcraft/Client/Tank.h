@@ -19,7 +19,7 @@ public:
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
 
-	virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
+	//virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
 	virtual void Dead(void);
 public:
 	void barrel_sync(void);

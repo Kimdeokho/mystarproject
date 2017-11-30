@@ -11,10 +11,8 @@
 #include "Workman.h"
 
 #include "Com_Animation.h"
-CCom_WSCV::CCom_WSCV(const int& damage , DAMAGE_TYPE edamagetype)
+CCom_WSCV::CCom_WSCV()
 {
-	m_damage = damage;
-	m_edamagetype = edamagetype;
 }
 
 CCom_WSCV::~CCom_WSCV(void)
@@ -34,6 +32,9 @@ void CCom_WSCV::Initialize(CObj* pobj /*= NULL*/)
 
 	m_gathertime = 0.f;
 	m_gatherdelay = 3.f;
+
+	m_weapon_info.damage = 5;
+	m_weapon_info.eDamageType = DAMAGE_NOMAL;
 }
 
 void CCom_WSCV::Update(void)
@@ -129,7 +130,7 @@ void CCom_WSCV::fire(CObj*& ptarget)
 					CObj* peff = new CGeneraEff(L"SCV_EFF" , m_targetpos , D3DXVECTOR2(1.f , 1.f), SORT_GROUND_EFF , 2.f);
 					peff->Initialize();
 					CObjMgr::GetInstance()->AddEffect(peff);
-					(ptarget)->SetDamage(m_damage , m_edamagetype);
+					(ptarget)->SetDamage( m_weapon_info.damage , m_weapon_info.eDamageType );
 				}
 			}
 		}

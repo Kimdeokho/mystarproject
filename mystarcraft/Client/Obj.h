@@ -73,6 +73,7 @@ public:
 	
 	void SetSelect(SELECT_FLAG eflag , D3DCOLOR ecolor = D3DCOLOR_ARGB(255,0,255,255));
 	void SetSpeed(const float& fspeed);
+	void SetMP(const int& imp);
 	void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
 	void Setdir(D3DXVECTOR2& vdir);
 	void Setdiridx(const int& diridx);

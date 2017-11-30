@@ -7,10 +7,8 @@
 #include "ObjMgr.h"
 #include "GeneraEff.h"
 #include "MultiEff.h"
-CCom_Wmarine::CCom_Wmarine(const int& damage , DAMAGE_TYPE edamagetype)
+CCom_Wmarine::CCom_Wmarine()
 {
-	m_damage = damage;
-	m_edamagetype = edamagetype;
 }
 
 CCom_Wmarine::~CCom_Wmarine(void)
@@ -24,6 +22,10 @@ void CCom_Wmarine::Initialize(CObj* pobj /*= NULL*/)
 	m_animation = (m_pobj->GetComponent(COM_ANIMATION));
 
 	m_attack_delay = 0.625f;
+	m_weapon_info.damage = 6;
+	m_weapon_info.airdamage = 6;
+	m_weapon_info.eDamageType = DAMAGE_NOMAL;
+	m_weapon_info.eAirDamageType = DAMAGE_NOMAL;
 
 	m_bfire = false;
 
@@ -35,7 +37,7 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 	{
 		m_pobj->SetState(IDLE);
 		
-		if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
+		//if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
 			m_pobj->SetState(ATTACK);
 			m_bfire = true;
@@ -53,7 +55,7 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 			{
 				D3DXVECTOR2 vpos = m_pobj->GetPos() + m_pobj->GetcurDir()*17;
 				vpos.y -= 15;
-				peff = new CMultiEff(L"BUNKERFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() ,6.0f , 4);
+				peff = new CMultiEff(L"BUNKERFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() ,6.0f , 7 , SORT_GROUND_EFF);
 				peff->SetPos(vpos);
 				peff->Initialize();
 				CObjMgr::GetInstance()->AddEffect(peff);
@@ -63,7 +65,7 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
-			(ptarget)->SetDamage(m_damage , m_edamagetype);
+			(ptarget)->SetDamage(m_weapon_info.damage , m_weapon_info.eDamageType);
 		}
 	}
 	else

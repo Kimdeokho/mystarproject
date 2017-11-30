@@ -16,12 +16,8 @@
 #include "Comandcenter.h"
 #include "T_gas.h"
 #include "GasResource.h"
-CCom_Worksearch::CCom_Worksearch(const int* attack_range , const int* search_range , TARGET_SEARCH_TYPE esearch_type)
+CCom_Worksearch::CCom_Worksearch()
 {
-	m_pattack_range = attack_range;
-	m_psearch_range = search_range;
-	m_search_type = esearch_type;
-	m_core_center = NULL;
 }
 
 CCom_Worksearch::~CCom_Worksearch(void)

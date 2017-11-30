@@ -16,6 +16,6 @@ public:
 public:
 	virtual void fire(CObj*& ptarget);
 public:
-	CCom_WSCV(const int& damage , DAMAGE_TYPE edamagetype);
+	CCom_WSCV();
 	~CCom_WSCV(void);
 };

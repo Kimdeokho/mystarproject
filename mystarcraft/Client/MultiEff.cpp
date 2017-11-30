@@ -4,12 +4,13 @@
 #include "TextureMgr.h"
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
-CMultiEff::CMultiEff(const TCHAR* texkey , const int& curdiridx ,const float& framespped ,const int& loopcnt)
+CMultiEff::CMultiEff(const TCHAR* texkey , const int& curdiridx ,const float& framespped ,const int& loopcnt , SORT_ID esortid)
 {
 	m_texkey = texkey;
 	m_curdiridx = curdiridx;
 	m_ftimespeed = framespped;
 	m_end_loopcnt = loopcnt;
+	m_sortID = esortid;
 }
 
 CMultiEff::~CMultiEff(void)
@@ -20,15 +21,10 @@ void CMultiEff::Initialize(void)
 {
 	m_cur_loopcnt = 0;
 	m_curtex = NULL;
-	m_sortID = SORT_GROUND_EFF;
-	//for(int i = 0; i < DIR_CNT; ++i)
-	//{
-	//	m_multiefftex[i] = CTextureMgr::GetInstance()->GetMultiEffTexture(m_texkey , i);
-	//}
 
-	if(m_curdiridx > 8)
+	if(m_curdiridx > 16)
 	{
-		m_curdiridx = 16 - m_curdiridx;
+		m_curdiridx = 32 - m_curdiridx;
 		m_matWorld._11 = -1;
 	}
 	else

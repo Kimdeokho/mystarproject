@@ -6,7 +6,8 @@ class CMultiEffTexture :
 {
 	//방향성은 있으나 상태가 없는 텍스쳐들
 public:
-	vector<TEXINFO*>	m_multiefftex[DIR_CNT];
+	vector<TEXINFO*>	m_multiefftex[DIR_CNT17];
+	//map<wstring , vector<TEXINFO*>*>	m_multiTex;
 public:
 	virtual HRESULT InsertTexture(const wstring& wstrFilePath
 		, const int& iCnt = 0);

@@ -78,10 +78,10 @@ public:
 public:
 	const vector<TEXINFO*>*	GetTileTexture_vecset(const wstring& wstrObjkey,	const wstring& wstrStatekey);
 	const vector<TEXINFO*>*	GetStateTexture_vecset(const wstring& wstrObjkey,	const wstring& wstrStatekey);
-	const vector<TEXINFO*>* GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
-	const vector<TEXINFO*>* GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
-	const vector<TEXINFO*>* GetMultiTexture(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
-	const vector<TEXINFO*>* GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey , const int& diridx);
+	const vector<TEXINFO*>* GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey);
+	const vector<TEXINFO*>* GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey );
+	const vector<TEXINFO*>* GetMultiTexture(const wstring& wstrobjkey , const wstring& wstrstatekey );
+	const vector<TEXINFO*>* GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey);
 	const TEXINFO*			GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);
 	const vector<TEXINFO*>*	GetGeneralTexture(const wstring& wstrObjKey);
 	const vector<TEXINFO*>* GetMultiEffTexture(const wstring& wstrObjKey , const int& dirdix);

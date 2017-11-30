@@ -316,8 +316,19 @@ void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 		m_bdestroy = true;
 		Dead();
 	}
+	if(m_unitinfo.hp >= m_unitinfo.maxhp)
+	{
+		m_unitinfo.hp = m_unitinfo.maxhp;
+	}
 }
 
+void CObj::SetMP(const int& imp)
+{
+	m_unitinfo.mp -= imp;
+
+	if(m_unitinfo.mp <= 0)
+		m_unitinfo.mp = 0;
+}
 // int CObj::GetHP(void)
 // {
 // 	return m_hp;

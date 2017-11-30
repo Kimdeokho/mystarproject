@@ -12,6 +12,6 @@ public:
 public:
 	virtual void fire(CObj*& ptarget);
 public:
-	CCom_WTurret(const int& damage , DAMAGE_TYPE edamagetype);
+	CCom_WTurret(void);
 	~CCom_WTurret(void);
 };

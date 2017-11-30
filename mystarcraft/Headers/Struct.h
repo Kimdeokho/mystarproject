@@ -200,23 +200,43 @@ typedef struct myline
 	}
 }MYLINE;
 
+typedef struct tagweaponinfo
+{
+	DAMAGE_TYPE			eDamageType;     /*진동형 노말형 폭발형*/
+	DAMAGE_TYPE			eAirDamageType;     /*진동형 노말형 폭발형*/
+
+	int					damage;
+	int					airdamage;
+
+	tagweaponinfo()
+	{
+		eDamageType = DAMAGE_NOMAL;
+		eAirDamageType = DAMAGE_NOMAL;
+		damage = 0;
+		airdamage = 0;
+	}
+
+}WEAPON_INFO;
+
 typedef struct tagunitinfo
 {
 	MOVE_TYPE			eMoveType;           /*땅인지 비행인지*/
 	ATTACK_SEARCH_TYPE	eAttackType;     /*땅만공격 하는지 , 공중만 공격하는건지, 아무거나 다하는지*/
-	DAMAGE_TYPE			eDamageType;     /*진동형 노말형 폭발형*/
+	
 	ARMOR_TYPE			eArmorType;
 	STATE				estate; // 상태
 	ORDER				eorder; //받은 명령
 
 	float				fbuildtime;
 	float				fspeed;
-	int					damage;
+
 	int					maxhp;
 	int					maxmp;
 	int					hp;
 	int					mp;
+
 	int					attack_range;
+	int					air_attack_range;
 	int					search_range;
 	int					fog_range;
 
@@ -224,19 +244,18 @@ typedef struct tagunitinfo
 	{
 		eMoveType = MOVE_GROUND;
 		eAttackType = ATTACK_ANYTHING;
-		eDamageType = DAMAGE_NOMAL;
 		eArmorType = ARMOR_MEDIUM;
 		estate = IDLE;
 		eorder = ORDER_NONE;
 		fspeed = 0.f;
 		fbuildtime = 0.f;
-		damage = 0;
 		hp = 10000;
 		maxhp = 0;
 		maxmp = 0;
 		mp = 0;
+		search_range = 0;
 		attack_range = 0;
-		search_range = 0;		
+		air_attack_range = 0;
 		fog_range = 64;
 	}
 }UNITINFO;

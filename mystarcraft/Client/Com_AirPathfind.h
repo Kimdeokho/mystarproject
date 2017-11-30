@@ -7,9 +7,10 @@ class CCom_AirPathfind :
 private:
 	CObj*			m_pTarget;
 	D3DXVECTOR2&	m_vpos;
-	D3DXVECTOR2		m_vgoalpos;
-	D3DXVECTOR2		m_vcurdest_pos;
+	D3DXVECTOR2		m_vgoalpos; //처음 명령내린 도착지점
+	D3DXVECTOR2		m_vcurdest_pos; //가야할 지점이 수시로 바뀐다.
 	D3DXVECTOR2		m_vcurdir;
+	D3DXVECTOR2		m_vgap;
 
 	float			m_fchase_time;
 	const float*	m_fspeed;
@@ -23,9 +24,10 @@ public:
 	void TargetChase(void);
 	void SetTargetObjID(const int& objid);
 	void SetDestPos(const D3DXVECTOR2& vgoalpos);
-	void SetGoalPos(const D3DXVECTOR2& vgoalpos);
+	void SetGoalPos(const D3DXVECTOR2& vgoalpos , bool is_magicbox = false);
 	void SetAir_moveupdate(bool is_dupdate);
 	bool Getarrive(void);
+	void gap_initialize(bool is_magicbox);
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

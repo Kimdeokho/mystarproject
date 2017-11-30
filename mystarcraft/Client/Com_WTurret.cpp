@@ -6,8 +6,9 @@
 #include "TimeMgr.h"
 #include "ObjMgr.h"
 #include "GeneraEff.h"
-#include "MultiEff.h"
-CCom_WTurret::CCom_WTurret(const int& damage , DAMAGE_TYPE edamagetype)
+#include "Turret_bullet.h"
+
+CCom_WTurret::CCom_WTurret(void)
 {
 
 }
@@ -23,8 +24,13 @@ void CCom_WTurret::Initialize(CObj* pobj /*= NULL*/)
 	m_animation = (m_pobj->GetComponent(COM_ANIMATION));
 
 	m_attack_delay = 0.625f;
+	m_weapon_info.damage = 20;
+	m_weapon_info.airdamage = 6;
+	m_weapon_info.eDamageType = DAMAGE_BOOM;
+	m_weapon_info.eAirDamageType = DAMAGE_BOOM;
 
 	m_bfire = false;
+
 }
 
 void CCom_WTurret::Update(void)
@@ -45,18 +51,19 @@ void CCom_WTurret::fire(CObj*& ptarget)
 	{
 		m_pobj->SetState(ATTACK);
 
-		if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
+		//if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{			
 			m_bfire = true;
 
 			m_attack_time = 0.f;
 			//총알생성
 			//타겟에게 데미지 ㄱㄱㄱㄱ
-			CObj* peff = new CGeneraEff(L"ToongToong" ,ptarget->GetPos() , D3DXVECTOR2(1.3f , 1.3f), SORT_GROUND_EFF);
-			peff->Initialize();
-			CObjMgr::GetInstance()->AddEffect(peff);
+			CObj* pbullet = new CTurret_bullet(ptarget->GetObjNumber() , ptarget->GetPos());
+			pbullet->SetPos(m_pobj->GetPos().x , m_pobj->GetPos().y - 15);
+			pbullet->Initialize();
 
-			(ptarget)->SetDamage(m_damage , m_edamagetype);
+			CObjMgr::GetInstance()->AddObject(pbullet , OBJ_BULLET);
+
 		}
 	}
 }

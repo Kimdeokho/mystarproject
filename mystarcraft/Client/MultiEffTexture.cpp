@@ -16,9 +16,9 @@ HRESULT CMultiEffTexture::InsertTexture(const wstring& wstrFilePath , const int&
 	TCHAR		szFullPath[MAX_PATH] = L"";
 
 
-	int reservecnt = int((iCnt)/DIR_CNT);
+	int reservecnt = int((iCnt)/DIR_CNT17);
 
-	for(int i = 0; i < DIR_CNT; ++i)
+	for(int i = 0; i < DIR_CNT17; ++i)
 	{
 		m_multiefftex[i].reserve(reservecnt);
 	}
@@ -59,7 +59,7 @@ HRESULT CMultiEffTexture::InsertTexture(const wstring& wstrFilePath , const int&
 			return E_FAIL;
 		}
 
-		m_multiefftex[i%DIR_CNT].push_back(pTexInfo);
+		m_multiefftex[i%DIR_CNT17].push_back(pTexInfo);
 		//vecTexture.push_back(pTexInfo);
 
 	}
@@ -70,7 +70,7 @@ HRESULT CMultiEffTexture::InsertTexture(const wstring& wstrFilePath , const int&
 
 void CMultiEffTexture::Release(void)
 {
-	for(int i = 0; i < DIR_CNT; ++i)
+	for(int i = 0; i < DIR_CNT17; ++i)
 	{
 		for( size_t j = 0; j < m_multiefftex[i].size(); ++j)
 		{

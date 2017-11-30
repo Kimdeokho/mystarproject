@@ -46,7 +46,6 @@ void CDrone::Initialize(void)
 	m_unitinfo.estate = IDLE;
 	m_unitinfo.hp = 40;
 	m_unitinfo.fspeed = 80;
-	m_unitinfo.attack_range = 16;
 	m_unitinfo.search_range = 256;
 	m_unitinfo.fog_range = 512;
 
@@ -74,7 +73,7 @@ void CDrone::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_DroneAnim(m_matWorld)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );	
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Distancesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range , SEARCH_ONLY_ENEMY) ) );	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , new CCom_Distancesearch( SEARCH_ONLY_ENEMY) ) );	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex)) ) ;	
 
 
@@ -165,9 +164,9 @@ void CDrone::Inputkey_reaction(const int& nkey)
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
 
@@ -202,9 +201,9 @@ void CDrone::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
 	}

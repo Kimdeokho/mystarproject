@@ -60,17 +60,16 @@ void CSCV::Initialize(void)
 	m_eOBJ_NAME = OBJ_SCV;
 	m_sortID = SORT_GROUND;
 
+	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = IDLE;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eDamageType = DAMAGE_NOMAL;
 	m_unitinfo.eArmorType = ARMOR_SMALL;
-	m_unitinfo.damage = 5;
+	m_unitinfo.maxhp = 60;
 	m_unitinfo.hp = 60;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 84;
-	m_unitinfo.attack_range = 0;
-	m_unitinfo.search_range = 191;
+	m_unitinfo.search_range = 4*32;
 	m_unitinfo.fog_range = 512;
 
 	m_vertex.left = 11.5;
@@ -78,12 +77,14 @@ void CSCV::Initialize(void)
 	m_vertex.top =  11.5;
 	m_vertex.bottom = 11.5;
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 32);
+
+
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 16);
 	m_com_anim = new CCom_SCVAnim(m_matWorld);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex);
-	m_com_targetsearch = new CCom_Meleesearch(&m_unitinfo.attack_range , &m_unitinfo.search_range, SEARCH_ONLY_ENEMY);
-	m_com_worksearch = new CCom_Worksearch(&m_unitinfo.attack_range , &m_unitinfo.search_range, SEARCH_ONLY_ENEMY);
-	m_com_weapon = new CCom_WSCV(m_unitinfo.damage , DAMAGE_NOMAL);
+	m_com_targetsearch = new CCom_Meleesearch(SEARCH_ONLY_ENEMY);
+	m_com_worksearch = new CCom_Worksearch();
+	m_com_weapon = new CCom_WSCV();
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION ,  m_com_collision) ) ;	
@@ -271,9 +272,9 @@ void CSCV::Inputkey_reaction(const int& nkey)
 
 				CTileManager::GetInstance()->Flowfield_Pathfinding(m_preview_info.vcenter_pos);
 				CUnitMgr::GetInstance()->Calculate_UnitCenterPt(m_preview_info.vcenter_pos);
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(m_preview_info.vcenter_pos);
+				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(m_preview_info.vcenter_pos , m_bmagicbox);
 				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(false);
+				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 
 				((CBuilding_Preview*)m_main_preview)->SetActive(false);
 
@@ -324,9 +325,9 @@ void CSCV::Inputkey_reaction(const int& nkey)
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
 	}
@@ -358,9 +359,9 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
 		CWorkman::SetMineral_mark(NULL);

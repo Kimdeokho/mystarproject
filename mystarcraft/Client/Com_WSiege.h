@@ -13,6 +13,6 @@ public:
 public:
 	virtual void fire(CObj*& ptarget);
 public:
-	CCom_WSiege(const int& damage , DAMAGE_TYPE edamagetype);
+	CCom_WSiege();
 	~CCom_WSiege(void);
 };

@@ -53,13 +53,11 @@ void CBarrack::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eDamageType = DAMAGE_NOMAL;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
-	m_unitinfo.damage = 0;
+
 	m_unitinfo.hp = 1;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 28;
-	m_unitinfo.attack_range = 0;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
 	m_unitinfo.fbuildtime = 1.f;
@@ -274,6 +272,7 @@ void CBarrack::Inputkey_reaction(const int& nkey)
 			m_unitinfo.eorder = ORDER_MOVE;
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+
 		}
 	}
 }

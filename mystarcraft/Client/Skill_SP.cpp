@@ -43,7 +43,7 @@ void CSkill_SP::Update(void)
 		{
 			m_bonce = false;
 			((CCom_Weapon*)m_com_weapon)->SetAttackDelay(0.625f);
-			m_pobj->SetSpeed(68);
+			m_pobj->SetSpeed(60);
 		}
 	}
 }

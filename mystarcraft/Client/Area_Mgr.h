@@ -57,13 +57,16 @@ public:
 	void Areasize_debugrender(const int& areasize , const int& areacnt);
 
 	CObj* GetChoiceTarget(void);
+
+	void  Setsplash_damage(CObj* pmyobj ,const WEAPON_INFO& weaponinfo,  const D3DXVECTOR2& vsplash_pos, const float& range1 , const float& range2, const float& range3 , bool random_splash);
 public:
 	CObj* Collision_check(CObj* pself , const int& idx);
 	bool Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );
 	bool Building_Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );
 public:
-	CObj*	AutoSearch_target(CObj* pobj , const int& isearch_range , const int& iattack_range ,TARGET_SEARCH_TYPE esearchtype);
-	CObj*	Target_extract( list<CObj*>* area_list, CObj* pobj ,const int& idx, const int& irange ,const int& iattackrange ,TARGET_SEARCH_TYPE esearchtype);
+	CObj*	AutoSearch_target(CObj* pobj , const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
+	CObj*	Target_extract(CObj* pobj ,const int& idx, const int& irange ,TARGET_SEARCH_TYPE esearchtype);
+	CObj*	MedicTarget_extract(CObj* pself ,const int& idx, const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
 	void	TargetChoice(const D3DXVECTOR2& vpos);
 public:
 	void ReleaseObj_Area64(const int& curidx , CObj* pobj);

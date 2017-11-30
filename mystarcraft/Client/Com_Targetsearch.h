@@ -18,6 +18,7 @@ protected:
 
 	const int*				m_pattack_range;
 	const int*				m_psearch_range;
+	const int*				m_pair_range;
 
 	bool			m_bforced_target;
 

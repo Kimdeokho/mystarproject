@@ -15,6 +15,6 @@ public:
 public:
 	virtual void fire(CObj*&	ptarget );
 public:
-	CCom_Wmarine(const int& damage , DAMAGE_TYPE edamagetype);
+	CCom_Wmarine();
 	~CCom_Wmarine(void);
 };

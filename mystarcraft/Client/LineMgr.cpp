@@ -51,30 +51,30 @@ void CLineMgr::LineRender(void)
 }
 void CLineMgr::collisionbox_render(const MYRECT<float>& rc)
 {
-	D3DXVECTOR2 vpt[5];
+	//D3DXVECTOR2 vpt[5];
 
-	vpt[0].x = rc.left - CScrollMgr::m_fScrollX;
-	vpt[0].y = rc.top - CScrollMgr::m_fScrollY;
+	//vpt[0].x = rc.left - CScrollMgr::m_fScrollX;
+	//vpt[0].y = rc.top - CScrollMgr::m_fScrollY;
 
-	vpt[1].x = rc.right - CScrollMgr::m_fScrollX;
-	vpt[1].y = rc.top - CScrollMgr::m_fScrollY;
+	//vpt[1].x = rc.right - CScrollMgr::m_fScrollX;
+	//vpt[1].y = rc.top - CScrollMgr::m_fScrollY;
 
-	vpt[2].x = rc.right - CScrollMgr::m_fScrollX;
-	vpt[2].y = rc.bottom - CScrollMgr::m_fScrollY;
+	//vpt[2].x = rc.right - CScrollMgr::m_fScrollX;
+	//vpt[2].y = rc.bottom - CScrollMgr::m_fScrollY;
 
-	vpt[3].x = rc.left - CScrollMgr::m_fScrollX;
-	vpt[3].y = rc.bottom - CScrollMgr::m_fScrollY;
+	//vpt[3].x = rc.left - CScrollMgr::m_fScrollX;
+	//vpt[3].y = rc.bottom - CScrollMgr::m_fScrollY;
 
-	vpt[4] = vpt[0];
+	//vpt[4] = vpt[0];
 
-	CDevice::GetInstance()->Render_End();
-	CDevice::GetInstance()->Render_Begin();
+	//CDevice::GetInstance()->Render_End();
+	//CDevice::GetInstance()->Render_Begin();
 
-	m_pLine->SetWidth(1.0f);
-	m_pLine->Draw(vpt , 5 , D3DCOLOR_ARGB(255,0,255,0));
+	//m_pLine->SetWidth(1.0f);
+	//m_pLine->Draw(vpt , 5 , D3DCOLOR_ARGB(255,0,255,0));
 
-	CDevice::GetInstance()->Render_End();
-	CDevice::GetInstance()->Render_Begin();
+	//CDevice::GetInstance()->Render_End();
+	//CDevice::GetInstance()->Render_Begin();
 }
 void CLineMgr::minicambox_render(const MYRECT<float>& rc)
 {

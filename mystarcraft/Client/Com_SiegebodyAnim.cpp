@@ -59,15 +59,15 @@ void CCom_SiegebodyAnim::Update(void)
 				m_frame.fcurframe = 0;
 			}
 
-			if( NULL !=  m_animtexture[0] )
-			{
-				const vector<TEXINFO*>* vtemp = m_animtexture[0];
+			//if( NULL !=  m_animtexture[0] )
+			//{
+				//const vector<TEXINFO*> vtemp = m_animtexture[0];
 
 				if( (int)(m_frame.fcurframe) <= m_frame.umax)
-					m_curtex = (*vtemp)[int(m_frame.fcurframe)];
-			}
-			else
-				m_curtex = NULL;
+					m_curtex = m_animtexture[0][int(m_frame.fcurframe)];
+			//}
+			//else
+				//m_curtex = NULL;
 		}
 
 	}
@@ -142,12 +142,12 @@ void CCom_SiegebodyAnim::SetAnimation(const TCHAR* statekey)
 		}
 		else
 		{
-			for(int i = 0; i < DIR_CNT; ++i)
-			{
-				m_animtexture[i] = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey , i);
-			}
+			//for(int i = 0; i < DIR_CNT; ++i)
+			//{
+				m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey );
+			//}
 
-			m_frame.umax = m_animtexture[0]->size();
+			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
 		}
 	}

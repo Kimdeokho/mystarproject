@@ -51,10 +51,9 @@ void CTank::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = IDLE;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eDamageType = DAMAGE_NOMAL;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
-	m_unitinfo.damage = 0;
 	m_unitinfo.hp = 150;
+	m_unitinfo.maxhp = 150;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 68;
 	m_unitinfo.fog_range = 512;
@@ -69,11 +68,12 @@ void CTank::Initialize(void)
 
 
 	m_tankbarrel = new CTankbarrel(this);
+	m_tankbarrel->SetPos(m_vPos);
 	m_tankbarrel->SetObjID(m_obj_id);
 
 
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 16);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 32);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex , true);
 	m_com_anim = new CCom_TankbodyAnim(m_matWorld);
 
@@ -107,8 +107,6 @@ void CTank::Update(void)
 		iter->second->Update();
 
 	m_select_ui->Update();
-
-
 
 
 	if(IDLE == m_unitinfo.estate)
@@ -175,7 +173,6 @@ void CTank::Update(void)
 	}
 
 	barrel_sync();
-
 	m_tankbarrel->Update();
 
 }
@@ -200,7 +197,7 @@ void CTank::Transform(void)
 void CTank::Transform_Tankbody(void)
 {
 
-	//변신한다
+	//역변신
 	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_ANIMATION);
 	Safe_Delete(m_com_anim);
 	m_componentlist.erase(iter);
@@ -210,7 +207,7 @@ void CTank::Transform_Tankbody(void)
 	m_com_anim->Initialize(this);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32, 16);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32, 32);
 	m_com_pathfind->Initialize(this);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE , m_com_pathfind));
 
@@ -241,48 +238,10 @@ void CTank::Transform_Siegebody(void)
 
 void CTank::barrel_sync(void)
 {
-	float fradian = CMyMath::dgree_to_radian( m_curdiridx*22.5f );
 	D3DXVECTOR2 vbarrelpos;
-
-	if( -1 == m_matWorld._11 )
-	{
-		if(m_curdiridx <= 3)
-		{
-			vbarrelpos.x = sinf(fradian)*13;
-			vbarrelpos.y = cosf(fradian)*6;
-		}
-		else if(m_curdiridx == 4)
-		{
-			vbarrelpos.x = sinf(fradian)*13;
-			vbarrelpos.y = -7;
-		}
-		else
-		{
-			vbarrelpos.x = sinf(fradian)*10;
-			vbarrelpos.y = cosf(fradian)*17;
-		}
-
-	}
-	else
-	{
-		if(m_curdiridx <= 3)
-		{
-			vbarrelpos.x = -sinf(fradian)*13;
-			vbarrelpos.y = cosf(fradian)*6;
-		}
-		else if(m_curdiridx == 4)
-		{
-			vbarrelpos.x = -sinf(fradian)*13;
-			vbarrelpos.y = -7;
-		}
-		else
-		{
-			vbarrelpos.x = -sinf(fradian)*10;
-			vbarrelpos.y = cosf(fradian)*17;
-		}
-	}
-
-	vbarrelpos += m_vPos;
+	
+	vbarrelpos = m_vPos - m_vcurdir*8;
+	vbarrelpos.y -= 5;
 	((CTankbarrel*)m_tankbarrel)->SetbarrelPos(m_vPos , vbarrelpos);
 
 }
@@ -325,10 +284,9 @@ void CTank::Inputkey_reaction(const int& nkey)
 				{
 					D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
-
-					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 					m_bmagicbox = false;
 				}
 			}
@@ -354,17 +312,15 @@ void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
 				m_unitinfo.eorder = ORDER_MOVE_ATTACK;
 				m_unitinfo.estate = MOVE;
 				m_tankbarrel->SetOrder(ORDER_MOVE_ATTACK);
-				m_tankbarrel->SetState(MOVE);
-				
+				m_tankbarrel->SetState(MOVE);				
 
 				if(NULL != m_com_pathfind)
 				{
 					D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
-
-					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding(m_bmagicbox);
+					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 					m_bmagicbox = false;
 				}
 			}
@@ -390,22 +346,6 @@ void CTank::Release(void)
 	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	Safe_Delete(m_tankbarrel);
-}
-
-CComponent* CTank::GetComponent(COMPONENT_LIST ecom_name)
-{
-	if(COM_TARGET_SEARCH == ecom_name)
-		return m_tankbarrel->GetComponent(ecom_name);
-	else
-	{
-		COMPONENT_PAIR::iterator iter;
-		iter = m_componentlist.find(ecom_name);
-
-		if(iter != m_componentlist.end())
-			return iter->second;
-
-		return NULL;
-	}
 }
 
 void CTank::Dead(void)

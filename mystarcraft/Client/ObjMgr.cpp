@@ -154,7 +154,16 @@ void CObjMgr::Destroy_Update(void)
 				fy = (*iter)->GetY();
 				sortid = (*iter)->GetsortID();
 				if(true == (*iter)->Be_in_camera()  )
-					m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+				{
+					if(SORT_GROUND_EFF == sortid)
+						m_groundeff_renderlist.push_back( (*iter) );
+					else if(SORT_AIR_EFF == sortid)
+						m_aireff_renderlist.push_back( (*iter) );
+					else if(SORT_AIR == sortid)
+						m_air_rendersort.push_back( (*iter) );
+					else
+						m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+				}
 
 				++iter;
 			}
@@ -222,6 +231,18 @@ void CObjMgr::Render(void)
 	}
 
 
+	if(!m_groundeff_renderlist.empty())
+	{
+		list<CObj*>::iterator iter = m_groundeff_renderlist.begin();
+		list<CObj*>::iterator iter_end = m_groundeff_renderlist.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Render();
+		}
+		m_groundeff_renderlist.clear();
+	}
+
 	if(!m_air_rendersort.empty())
 	{
 		list<CObj*>::iterator iter = m_air_rendersort.begin();
@@ -234,6 +255,17 @@ void CObjMgr::Render(void)
 		m_air_rendersort.clear();
 	}
 
+	if(!m_aireff_renderlist.empty())
+	{
+		list<CObj*>::iterator iter = m_aireff_renderlist.begin();
+		list<CObj*>::iterator iter_end = m_aireff_renderlist.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Render();
+		}
+		m_aireff_renderlist.clear();
+	}
 }
 void CObjMgr::LoadObj(HANDLE hFile)
 {

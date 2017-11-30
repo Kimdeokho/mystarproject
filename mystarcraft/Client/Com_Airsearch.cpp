@@ -18,6 +18,7 @@ CCom_Airsearch::~CCom_Airsearch(void)
 
 void CCom_Airsearch::Initialize(CObj* pobj /*= NULL*/)
 {
+	m_search_type = SEARCH_ONLY_ENEMY;
 	m_ptarget = NULL;
 
 	m_pobj = pobj;
@@ -29,6 +30,10 @@ void CCom_Airsearch::Initialize(CObj* pobj /*= NULL*/)
 	m_com_weapon = (m_pobj->GetComponent(COM_WEAPON));
 
 	m_target_objid = -1;
+
+	m_pattack_range = &( m_pobj->GetUnitinfo().attack_range );
+	m_pair_range = &( m_pobj->GetUnitinfo().air_attack_range );
+	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);
 }
 
 void CCom_Airsearch::Update(void)
@@ -99,7 +104,6 @@ void CCom_Airsearch::Update(void)
 					//Å¸°ÙÀ» ÂÑ¾Æ°¡ÀÚ
 					((CCom_AirPathfind*)m_com_pathfind)->SetAir_moveupdate(true);
 				}
-					//((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 			}
 		}
 
@@ -110,7 +114,7 @@ void CCom_Airsearch::Update(void)
 		{
 			if(NULL == m_ptarget)
 			{
-				m_ptarget = CArea_Mgr::GetInstance()->AutoSearch_target(m_pobj , *m_psearch_range , *m_pattack_range , m_search_type);			
+				m_ptarget = CArea_Mgr::GetInstance()->AutoSearch_target(m_pobj , *m_psearch_range , m_search_type);			
 			}
 
 			if(NULL != m_ptarget)

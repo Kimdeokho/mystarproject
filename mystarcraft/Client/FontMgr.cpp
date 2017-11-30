@@ -162,6 +162,8 @@ void CFontMgr::Set_KeyInput_Font(const TCHAR* szfont , D3DCOLOR _color /*= D3DCO
 }
 void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
+		/*업데이트단계에서 지속적으로 입력받는 폰트
+	입력받고 렌더 후 지우는 방식이다*/
 	FONT_INFO ptemp;
 
 	ptemp.fX = posX;
@@ -174,6 +176,8 @@ void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int& font_number , floa
 }
 void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
+	/*업데이트단계에서 지속적으로 입력받는 폰트
+	입력받고 렌더 후 지우는 방식이다*/
 	FONT_INFO ptemp;
 
 	ptemp.fX = posX;
@@ -184,6 +188,8 @@ void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY , D3D
 }
 void CFontMgr::SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
+	/*한번 입력받고 새로운 폰트가 들어오지 않는이상 입력받은 폰트를 계속 띄운다*/
+
 	m_render_fontlist.clear();
 
 	FONT_INFO ptemp;
@@ -198,6 +204,7 @@ void CFontMgr::SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCO
 }
 void CFontMgr::SetNoticeFont(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
 {
+	/*한번 입력받고 몇초동안 지속적으로 렌더하는 폰트*/
 	FONT_INFO ptemp;
 
 	ptemp.fX = posX;
@@ -210,6 +217,7 @@ void CFontMgr::SetNoticeFont(const TCHAR* szfont , float posX , float posY , D3D
 }
 void CFontMgr::SetNoticeFont(const TCHAR* szfont , const int& fontnumber, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
 {
+	/*한번 입력받고 몇초동안 지속적으로 렌더하는 폰트*/
 	FONT_INFO ptemp;
 
 	ptemp.fX = posX;

@@ -58,8 +58,8 @@ void CCom_TurretheadAnim::Update(void)
 
 	}
 
-	const vector<TEXINFO*>* vtemp = m_animtexture32[m_texdiridx];
-	m_curtex = (*vtemp)[int(m_frame.fcurframe)];
+	//const vector<TEXINFO*>* vtemp = m_animtexture32[m_texdiridx];
+	m_curtex = m_animtexture32[m_texdiridx][int(m_frame.fcurframe)];
 
 }
 void CCom_TurretheadAnim::Render(void)
@@ -84,18 +84,18 @@ void CCom_TurretheadAnim::SetAnimation(const TCHAR* statekey)
 		m_statkey = statekey;
 		m_frame.fcurframe = 0;			
 
-		for(int i = 0; i < DIR_CNT17; ++i)
-		{
+		//for(int i = 0; i < DIR_CNT17; ++i)
+		//{
 			/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-			m_animtexture32[i] = CTextureMgr::GetInstance()->GetMultiTexture32(m_objname , m_statkey , i);
-			if(NULL == m_animtexture32[i])
-				break;
-		}
+			m_animtexture32 = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey );
+			//if(NULL == m_animtexture32[i])
+				//break;
+		//}
 
-		if(NULL != m_animtexture32[0])
-		{
-			m_frame.umax = m_animtexture32[0]->size();
+		//if(NULL != m_animtexture32[0])
+		//{
+			m_frame.umax = m_animtexture32[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
-		}
+		//}
 	}
 }

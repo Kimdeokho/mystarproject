@@ -9,10 +9,8 @@
 #include "Com_Weapon.h"
 #include "Com_Pathfind.h"
 #include "Bunker.h"
-CCom_Distancesearch::CCom_Distancesearch(const int* attack_range , const int* search_range , TARGET_SEARCH_TYPE esearch_type , CObj* otherobj)
+CCom_Distancesearch::CCom_Distancesearch(TARGET_SEARCH_TYPE esearch_type , CObj* otherobj)
 {
-	m_pattack_range = attack_range;
-	m_psearch_range = search_range;
 	m_search_type = esearch_type;
 	m_otherobj = otherobj;
 }
@@ -36,6 +34,10 @@ void CCom_Distancesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_com_weapon = (m_pobj->GetComponent(COM_WEAPON));
 
 	m_target_objid = -1;
+
+	m_pattack_range = &( m_pobj->GetUnitinfo().attack_range );
+	m_pair_range = &( m_pobj->GetUnitinfo().air_attack_range );
+	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);	
 }
 
 void CCom_Distancesearch::Update(void)
@@ -104,7 +106,6 @@ void CCom_Distancesearch::Update(void)
 						m_ptarget = NULL;
 						m_target_objid = 0;
 					}
-
 					
 					if(NULL != m_com_pathfind)
 					{
@@ -120,7 +121,8 @@ void CCom_Distancesearch::Update(void)
 			}
 			else
 			{
-				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
+				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 
+					(*m_pattack_range)*(*m_pattack_range))
 				{			
 					//공격 범위에 들어오면
 					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
@@ -165,7 +167,14 @@ void CCom_Distancesearch::Update(void)
 		{
 			if(NULL == m_ptarget)
 			{
-				m_ptarget = CArea_Mgr::GetInstance()->AutoSearch_target(m_pobj , *m_psearch_range , *m_pattack_range , m_search_type);			
+				int range = 0;
+				
+				if(NULL != m_pattack_range && NULL != m_pair_range)
+					range = max(*m_pattack_range , *m_pair_range);
+
+				range = max(range , *m_psearch_range);
+
+				m_ptarget = CArea_Mgr::GetInstance()->AutoSearch_target(m_pobj , range , m_search_type);			
 			}
 
 			if(NULL != m_ptarget)
@@ -182,13 +191,17 @@ void CCom_Distancesearch::Update(void)
 
 		if(NULL != m_ptarget)
 		{
+			int range = 0;
+			if( MOVE_GROUND == m_pobj->GetUnitinfo().eMoveType)
+				range = *m_pattack_range;
+			else
+				range = *m_pair_range;
+
 			//원거리
 			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
 			{			
 				//공격 범위에 들어오면
 				m_pobj->Setdir( m_ptarget->GetPos() - m_pobj->GetPos());
-
-				//m_pobj->SetState(ATTACK);//임시방편
 
 				if(NULL != m_com_weapon)
 					((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
@@ -240,7 +253,6 @@ void CCom_Distancesearch::Update(void)
 			}
 		}
 	}
-
 }
 
 void CCom_Distancesearch::Render(void)

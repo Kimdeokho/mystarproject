@@ -5,7 +5,10 @@ CCom_Weapon::CCom_Weapon(void)
 {
 	m_attack_delay = 0.f;
 	m_attack_time = 0.f;
+	m_air_attack_delay = 0.f;
+	m_air_attack_time = 0.f;
 	m_bfire = false;
+	m_bair_fire = false;
 }
 
 CCom_Weapon::~CCom_Weapon(void)
@@ -35,4 +38,9 @@ bool CCom_Weapon::GetFire(void)
 void CCom_Weapon::SetAttackDelay(float delay)
 {
 	m_attack_delay = delay;
+}
+
+const WEAPON_INFO& CCom_Weapon::GetWeapon_info(void)
+{
+	return m_weapon_info;
 }

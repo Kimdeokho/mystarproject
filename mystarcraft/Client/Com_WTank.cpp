@@ -8,10 +8,8 @@
 #include "GeneraEff.h"
 #include "MultiEff.h"
 #include "Tankbarrel.h"
-CCom_WTank::CCom_WTank(const int& damage , DAMAGE_TYPE edamagetype)
+CCom_WTank::CCom_WTank()
 {
-	m_damage = damage;
-	m_edamagetype = edamagetype;
 }
 
 CCom_WTank::~CCom_WTank(void)
@@ -25,6 +23,9 @@ void CCom_WTank::Initialize(CObj* pobj /*= NULL*/)
 	m_animation = (m_pobj->GetComponent(COM_ANIMATION));
 
 	m_attack_delay = 1.5416f;
+	m_weapon_info.damage = 30;
+
+	m_weapon_info.eDamageType = DAMAGE_BOOM;
 
 	m_bfire = false;
 
@@ -58,13 +59,13 @@ void CCom_WTank::fire(CObj*& ptarget)
 			CObjMgr::GetInstance()->AddEffect(peff);
 
 
-			peff = new CMultiEff(L"TANKFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() , 7);
+			peff = new CMultiEff(L"TANKFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() , 7 , 1 , SORT_GROUND_EFF);
 			peff->SetPos(((CTankbarrel*)m_pobj)->GetbarrelPos());
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 			
 
-			(ptarget)->SetDamage(m_damage , m_edamagetype);
+			(ptarget)->SetDamage( m_weapon_info.damage , m_weapon_info.eDamageType );
 		}
 	}
 	else
