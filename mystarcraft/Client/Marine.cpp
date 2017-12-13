@@ -22,11 +22,9 @@
 #include "FontMgr.h"
 #include "UI_Select.h"
 
-
 #include "Corpse.h"
 #include "UnitMgr.h"
 #include "Area_Mgr.h"
-
 #include "MyMath.h"
 
 CMarine::CMarine(void)
@@ -73,7 +71,7 @@ void CMarine::Initialize(void)
 	m_vertex.top =  10;
 	m_vertex.bottom = 10;
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
 	m_com_weapon = new CCom_Wmarine();
 	m_com_targetsearch = new CCom_Distancesearch(SEARCH_ONLY_ENEMY);
 	m_com_anim = new CCom_MarineAnim(m_matWorld);

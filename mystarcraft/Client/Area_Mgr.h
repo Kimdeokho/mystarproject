@@ -65,7 +65,7 @@ public:
 	bool Building_Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );
 public:
 	CObj*	AutoSearch_target(CObj* pobj , const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
-	CObj*	Target_extract(CObj* pobj ,const int& idx, const int& irange ,TARGET_SEARCH_TYPE esearchtype);
+	void	Target_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
 	CObj*	MedicTarget_extract(CObj* pself ,const int& idx, const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
 	void	TargetChoice(const D3DXVECTOR2& vpos);
 public:

@@ -62,7 +62,7 @@ void CFirebat::Initialize(void)
 	m_unitinfo.mp = 0;
 	m_unitinfo.maxmp = 0;
 	m_unitinfo.fspeed = 68;
-	m_unitinfo.search_range = 255;
+	m_unitinfo.search_range = 4*32;
 	m_unitinfo.fog_range = 512;
 
 

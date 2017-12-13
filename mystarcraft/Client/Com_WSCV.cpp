@@ -115,7 +115,7 @@ void CCom_WSCV::fire(CObj*& ptarget)
 	else
 	{
 		if( false == m_bfire)
-		{	
+		{		
 			m_pobj->SetState(IDLE);
 			if(true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 			{				

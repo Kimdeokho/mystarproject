@@ -12,7 +12,7 @@ protected:
 	FRAME						m_frame;
 
 	const vector<TEXINFO*>* 	m_animtexture;/*[]는 방향(각도)을 뜻한다*/
-	const vector<TEXINFO*>* 	m_animtexture32;/*[]는 방향(각도)을 뜻한다*/
+	const vector<TEXINFO*>* 	m_statetexture;/*방향성은 없지만 상태가 있는 텍스쳐들*/
 	const vector<TEXINFO*>*		m_generaltex;
 
 	const TCHAR*				m_objname;

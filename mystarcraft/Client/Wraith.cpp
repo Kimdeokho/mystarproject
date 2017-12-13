@@ -52,7 +52,7 @@ void CWraith::Initialize(void)
 	m_unitinfo.fspeed = 113;
 	m_unitinfo.attack_range = 5*32;
 	m_unitinfo.air_attack_range = 5*32;
-	m_unitinfo.search_range = 255;
+	m_unitinfo.search_range = 6*32;
 	m_unitinfo.fog_range = 512;
 
 	m_vertex.left = 19;

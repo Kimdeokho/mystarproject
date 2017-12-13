@@ -59,7 +59,7 @@ void CBattle_bim::Update(void)
 
 	D3DXVECTOR2 vdir = m_vdest_pos - m_vPos;	
 	D3DXVec2Normalize(&vdir , &vdir);
-	m_vPos += vdir*GETTIME*800;
+	m_vPos += vdir*GETTIME*1100;
 
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 8*8)
 	{

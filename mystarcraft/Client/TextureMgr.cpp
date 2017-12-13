@@ -606,8 +606,8 @@ bool CTextureMgr::Read_Texture(TCHAR*	szPath)
 	if(Read_directional_ImgPath(L"../Data/imgpath/directionalImgPath.txt" , szPath) )
 		ERR_MSG(L"유닛텍스쳐 불러오기 실패");
 
-	if(Read_directional32_ImgPath(L"../Data/imgpath/directional32ImgPath.txt" , szPath) )
-		ERR_MSG(L"32방향텍스쳐 불러오기 실패");
+	//if(Read_directional32_ImgPath(L"../Data/imgpath/directional32ImgPath.txt" , szPath) )
+	//	ERR_MSG(L"32방향텍스쳐 불러오기 실패");
 
 	if(Read_MultiEff_ImgPath(L"../Data/imgpath/MultiEff_ImgPath.txt" , szPath) )
 		ERR_MSG(L"멀티이펙텍스쳐 불러오기 실패");

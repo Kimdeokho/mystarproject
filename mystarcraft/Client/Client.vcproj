@@ -316,6 +316,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\KeyMgr.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\KeyMgr.h"
 					>
 				</File>
@@ -726,10 +730,6 @@
 							>
 						</File>
 						<File
-							RelativePath=".\KeyMgr.cpp"
-							>
-						</File>
-						<File
 							RelativePath=".\Marine.cpp"
 							>
 						</File>
@@ -751,6 +751,22 @@
 						</File>
 						<File
 							RelativePath=".\SCV.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Spidermine.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Spidermine.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Vulture.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Vulture.h"
 							>
 						</File>
 						<Filter
@@ -927,6 +943,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Vulture_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Vulture_Bullet.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Wraith_Bim.cpp"
 						>
 					</File>
@@ -1027,14 +1051,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Com_bulletAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_bulletAnim.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Com_DroneAnim.cpp"
 						>
 					</File>
@@ -1075,14 +1091,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Com_LaserAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_LaserAnim.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Com_MarineAnim.cpp"
 						>
 					</File>
@@ -1096,6 +1104,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_MedicAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_MineAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_MineAnim.h"
 						>
 					</File>
 					<File
@@ -1187,6 +1203,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_VultureAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_VultureAnim.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_WraithAnim.cpp"
 						>
 					</File>
@@ -1194,6 +1218,34 @@
 						RelativePath=".\Com_WraithAnim.h"
 						>
 					</File>
+					<Filter
+						Name="Bullet"
+						>
+						<File
+							RelativePath=".\Com_BulletAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_BulletAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_dirBulletAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_dirBulletAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LaserAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LaserAnim.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="Weapon"
@@ -1279,6 +1331,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_WVulture.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WVulture.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_WWraith.cpp"
 						>
 					</File>
@@ -1320,6 +1380,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_Meleesearch.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Minesearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Minesearch.h"
 						>
 					</File>
 					<File

@@ -32,3 +32,4 @@ TERRAN|UNIT|GOLIATH_ARM|ATTACK|34|..\Texture\Multi\Terran\Unit\goliath_arm\attac
 TERRAN|UNIT|BATTLE|IDLE|17|..\Texture\Multi\Terran\Unit\battlecruiser\battlecruiser%d.png
 TERRAN|UNIT|WRAITH|IDLE|17|..\Texture\Multi\Terran\Unit\wraith\wraith%d.png
 TERRAN|UNIT|DROPSHIP|IDLE|17|..\Texture\Multi\Terran\Unit\dropship\dropship%d.png
+TERRAN|UNIT|VULTURE|IDLE|17|..\Texture\Multi\Terran\Unit\vulture\vulture%d.png

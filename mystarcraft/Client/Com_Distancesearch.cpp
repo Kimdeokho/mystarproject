@@ -3,6 +3,7 @@
 
 #include "Obj.h"
 #include "ObjMgr.h"
+#include "TimeMgr.h"
 #include "Area_Mgr.h"
 #include "MyMath.h"
 
@@ -38,13 +39,19 @@ void CCom_Distancesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_pattack_range = &( m_pobj->GetUnitinfo().attack_range );
 	m_pair_range = &( m_pobj->GetUnitinfo().air_attack_range );
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);	
+
+	m_search_time = 0.f;
+	m_btarget_search = true;
 }
 
 void CCom_Distancesearch::Update(void)
 {
-	if(/*COLLISION == m_pobj->GetUnitinfo().estate ||*/
+	if(COLLISION == m_pobj->GetUnitinfo().estate ||
 		TRANSFORMING == m_pobj->GetUnitinfo().estate ||
 		BOARDING == m_pobj->GetUnitinfo().estate)
+		return;
+
+	if(ORDER_INSTALL_MINE == m_pobj->GetUnitinfo().eorder)
 		return;
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
@@ -165,8 +172,14 @@ void CCom_Distancesearch::Update(void)
 	{
 		if(ORDER_MOVE != m_pobj->GetUnitinfo().eorder)
 		{
-			if(NULL == m_ptarget)
+			//if(NULL == m_ptarget)
+
+			m_search_time += GETTIME;
+
+			if(true == m_btarget_search &&
+				m_search_time > 0.2f)
 			{
+				m_search_time = 0.f;
 				int range = 0;
 				
 				if(NULL != m_pattack_range && NULL != m_pair_range)
@@ -180,7 +193,10 @@ void CCom_Distancesearch::Update(void)
 			if(NULL != m_ptarget)
 				m_target_objid = m_ptarget->GetObjNumber();
 			else
+			{
 				m_target_objid = 0;
+				m_btarget_search = true;
+			}
 		}
 		else
 		{
@@ -212,6 +228,8 @@ void CCom_Distancesearch::Update(void)
 					((CCom_Pathfind*)m_com_pathfind)->ClearPath();
 					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 				}
+
+				m_btarget_search = false;
 			}
 			else if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) > (*m_psearch_range)*(*m_psearch_range))
 			{

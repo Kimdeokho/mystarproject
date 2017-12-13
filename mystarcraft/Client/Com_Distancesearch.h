@@ -6,6 +6,9 @@ class CCom_Distancesearch :
 {
 private:
 	CObj*			m_otherobj; //탱크나 골리앗같은 분리된 오브젝트 관리
+
+	float			m_search_time;
+	bool			m_btarget_search;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

@@ -359,7 +359,6 @@ void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3D
 		}
 		else
 		{
-
 			if(m_dummynode->H > pnode->H)
 				m_dummynode = pnode;
 		}

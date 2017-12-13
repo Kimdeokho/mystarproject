@@ -33,6 +33,7 @@ CCom_Animation::CCom_Animation(D3DXMATRIX& objmat)
 	m_banim_end = false;
 
 	m_generaltex = NULL;
+	m_curtex = NULL;
 	m_statkey = L"";
 	m_battack_end = true;
 }

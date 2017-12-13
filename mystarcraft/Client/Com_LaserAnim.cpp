@@ -33,13 +33,21 @@ void CCom_LaserAnim::Update(void)
 		m_frame.fcurframe = 0;
 	}
 
-	m_curtex = m_animtexture32[m_texdiridx][int(m_frame.fcurframe)];
+	m_curtex = m_animtexture[m_texdiridx][int(m_frame.fcurframe)];
 }
 
 void CCom_LaserAnim::Render(void)
 {
 	if(NULL == m_curtex)
 		return;
+
+	if( m_objmat._11 < 0 )
+		m_objmat._11 = -2;
+	else
+		m_objmat._11 = 2;
+
+	m_objmat._22 = 2;
+
 
 	m_pSprite->SetTransform(&m_objmat);
 	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
@@ -62,9 +70,9 @@ void CCom_LaserAnim::SetAnimation(const TCHAR* statekey)
 		m_frame.fcurframe = 0;			
 
 		/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-		m_animtexture32 = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey );
+		m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey );
 
-		m_frame.umax = m_animtexture32[0].size();
+		m_frame.umax = m_animtexture[0].size();
 		m_frame.fframespeed = (float)m_frame.umax;
 	}
 }

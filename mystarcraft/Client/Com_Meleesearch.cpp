@@ -22,7 +22,6 @@ CCom_Meleesearch::~CCom_Meleesearch(void)
 void CCom_Meleesearch::Initialize(CObj* pobj /*= NULL*/)
 {
 	m_ptarget = NULL;
-	m_bmelee_search = false;
 
 	m_pobj = pobj;
 
@@ -31,7 +30,7 @@ void CCom_Meleesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_com_weapon = (m_pobj->GetComponent(COM_WEAPON));
 
 	m_target_objid = -1;
-	m_bmelee_search = true;
+	//m_bmelee_search = true;
 
 	m_meleerangeX = 4.5f;
 	m_meleerangeY = 4.5f;
@@ -39,6 +38,7 @@ void CCom_Meleesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);
 
 	m_search_time = 0.f;
+	m_meleesearch_time = 0.f;
 	m_btarget_search = true;
 }
 
@@ -62,7 +62,7 @@ void CCom_Meleesearch::Update(void)
 	else
 	{
 		m_bforced_target = false;
-		m_bmelee_search = true;
+		//m_bmelee_search = true;
 		m_target_objid = 0;
 	}
 
@@ -161,7 +161,8 @@ void CCom_Meleesearch::Update(void)
 			else
 			{
 				m_bforced_target = false;
-				m_bmelee_search = true;
+				//m_bmelee_search = true;
+				m_btarget_search = true;
 				m_target_objid = 0;
 
 			}
@@ -170,7 +171,7 @@ void CCom_Meleesearch::Update(void)
 		{
 			m_btarget_search = true;
 			m_bforced_target = false;
-			m_bmelee_search = false;
+			//m_bmelee_search = false;
 			m_target_objid = 0;
 			m_ptarget = NULL;
 		}
@@ -186,8 +187,8 @@ void CCom_Meleesearch::Update(void)
 			}
 			else
 			{
-				m_meleerangeX = 4.5f;
-				m_meleerangeY = 4.5f;
+				m_meleerangeX = 5.f;
+				m_meleerangeY = 5.f;
 			}
 
 			m_myrc = m_pobj->GetMyRect();
@@ -196,15 +197,20 @@ void CCom_Meleesearch::Update(void)
 			m_myrc.top -= m_meleerangeY;
 			m_myrc.bottom += m_meleerangeY;
 
+			m_meleesearch_time += GETTIME;
 
-			if( true == m_bmelee_search &&
-				CArea_Mgr::GetInstance()->MeleeAttack_Search(m_pobj ,m_ptarget/*새타겟을 얻기위함*/ , m_myrc , m_search_type))
-			{
-				m_target_objid = m_ptarget->GetObjNumber();
-				m_bmelee_search = false;
-			}
+			//if(m_meleesearch_time > 0.2f)
+			//{
+			//	m_meleesearch_time = 0.f;
+			//	if( true == m_bmelee_search &&
+			//		CArea_Mgr::GetInstance()->MeleeAttack_Search(m_pobj ,m_ptarget/*새타겟을 얻기위함*/ , m_myrc , m_search_type))
+			//	{
+			//		m_target_objid = m_ptarget->GetObjNumber();
+			//		m_bmelee_search = false;
+			//	}
+			//}
 
-			if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+			if( MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
 			{
 				m_btarget_search = false;
 				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
@@ -217,7 +223,7 @@ void CCom_Meleesearch::Update(void)
 					((CCom_Pathfind*)m_com_pathfind)->ClearPath();
 					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 				}
-				m_bmelee_search = false;
+				//m_bmelee_search = false;
 			}
 			else
 			{				
@@ -239,13 +245,9 @@ void CCom_Meleesearch::Update(void)
 					if(NULL != m_com_pathfind)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}
-				m_bmelee_search = true;
+				//m_bmelee_search = true;
 				m_btarget_search = true;
 			}
-		}
-		else
-		{
-			m_btarget_search = true;
 		}
 	}
 }

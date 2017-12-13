@@ -36,7 +36,7 @@ void CGoliath_part::Initialize(void)
 	m_unitinfo.hp = 0;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
-	m_unitinfo.search_range = 255;
+	m_unitinfo.search_range = 7*32;
 	m_unitinfo.attack_range = 6*32;
 	m_unitinfo.air_attack_range = 5*32;
 

@@ -53,11 +53,8 @@ void CGeneraEff::Update(void)
 
 void CGeneraEff::Render(void)
 {
-	//if(CScrollMgr::inside_camera(m_matWorld._41 , m_matWorld._42))
-	{
-		m_pSprite->SetTransform(&m_matWorld);
-		m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
-	}
+	m_pSprite->SetTransform(&m_matWorld);
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CGeneraEff::Release(void)

@@ -22,6 +22,7 @@
 #include "BattleCruiser.h"
 #include "Wraith.h"
 #include "Dropship.h"
+#include "Vulture.h"
 
 #include "Comandcenter.h"
 #include "T_gas.h"
@@ -388,6 +389,24 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			
 			m_bwork = true;
 		}
+		else if(m_clickwating['I'])
+		{
+			m_clickwating['I'] = false;
+			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+			{
+				vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+
+				if(false == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+				{
+					vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+
+					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
+					CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);	
+
+					CUnitMgr::GetInstance()->Intputkey_reaction('I' , VK_LBUTTON);
+				}
+			}
+		}
 		//else if(m_clickwating['C'])
 		//{
 		//	m_clickwating['C'] = false;
@@ -629,29 +648,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Intputkey_reaction('F');
 		}
 	}
-	if(true == m_bOnceKeyDown_complete['I'])
-	{
-		m_bOnceKeyDown_complete['I'] = false;
 
-		if(m_clickwating['B'])
-		{
-			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
-				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'I');
-
-			m_clickwating['B'] = false;
-		}
-		else if(m_clickwating['V'])
-		{
-			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
-				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'I');
-
-			m_clickwating['V'] = false;
-		}
-		else
-		{
-			CUnitMgr::GetInstance()->Intputkey_reaction('I');
-		}
-	}
 	if(true == m_bOnceKeyDown_complete['G'])
 	{
 		m_bOnceKeyDown_complete['G'] = false;
@@ -690,6 +687,36 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Intputkey_reaction('G');
 		}
 	}
+
+	if(true == m_bOnceKeyDown_complete['I'])
+	{
+		m_bOnceKeyDown_complete['I'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'I');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'I');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			if(CUnitMgr::GetInstance()->GetUnitlistempty())
+				m_clickwating['I'] = false;
+			else
+				m_clickwating['I'] = true;
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('I');
+		}
+	}
+
 
 	if(true == m_bOnceKeyDown_complete['L'])
 	{
@@ -929,6 +956,19 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				m_clickwating['V'] = true;
 
 			CUnitMgr::GetInstance()->Intputkey_reaction('V');
+		}
+
+		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		for(int i = 0; i < 10; ++i)
+		{
+			vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			vpos.x += rand()%50 - 25;
+			vpos.y += rand()%50 - 25;
+			pObj = new CVulture;
+			CObjMgr::GetInstance()->AddObject(pObj , OBJ_VULTURE);
+			pObj->SetPos(vpos);
+			pObj->Initialize();
+			objcnt += 1;
 		}
 	}
 

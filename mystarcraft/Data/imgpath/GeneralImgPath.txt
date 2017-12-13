@@ -38,3 +38,7 @@ EFFECT|BIGFIRE_B|BIGFIRE_B|12|..\Texture\General\Effect\terran_fire\fireB\bigfir
 EFFECT|FIRE_C|FIRE_C|12|..\Texture\General\Effect\terran_fire\fireC\fire_C%d.png
 EFFECT|BIGFIRE_C|BIGFIRE_C|12|..\Texture\General\Effect\terran_fire\fireC\bigfire_C%d.png
 EFFECT|TURRET_TRAIL|TURRET_TRAIL|8|..\Texture\General\Effect\turret_trail\turret_trail%d.png
+EFFECT|VULTURE_FIRE|VULTURE_FIRE|8|..\Texture\General\Effect\vulture_fire\vulturefire%d.png
+EFFECT|VULTURE_HIT|VULTURE_HIT|9|..\Texture\General\Effect\vul_hit\vulture_hit%d.png
+EFFECT|MINE_BOOM|MINE_BOOM|10|..\Texture\General\Effect\mine_boom\mine_boom%d.png
+BULLET|VULTURE_BULLET|VULTURE_BULLET|4|..\Texture\General\bullet\vulture_bullet%d.png

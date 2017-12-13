@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Turret_bullet.h"
 
-#include "Com_bulletAnim.h"
+#include "Com_dirBulletAnim.h"
 #include "TimeMgr.h"
 
 #include "ObjMgr.h"
@@ -26,7 +26,7 @@ void CTurret_bullet::Initialize(void)
 {
 	m_sortID = SORT_AIR_EFF;
 
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_bulletAnim( m_matWorld , L"TURRET_BULLET" )));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_dirBulletAnim( m_matWorld , L"TURRET_BULLET" )));
 
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();

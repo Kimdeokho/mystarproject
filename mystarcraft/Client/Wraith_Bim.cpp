@@ -9,6 +9,8 @@
 #include "MyMath.h"
 
 #include "ScrollMgr.h"
+
+#include "FontMgr.h"
 CWraith_Bim::CWraith_Bim(const int& ptarget_id , const D3DXVECTOR2& vdesetpos)
 {
 	m_ptarget = NULL;

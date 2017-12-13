@@ -46,7 +46,10 @@ void CCom_WWraith::fire(CObj*& ptarget)
 			//ÃÑ¾Ë »ý¼º
 
 			CObj* pbullet = new CWraith_Bim(ptarget->GetObjNumber() , ptarget->GetPos() );
-			pbullet->SetPos(m_pobj->GetPos());
+			D3DXVECTOR2 vpos = m_pobj->GetPos();
+			vpos = vpos + m_pobj->GetcurDir()*10;
+			
+			pbullet->SetPos(vpos);
 			pbullet->Initialize();
 			CObjMgr::GetInstance()->AddObject(pbullet , OBJ_BULLET);
 		}

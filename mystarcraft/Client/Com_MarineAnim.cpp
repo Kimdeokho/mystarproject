@@ -95,6 +95,9 @@ void CCom_MarineAnim::Update(void)
 
 void CCom_MarineAnim::Render(void)
 {
+	if(NULL == m_curtex)
+		return;
+
 	m_pSprite->SetTransform(&m_objmat);
 	if(TEAM_1 == m_pobj->GetTeamNumber())
 	{

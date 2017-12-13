@@ -60,3 +60,8 @@ BUILDING|None|T_BUNKER|IDLE|1|..\Texture\Multi\Terran\Building\bunker\idle\bunke
 BUILDING|None|T_TURRETBODY|IDLE|1|..\Texture\Multi\Terran\Building\turret_body\idle\turret_idle%d.png
 BUILDING|None|T_TURRETBODY|BUILD|2|..\Texture\Multi\Terran\Building\turret_body\build\turret_build%d.png
 BUILDING|None|T_TURRET_PREVIEW|IDLE|1|..\Texture\Multi\Terran\Building\turret_preview\idle\turret_preview%d.png
+TERRAN|UNIT|MINE|IDLE|1|..\Texture\Multi\Terran\Unit\mine\idle\mine_idle%d.png
+TERRAN|UNIT|MINE|BURROW|1|..\Texture\Multi\Terran\Unit\mine\burrow\mine_burrow%d.png
+TERRAN|UNIT|MINE|MOVE|8|..\Texture\Multi\Terran\Unit\mine\move\mine_move%d.png
+TERRAN|UNIT|MINE|PLANT|3|..\Texture\Multi\Terran\Unit\mine\plant\mine_plant%d.png
+TERRAN|UNIT|MINE|PULL|3|..\Texture\Multi\Terran\Unit\mine\pull\mine_pull%d.png
