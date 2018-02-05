@@ -22,6 +22,10 @@ private:
 	bool			m_bsearch_collision;
 	float			m_nuckback_time;
 	
+
+	TILE**			m_ptilelist;
+	D3DXVECTOR2		m_vprepos;
+
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

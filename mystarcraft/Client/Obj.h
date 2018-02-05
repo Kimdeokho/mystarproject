@@ -67,6 +67,8 @@ public:
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
 	virtual void Release(void);
 	virtual void Dead(void);
+	virtual void Update_Cmdbtn(void);
+	virtual void Update_Wireframe(void);
 public:
 	void SetPos(const float x , const float y, OBJ_POS_KIND ekind = STATIC_OBJ);
 	void SetPos(const D3DXVECTOR2& vpos);
@@ -77,6 +79,7 @@ public:
 	void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
 	void Setdir(D3DXVECTOR2& vdir);
 	void Setdiridx(const int& diridx);
+	//void Set_oldIdx(const int& idx);
 
 	void SetState(STATE estate);
 	void SetOrder(ORDER eorder);

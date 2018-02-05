@@ -11,6 +11,8 @@
 #include "Area_Mgr.h"
 #include "UnitMgr.h"
 #include "ObjMgr.h"
+#include "TimeMgr.h"
+
 #include "GeneraEff.h"
 
 #include "UI_Select.h"
@@ -42,6 +44,8 @@ void CTurret::Initialize(void)
 	CTerran_building::building_area_Initialize(2 , 2);
 	CTerran_building::building_pos_Initialize(2 , 2);
 
+	m_ebuild_tech = T_TURRET;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_TURRET;
@@ -51,8 +55,7 @@ void CTurret::Initialize(void)
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
-	m_unitinfo.hp = 200;
-	m_unitinfo.maxhp = m_unitinfo.hp;
+	m_unitinfo.maxhp = 200;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
@@ -73,7 +76,7 @@ void CTurret::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select62" , m_vPos , 10);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
 	CTerran_building::fire_eff_initialize();
 
@@ -81,6 +84,8 @@ void CTurret::Initialize(void)
 	m_turrethead->SetPos(m_vPos - m_weight);
 	m_turrethead->Initialize();
 	m_turrethead->SetState(BUILD);
+
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 }
 
 void CTurret::Update(void)
@@ -104,6 +109,16 @@ void CTurret::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+		}
 	}
 
 	CTerran_building::fire_eff_update();

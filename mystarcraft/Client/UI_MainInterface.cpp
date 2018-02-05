@@ -12,7 +12,7 @@ CUI_MainInterface::~CUI_MainInterface(void)
 
 void CUI_MainInterface::Initialize(void)
 {
-	m_texinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , L"main_interface");
+	m_texinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , m_statekey);
 	m_vcenter.x = (float)(m_texinfo->ImgInfo.Width/2);
 	m_vcenter.y = (float)(m_texinfo->ImgInfo.Height/2);
 	m_vcenter.z = 0;

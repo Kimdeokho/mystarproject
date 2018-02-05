@@ -208,6 +208,11 @@ void CObj::SetSelect(SELECT_FLAG eflag ,D3DCOLOR ecolor)
 	{
 		((CUI_Select*)m_select_ui)->SetSelect(eflag , ecolor);
 	}
+
+	if(eflag == NONE_SELECT)
+		m_bSelect = false;
+	else
+		m_bSelect = true;
 }
 void CObj::SetState(STATE estate)
 {
@@ -313,6 +318,8 @@ void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 	if(m_unitinfo.hp <= 0)
 	{
+		//킬수 + 1 하면 되는디..
+		m_unitinfo.hp = 0;
 		m_bdestroy = true;
 		Dead();
 	}
@@ -377,6 +384,16 @@ OBJID CObj::GetOBJNAME(void)
 void CObj::SetDestroy(bool bdestroy)
 {
 	m_bdestroy = bdestroy;
+}
+
+void CObj::Update_Cmdbtn(void)
+{
+
+}
+
+void CObj::Update_Wireframe(void)
+{
+
 }
 
 int CObj::m_globalobj_id;

@@ -25,6 +25,7 @@ private:
 
 
 	list<CUI*>		m_SelectUI_List;
+	list<CUI*>		m_AirSelectUI_List;
 	list<CObj*>		m_Effect_List;
 	CObj*			m_obj_alive[MAX_OBJCNT];
 public:
@@ -38,7 +39,7 @@ public:
 	void AddCorpse(CObj* pObj );
 
 
-	void AddSelect_UI(CUI* pui);
+	void AddSelect_UI(CUI* pui , MOVE_TYPE emovetype);
 	void AddEffect(CObj* peff);
 
 	//void DestroyObj(TERRAN_UNIT_ID eid);

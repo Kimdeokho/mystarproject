@@ -10,11 +10,16 @@
 #include "ScrollMgr.h"
 #include "FontMgr.h"
 #include "GasResource.h"
+
+#include "TileManager.h"
 CGasBuilding::CGasBuilding(void)
 {
 	m_pworkman = NULL;
 	m_fgather_time = 0.f;
 	D3DXMatrixIdentity(&m_matshadow);
+
+	m_fbuild_tick = 0.f;
+	m_build_hp = 0.f;
 }
 
 CGasBuilding::~CGasBuilding(void)
@@ -111,17 +116,17 @@ void CGasBuilding::Update(void)
 				int widthcnt = (32/stepsize)*m_irow;
 				int heightcnt = (32/stepsize)*m_icol + 2;
 				int idx64;
-				float fmindistance = 10000000;
 
 				D3DXVECTOR2 collocate_pos[4];
 				D3DXVECTOR2	temp_pos[4];
 				D3DXVECTOR2	result_pos;
 
 				bool bescape = false;
-
+				int idx32 = 0;
 
 				while(!bescape)
-				{				
+				{			
+					
 					collocate_pos[0].x = m_vPos.x - m_weight.x - loopcnt*32; //밑줄 오른쪽방향
 					collocate_pos[0].y = m_vPos.y + m_weight.y + 32 + loopcnt*32;
 
@@ -138,7 +143,6 @@ void CGasBuilding::Update(void)
 
 					for(int i = 0; i < widthcnt; ++i)
 					{
-
 						temp_pos[0].x = collocate_pos[0].x + i*stepsize;
 
 						collocate_rc.left = temp_pos[0].x - workman_vtx.left; 
@@ -147,14 +151,15 @@ void CGasBuilding::Update(void)
 						collocate_rc.bottom = temp_pos[0].y + workman_vtx.bottom;
 						idx64 = CMyMath::Pos_to_index(temp_pos[0] , 64);
 
-						CFontMgr::GetInstance()->Setbatch_Font(L"@" , temp_pos[0].x - CScrollMgr::m_fScrollX ,
-							temp_pos[0].y - CScrollMgr::m_fScrollY);
-
 						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
-						{
-							result_pos = temp_pos[0];
-							bescape = true;
-							break;
+						{				
+							idx32 = CMyMath::Pos_to_index(temp_pos[0] , 32);
+							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
+							{
+								result_pos = temp_pos[0];
+								bescape = true;
+								break;
+							}
 						}
 					}
 					if(bescape)
@@ -172,9 +177,13 @@ void CGasBuilding::Update(void)
 
 						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
 						{
-							result_pos = temp_pos[1];
-							bescape = true;
-							break;
+							idx32 = CMyMath::Pos_to_index(temp_pos[1] , 32);
+							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
+							{
+								result_pos = temp_pos[1];
+								bescape = true;
+								break;
+							}
 						}
 					}
 					if(bescape)
@@ -192,9 +201,13 @@ void CGasBuilding::Update(void)
 
 						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
 						{
-							result_pos = temp_pos[2];
-							bescape = true;
-							break;
+							idx32 = CMyMath::Pos_to_index(temp_pos[2] , 32);
+							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
+							{
+								result_pos = temp_pos[2];
+								bescape = true;
+								break;
+							}
 						}
 
 					}
@@ -213,14 +226,102 @@ void CGasBuilding::Update(void)
 
 						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
 						{
-							result_pos = temp_pos[3];
-							bescape = true;
-							break;
+							idx32 = CMyMath::Pos_to_index(temp_pos[3] , 32);
+							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
+							{
+								result_pos = temp_pos[3];
+								bescape = true;
+								break;
+							}
 						}
 					}
 					if(bescape)
 						break;
 
+					//for(int i = 0; i < widthcnt; ++i)
+					//{
+
+					//	temp_pos[0].x = collocate_pos[0].x + i*stepsize;
+
+					//	collocate_rc.left = temp_pos[0].x - workman_vtx.left; 
+					//	collocate_rc.right = temp_pos[0].x + workman_vtx.right;
+					//	collocate_rc.top = temp_pos[0].y - workman_vtx.top;
+					//	collocate_rc.bottom = temp_pos[0].y + workman_vtx.bottom;
+					//	idx64 = CMyMath::Pos_to_index(temp_pos[0] , 64);
+
+					//	CFontMgr::GetInstance()->Setbatch_Font(L"@" , temp_pos[0].x - CScrollMgr::m_fScrollX ,
+					//		temp_pos[0].y - CScrollMgr::m_fScrollY);
+
+					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+					//	{
+					//		result_pos = temp_pos[0];
+					//		bescape = true;
+					//		break;
+					//	}
+					//}
+					//if(bescape)
+					//	break;
+
+					//for(int i = 0; i < heightcnt; ++i)
+					//{					
+					//	temp_pos[1].y = collocate_pos[1].y - i*stepsize;;
+
+					//	collocate_rc.left = temp_pos[1].x - workman_vtx.left; 
+					//	collocate_rc.right = temp_pos[1].x + workman_vtx.right;
+					//	collocate_rc.top = temp_pos[1].y - workman_vtx.top;
+					//	collocate_rc.bottom = temp_pos[1].y + workman_vtx.bottom;
+					//	idx64 = CMyMath::Pos_to_index(temp_pos[1] , 64);
+
+					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+					//	{
+					//		result_pos = temp_pos[1];
+					//		bescape = true;
+					//		break;
+					//	}
+					//}
+					//if(bescape)
+					//	break;
+
+					//for(int i = 0; i < widthcnt; ++i)
+					//{					
+					//	temp_pos[2].x = collocate_pos[2].x - i*stepsize;;
+
+					//	collocate_rc.left = temp_pos[2].x - workman_vtx.left; 
+					//	collocate_rc.right = temp_pos[2].x + workman_vtx.right;
+					//	collocate_rc.top = temp_pos[2].y - workman_vtx.top;
+					//	collocate_rc.bottom = temp_pos[2].y + workman_vtx.bottom;
+					//	idx64 = CMyMath::Pos_to_index(temp_pos[2] , 64);
+
+					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+					//	{
+					//		result_pos = temp_pos[2];
+					//		bescape = true;
+					//		break;
+					//	}
+
+					//}
+					//if(bescape)
+					//	break;
+
+					//for(int i = 0; i < heightcnt; ++i)
+					//{
+					//	temp_pos[3].y = collocate_pos[3].y + i*stepsize;;
+
+					//	collocate_rc.left = temp_pos[3].x - workman_vtx.left; 
+					//	collocate_rc.right = temp_pos[3].x + workman_vtx.right;
+					//	collocate_rc.top = temp_pos[3].y - workman_vtx.top;
+					//	collocate_rc.bottom = temp_pos[3].y + workman_vtx.bottom;
+					//	idx64 = CMyMath::Pos_to_index(temp_pos[3] , 64);
+
+					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+					//	{
+					//		result_pos = temp_pos[3];
+					//		bescape = true;
+					//		break;
+					//	}
+					//}
+					//if(bescape)
+					//	break;
 
 					//여기서 커맨드센터와 가장 가까운걸 고른다.
 

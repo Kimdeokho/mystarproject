@@ -13,12 +13,15 @@ private:
 
 	float	 m_search_time;
 	bool	 m_btarget_search;
+
+	float	m_fdelay;
+	bool	m_bwait;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CCom_Minesearch(void);
+	CCom_Minesearch(TARGET_SEARCH_TYPE esearch_type);
 	~CCom_Minesearch(void);
 };

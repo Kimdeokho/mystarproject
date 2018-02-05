@@ -23,6 +23,9 @@
 #include "Comandcenter.h"
 
 #include "LoopEff.h"
+#include "Fog_object.h"
+#include "ObjMgr.h"
+#include "MouseMgr.h"
 CComset::CComset(CObj* command)
 {
 	m_mainbuilding = command;
@@ -45,6 +48,8 @@ void CComset::Initialize(void)
 	m_vertex.top =  16.f;
 	m_vertex.bottom = 26.f;
 
+	m_ebuild_tech = T_COMSET;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_COMSET;
@@ -53,15 +58,13 @@ void CComset::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eArmorType = ARMOR_SMALL;
-	m_unitinfo.hp = 100;
-	m_unitinfo.maxhp = m_unitinfo.hp;
+	m_unitinfo.eArmorType = ARMOR_LARGE;
+	m_unitinfo.maxhp = 500;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-
-
+	m_unitinfo.fbuildtime = 10.f;
 
 	m_com_anim = new CCom_PartAnim(L"T_COMSET" , L"COMSET_LINK", m_matWorld);
 
@@ -77,8 +80,9 @@ void CComset::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 }
 
@@ -99,6 +103,17 @@ void CComset::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+			m_mainbuilding->SetState(IDLE);
+		}
 	}
 
 	D3DXVECTOR2 vpos;
@@ -148,12 +163,36 @@ void CComset::Dead(void)
 
 void CComset::Inputkey_reaction(const int& nkey)
 {
+	if(nkey == 'S')
+	{
 
+	}
 }
 
 void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
+	if('S' == firstkey && VK_LBUTTON == secondkey)
+	{
+		D3DXVECTOR2 vmousept;
+		vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
 
+		if(true == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+		{
+			CComanderMgr::GetInstance()->Minimappos_to_screen(vmousept);
+			//어택땅을 미니맵에 클릭시 미니맵 위치를 화면위치로 바꿔준다
+		}
+		else
+		{
+			vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		}	
+
+		CObj* pobj = NULL;
+
+		pobj = new CFog_object(320*2 , 10.f , vmousept);
+		pobj->Initialize();
+
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FOG);
+	}
 }
 
 void CComset::Setlink(bool blink , CObj* pobj)

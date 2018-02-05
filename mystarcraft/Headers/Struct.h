@@ -130,7 +130,7 @@ typedef struct tagImgPath
 
 typedef struct tagAstarNode
 {
-	float				iCost; //거리비용
+	float				iCost; //거리비용 G + H
 	float				G;//현재노드와 시작점의 거리
 	float				H;//현재 노드와 도착점의 거리
 	int				index;//노드의 인덱스
@@ -249,7 +249,7 @@ typedef struct tagunitinfo
 		eorder = ORDER_NONE;
 		fspeed = 0.f;
 		fbuildtime = 0.f;
-		hp = 10000;
+		hp = 0;
 		maxhp = 0;
 		maxmp = 0;
 		mp = 0;
@@ -265,7 +265,7 @@ typedef struct tag_preivew
 	const TCHAR* objname;
 	D3DXVECTOR2	 vpos;
 	D3DXVECTOR2	 vcenter_pos;
-	BUILD_TECH	 ebuild;
+	TERRAN_BUILD_TECH	 ebuild;
 	int			 icol;
 	int			 irow;
 	tag_preivew()
@@ -276,3 +276,47 @@ typedef struct tag_preivew
 		objname = NULL;
 	}
 }PREVIEW_INFO;
+
+typedef struct tag_upginfo
+{
+	bool proceeding; //진행중이냐
+	int	 upg_cnt;
+
+	tag_upginfo()
+	{
+		proceeding = false;
+		upg_cnt = 0;
+	}
+}UPG_INFO;
+
+typedef struct tag_production
+{
+	float curtime;
+	float maxtime;
+	PRODUCTION_ID eid;
+	const TCHAR* texkey;
+
+	tag_production()
+	{
+		texkey = L"";
+		curtime = 0.f;
+		maxtime = 0.f;
+		eid = PRODUCTION_NONE;
+	}
+}PRODUCTION_INFO;
+
+typedef struct tag_boarding
+{
+	void* obj_address;
+	int irow;
+	int icol;
+	const TCHAR* texkey;
+
+	tag_boarding()
+	{
+		obj_address = NULL;
+		irow = 1;
+		icol = 1;
+		texkey = L"";
+	}
+}BOARDING_INFO;

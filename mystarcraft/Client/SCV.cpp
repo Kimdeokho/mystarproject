@@ -41,10 +41,14 @@
 #include "MouseMgr.h"
 #include "TimeMgr.h"
 
+#include "UI_Wireframe.h"
 CSCV::CSCV(void)
 {
 }
-
+CSCV::CSCV(const D3DXVECTOR2& vpos)
+{
+	m_vPos = vpos;
+}
 CSCV::~CSCV(void)
 {
 	Release();
@@ -104,7 +108,7 @@ void CSCV::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select32" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
 	m_fterm_time = 0.f;
 	m_vnormal = D3DXVECTOR2(0 ,0 );
@@ -130,7 +134,8 @@ void CSCV::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	
+	if(!m_bSelect)
+		m_ecmd_state = CMD_BASIC;
 
 	if(IDLE == m_unitinfo.estate)
 	{
@@ -148,10 +153,13 @@ void CSCV::Update(void)
 
 	if(ORDER_BUILDING == m_unitinfo.eorder)
 	{
+		//건물 짓는중이다.
 		m_sortID = SORT_GROUND_EFF;
 
 		if(NULL != m_charge_building)
 		{			
+			m_ecmd_state = CMD_BUILDING;
+
 			MYRECT<float> rc = m_charge_building->GetMyRect();
 
 			m_vbuild_pos[0].x = rc.left;
@@ -185,7 +193,6 @@ void CSCV::Update(void)
 			else
 			{
 				m_unitinfo.estate = ATTACK;
-				//((CCom_Weapon*)m_com_weapon)->fire(m_charge_building);
 				D3DXVec2Normalize(&m_vcurdir , &(m_charge_building->GetPos() - m_vPos));
 			}
 
@@ -213,10 +220,13 @@ void CSCV::Update(void)
 
 			if(IDLE == m_charge_building->GetUnitinfo().estate)
 			{
+				//건물 완성
 				m_sortID = SORT_GROUND;
 				m_unitinfo.estate = IDLE;
 				m_unitinfo.eorder = ORDER_NONE;
 				m_charge_building = NULL;
+
+				m_ecmd_state = CMD_BASIC;
 			}
 		}
 	}
@@ -225,7 +235,6 @@ void CSCV::Update(void)
 	{
 		((CBuilding_Preview*)m_main_preview)->SetPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
 		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
-		//CComanderMgr::GetInstance()->SetPreviewPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
 	}
 
 }
@@ -255,11 +264,13 @@ void CSCV::Inputkey_reaction(const int& nkey)
 	
 	if(VK_LBUTTON == nkey)
 	{
-		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
-
-
 		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
 		{
+			m_ecmd_state = CMD_BASIC;
+			D3DXVECTOR2  vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+			CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
+
 			m_is_preview = true;
 			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
 			{				
@@ -279,7 +290,7 @@ void CSCV::Inputkey_reaction(const int& nkey)
 				((CBuilding_Preview*)m_main_preview)->SetActive(false);
 
 				//위치에 도착하면 건물생성
-			}
+			}			
 		}
 	}
 	if(VK_RBUTTON == nkey)
@@ -317,19 +328,35 @@ void CSCV::Inputkey_reaction(const int& nkey)
 		{
 			COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_TARGET_SEARCH);
 			iter->second = m_com_targetsearch;
-			((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
+			//((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 		}
 
 		if(NULL != m_com_pathfind)
 		{
-			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+			if(NULL == ptarget)
+				m_bmagicbox = true;
+			else
+				m_bmagicbox = false;
 
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
+	}
+
+	if('B' == nkey)
+	{
+		if( true == CComanderMgr::GetInstance()->Active_Cmdbtn(6 , BTN_B_BUILD) )
+			m_ecmd_state = CMD_B_VIEW;			
+	}
+
+	if('V' == nkey)
+	{
+		if( true == CComanderMgr::GetInstance()->Active_Cmdbtn(7 , BTN_V_BUILD) )
+			m_ecmd_state = CMD_V_VIEW;
 	}
 
 	if('W' == nkey)
@@ -367,68 +394,60 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		CWorkman::SetMineral_mark(NULL);
 	}
 
-	if('B' == firstkey && 'A' == secondkey)
+	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
 	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_ACADEMY" , T_ACADEMY , 2 , 3 , this);
-	}
-	if('B' == firstkey && 'B' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BARRACK" , T_BARRACK , 3 , 4 , this);
-	}
-	if('B' == firstkey && 'C' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);
-	}
-	if('B' == firstkey && 'E' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_EB", T_EB , 3 , 4 , this);
-	}
-	if('B' == firstkey && 'R' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_GAS" ,T_GAS, 2 , 4 , this);
-	}
-	if('B' == firstkey && 'S' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_SUPPLY" , T_SUPPLY , 2 , 3 , this);
-	}
-	if('B' == firstkey && 'T' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_TURRET_PREVIEW" , T_TURRET , 2 , 2 , this);
+		if('B' == firstkey && 'A' == secondkey)
+		{
+			SetPreview_info(L"T_ACADEMY" , T_ACADEMY , 2 , 3);
+		}
+		if('B' == firstkey && 'B' == secondkey)
+		{
+			SetPreview_info(L"T_BARRACK" , T_BARRACK , 3 , 4);
+		}
+		if('B' == firstkey && 'C' == secondkey)
+		{
+			SetPreview_info(L"COMMANDCENTER" , T_COMMANDCENTER , 3 , 4);
+		}
+		if('B' == firstkey && 'E' == secondkey)
+		{
+			SetPreview_info(L"T_EB" , T_EB , 3 , 4);
+		}
+		if('B' == firstkey && 'R' == secondkey)
+		{
+			SetPreview_info(L"T_GAS" , T_GAS , 2 , 4);
+		}
+		if('B' == firstkey && 'S' == secondkey)
+		{
+			SetPreview_info(L"T_SUPPLY" , T_SUPPLY , 2 , 3);
+		}
+		if('B' == firstkey && 'T' == secondkey)
+		{
+			SetPreview_info(L"T_TURRET_PREVIEW" , T_TURRET , 2 , 2);
+		}
+
+		if('B' == firstkey && 'U' == secondkey)
+		{
+			SetPreview_info(L"T_BUNKER" , T_BUNKER , 2 , 3);
+		}
+
+		if('V' == firstkey && 'A' == secondkey)
+		{
+			SetPreview_info(L"T_ARMOURY" , T_ARMOURY , 2 , 3);
+		}
+		if('V' == firstkey && 'F' == secondkey)
+		{
+			SetPreview_info(L"T_FACTORY" , T_FACTORY , 3 , 4);
+		}
+		if('V' == firstkey && 'I' == secondkey)
+		{
+			SetPreview_info(L"T_SIENCE" , T_SIENCE , 3 , 4);
+		}
+		if('V' == firstkey && 'S' == secondkey)
+		{
+			SetPreview_info(L"T_STARPORT" , T_STARPORT , 3 , 4);
+		}
 	}
 
-	if('B' == firstkey && 'U' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BUNKER" ,T_BUNKER, 2 , 3 , this);
-	}
-
-	if('V' == firstkey && 'A' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_ARMOURY" ,T_ARMOURY, 2 , 3 , this);
-	}
-	if('V' == firstkey && 'F' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_FACTORY" ,T_FACTORY, 3 , 4 , this);
-	}
-	if('V' == firstkey && 'I' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_SIENCE" ,T_SIENCE, 3 , 4 , this);
-	}
-	if('V' == firstkey && 'S' == secondkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_STARPORT" ,T_STARPORT, 3 , 4 , this);
-	}
 }
 
 void CSCV::Release(void)
@@ -453,10 +472,20 @@ void CSCV::Dead(void)
 
 void CSCV::Create_Building(void)
 {
+
+
 	CObj* pobj = NULL;
 	if(CMyMath::Pos_to_index(m_vPos , 32) == 
 		CMyMath::Pos_to_index(m_preview_info.vcenter_pos , 32))
 	{
+		if(false == ((CBuilding_Preview*)m_main_preview)->Install_check(m_preview_info))
+		{
+			m_unitinfo.eorder = ORDER_NONE;
+			m_unitinfo.estate = IDLE;
+			return;
+		}
+
+
 		m_unitinfo.eorder = ORDER_BUILDING;
 		m_unitinfo.estate = BUILD;
 		if(T_COMMANDCENTER == m_preview_info.ebuild)
@@ -572,3 +601,68 @@ void CSCV::Create_Building(CObj* pgas_resorce)
 	
 }
 
+void CSCV::SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow )
+{
+	//CComanderMgr::GetInstance()->Release_Cmdbtn(); 여기 수정해야함
+	//자원이 모자르면 못보여줌
+	//버튼 비활성화면 못보여줌
+
+	m_is_preview = true;
+	((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(objkey ,ebuild, icol , irow , this);
+}
+void CSCV::Update_Cmdbtn(void)
+{
+	if(CMD_BUILDING == m_ecmd_state)
+	{
+		for(int i = 0; i < 9; ++i)
+			CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"" , BTN_NONE);
+	}
+	else if(CMD_B_VIEW == m_ecmd_state)
+	{
+		CComanderMgr::GetInstance()->T_Cmdbtn_B_buildsetting();
+	}
+	else if(CMD_V_VIEW == m_ecmd_state)
+	{
+		CComanderMgr::GetInstance()->T_Cmdbtn_V_buildsetting();
+	}
+	else
+	{
+		CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+		CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_BBUILD" , BTN_B_BUILD);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(7 , L"BTN_VBUILD" , BTN_V_BUILD);
+	}
+}
+
+void CSCV::Update_Wireframe(void)
+{
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.estate))
+	{
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_SCV" , D3DXVECTOR2(280,545));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran SCV" , 400 , 510 );
+	}
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		280 , 580 , font_color);
+	
+}

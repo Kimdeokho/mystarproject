@@ -26,7 +26,13 @@
 #include "Comset.h"
 #include "Nuclear_part.h"
 #include "LoopEff.h"
+#include "UI_Wireframe.h"
 
+#include "TextureMgr.h"
+
+#include "Com_Pathfind.h"
+#include "Com_Production_building.h"
+#include "SCV.h"
 CComandcenter::CComandcenter(void)
 {
 }
@@ -48,6 +54,8 @@ void CComandcenter::Initialize(void)
 	CTerran_building::building_area_Initialize(3 , 4);
 	CTerran_building::building_pos_Initialize(3 , 4);
 
+	m_ebuild_tech = T_COMMANDCENTER;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_COMMAND;
@@ -56,22 +64,26 @@ void CComandcenter::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eArmorType = ARMOR_LARGE;
-	m_unitinfo.hp = 100;
-	m_unitinfo.maxhp = m_unitinfo.hp;
+	m_unitinfo.eArmorType = ARMOR_LARGE;	
+	m_unitinfo.maxhp = 1500;
+	m_unitinfo.hp = 0;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 28;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-	m_unitinfo.fbuildtime = 1.f;
+	m_unitinfo.fbuildtime = 10.f;
 
+
+	m_production_tex = CTextureMgr::GetInstance()->GetStateTexture_vecset( L"COMMANDCENTER" , L"PRODUCTION");
 
 	m_com_anim = new CCom_TBuildingAnim(L"COMMANDCENTER",m_matWorld );
 	m_com_pathfind = new CCom_AirPathfind(m_vPos);
+	m_com_production = new CCom_Production_building(m_vPos , m_weight , m_irow , m_icol);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex , false) ) ) ;	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PRODUCTION_BUILDING , m_com_production ) ) ;	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -81,16 +93,28 @@ void CComandcenter::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select146" , m_vPos , 10);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
 	m_is_take_off = false;
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
+
+	//커맨드센터 생산관련
+	m_bswitch = false;
+	m_bactive = false;
+
+	m_ontime = (rand()%3 + 1);
+	m_offtime = (rand()%3 + 1);
+
+	m_curtime = 0.f;
 }
 
 void CComandcenter::Update(void)
 {
-	CTerran_building::building_area_update();	
+	CTerran_building::building_area_update();
+	//CTerran_building::update_production();
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -104,10 +128,21 @@ void CComandcenter::Update(void)
 	if(IDLE == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
+		m_bactive = false;
 	}
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+		}
 	}
 	else if(TAKE_OFF == m_unitinfo.estate)
 	{
@@ -120,7 +155,7 @@ void CComandcenter::Update(void)
 			//이륙 완료
 			m_vPos.y = m_vairpos.y - 48.f;
 			m_unitinfo.estate = AIR_IDLE;
-			
+
 			if(true == m_is_autoinstall)
 			{
 				m_is_autoinstall = false;
@@ -185,6 +220,33 @@ void CComandcenter::Update(void)
 			m_componentlist.erase(iter);
 		}
 	}
+	else if(PRODUCTION == m_unitinfo.estate)
+	{
+		m_curtime += GETTIME*15;
+
+		if(m_bswitch)
+		{
+			if(m_ontime < m_curtime)
+			{
+				m_bswitch = false;
+				m_curtime = 0.f;
+				m_ontime = (rand()%3 + 1);
+			}
+			else
+				m_bactive = true;
+		}
+		else
+		{
+			if(m_offtime < m_curtime)
+			{
+				m_bswitch = true;
+				m_curtime = 0.f;
+				m_offtime = (rand()%3 + 1);
+			}
+			else
+				m_bactive = false;
+		}
+	}
 
 
 	if(ORDER_LANDING_MOVE == m_unitinfo.eorder)
@@ -224,7 +286,7 @@ void CComandcenter::Update(void)
 			}
 		}
 	}
-	
+
 
 
 	if(true == m_is_preview)
@@ -256,8 +318,23 @@ void CComandcenter::Render(void)
 	m_com_anim->Render();
 
 
+	if(true == m_bactive)
+	{
+		m_pSprite->SetTransform(&m_matWorld);
+		m_pSprite->Draw( (*m_production_tex)[0]->pTexture , NULL , &D3DXVECTOR3(float((*m_production_tex)[0]->ImgInfo.Width/2) , float((*m_production_tex)[0]->ImgInfo.Height/2 ) , 0)
+			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
+
+
 	CTerran_building::fire_eff_render();
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
+
+	//if(m_is_rally) //모든건물 렐리 보려면
+	//	CLineMgr::GetInstance()->RallyLineRender(m_vPos , m_rallypoint);
+
+
+	//if(m_bSelect) //모든건물 렐리 보려면
+	//	CLineMgr::GetInstance()->RallyLineRender(m_vPos , m_rallypoint);
 }
 
 void CComandcenter::Inputkey_reaction(const int& nkey)
@@ -287,6 +364,17 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 			m_is_preview = true;
 			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , this);			
 		}		
+	}
+	if('S' == nkey)
+	{
+		//자원이 충족되면
+		//상태는 생산중으로 변경 , 공중에서 생산 X
+		
+		if(false == m_is_take_off)
+		{
+			//add_production_info(7.f , PRODUCTION_SCV , L"BTN_SCV");
+			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_SCV , L"BTN_SCV");
+		}
 	}
 	if('N' == nkey)
 	{
@@ -327,19 +415,20 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 						m_is_partinstall = true;
 
 						CTerran_building::TakeOff();
-						
+
 					}
 					else
 					{
+						//옆에 바로 설치
 						CObj* pobj = NULL;
-						BUILD_TECH ebuild = ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild;
+						TERRAN_BUILD_TECH ebuild = ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild;
 						if(T_COMSET == ebuild)
 						{
 							pobj = new CComset(this/*아니면 오브젝트 아이디*/);
 							pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
 							pobj->Initialize();				
 							CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMSET);
-							
+
 						}
 						else if(T_NC_PART == ebuild)
 						{
@@ -347,7 +436,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 							pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
 							pobj->Initialize();				
 							CObjMgr::GetInstance()->AddObject(pobj , OBJ_NUCLEAR);
-							
+
 						}
 						m_partbuilding = pobj;
 						((CTerran_building*)m_partbuilding)->Setlink(true , this);
@@ -379,6 +468,10 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
 			}
 		}
+		else
+		{
+
+		}
 	}
 	if(VK_RBUTTON == nkey)
 	{
@@ -390,6 +483,28 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 			m_unitinfo.eorder = ORDER_MOVE;
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos);
+		}
+		else
+		{
+			CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
+
+			((CCom_Production_building*)m_com_production)->set_rallypoint(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
+
+			if(this == ptarget)
+			{
+				//m_rallypoint = m_vPos;
+				//m_is_rally = false;
+				((CCom_Production_building*)m_com_production)->set_is_rally(false);
+				((CCom_Production_building*)m_com_production)->set_rallypoint(m_vPos);								
+			}
+			else
+			{
+				//m_is_rally = true;
+				//CTerran_building::rallypoint_pathfinding();
+				((CCom_Production_building*)m_com_production)->set_is_rally(true);
+				((CCom_Production_building*)m_com_production)->rallypoint_pathfinding();
+				
+			}
 		}
 	}
 }
@@ -432,3 +547,139 @@ void CComandcenter::Dead(void)
 		m_partbuilding = NULL;
 	}
 }
+void CComandcenter::Update_Cmdbtn(void)
+{
+	if(IDLE == m_unitinfo.estate )
+	{	
+		CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_SCV" , BTN_SCV , true);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
+
+		if( NULL == m_partbuilding )
+		{
+			if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_ACADEMY))
+				CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , true);
+			else
+				CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , false);
+
+			if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_GHOST_ADDON))
+				CComanderMgr::GetInstance()->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , true);
+			else
+				CComanderMgr::GetInstance()->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , false);
+		}
+		else
+		{
+			if(BUILD == m_partbuilding->GetUnitinfo().estate)
+			{
+				CComanderMgr::GetInstance()->clear_cmdbtn();
+			}
+		}
+
+	}
+	else if( PRODUCTION == m_unitinfo.estate)
+	{
+		CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_SCV" , BTN_SCV , true);
+	}
+	else if(AIR_IDLE == m_unitinfo.estate ||
+		TAKE_OFF == m_unitinfo.estate)
+	{
+		CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
+	}
+}
+
+void CComandcenter::Update_Wireframe(void)
+{
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.estate))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_COMMAND" , D3DXVECTOR2(280,545));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Command Center" , 415 , 510 );
+
+		if(BUILD == m_unitinfo.estate)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction.." , 425 , 535);
+		}
+		else if(PRODUCTION == m_unitinfo.estate)
+		{
+
+		}
+
+		if( NULL != m_partbuilding )
+		{
+			if(BUILD == m_partbuilding->GetUnitinfo().estate)
+			{
+				CFontMgr::GetInstance()->SetInfomation_font(L"Adding on.." , 425 , 535);
+			}
+		}
+	}
+
+	//--------------------계속해서 갱신받는 부분
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		290 , 580 , font_color);
+
+	if(BUILD == m_unitinfo.estate)
+	{		
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(405,555) , m_build_hp / (float)m_unitinfo.maxhp );
+	}
+
+	((CCom_Production_building*)m_com_production)->show_production_state();
+	//if(!m_production_list.empty())
+	//{
+	//	CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(410,550) , m_production_list.front().curtime / m_production_list.front().maxtime );
+	//	CComanderMgr::GetInstance()->SetBuilding_info(m_production_list);
+	//}
+
+	if( NULL != m_partbuilding )
+	{
+		if(BUILD == m_partbuilding->GetUnitinfo().estate)
+		{
+			m_unitinfo.estate = ADDING_ON;
+			
+			UNITINFO temp = m_partbuilding->GetUnitinfo();
+			CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(405,555) , temp.hp / (float)temp.maxhp );
+		}
+	}
+	//-------------------------------------------
+}
+
+//void CComandcenter::create_unit(PRODUCTION_ID eid)
+//{
+//	CComponent* pcom = NULL;
+//	CObj* pobj = NULL;
+//
+//	if(PRODUCTION_SCV == eid)
+//	{
+//		pobj = new CSCV;
+//		pobj->SetPos(m_vPos);
+//		pobj->Initialize();
+//		CTerran_building::unit_collocate(pobj);
+//		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
+//
+//		if(true == m_is_rally)
+//		{
+//			pobj->SetOrder(ORDER_MOVE);
+//			pcom = pobj->GetComponent(COM_PATHFINDE);
+//			((CCom_Pathfind*)pcom)->SetGoalPos(m_rallypoint , false);
+//			((CCom_Pathfind*)pcom)->Setrally_path(m_rallypath);
+//		}
+//
+//
+//	}
+//	m_bactive = false;
+//}

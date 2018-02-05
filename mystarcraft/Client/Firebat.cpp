@@ -96,7 +96,7 @@ void CFirebat::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 }
 
 void CFirebat::Update(void)

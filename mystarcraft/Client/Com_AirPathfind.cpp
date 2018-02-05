@@ -7,6 +7,7 @@
 #include "ObjMgr.h"
 #include "UnitMgr.h"
 
+#include "Com_Transport.h"
 CCom_AirPathfind::CCom_AirPathfind(D3DXVECTOR2& vpos)
 : m_vpos(vpos)
 {
@@ -84,16 +85,28 @@ void CCom_AirPathfind::Air_MovingUpdate(void)
 	m_pobj->Setdir(m_vcurdir);
 
 	m_vpos += m_vcurdir*GETTIME*(*m_fspeed);
-	if(CMyMath::pos_distance(m_vpos , m_vgoalpos) < 2*2)
+	if(CMyMath::pos_distance(m_vpos , m_vgoalpos) < 4*4)
 	{
 		m_vpos = m_vgoalpos;
-		m_is_moveupdate = false;
+		
 		m_is_arrive = true;
 
 		if(ORDER_MOVE == m_pobj->GetUnitinfo().eorder || 
 			ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().eorder)
 		{
+			m_is_moveupdate = false;
 			m_pobj->SetOrder(ORDER_NONE);
+		}
+		else if(ORDER_GET_OFF == m_pobj->GetUnitinfo().eorder)
+		{
+			CComponent* pcom;
+			pcom = m_pobj->GetComponent(COM_TRANSPORT);
+			if( false == ((CCom_Transport*)pcom)->unit_landing() )
+			{
+				m_is_moveupdate = false;
+				m_pobj->SetState(IDLE);
+				m_pobj->SetOrder(ORDER_NONE);
+			}
 		}
 		
 	}

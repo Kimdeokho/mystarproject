@@ -11,14 +11,17 @@
 #include "Area_Mgr.h"
 #include "UnitMgr.h"
 #include "ObjMgr.h"
-#include "GeneraEff.h"
-
-#include "UI_Select.h"
+#include "ComanderMgr.h"
+#include "TimeMgr.h"
 #include "LineMgr.h"
 #include "FontMgr.h"
+#include "GeneraEff.h"
+#include "UI_Select.h"
+
 
 #include "Corpse.h"
 #include "GasResource.h"
+
 CT_gas::CT_gas(void)
 {
 }
@@ -31,6 +34,7 @@ CT_gas::CT_gas(CObj* resource_gas)
 CT_gas::~CT_gas(void)
 {
 	Release();
+	CComanderMgr::GetInstance()->T_BuildTech_Update(T_GAS , -1);
 }
 
 void CT_gas::Initialize(void)
@@ -50,14 +54,14 @@ void CT_gas::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eArmorType = ARMOR_SMALL;
-	m_unitinfo.hp = 1;
+	m_unitinfo.eArmorType = ARMOR_LARGE;
+	m_unitinfo.maxhp = 750;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
 
-	float buildtime = 1.f;
+	float buildtime = 10.f;
 
 	m_com_anim = new CCom_T_gasAnim(m_matWorld , buildtime);
 
@@ -73,8 +77,9 @@ void CT_gas::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select122" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 }
 
 void CT_gas::Update(void)
@@ -97,6 +102,16 @@ void CT_gas::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CComanderMgr::GetInstance()->T_BuildTech_Update(T_GAS , 1);
+		}
 	}
 
 

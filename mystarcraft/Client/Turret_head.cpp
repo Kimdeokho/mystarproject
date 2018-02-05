@@ -37,6 +37,8 @@ void CTurret_head::Initialize(void)
 	//CTerran_building::building_area_Initialize(2 , 2);
 	CTerran_building::building_pos_Initialize(2 , 2);
 
+	m_ebuild_tech = BUILD_NONE;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_TURRET;

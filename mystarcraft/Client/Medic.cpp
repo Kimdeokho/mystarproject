@@ -63,7 +63,7 @@ void CMedic::Initialize(void)
 	m_unitinfo.fspeed = 68;
 	m_unitinfo.attack_range = 1*32;
 	m_unitinfo.air_attack_range = 0*32;
-	m_unitinfo.search_range = 255;
+	m_unitinfo.search_range = 5*32;
 	m_unitinfo.fog_range = 256;
 
 
@@ -96,7 +96,7 @@ void CMedic::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 }
 
 void CMedic::Update(void)
@@ -153,11 +153,15 @@ void CMedic::Inputkey_reaction(const int& nkey)
 		m_unitinfo.eorder = ORDER_MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
-
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		if(NULL != m_com_pathfind)
 		{
+			if(NULL == ptarget)
+				m_bmagicbox = true;
+			else
+				m_bmagicbox = false;
+
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);

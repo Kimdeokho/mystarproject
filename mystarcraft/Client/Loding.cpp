@@ -69,6 +69,7 @@ void CLoding::Load_BaiscTexture(void)
 {
 	if(m_pTextureMgr->Read_Texture(m_szPath))
 		m_bLodingComplete = true;
+	
 }
 
 void CLoding::Logo_LodingRender(void)

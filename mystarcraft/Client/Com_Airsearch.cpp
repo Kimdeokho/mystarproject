@@ -68,8 +68,15 @@ void CCom_Airsearch::Update(void)
 		//강제타겟이 있을 경우
 		if(RESOURCE != m_ptarget->GetCategory())
 		{
+
 			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
-			{			
+			{		
+				if(ORDER_MOVE == m_pobj->GetUnitinfo().eorder)
+				{
+					m_bforced_target = false;
+					m_target_objid = 0;
+					return;
+				}
 				//공격 범위에 들어오면
 				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
 
@@ -114,7 +121,7 @@ void CCom_Airsearch::Update(void)
 		{
 			if(NULL == m_ptarget)
 			{
-				m_ptarget = CArea_Mgr::GetInstance()->AutoSearch_target(m_pobj , *m_psearch_range , m_search_type);			
+				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
 			}
 
 			if(NULL != m_ptarget)

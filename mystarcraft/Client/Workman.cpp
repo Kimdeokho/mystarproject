@@ -21,6 +21,8 @@ CWorkman::CWorkman(void)
 	m_is_preview = false;
 
 	m_main_preview = new CBuilding_Preview;
+
+	m_ecmd_state = CMD_BASIC;
 }
 
 CWorkman::~CWorkman(void)

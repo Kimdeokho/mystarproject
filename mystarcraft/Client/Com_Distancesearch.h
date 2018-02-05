@@ -9,6 +9,8 @@ private:
 
 	float			m_search_time;
 	bool			m_btarget_search;
+
+	int				m_irange;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

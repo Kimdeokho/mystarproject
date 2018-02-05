@@ -7,6 +7,8 @@
 #include "MyMath.h"
 #include "MouseMgr.h"
 #include "ComanderMgr.h"
+
+#include "UnitMgr.h"
 IMPLEMENT_SINGLETON(CLineMgr)
 CLineMgr::CLineMgr(void)
 {
@@ -34,8 +36,12 @@ void CLineMgr::SetRectPoint(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend)
 
 	m_RectLine[4] = vstart;
 }
-
-void CLineMgr::LineRender(void)
+void CLineMgr::SetlinePoint(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend)
+{
+	m_Line[0] = vstart;
+	m_Line[1] = vend;
+}
+void CLineMgr::RectLineRender(void)
 {
 	if(true == m_bSwitch)
 	{
@@ -105,9 +111,6 @@ void CLineMgr::minicambox_render(const MYRECT<float>& rc)
 }
 void CLineMgr::Select_unit(void)
 {	
-	//if(true == CComanderMgr::GetInstance()->GetPreview_Active())
-	//	return;
-
 
 	D3DXVECTOR2 vMousept;
 
@@ -149,6 +152,8 @@ void CLineMgr::Select_unit(void)
 
 		CArea_Mgr::GetInstance()->DragCheck( rc);
 	}
+
+	//CUnitMgr::GetInstance()->Update_Cmdbtn();
 	//DragCheck()
 }
 void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
@@ -189,6 +194,24 @@ void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 }
+void CLineMgr::RallyLineRender(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend)
+{
+	m_Line[0].x = vstart.x - CScrollMgr::m_fScrollX;
+	m_Line[0].y = vstart.y - CScrollMgr::m_fScrollY;
+
+	m_Line[1].x = vend.x - CScrollMgr::m_fScrollX;
+	m_Line[1].y = vend.y - CScrollMgr::m_fScrollY;
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+
+	m_pLine->SetWidth(1.0f);
+	m_pLine->Draw(m_Line , 2 , D3DCOLOR_ARGB(255,0,255,0));
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+}
+
 void CLineMgr::SetRenderSwitch(bool bswitch)
 {
 	m_bSwitch = bswitch;

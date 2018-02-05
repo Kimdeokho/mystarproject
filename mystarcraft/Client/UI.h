@@ -17,6 +17,7 @@ protected:
 
 public:
 	void SetDestroy(bool bdestroy);
+	void SetPos(const D3DXVECTOR2& vpos);
 public:
 	bool GetDestroy(void);
 	const MYRECT<float>& GetMyRect(void);

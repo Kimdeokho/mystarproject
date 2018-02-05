@@ -32,10 +32,12 @@ void CCom_MineAnim::Update(void)
 		if(L"PLANT" == m_statkey)
 		{
 			SetAnimation(L"BURROW");
+			m_pobj->SetState(BURROW);
 		}
 		else if(L"PULL" == m_statkey)
 		{
 			SetAnimation(L"IDLE");
+			m_pobj->SetState(IDLE);
 		}
 	}
 
@@ -87,6 +89,10 @@ void CCom_MineAnim::SetAnimation(const TCHAR* statekey)
 		{
 			m_frame.umax = m_statetexture->size();
 			m_frame.fframespeed = (float)m_frame.umax;
+
+			if(L"PLANT" == m_statkey || L"PULL" == m_statkey
+				|| L"MOVE" == m_statkey)
+				m_frame.fframespeed *= 4;			
 		}
 	}
 }

@@ -63,8 +63,8 @@ bool MyPtInrect(const D3DXVECTOR2& vpos ,const MYRECT<T>* rect)
 template<typename T>
 bool MyIntersectrect(MYRECT<T>* outrect , const MYRECT<T>* A ,const MYRECT<T>* B)
 {
-	T maxX , minX;
-	T maxY , minY;
+	static T maxX , minX;
+	static T maxY , minY;
 
 	maxX = A->left < B->left ? B->left : A->left;
 	minX = A->right < B->right ? A->right : B->right;

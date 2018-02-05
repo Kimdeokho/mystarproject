@@ -8,6 +8,8 @@
 #include "Com_Animation.h"
 #include "ObjMgr.h"
 
+#include "MyMath.h"
+
 CCom_Collision::CCom_Collision(D3DXVECTOR2& vpos , MYRECT<float>& rc , const MYRECT<float>& vtx , bool bsearch_collision)
 :m_vPos(vpos) , m_rect(rc) , m_vertex(vtx) , m_bsearch_collision(bsearch_collision)
 {
@@ -37,6 +39,8 @@ void CCom_Collision::Initialize(CObj* pobj)
 	m_collision_target = NULL;
 
 	m_nuckback_time = 0.f;
+
+	m_ptilelist = CTileManager::GetInstance()->GetSqTile();
 }
 
 void CCom_Collision::Update(void)
@@ -46,13 +50,14 @@ void CCom_Collision::Update(void)
 	m_rect.top = m_vPos.y - m_vertex.top;
 	m_rect.bottom = m_vPos.y + m_vertex.bottom;
 
-	if( BOARDING == m_pobj->GetUnitinfo().estate ||
-		ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
-		return;
+
 
 	if(false == m_bsearch_collision)
 		return;
 
+	if( BOARDING == m_pobj->GetUnitinfo().estate ||
+		ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+		return;
 	//충돌되고있을때 ,, 그 해당유닛이 삭제되버리면 힙손상이네!
 
 
@@ -95,19 +100,31 @@ void CCom_Collision::Update(void)
 			m_nuckback_time < 0.4f)
 		{			
 			//임의
-			TILE** ptilelist = CTileManager::GetInstance()->GetSqTile();
+			
+
+			int idx32 = 0;
+			m_vprepos = m_vPos - GETTIME* (*m_fspeed) *m_collision_vnormal;
+			idx32 = CMyMath::Pos_to_index(m_vprepos , 32);
 
 			/*타겟과 충돌이 일어나는 중이라면*/
-			BYTE byop = ptilelist[m_pobj->Getcuridx(32)]->byOption;
+			BYTE byop = m_ptilelist[idx32]->byOption;
+
 			if(MOVE_OK == byop ||
 				RESOURCE_MINERAL == byop ||
 				RESOURCE_GAS == byop)
 			{
-				m_vPos -= GETTIME* (*m_fspeed) *m_collision_vnormal;
+				//m_vPos -= GETTIME* (*m_fspeed) *m_collision_vnormal;
+				m_vPos = m_vprepos;
 
 				m_pobj->Setdir(-m_collision_vnormal);
 				m_pobj->SetState(COLLISION);
 				//충돌중일때 길찾기 멈춰야 할듯..
+			}
+			else if(MOVE_NONE == byop)
+			{
+				m_pobj->SetState(IDLE);
+				m_collision_target = NULL;
+				m_nuckback_time = 0.f;
 			}
 		}
 		else

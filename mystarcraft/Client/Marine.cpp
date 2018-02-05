@@ -27,6 +27,9 @@
 #include "Area_Mgr.h"
 #include "MyMath.h"
 
+#include "ComanderMgr.h"
+
+#include "UI_Wireframe.h"
 CMarine::CMarine(void)
 {
 }
@@ -62,7 +65,7 @@ void CMarine::Initialize(void)
 	m_unitinfo.fspeed = 68;
 	m_unitinfo.attack_range = 4*32;
 	m_unitinfo.air_attack_range = 4*32;
-	m_unitinfo.search_range = 5*32;
+	m_unitinfo.search_range = 6*32;
 	m_unitinfo.fog_range = 512;
 
 
@@ -71,7 +74,7 @@ void CMarine::Initialize(void)
 	m_vertex.top =  10;
 	m_vertex.bottom = 10;
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
 	m_com_weapon = new CCom_Wmarine();
 	m_com_targetsearch = new CCom_Distancesearch(SEARCH_ONLY_ENEMY);
 	m_com_anim = new CCom_MarineAnim(m_matWorld);
@@ -96,7 +99,7 @@ void CMarine::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
 }
 
@@ -226,4 +229,27 @@ void CMarine::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
+}
+void CMarine::Update_Cmdbtn(void)
+{
+	CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK);
+}
+
+void CMarine::Update_Wireframe(void)
+{
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.estate))
+	{
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_MARINE" , D3DXVECTOR2(280,545));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Marine" , 400 , 510 );
+	}
 }

@@ -26,6 +26,8 @@ private:
 private:
 	int			m_checkidx;
 	int			m_stepsize;
+private:
+	UNITINFO	m_target_unitinfo;
 public:
 public:
 	
@@ -38,9 +40,11 @@ public:
 	void SelectCheck(const int& idx , const D3DXVECTOR2& vpos);
 	void DragCheck( const MYRECT<float>& rc);
 	bool Choice_unit(const int& idx , const D3DXVECTOR2& vpos);
-	void Choice_unit(const int& idx , const MYRECT<float>& rc);
+	void Choice_unit(const int& idx, const MYRECT<float>& rc);
+	void Choice_building(const int& idx, const MYRECT<float>& rc);
 	
 	bool DummyCheck(const int& idx, const MYRECT<float>& rc);
+	bool DummyCheck(const int& idx, const D3DXVECTOR2& vpos);
 
 	bool MeleeAttack_Search( CObj* pself , CObj*& ptarget, const MYRECT<float>& myrc ,TARGET_SEARCH_TYPE esearchtype);
 
@@ -48,7 +52,7 @@ public:
 	bool LineCross(const int& idx , const int& lineidx , CObj* pself , bool movecheck);
 	bool diamond_check( const int& idx , CObj* pself ,const CObj* ptarget);
 
-	bool overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself);
+	int overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself);
 	void Search_Mineral( const int& idx , const int& isearch_range ,CObj* pself , CObj*& pmineral);
 	CObj* Search_Partbuilding(const int& areaidx , const int& searchidx , OBJID eid);
 	bool Mineral_extractor(const int& isearch_range ,CObj* pself , CObj*& pmineral);
@@ -64,9 +68,11 @@ public:
 	bool Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );
 	bool Building_Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );
 public:
-	CObj*	AutoSearch_target(CObj* pobj , const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
+	CObj*	Auto_explore_target(CObj* pobj , const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
+	CObj*	Explore_medic_target(CObj* pobj , const int& isearch_range );
+	
 	void	Target_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
-	CObj*	MedicTarget_extract(CObj* pself ,const int& idx, const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
+	void	MedicTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int& isearch_range);
 	void	TargetChoice(const D3DXVECTOR2& vpos);
 public:
 	void ReleaseObj_Area64(const int& curidx , CObj* pobj);

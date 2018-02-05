@@ -21,13 +21,18 @@ public:
 
 	//virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
 	virtual void Dead(void);
+
+	virtual void Update_Cmdbtn(void);
 public:
 	void barrel_sync(void);
 	bool GetTransformReady(void);
+	bool GetSiegemode(void);
+
 	void SetTransformReady(bool btransform_ready);
 	void Transform_Tankbody(void);
 	void Transform_Siegebody(void);
 	void Transform(void);
+	
 public:
 	CTank(void);
 	~CTank(void);

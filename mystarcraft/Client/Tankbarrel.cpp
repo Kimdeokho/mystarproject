@@ -37,6 +37,7 @@ void CTankbarrel::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = IDLE;
 	m_ecategory = UNIT;
+	m_eOBJ_NAME = OBJ_TANK;
 	
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eorder = ORDER_NONE;
@@ -103,8 +104,7 @@ void CTankbarrel::Update(void)
 
 				if(false == m_bsiegemode)
 				{				
-					m_bsiegemode = true;										
-					m_btransform_ready = false;
+					m_bsiegemode = true;
 				}
 				else
 				{
@@ -137,6 +137,9 @@ void CTankbarrel::Update(void)
 
 void CTankbarrel::Render(void)
 {
+	if( BOARDING == m_unitinfo.estate )
+		return;
+
 	m_matWorld._41 = m_vbarrelpos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vbarrelpos.y - CScrollMgr::m_fScrollY;
 

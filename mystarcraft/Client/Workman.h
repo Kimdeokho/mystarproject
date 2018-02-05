@@ -12,6 +12,7 @@ protected:
 	CComponent*		m_com_pathfind;
 	CComponent*		m_com_collision;
 protected:
+	CMD_STATE		m_ecmd_state;
 protected:
 
 	CUI*			m_miniunit_display;

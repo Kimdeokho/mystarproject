@@ -14,7 +14,7 @@ public:
 	virtual void Dead(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
-	virtual void Setlink(bool blink);
+	virtual void Setlink(bool blink , CObj* pobj);
 public:
 	CNuclear_part(CObj* pobj);
 	~CNuclear_part(void);

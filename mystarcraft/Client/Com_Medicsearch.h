@@ -4,6 +4,9 @@
 class CCom_Medicsearch :
 	public CCom_Targetsearch
 {
+private:
+	float	 m_search_time;
+	bool	 m_btarget_search;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

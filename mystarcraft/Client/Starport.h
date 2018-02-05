@@ -12,6 +12,7 @@ public:
 	virtual void Dead(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+	virtual void Update_Cmdbtn(void);
 public:
 	CStarport(void);
 	~CStarport(void);

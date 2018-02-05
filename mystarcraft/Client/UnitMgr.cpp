@@ -11,6 +11,7 @@
 #include "ScrollMgr.h"
 
 #include "Com_Targetsearch.h"
+#include "ComanderMgr.h"
 
 IMPLEMENT_SINGLETON(CUnitMgr)
 CUnitMgr::CUnitMgr(void)
@@ -51,6 +52,20 @@ void CUnitMgr::discharge_unit(void)
 
 	m_curunitList.clear();
 }
+
+void CUnitMgr::Intputkey_reaction(const int& nkey)
+{
+	if(!m_curunitList.empty())
+	{
+		list<CObj*>::iterator iter = m_curunitList.begin();
+		list<CObj*>::iterator iter_end = m_curunitList.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Inputkey_reaction(nkey);
+		}
+	}
+}
 void CUnitMgr::Intputkey_reaction(const int& firstkey , const int& secondkey)
 {
 	if(!m_curunitList.empty())
@@ -84,19 +99,6 @@ void CUnitMgr::clear_destroy_unitlist(CObj* pobj)
 	}
 }
 
-void CUnitMgr::Intputkey_reaction(const int& nkey)
-{
-	if(!m_curunitList.empty())
-	{
-		list<CObj*>::iterator iter = m_curunitList.begin();
-		list<CObj*>::iterator iter_end = m_curunitList.end();
-
-		for( ; iter != iter_end; ++iter)
-		{
-			(*iter)->Inputkey_reaction(nkey);
-		}
-	}
-}
 void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptarget*/)
 {
 	list<CObj*>::iterator iter = m_curunitList.begin();
@@ -166,6 +168,62 @@ D3DXVECTOR2 CUnitMgr::GetUnitCentterPt(void)
 int CUnitMgr::GetGoalidx(void)
 {
 	return m_vGoalIdx;
+}
+
+void CUnitMgr::Update_UI_Infomation(void)
+{
+	if(!m_curunitList.empty())
+	{
+		if(1 == m_curunitList.size())
+		{
+			CComanderMgr::GetInstance()->Update_Cmdbtn( m_curunitList.front() );
+			CComanderMgr::GetInstance()->Update_Wireframe( m_curunitList.front() );
+		}
+		else
+		{
+			list<CObj*>::iterator iter = m_curunitList.begin();
+			list<CObj*>::iterator iter_end = m_curunitList.end();
+
+			bool bflag = false;
+			CObj* pobj = m_curunitList.front();
+			for( ; iter != iter_end; ++iter)
+			{
+				if( pobj->GetOBJNAME() != (*iter)->GetOBJNAME() )
+				{
+					bflag = true;
+					break;
+				}
+			}
+			if(true == bflag)
+				CComanderMgr::GetInstance()->Update_Cmdbtn(NULL);
+			else
+			{
+				if(OBJ_SCV == pobj->GetOBJNAME())
+					CComanderMgr::GetInstance()->Update_Cmdbtn(NULL);
+				else
+					CComanderMgr::GetInstance()->Update_Cmdbtn(pobj);				
+			}
+
+			CFontMgr::GetInstance()->renewal_infomation_font();
+			CComanderMgr::GetInstance()->renewal_wireframe_ui(NULL , STATE_NONE);
+			//여기에 부대 와이어프레임 함수를 호출한다.
+		}
+	}
+	else
+	{
+		//명렁 버튼을 비운다
+		CComanderMgr::GetInstance()->clear_cmdbtn();
+	}
+}
+
+int CUnitMgr::GetSelectunit_size(void)
+{
+	return int(m_curunitList.size());
+}
+
+list<CObj*>* CUnitMgr::Getcur_unitlist(void)
+{
+	return &m_curunitList;
 }
 
 

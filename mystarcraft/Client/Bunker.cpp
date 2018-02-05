@@ -19,7 +19,7 @@
 #include "FontMgr.h"
 #include "Corpse.h"
 #include "ComanderMgr.h"
-
+#include "TimeMgr.h"
 CBunker::CBunker(void)
 {
 }
@@ -41,6 +41,8 @@ void CBunker::Initialize(void)
 	CTerran_building::building_area_Initialize(2 , 3);
 	CTerran_building::building_pos_Initialize(2 , 3);
 
+	m_ebuild_tech = T_BUNKER;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_ARMOURY;
@@ -51,13 +53,13 @@ void CBunker::Initialize(void)
 	m_unitinfo.eorder = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 
-	m_unitinfo.hp = 350;
-	m_unitinfo.maxhp = m_unitinfo.hp;
+	m_unitinfo.hp = 0;
+	m_unitinfo.maxhp = 350;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 28;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-	m_unitinfo.fbuildtime = 1.f;
+	m_unitinfo.fbuildtime = 10.f;
 
 	m_com_anim = new CCom_TBuildingAnim(L"T_BUNKER" , m_matWorld);
 
@@ -73,8 +75,9 @@ void CBunker::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 7);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 }
 
@@ -98,6 +101,16 @@ void CBunker::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+		}
 	}
 
 	CTerran_building::fire_eff_update();
@@ -180,11 +193,19 @@ void CBunker::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 bool CBunker::UnitEnter_Bunker(CObj* pobj)
 {
-	if(m_unitlist.size() < 4)
+	if(OBJ_FIREBAT == pobj->GetOBJNAME() ||
+		OBJ_MARINE == pobj->GetOBJNAME() ||
+		OBJ_MEDIC == pobj->GetOBJNAME() ||
+		OBJ_GHOST == pobj->GetOBJNAME())
 	{
-		pobj->SetPos(m_vPos);
-		m_unitlist.push_back(pobj);
-		return true;
+		if(m_unitlist.size() < 4)
+		{
+			pobj->SetPos(m_vPos);
+			m_unitlist.push_back(pobj);
+			return true;
+		}
+		else
+			return false;
 	}
 	else
 		return false;

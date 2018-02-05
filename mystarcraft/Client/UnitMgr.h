@@ -20,11 +20,16 @@ private:
 public:
 	void SetUnit(CObj* pobj);
 public:
-	bool		GetUnitlistempty(void);
-	D3DXVECTOR2	GetUnitGoalPos(void);
-	D3DXVECTOR2 GetUnitCentterPt(void);
-	int			GetGoalidx(void);
-	void		Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptarget*/);
+	int				GetSelectunit_size(void);
+	bool			GetUnitlistempty(void);
+	D3DXVECTOR2		GetUnitGoalPos(void);
+	D3DXVECTOR2		GetUnitCentterPt(void);
+	int				GetGoalidx(void);
+	list<CObj*>*	Getcur_unitlist(void);
+	void			Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos);
+
+public:
+	void		Update_UI_Infomation(void);
 public:
 	void Initialize(void);
 	void discharge_unit(void);

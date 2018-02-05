@@ -26,6 +26,10 @@ protected:
 	vector<int>		m_old_areaidx_vec;
 protected:
 	float			m_fgather_time;
+
+	float			m_fbuild_tick;
+	float			m_build_hp;
+
 public:
 	void building_area_Initialize(const int& col , const int& row);
 	void area_release(void);

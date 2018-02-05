@@ -30,13 +30,14 @@ void CGoliath_part::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = IDLE;
 	m_ecategory = UNIT;
+	m_eOBJ_NAME = OBJ_GOLIATH;
 
 	m_unitinfo.eorder = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.hp = 0;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
-	m_unitinfo.search_range = 7*32;
+	m_unitinfo.search_range = 255;
 	m_unitinfo.attack_range = 6*32;
 	m_unitinfo.air_attack_range = 5*32;
 
@@ -73,7 +74,6 @@ void CGoliath_part::Update(void)
 	if(IDLE == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
-		m_goliath_leg->SetState(IDLE);
 	}
 	else if(ATTACK == m_unitinfo.estate)
 	{
@@ -86,16 +86,19 @@ void CGoliath_part::Update(void)
 			((CCom_Animation*)m_com_anim)->SetAnimation(L"ATTACK");
 		}		
 		m_goliath_leg->SetState(IDLE);
-		//m_tankbody->SetState(ATTACK);
 	}
 	else if(MOVE == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
+		m_goliath_leg->SetState(MOVE);
 	}
 }
 
 void CGoliath_part::Render(void)
 {
+	if( BOARDING == m_unitinfo.estate )
+		return;
+
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 

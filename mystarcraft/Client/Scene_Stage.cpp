@@ -16,6 +16,8 @@
 #include "ScrollMgr.h"
 #include "Area_Mgr.h"
 
+#include "SCV.h"
+#include "Medic.h"
 CScene_Stage::CScene_Stage(void)
 {
 }
@@ -30,8 +32,26 @@ HRESULT CScene_Stage::Initialize(void)
 		
 	CUnitMgr::GetInstance()->Initialize();
 	CTileManager::GetInstance()->Initialize();
-	CComanderMgr::GetInstance()->Initialize();
+	CComanderMgr::GetInstance()->Initialize(TERRAN);
 	LoadData();
+
+	CObj* pobj = NULL;
+	D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+	for(int i = 0; i < 10; ++i)
+	{
+		vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		vpos.x += rand()%50 - 25;
+		vpos.y += rand()%50 - 25;
+		pobj = new CSCV;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
+		pobj->SetPos(vpos);
+		pobj->Initialize();
+
+		pobj = new CMedic;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);
+		pobj->SetPos(vpos);
+		pobj->Initialize();
+	}
 
 	return S_OK;
 }
@@ -53,18 +73,18 @@ void CScene_Stage::Render(void)
 	CObjMgr::GetInstance()->Render();
 
 	CTileManager::GetInstance()->RenderFog();
-	//CTileManager::GetInstance()->Render_Flowfield();
+	//CTileManager::GetInstance()->Render_Flowfield();	
 	
-
-	CFontMgr::GetInstance()->FontRender();
 	//CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
-	CLineMgr::GetInstance()->LineRender();
+	CLineMgr::GetInstance()->RectLineRender();
 
 	CComanderMgr::GetInstance()->Render();
+
+	CFontMgr::GetInstance()->FontRender();
 }
 void CScene_Stage::Release(void)
 {
-	CObjPoolMgr::DestroyInstance();
+	//CObjPoolMgr::DestroyInstance();
 	CUnitMgr::DestroyInstance();
 	CObjMgr::DestroyInstance();
 	CComanderMgr::DestroyInstance();

@@ -23,6 +23,8 @@
 #include "Area_Mgr.h"
 #include "MyMath.h"
 #include "GeneraEff.h"
+
+#include "ComanderMgr.h"
 CVulture::CVulture(void)
 {
 }
@@ -58,7 +60,7 @@ void CVulture::Initialize(void)
 	m_unitinfo.fspeed = 155;
 	m_unitinfo.attack_range = 5*32;
 	m_unitinfo.air_attack_range = 0*32;
-	m_unitinfo.search_range = 6*32;
+	m_unitinfo.search_range = 255;
 	m_unitinfo.fog_range = 512;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 
@@ -91,7 +93,7 @@ void CVulture::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select32" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
 	m_landmine_cnt = 3;
 }
@@ -230,4 +232,20 @@ void CVulture::Dead(void)
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND ,1.4f);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+
+void CVulture::Update_Cmdbtn(void)
+{
+	CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_SPIDERMINE" , BTN_SPIDERMINE);
+}
+
+void CVulture::Update_Wireframe(void)
+{
+
 }

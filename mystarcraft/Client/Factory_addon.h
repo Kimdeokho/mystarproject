@@ -12,7 +12,7 @@ public:
 	virtual void Dead(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
-	virtual void Setlink(bool blink);
+	virtual void Setlink(bool blink , CObj* pobj);
 public:
 	CFactory_addon(CObj* pobj);
 	~CFactory_addon(void);

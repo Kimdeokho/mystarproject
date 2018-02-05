@@ -85,7 +85,7 @@ void CGoliath::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select48" , m_vPos , 8);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 }
 
 void CGoliath::Update(void)
@@ -124,6 +124,9 @@ void CGoliath::Update(void)
 
 void CGoliath::Render(void)
 {
+	if( BOARDING == m_unitinfo.estate )
+		return;
+
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 

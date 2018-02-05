@@ -45,6 +45,8 @@ void CBarrack::Initialize(void)
 	CTerran_building::building_area_Initialize(3 , 4);
 	CTerran_building::building_pos_Initialize(3 , 4);
 
+	m_ebuild_tech = T_BARRACK;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_BARRACK;
@@ -55,12 +57,12 @@ void CBarrack::Initialize(void)
 	m_unitinfo.eorder = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 
-	m_unitinfo.hp = 1;
+	m_unitinfo.maxhp = 1000;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 28;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-	m_unitinfo.fbuildtime = 1.f;
+	m_unitinfo.fbuildtime = 10.f;
 
 	m_com_anim = new CCom_TBuildingAnim(L"T_BARRACK",m_matWorld );
 	m_com_pathfind = new CCom_AirPathfind(m_vPos);
@@ -77,10 +79,11 @@ void CBarrack::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select146" , m_vPos , 10);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
 	m_is_take_off = false;
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 }
 
@@ -104,6 +107,16 @@ void CBarrack::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+		}
 	}
 	else if(TAKE_OFF == m_unitinfo.estate)
 	{
@@ -159,8 +172,6 @@ void CBarrack::Update(void)
 			}
 		}
 	}
-
-
 
 	if(true == m_is_preview)
 	{
@@ -261,6 +272,13 @@ void CBarrack::Inputkey_reaction(const int& nkey)
 				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
 			}
 		}
+		else
+		{
+			CMD_BTN ebtn = CComanderMgr::GetInstance()->Get_Cmd_btn();
+			if(BTN_TAKE_OFF == ebtn ||	BTN_LANDING == ebtn)
+				Inputkey_reaction('L');
+				
+		}
 	}
 	if(VK_RBUTTON == nkey)
 	{
@@ -281,3 +299,50 @@ void CBarrack::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
+void CBarrack::Update_Cmdbtn(void)
+{
+	if(IDLE == m_unitinfo.estate)
+	{
+		CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MARINE" , BTN_MARINE , true);
+
+		if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_ACADEMY))
+		{
+			CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , true);
+			CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , true);
+		}
+		else
+		{
+			CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , false);
+			CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , false);
+		}
+
+		if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_GHOST_ADDON))
+			CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST , true);
+		else
+			CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST, false);
+
+		CComanderMgr::GetInstance()->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
+	}
+	else if(AIR_IDLE == m_unitinfo.estate ||
+		TAKE_OFF == m_unitinfo.estate)
+	{
+		CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
+		CComanderMgr::GetInstance()->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
+	}
+
+}
+
+void CBarrack::Update_Wireframe(void)
+{
+	if(BUILD == m_unitinfo.estate)
+	{		
+		if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.estate))
+		{
+			//폰트들
+			//CComanderMgr::GetInstance()->add_infomation_ui()
+		}
+	}
+}
+
+

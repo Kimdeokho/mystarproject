@@ -42,6 +42,8 @@ void CGhost_addon::Initialize(void)
 	m_vertex.top =  24.f;
 	m_vertex.bottom = 23.f;
 
+	m_ebuild_tech = T_GHOST_ADDON;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_GHOST_ADDON;
@@ -51,12 +53,12 @@ void CGhost_addon::Initialize(void)
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
-	m_unitinfo.hp = 1;
+	m_unitinfo.maxhp = 750;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-	m_unitinfo.fbuildtime = 1.f;
+	m_unitinfo.fbuildtime = 10.f;
 
 
 	m_com_anim = new CCom_PartAnim(L"T_GHOST_ADDON", L"GHOST_LINK" , m_matWorld);
@@ -73,8 +75,9 @@ void CGhost_addon::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 }
 
@@ -95,6 +98,16 @@ void CGhost_addon::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+		}
 	}
 
 	D3DXVECTOR2 vpos;
@@ -136,7 +149,8 @@ void CGhost_addon::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
+	if(NULL != m_mainbuilding)
+		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
 }
 
 void CGhost_addon::Inputkey_reaction(const int& nkey)
@@ -149,14 +163,16 @@ void CGhost_addon::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 }
 
-void CGhost_addon::Setlink(bool blink)
+void CGhost_addon::Setlink(bool blink , CObj* pobj)
 {
 	if(true == blink)
 	{
+		m_mainbuilding = pobj;
 		((CCom_PartAnim*)m_com_anim)->play_direction(1);
 	}
 	else
 	{
+		m_mainbuilding = NULL;
 		((CCom_PartAnim*)m_com_anim)->play_direction(-1);
 	}
 }

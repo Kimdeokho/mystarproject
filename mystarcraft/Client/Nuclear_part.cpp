@@ -44,6 +44,8 @@ void CNuclear_part::Initialize(void)
 	m_vertex.top =  16.f;
 	m_vertex.bottom = 26.f;
 
+	m_ebuild_tech = T_NC_PART;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_NUCLEAR;
@@ -52,13 +54,13 @@ void CNuclear_part::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eArmorType = ARMOR_SMALL;
-	m_unitinfo.hp = 1;
+	m_unitinfo.eArmorType = ARMOR_LARGE;
+	m_unitinfo.maxhp = 600;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-	m_unitinfo.fbuildtime = 1.f;
+	m_unitinfo.fbuildtime = 10.f;
 
 
 	m_com_anim = new CCom_PartAnim(L"T_NC_PART" , L"NC_LINK", m_matWorld);
@@ -75,8 +77,9 @@ void CNuclear_part::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 }
 
@@ -97,6 +100,16 @@ void CNuclear_part::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+		}
 	}
 
 	D3DXVECTOR2 vpos;
@@ -138,7 +151,8 @@ void CNuclear_part::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
+	if(NULL != m_mainbuilding)
+		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
 }
 
 void CNuclear_part::Inputkey_reaction(const int& nkey)
@@ -151,14 +165,16 @@ void CNuclear_part::Inputkey_reaction(const int& firstkey , const int& secondkey
 
 }
 
-void CNuclear_part::Setlink(bool blink)
+void CNuclear_part::Setlink(bool blink , CObj* pobj)
 {
 	if(true == blink)
 	{
+		m_mainbuilding = pobj;
 		((CCom_PartAnim*)m_com_anim)->play_direction(1);
 	}
 	else
 	{
+		m_mainbuilding = NULL;
 		((CCom_PartAnim*)m_com_anim)->play_direction(-1);
 	}
 }

@@ -89,8 +89,6 @@ void CTileManager::ReadyTileTexture(void)
 
 void CTileManager::RenderTile(void)
 {
-
-
 	m_matWorld._41 = 0;
 	m_matWorld._42 = 0;
 	m_matWorld._11 = 1;

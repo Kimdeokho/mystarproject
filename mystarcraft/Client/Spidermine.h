@@ -4,6 +4,9 @@
 class CSpidermine :
 	public CUnit
 {
+private:
+	bool	m_bplant_init;
+	float	m_plant_time;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

@@ -364,14 +364,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ObjPoolMgr.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ObjPoolMgr.h"
-					>
-				</File>
-				<File
 					RelativePath=".\SceneMgr.cpp"
 					>
 				</File>
@@ -463,6 +455,14 @@
 			<Filter
 				Name="Obj"
 				>
+				<File
+					RelativePath=".\Fog_object.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Fog_object.h"
+					>
+				</File>
 				<File
 					RelativePath=".\GasResource.cpp"
 					>
@@ -996,6 +996,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Com_Production_building.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Production_building.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Transport.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Transport.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Component.cpp"
 					>
 				</File>
@@ -1299,6 +1315,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_WMine.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WMine.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_WSCV.cpp"
 						>
 					</File>
@@ -1440,6 +1464,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Cmd_btn.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Cmd_btn.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Minimap.cpp"
 					>
 				</File>
@@ -1448,11 +1480,51 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Production_bar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Production_bar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UI.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\UI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_armyunitlist.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_armyunitlist.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Boarding_info.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Boarding_info.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Building_info.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Building_info.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_form.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_form.h"
 					>
 				</File>
 				<File
@@ -1477,6 +1549,22 @@
 				</File>
 				<File
 					RelativePath=".\UI_Select.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_wireform.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_wireform.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Wireframe.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Wireframe.h"
 					>
 				</File>
 			</Filter>
@@ -1541,6 +1629,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

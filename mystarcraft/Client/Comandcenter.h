@@ -5,6 +5,14 @@ class CComandcenter :
 	public CTerran_building
 {
 private:
+	CComponent*					m_com_production;
+	const vector<TEXINFO*>*		m_production_tex;
+
+	int						m_ontime;
+	int						m_offtime;
+	float						m_curtime;
+	bool						m_bactive; //Ä¿¸Çµå ºÒºû ¹ÝÂ¦ÀÌ´Â°Å ·»´õ¿©ºÎ
+	bool						m_bswitch;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
@@ -13,6 +21,11 @@ public:
 	virtual void Dead(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+
+	//virtual void create_unit(PRODUCTION_ID eid);
+
+	virtual void Update_Cmdbtn(void);
+	virtual void Update_Wireframe(void);
 public:
 	CComandcenter(void);
 	~CComandcenter(void);

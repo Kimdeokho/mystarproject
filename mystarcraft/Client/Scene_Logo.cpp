@@ -29,8 +29,8 @@ HRESULT CScene_Logo::Initialize(void)
 
 void CScene_Logo::Update(void)
 {
-	if(m_pLoding->GetLoadingComplete())
-		CSceneMgr::GetInstance()->SetScene(SCENE_STAGE);
+	//if(m_pLoding->GetLoadingComplete())
+	//	CSceneMgr::GetInstance()->SetScene(SCENE_STAGE);
 }
 
 void CScene_Logo::Render(void)
@@ -43,6 +43,9 @@ void CScene_Logo::Render(void)
 		, D3DCOLOR_ARGB(255,255,255,255));
 
 	m_pLoding->Logo_LodingRender();
+
+	if(m_pLoding->GetLoadingComplete())
+		CSceneMgr::GetInstance()->SetScene(SCENE_STAGE);
 }
 
 void CScene_Logo::Release(void)

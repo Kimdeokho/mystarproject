@@ -107,11 +107,11 @@ void CCom_WSCV::fire(CObj*& ptarget)
 	{
 
 	}
-	else if( OBJ_COMMAND == ptarget->GetOBJNAME() )
-	{
-		//수리??
-		int a = 0;
-	}
+	//else if( OBJ_COMMAND == ptarget->GetOBJNAME() )
+	//{
+	//	//수리??
+	//	int a = 0;
+	//}
 	else
 	{
 		if( false == m_bfire)

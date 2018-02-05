@@ -44,7 +44,7 @@ void CCom_SiegebarrelAnim::Update(void)
 				m_banim_end = true;
 				m_bsiegemode = true;
 				SetAnimation(L"IDLE");
-				m_pobj->SetState(IDLE);
+				//m_pobj->SetState(IDLE);
 
 
 				//여기서 0은 수학좌표계 +X축에 해당한다

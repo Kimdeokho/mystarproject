@@ -23,9 +23,10 @@ private:
 public:
 	void SetPos(const D3DXVECTOR2& vpos);
 	void SetActive(bool bactive);
-	void SetPreviewInfo(const TCHAR* objkey , BUILD_TECH ebuild , const int& icol , const int& irow , CObj* pobj);
+	void SetPreviewInfo(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow , CObj* pobj);
 	bool GetActive(void);
 	bool Install_check(void);
+	bool Install_check(const PREVIEW_INFO& cur_info);
 	const PREVIEW_INFO GetPreviewInfo(void);
 	
 public:

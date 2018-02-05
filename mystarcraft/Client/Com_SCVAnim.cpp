@@ -69,6 +69,9 @@ void CCom_SCVAnim::Update(void)
 
 void CCom_SCVAnim::Render(void)
 {
+	if(NULL == m_curtex)
+		return;
+
 	m_objshadow_mat = m_objmat;
 	m_objshadow_mat._42 += 8;
 

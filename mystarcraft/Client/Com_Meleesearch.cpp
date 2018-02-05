@@ -10,6 +10,7 @@
 #include "Com_Pathfind.h"
 #include "TimeMgr.h"
 #include "Bunker.h"
+#include "Dropship.h"
 CCom_Meleesearch::CCom_Meleesearch(TARGET_SEARCH_TYPE esearch_type)
 {
 	m_search_type = esearch_type;
@@ -82,15 +83,14 @@ void CCom_Meleesearch::Update(void)
 
 		if(RESOURCE != m_ptarget->GetCategory())
 		{
-			if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+			if( ORDER_MOVE == m_pobj->GetUnitinfo().eorder &&
+				m_pobj->GetTeamNumber() == m_ptarget->GetTeamNumber())
 			{
-				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
-
-				if(OBJ_BUNKER == m_ptarget->GetOBJNAME() &&
-					ORDER_MOVE == m_pobj->GetUnitinfo().eorder ||
-					ORDER_NONE == m_pobj->GetUnitinfo().eorder)
+				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
 				{
-					if(OBJ_FIREBAT == m_pobj->GetOBJNAME())
+					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+					if(OBJ_BUNKER == m_ptarget->GetOBJNAME() )
 					{
 						if( true == ((CBunker*)m_ptarget)->UnitEnter_Bunker(m_pobj) )
 						{
@@ -104,13 +104,48 @@ void CCom_Meleesearch::Update(void)
 							m_pobj->SetState(IDLE);
 							m_pobj->SetOrder(ORDER_NONE);
 						}
-						m_ptarget = NULL;
-						m_target_objid = 0;
+					}
+					else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
+					{
+						//if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 32*32)
+						//{			
+							//범위에 들어오면
+							m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+							if(true == ((CDropship*)m_ptarget)->setunit(m_pobj))
+							{
+								m_pobj->SetSelect(NONE_SELECT);
+								m_pobj->area_release();
+								m_pobj->SetState(BOARDING); 
+							}
+							else
+							{
+								m_pobj->SetState(IDLE);						
+							}
+							m_pobj->SetOrder(ORDER_NONE);
+						//}
+					}
+
+					m_ptarget = NULL;
+					m_target_objid = 0;
+
+					if(NULL != m_com_pathfind)
+					{
+						((CCom_Pathfind*)m_com_pathfind)->ClearPath();
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 					}
 				}
 				else
 				{
-					
+					if(NULL != m_com_pathfind)
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+				}
+			}
+			else
+			{
+				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+				{
+					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
 
 					ATTACK_SEARCH_TYPE emy_attacktype = m_pobj->GetUnitinfo().eAttackType;
 					MOVE_TYPE	etarget_movetype = m_ptarget->GetUnitinfo().eMoveType;
@@ -135,12 +170,13 @@ void CCom_Meleesearch::Update(void)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 					}
 				}
+				else
+				{
+					if(NULL != m_com_pathfind)
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+				}
 			}
-			else
-			{
-				if(NULL != m_com_pathfind)
-					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
-			}
+
 		}
 	}
 	else
@@ -153,7 +189,7 @@ void CCom_Meleesearch::Update(void)
 				m_search_time > 0.2f)
 			{
 				m_search_time = 0.f;
-				m_ptarget = CArea_Mgr::GetInstance()->AutoSearch_target(m_pobj , *m_psearch_range , m_search_type);			
+				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
 			}
 
 			if(NULL != m_ptarget)
@@ -161,7 +197,6 @@ void CCom_Meleesearch::Update(void)
 			else
 			{
 				m_bforced_target = false;
-				//m_bmelee_search = true;
 				m_btarget_search = true;
 				m_target_objid = 0;
 
@@ -171,7 +206,6 @@ void CCom_Meleesearch::Update(void)
 		{
 			m_btarget_search = true;
 			m_bforced_target = false;
-			//m_bmelee_search = false;
 			m_target_objid = 0;
 			m_ptarget = NULL;
 		}
@@ -187,8 +221,8 @@ void CCom_Meleesearch::Update(void)
 			}
 			else
 			{
-				m_meleerangeX = 5.f;
-				m_meleerangeY = 5.f;
+				m_meleerangeX = 6.f;
+				m_meleerangeY = 6.f;
 			}
 
 			m_myrc = m_pobj->GetMyRect();
@@ -197,7 +231,7 @@ void CCom_Meleesearch::Update(void)
 			m_myrc.top -= m_meleerangeY;
 			m_myrc.bottom += m_meleerangeY;
 
-			m_meleesearch_time += GETTIME;
+			//m_meleesearch_time += GETTIME;
 
 			//if(m_meleesearch_time > 0.2f)
 			//{

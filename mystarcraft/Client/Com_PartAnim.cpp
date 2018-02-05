@@ -5,6 +5,7 @@
 #include "TimeMgr.h"
 #include "Obj.h"
 
+#include "Terran_building.h"
 CCom_PartAnim::CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3DXMATRIX& objmat )
 :CCom_Animation(objmat)
 {
@@ -12,6 +13,7 @@ CCom_PartAnim::CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3D
 	m_link_texkey = linktexkey;
 
 	m_statkey = L"";
+	m_linktex = NULL;
 }
 
 CCom_PartAnim::~CCom_PartAnim(void)
@@ -38,7 +40,15 @@ void CCom_PartAnim::Initialize(CObj* pobj)
 
 void CCom_PartAnim::Update(void)
 {
-	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	if(L"BUILD" == m_statkey)
+	{
+		const UNITINFO& unit_info = m_pobj->GetUnitinfo();
+		float curframe = float(unit_info.hp) / float(unit_info.maxhp);
+		m_frame.fcurframe = m_frame.umax * curframe;
+	}
+	else
+		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+
 	if(m_frame.fcurframe >= m_frame.umax)
 	{
 		m_frame.fcurframe = 0.f;
@@ -46,6 +56,7 @@ void CCom_PartAnim::Update(void)
 		{
 			m_pobj->SetState(IDLE);
 			m_sub_on = true;
+			//((CTerran_building*)m_pobj)->Build_Complete();
 		}
 	}
 

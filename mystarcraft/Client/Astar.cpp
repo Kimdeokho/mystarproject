@@ -354,12 +354,12 @@ void CAstar::UnitPath_calculation_Update(const MYRECT<float>& vertex, vector<D3D
 
 		if(m_bweightG)
 		{
-			if(m_dummynode->G <= pnode->G)
+			if(m_dummynode->G <= pnode->G) //도착점에서 먼곳으로
 				m_dummynode = pnode;
 		}
 		else
 		{
-			if(m_dummynode->H > pnode->H)
+			if(m_dummynode->H > pnode->H)// 도착점과 가까운곳으로
 				m_dummynode = pnode;
 		}
 

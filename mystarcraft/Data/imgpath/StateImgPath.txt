@@ -18,6 +18,7 @@ Tile|None|HillR|R|36|..\Texture\Multi\Tile\HillR\R\hill%d.png
 BUILDING|None|COMMANDCENTER|IDLE|1|..\Texture\Multi\Terran\Building\commandcenter\idle\command_idle%d.png
 BUILDING|None|COMMANDCENTER|BUILD|4|..\Texture\Multi\Terran\Building\commandcenter\build\command_build%d.png
 BUILDING|None|COMMANDCENTER|AIR|3|..\Texture\Multi\Terran\Building\commandcenter\air\command_air%d.png
+BUILDING|None|COMMANDCENTER|PRODUCTION|1|..\Texture\Multi\Terran\Building\commandcenter\production\command_production%d.png
 BUILDING|None|T_FACTORY|IDLE|1|..\Texture\Multi\Terran\Building\factory\idle\factory_idle%d.png
 BUILDING|None|T_FACTORY|BUILD|4|..\Texture\Multi\Terran\Building\factory\build\factory_build%d.png
 BUILDING|None|T_FACTORY|AIR|3|..\Texture\Multi\Terran\Building\factory\air\factory_air%d.png
@@ -45,7 +46,7 @@ BUILDING|None|T_BATTLE_ADDON|BUILD|4|..\Texture\Multi\Terran\Building\battle_add
 BUILDING|None|T_BARRACK|IDLE|1|..\Texture\Multi\Terran\Building\barrack\idle\barrack_idle%d.png
 BUILDING|None|T_BARRACK|BUILD|4|..\Texture\Multi\Terran\Building\barrack\build\barrack_build%d.png
 BUILDING|None|T_BARRACK|AIR|3|..\Texture\Multi\Terran\Building\barrack\air\barrack_air%d.png
-BUILDING|None|T_BARRACK|WORK|2|..\Texture\Multi\Terran\Building\barrack\work\barrack_work%d.png
+BUILDING|None|T_BARRACK|PRODUCTION|2|..\Texture\Multi\Terran\Building\barrack\production\barrack_work%d.png
 BUILDING|None|T_EB|BUILD|4|..\Texture\Multi\Terran\Building\engineering\build\eb_build%d.png
 BUILDING|None|T_EB|AIR|2|..\Texture\Multi\Terran\Building\engineering\air\eb_air%d.png
 BUILDING|None|T_EB|IDLE|1|..\Texture\Multi\Terran\Building\engineering\idle\eb_idle%d.png

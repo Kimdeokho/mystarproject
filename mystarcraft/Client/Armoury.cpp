@@ -19,7 +19,7 @@
 #include "FontMgr.h"
 #include "Corpse.h"
 #include "ComanderMgr.h"
-
+#include "TimeMgr.h"
 CArmoury::CArmoury(void)
 {
 }
@@ -41,6 +41,8 @@ void CArmoury::Initialize(void)
 	CTerran_building::building_area_Initialize(2 , 3);
 	CTerran_building::building_pos_Initialize(2 , 3);
 
+	m_ebuild_tech = T_ARMOURY;
+
 	m_sortID = SORT_GROUND;	
 	m_ecategory = BUILDING;
 	m_eOBJ_NAME = OBJ_ARMOURY;
@@ -50,7 +52,7 @@ void CArmoury::Initialize(void)
 	m_unitinfo.estate = BUILD;
 	m_unitinfo.eorder = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
-	m_unitinfo.hp = 1;
+	m_unitinfo.maxhp = 750;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 28;
 	m_unitinfo.search_range = 0;
@@ -71,8 +73,9 @@ void CArmoury::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select110" , m_vPos , 10);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
+	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 }
 
@@ -96,6 +99,16 @@ void CArmoury::Update(void)
 	else if(BUILD == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
+
+		m_build_hp += m_fbuild_tick * GETTIME;
+		m_unitinfo.hp = (int)m_build_hp;
+
+		if(m_unitinfo.hp >= m_unitinfo.maxhp )
+		{
+			m_unitinfo.hp = m_unitinfo.maxhp;
+			m_unitinfo.estate = IDLE;
+			CTerran_building::Build_Complete();
+		}
 	}
 
 	CTerran_building::fire_eff_update();

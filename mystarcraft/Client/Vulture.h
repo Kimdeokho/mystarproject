@@ -16,6 +16,9 @@ public:
 
 	virtual void Release(void);
 	virtual void Dead(void);
+
+	virtual void Update_Cmdbtn(void);
+	virtual void Update_Wireframe(void);
 public:
 	CVulture(void);
 	~CVulture(void);

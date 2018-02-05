@@ -16,6 +16,8 @@
 #include "Comandcenter.h"
 #include "T_gas.h"
 #include "GasResource.h"
+
+#include "Dropship.h"
 CCom_Worksearch::CCom_Worksearch()
 {
 }
@@ -181,6 +183,36 @@ void CCom_Worksearch::Update(void)
 			//미네랄을 들고 있으면,,
 			m_pobj->SetOrder(ORDER_RETURN_CARGO);
 		}
+		else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
+		{
+			if(m_ptarget->GetTeamNumber() == m_pobj->GetTeamNumber())
+			{
+				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 32*32)
+				{			
+					//범위에 들어오면
+					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+
+					if(true == ((CDropship*)m_ptarget)->setunit(m_pobj))
+					{
+						m_pobj->SetSelect(NONE_SELECT);
+						m_pobj->area_release();
+						m_pobj->SetState(BOARDING); 
+					}
+					else
+					{
+						m_pobj->SetState(IDLE); 						
+					}
+					m_pobj->SetOrder(ORDER_NONE);
+
+					m_target_objid = 0;
+					m_ptarget = NULL;
+					((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
+					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+				}
+			}
+		}
+
 		if(NULL != m_ptarget)
 		{
 			((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_ptarget->GetObjNumber());

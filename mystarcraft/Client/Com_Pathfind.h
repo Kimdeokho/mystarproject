@@ -67,6 +67,7 @@ public:
 	void SetGoalPos(const D3DXVECTOR2& vgoalpos , bool bmagicbox);
 
 	void SetFlowField(void);
+	void Setrally_path(const vector<D3DXVECTOR2>& vrally_path);
 	void Target_chase(void);
 public:
 	CCom_Pathfind(D3DXVECTOR2& vpos , MYRECT<float>&	rc, const int& mainstep , const int& substep);

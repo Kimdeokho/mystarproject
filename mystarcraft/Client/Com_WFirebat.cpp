@@ -87,7 +87,6 @@ void CCom_WFirebat::fire(CObj*& ptarget)
 			vsplash_pos[1] = vsplash_pos[0] + vdir * 20;
 			vsplash_pos[2] = vsplash_pos[1] + vdir * 20;
 
-			D3DXVECTOR2 renderpos;
 			for(int i = 0; i < 3; ++i)
 			{				
 				//renderpos.x = vsplash_pos[i].x - CScrollMgr::m_fScrollX;

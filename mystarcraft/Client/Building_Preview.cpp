@@ -20,7 +20,7 @@ CBuilding_Preview::~CBuilding_Preview(void)
 {
 }
 
-void CBuilding_Preview::SetPreviewInfo(const TCHAR* objkey , BUILD_TECH ebuild , const int& icol , const int& irow , CObj* pobj)
+void CBuilding_Preview::SetPreviewInfo(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow , CObj* pobj)
 {
 	D3DXMatrixIdentity(&m_tempmat);
 	m_preview_info.objname = objkey;
@@ -203,7 +203,57 @@ bool CBuilding_Preview::Install_check(void)
 
 	return true;
 }
+bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
+{
+	int idx32 = 0;
+	int idx64 = 0;
+	D3DXVECTOR2 vtemp = cur_info.vpos;
+	MYRECT<float>	temprc;
+	for(int i = 0; i < cur_info.icol; ++i)
+	{
+		vtemp.y = cur_info.vpos.y + i*32;
+		for(int j = 0; j < cur_info.irow; ++j)
+		{
+			vtemp.x = cur_info.vpos.x + j*32;
+			idx32 = CMyMath::Pos_to_index(vtemp  , 32);
+			idx64 = CMyMath::Pos_to_index(vtemp , 64);
 
+			temprc.left = vtemp.x - 16;
+			temprc.right = vtemp.x + 16;
+			temprc.top = vtemp.y - 16;
+			temprc.bottom = vtemp.y + 16;
+
+			BYTE op = CTileManager::GetInstance()->GetTileOption(idx32);
+			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogSightOp(idx32);
+
+			if(T_GAS == cur_info.ebuild )
+			{
+				if(RESOURCE_GAS != op || FOG_BLACK == fog_sight)
+				{
+					CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					return false;
+				}
+			}
+			else
+			{
+				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
+					MOVE_OK == op &&
+					FOG_BLACK != fog_sight)
+				{
+				}
+				else
+				{
+					CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
+}
 const PREVIEW_INFO CBuilding_Preview::GetPreviewInfo(void)
 {
 	return m_preview_info;

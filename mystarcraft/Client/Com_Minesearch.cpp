@@ -10,8 +10,9 @@
 #include "Com_Pathfind.h"
 #include "TimeMgr.h"
 
-CCom_Minesearch::CCom_Minesearch(void)
+CCom_Minesearch::CCom_Minesearch(TARGET_SEARCH_TYPE esearch_type)
 {
+	m_search_type = esearch_type;
 }
 
 CCom_Minesearch::~CCom_Minesearch(void)
@@ -37,7 +38,9 @@ void CCom_Minesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);
 
 	m_search_time = 0.f;
+	m_fdelay = 0.f;
 	m_btarget_search = true;
+	m_bwait = false;
 }
 
 void CCom_Minesearch::Update(void)
@@ -48,9 +51,7 @@ void CCom_Minesearch::Update(void)
 	{
 	}
 	else
-	{
 		m_target_objid = 0;
-	}
 
 	if(NULL != m_com_pathfind)
 		((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
@@ -60,45 +61,45 @@ void CCom_Minesearch::Update(void)
 	{
 		m_search_time += GETTIME;
 
-		if(true == m_btarget_search &&
+		if(	NULL == m_ptarget &&
 			m_search_time > 0.2f)
 		{
 			m_search_time = 0.f;
-			m_ptarget = CArea_Mgr::GetInstance()->AutoSearch_target(m_pobj , *m_psearch_range , m_search_type);			
+			m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
 		}
 
 		if(NULL != m_ptarget)
 		{
-			m_btarget_search = false;
 			m_target_objid = m_ptarget->GetObjNumber();
 		}
 		else
 		{
-			m_bforced_target = false;
-			m_btarget_search = true;
 			m_target_objid = 0;
 
 		}
 	}
-	else
+
+	if(m_bwait)
 	{
-		m_btarget_search = true;
-		m_bforced_target = false;
-		m_target_objid = 0;
-		m_ptarget = NULL;
+		m_fdelay += GETTIME;
+
+		if(m_fdelay > 0.5f)
+		{
+			m_bwait = false;
+			m_fdelay = 0.f;
+		}
+		else
+			return;
+
 	}
-
-
-
 	if(NULL != m_ptarget)
 	{
 		if( BURROW == m_pobj->GetUnitinfo().estate)
 		{
 			m_pobj->SetState(PULL);
+			m_bwait = true;
 			return;
 		}
-		else if( PULL == m_pobj->GetUnitinfo().estate)
-			return;
 
 		m_myrc = m_pobj->GetMyRect();
 		m_myrc.left -= m_meleerangeX;
@@ -120,28 +121,10 @@ void CCom_Minesearch::Update(void)
 			//}
 		}
 		else
-		{				
-			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) > (*m_psearch_range)*(*m_psearch_range))
-			{
-				//ÃßÀû¹üÀ§ ¹Û
-				//´Ù½Ã ¶¥¿¡ ¹ÚÈù´Ù
+		{
+			if(NULL != m_com_pathfind)
+				((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 
-				m_pobj->SetState(PLANT);
-				m_ptarget = NULL;
-				m_target_objid = 0;
-
-				if(NULL != m_com_pathfind)
-				{
-					((CCom_Pathfind*)m_com_pathfind)->ClearPath();
-					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
-				}
-			}
-			else
-			{
-				if(NULL != m_com_pathfind)
-					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
-			}
-			m_btarget_search = true;
 		}
 	}
 	else
@@ -150,6 +133,8 @@ void CCom_Minesearch::Update(void)
 			MOVE == m_pobj->GetUnitinfo().estate)
 		{
 			//´Ù½Ã ¶¥¿¡ ¹ÚÈù´Ù
+			m_bwait = false;
+			m_fdelay = 0.f;
 
 			m_pobj->SetState(PLANT);
 		}

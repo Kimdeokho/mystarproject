@@ -48,3 +48,8 @@ const MYRECT<float>& CUI::GetMyRect(void)
 {
 	return m_rect;
 }
+
+void CUI::SetPos(const D3DXVECTOR2& vpos)
+{
+	m_vpos = vpos;
+}

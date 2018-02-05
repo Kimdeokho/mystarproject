@@ -25,6 +25,9 @@
 #include "Area_Mgr.h"
 #include "ObjMgr.h"
 #include "UI_Select.h"
+
+#include "ComanderMgr.h"
+
 CTank::CTank(void)
 {
 	m_tankbarrel = NULL;
@@ -46,6 +49,7 @@ void CTank::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = UNIT;
 	m_eteamnumber = TEAM_0;
+	m_eOBJ_NAME = OBJ_TANK;
 
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
@@ -93,7 +97,7 @@ void CTank::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select62" , m_vPos , 8);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui);
+	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 }
 
 void CTank::Update(void)
@@ -112,6 +116,7 @@ void CTank::Update(void)
 	if(IDLE == m_unitinfo.estate)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
+		//m_tankbarrel->SetState(IDLE); //아 이거 문젠데....
 	}
 	else if(ATTACK == m_unitinfo.estate)
 	{
@@ -139,8 +144,7 @@ void CTank::Update(void)
 				if(false == m_bsiegemode)
 				{
 					m_bsiegemode = true;
-					((CTankbarrel*)m_tankbarrel)->TransformSiegebarrel();
-					
+					((CTankbarrel*)m_tankbarrel)->TransformSiegebarrel();					
 				}
 				else
 				{
@@ -149,6 +153,7 @@ void CTank::Update(void)
 					Transform_Tankbody();
 					((CTankbarrel*)m_tankbarrel)->TransformTankbarrel();
 				}
+				//CUnitMgr::GetInstance()->Update_Cmdbtn();
 				m_btransform_ready = false;
 			}			
 		}
@@ -179,6 +184,9 @@ void CTank::Update(void)
 
 void CTank::Render(void)
 {
+	if( BOARDING == m_unitinfo.estate )
+		return;
+
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
@@ -196,7 +204,6 @@ void CTank::Transform(void)
 }
 void CTank::Transform_Tankbody(void)
 {
-
 	//역변신
 	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_ANIMATION);
 	Safe_Delete(m_com_anim);
@@ -215,6 +222,9 @@ void CTank::Transform_Tankbody(void)
 
 	//변신 끝
 	m_btransform_ready = false;
+
+	m_eOBJ_NAME = OBJ_TANK;
+	m_tankbarrel->SetObjName(OBJ_TANK);
 	
 }
 
@@ -234,6 +244,9 @@ void CTank::Transform_Siegebody(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));
 
 	((CCom_Collision*)m_com_collision)->SetCollsearch(false);
+
+	m_eOBJ_NAME = OBJ_SIEGETANK;
+	m_tankbarrel->SetObjName(OBJ_SIEGETANK);
 }
 
 void CTank::barrel_sync(void)
@@ -282,6 +295,12 @@ void CTank::Inputkey_reaction(const int& nkey)
 
 				if(NULL != m_com_pathfind)
 				{
+					CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
+					if(NULL == ptarget)
+						m_bmagicbox = true;
+					else
+						m_bmagicbox = false;
+
 					D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
@@ -331,6 +350,10 @@ void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 	m_tankbarrel->Inputkey_reaction(firstkey , secondkey);
 }
+bool CTank::GetSiegemode(void)
+{
+	return m_bsiegemode;
+}
 bool CTank::GetTransformReady(void)
 {
 	return m_btransform_ready;
@@ -354,4 +377,20 @@ void CTank::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);
 }
+void CTank::Update_Cmdbtn(void)
+{
+	CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	CComanderMgr::GetInstance()->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 
+	if(true == m_bsiegemode)
+	{
+		CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_SIEGETANK" , BTN_SIEGETANK);
+	}
+	else
+	{
+		CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_SIEGEMODE" , BTN_SIEGEMODE);
+	}
+}

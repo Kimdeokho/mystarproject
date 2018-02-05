@@ -190,6 +190,26 @@ void CObjMgr::Destroy_Update(void)
 			}
 		}
 	}
+
+	if(!m_AirSelectUI_List.empty())
+	{
+		list<CUI*>::iterator iter = m_AirSelectUI_List.begin();
+		list<CUI*>::iterator iter_end = m_AirSelectUI_List.end();
+
+		for( ; iter != iter_end; )
+		{
+			if(true == (*iter)->GetDestroy() )
+			{
+				Safe_Delete(*iter);
+				iter = m_AirSelectUI_List.erase(iter);
+				continue;
+			}
+			else
+			{
+				++iter;
+			}
+		}
+	}
 }
 void CObjMgr::Render(void)
 {
@@ -228,6 +248,18 @@ void CObjMgr::Render(void)
 			iter->second->Render();
 
 		m_rendersort[i].clear();
+	}
+
+
+	if(!m_AirSelectUI_List.empty())
+	{
+		list<CUI*>::iterator iter = m_AirSelectUI_List.begin();
+		list<CUI*>::iterator iter_end = m_AirSelectUI_List.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Render();
+		}
 	}
 
 
@@ -351,9 +383,12 @@ void CObjMgr::AddObject(CObj* pObj , OBJID eid)
 		}
 	}
 }
-void CObjMgr::AddSelect_UI(CUI* pui)
+void CObjMgr::AddSelect_UI(CUI* pui , MOVE_TYPE emovetype)
 {
-	m_SelectUI_List.push_back(pui);
+	if(MOVE_GROUND == emovetype)
+		m_SelectUI_List.push_back(pui);
+	else if(MOVE_AIR == emovetype)
+		m_AirSelectUI_List.push_back(pui);
 }
 void CObjMgr::AddEffect(CObj* peff)
 {
@@ -403,6 +438,14 @@ void CObjMgr::Release()
 
 	m_SelectUI_List.clear();
 
+
+	iter_UI = m_AirSelectUI_List.begin();
+	iterUI_end = m_AirSelectUI_List.end();
+
+	for( ; iter_UI != iterUI_end; ++iter_UI)
+		Safe_Delete((*iter_UI));
+
+	m_AirSelectUI_List.clear();
 
 
 	list<CObj*>::iterator iter_eff = m_Effect_List.begin();
