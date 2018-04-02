@@ -4,11 +4,12 @@
 #include "TextureMgr.h"
 #include "TimeMgr.h"
 #include "Obj.h"
-CCom_LaserAnim::CCom_LaserAnim(D3DXMATRIX& objmat , const TCHAR* objname )
+CCom_LaserAnim::CCom_LaserAnim(D3DXMATRIX& objmat , const TCHAR* objname , float fsize)
 :CCom_Animation(objmat)
 {
 	m_objname = objname;
 	m_statkey = L"";
+	m_fsize = fsize;
 }
 
 CCom_LaserAnim::~CCom_LaserAnim(void)
@@ -42,11 +43,11 @@ void CCom_LaserAnim::Render(void)
 		return;
 
 	if( m_objmat._11 < 0 )
-		m_objmat._11 = -2;
+		m_objmat._11 = -m_fsize;
 	else
-		m_objmat._11 = 2;
+		m_objmat._11 = m_fsize;
 
-	m_objmat._22 = 2;
+	m_objmat._22 = m_fsize;
 
 
 	m_pSprite->SetTransform(&m_objmat);

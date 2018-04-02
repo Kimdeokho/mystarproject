@@ -13,7 +13,12 @@ CUI_form::CUI_form(const D3DXVECTOR2& vsize)
 	m_matworld._11 = vsize.x;
 	m_matworld._22 = vsize.y;
 }
-
+CUI_form::CUI_form(const TCHAR* texkey , const D3DXVECTOR2& vpos)
+{
+	m_is_active = true;
+	m_vpos = vpos;
+	m_texinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , texkey);
+}
 CUI_form::~CUI_form(void)
 {
 }

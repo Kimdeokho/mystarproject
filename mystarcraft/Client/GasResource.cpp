@@ -20,6 +20,7 @@ CGasResource::CGasResource(void)
 
 CGasResource::~CGasResource(void)
 {
+	Release();
 }
 
 void CGasResource::building_area_Initialize(void)
@@ -62,12 +63,11 @@ void CGasResource::Initialize(void)
 
 	building_area_Initialize();
 
-	m_ecategory = RESOURCE;
+	m_ecategory = CATEGORY_RESOURCE;
 	m_eteamnumber = TEAM_NONE;
 	m_sortID = SORT_GROUND;
 	m_eOBJ_NAME = OBJ_GAS;
-
-
+	m_unitinfo.eMoveType = MOVE_GROUND;
 
 	m_vecTex = CTextureMgr::GetInstance()->GetGeneralTexture(L"Gas");
 
@@ -82,16 +82,15 @@ void CGasResource::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select122" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+	//CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 }
 void CGasResource::Update(void)
 {
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_gasa_mount , m_vPos.x - CScrollMgr::m_fScrollX
 	//	,m_vPos.y - CScrollMgr::m_fScrollY);
 
-	m_select_ui->Update();
 
-	if( BOARDING == m_unitinfo.estate)
+	if( false == m_unitinfo.is_active)
 		return;
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -100,11 +99,14 @@ void CGasResource::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
+	m_select_ui->Update();
 }
 void CGasResource::Render(void)
 {
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
+
+	m_select_ui->Render();
 
 	m_pSprite->SetTransform(&m_matWorld);
 	m_pSprite->Draw((*m_vecTex)[0]->pTexture , NULL , &D3DXVECTOR3(64,32,0) , NULL , D3DCOLOR_ARGB(255,255,255,255));
@@ -113,7 +115,9 @@ void CGasResource::Render(void)
 }
 void CGasResource::Release(void)
 {
+	building_area_release();
 
+	Safe_Delete(m_select_ui);
 }
 
 void CGasResource::building_area_release(void)

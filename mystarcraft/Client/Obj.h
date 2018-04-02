@@ -14,6 +14,7 @@ protected:
 	boost::unordered_map<COMPONENT_LIST , CComponent*>	m_componentlist;
 
 	CUI*			m_select_ui;
+	CUI*			m_energybar_ui;
 protected:
 	//transform
 	D3DXVECTOR2		m_vPos; //스크롤이 더해진 값 범위 0~4096
@@ -69,6 +70,7 @@ public:
 	virtual void Dead(void);
 	virtual void Update_Cmdbtn(void);
 	virtual void Update_Wireframe(void);
+	virtual void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
 public:
 	void SetPos(const float x , const float y, OBJ_POS_KIND ekind = STATIC_OBJ);
 	void SetPos(const D3DXVECTOR2& vpos);
@@ -76,18 +78,21 @@ public:
 	void SetSelect(SELECT_FLAG eflag , D3DCOLOR ecolor = D3DCOLOR_ARGB(255,0,255,255));
 	void SetSpeed(const float& fspeed);
 	void SetMP(const int& imp);
-	void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
+	
 	void Setdir(D3DXVECTOR2& vdir);
 	void Setdiridx(const int& diridx);
-	//void Set_oldIdx(const int& idx);
+	void SetActive(bool is_active);
 
-	void SetState(STATE estate);
-	void SetOrder(ORDER eorder);
+	void SetState(STATE state);
+	void SetOrder(ORDER order);
 	void SetObjID(const int& id);
 	void SetObjName(OBJID eobjname);
 	void SetTeamNumber(TEAM_NUMBER eteamnum);
 	void SetMagicBox(bool bmagicbox);
+	void SetWait(bool is_wait);
 	void SetDestroy(bool bdestroy);
+
+	void SetHP(const int& ihp);
 public:
 	const D3DXMATRIX&		GetMat(void);
 	int						GetObjNumber(void);
@@ -106,7 +111,7 @@ public:
 	D3DXVECTOR2&			GetReferencePos(void);
 	
 	const D3DXVECTOR2&		GetcurDir(void);
-	int						Getcuridx(const int& tilesize);
+	const int&				Getcuridx(const int& tilesize);
 
 	virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
 	const	UNITINFO&		GetUnitinfo();

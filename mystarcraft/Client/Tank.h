@@ -11,6 +11,10 @@ private:
 
 	CObj*				m_tankbarrel;
 
+	CComponent*			m_com_tankanim;
+	CComponent*			m_com_siegeanim;
+
+	bool				m_bcheck;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
@@ -22,7 +26,9 @@ public:
 	//virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
 	virtual void Dead(void);
 
+	virtual void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
 	virtual void Update_Cmdbtn(void);
+	virtual void Update_Wireframe(void);
 public:
 	void barrel_sync(void);
 	bool GetTransformReady(void);

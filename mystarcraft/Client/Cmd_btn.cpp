@@ -12,10 +12,10 @@ CCmd_btn::CCmd_btn(const TCHAR* texkey, CMD_BTN ebtn , const D3DXVECTOR2& vpos ,
 
 	m_texinfo = NULL;
 
-	m_rect.left = m_vpos.x - 18;
-	m_rect.right = m_vpos.x + 18;
-	m_rect.top = m_vpos.y - 17;
-	m_rect.bottom = m_vpos.y + 17;
+	m_rect.left = m_vpos.x;
+	m_rect.right = m_vpos.x + 36;
+	m_rect.top = m_vpos.y;
+	m_rect.bottom = m_vpos.y + 34;
 }
 
 CCmd_btn::~CCmd_btn(void)
@@ -63,7 +63,7 @@ void CCmd_btn::Init_btn(const TCHAR* texkey , CMD_BTN ebtn ,const D3DXVECTOR2& v
 	m_matworld._42 = m_vpos.y;
 
 	m_texinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , m_texkey);
-	m_vcenter = D3DXVECTOR3( 18 , 17 , 0);
+	m_vcenter = D3DXVECTOR3( 0 , 0 , 0);
 	m_btn_id = ebtn;
 	m_is_active = is_ative;
 

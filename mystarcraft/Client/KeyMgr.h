@@ -40,6 +40,7 @@ private:
 
 	bool	m_clickwating[MAX_KEY];
 	bool	m_bwork; //미니맵 클릭시 곧바로 이동방지
+	bool	m_select; // 단축키+ 클릭시 유닛선택되는거 방지
 	bool	m_bdraging;
 public:
 	void TurboKeyDown(const int& nkey);

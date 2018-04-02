@@ -17,6 +17,8 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
+	void	Range_update(void);
+public:
 	CCom_Distancesearch(TARGET_SEARCH_TYPE esearch_type , CObj* otherobj = NULL);
 	~CCom_Distancesearch(void);
 };

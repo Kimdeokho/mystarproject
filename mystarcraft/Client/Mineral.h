@@ -7,18 +7,20 @@ class CMineral :
 private:
 	D3DXMATRIX				m_matshadow;
 	const vector<TEXINFO*>*	m_vecTex;
-	const CObj*				m_workman;
+	//const CObj*				m_workman;
+	list<CObj*>				m_workman_list;
 
 	int						m_mineral_amount;
 	int						m_workmancnt;
-	
-	
-	
 public:
-	void Setworkman(const CObj* pworkman);
-	void decrease_workman(void);
-	const CObj*  Getworkman(void);
+	bool Setworkman(CObj* pworkman);
 	void SetMineral_amount(const int& iamount);
+	
+	bool Getworkman(CObj* pworkman);
+	int	 Getworkman_count(void);
+
+	bool Check_workman(CObj* pworkman);
+	bool decrease_workman(CObj* pworkman);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

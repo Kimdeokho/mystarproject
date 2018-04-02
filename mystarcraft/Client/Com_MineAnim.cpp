@@ -83,15 +83,14 @@ void CCom_MineAnim::SetAnimation(const TCHAR* statekey)
 		/* [i]는 방향 , DRONE, MOVE의 사진집합 */
 		m_statetexture = CTextureMgr::GetInstance()->GetStateTexture_vecset(m_objname , m_statkey );
 
-
-
 		if(NULL != m_statetexture)
 		{
 			m_frame.umax = m_statetexture->size();
 			m_frame.fframespeed = (float)m_frame.umax;
 
-			if(L"PLANT" == m_statkey || L"PULL" == m_statkey
-				|| L"MOVE" == m_statkey)
+			if(L"PLANT" == m_statkey || 
+				L"PULL" == m_statkey || 
+				L"MOVE" == m_statkey)
 				m_frame.fframespeed *= 4;			
 		}
 	}

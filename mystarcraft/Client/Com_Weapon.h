@@ -6,6 +6,7 @@ class CCom_Weapon :
 	public CComponent
 {
 protected:
+	UPG_INFO*	m_upg_info;
 	WEAPON_INFO	m_weapon_info;
 
 	float	m_attack_delay;

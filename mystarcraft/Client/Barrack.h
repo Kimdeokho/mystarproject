@@ -4,6 +4,8 @@
 class CBarrack :
 	public CTerran_building
 {
+private:
+	CComponent*	m_com_production;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

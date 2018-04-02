@@ -11,10 +11,14 @@ private:
 	bool	m_bsiegemode;
 	bool	m_btransform_ready;
 	D3DXVECTOR2	m_vbarrelpos;
+
+	CComponent*	m_com_siegeanim;
+	CComponent*	m_com_tankanim;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
 	virtual void Render(void);
+	virtual void Release(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
 public:

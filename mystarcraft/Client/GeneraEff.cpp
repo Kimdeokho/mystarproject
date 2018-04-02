@@ -8,13 +8,15 @@ CGeneraEff::CGeneraEff(void)
 {
 }
 
-CGeneraEff::CGeneraEff(const TCHAR* texkey ,const D3DXVECTOR2& vpos ,const D3DXVECTOR2& vsize, SORT_ID esortid, const float& ftimespeed)
+CGeneraEff::CGeneraEff(const TCHAR* texkey ,const D3DXVECTOR2& vpos ,const D3DXVECTOR2& vsize, SORT_ID esortid, const float& ftimespeed
+					   , D3DCOLOR	_color)
 {
 	m_texname = texkey;
 	m_sortID = esortid;
 	m_vPos = vpos;
 	m_vsize = vsize;
 	m_ftimespeed = ftimespeed;
+	m_color = _color;
 }
 
 CGeneraEff::~CGeneraEff(void)
@@ -54,7 +56,7 @@ void CGeneraEff::Update(void)
 void CGeneraEff::Render(void)
 {
 	m_pSprite->SetTransform(&m_matWorld);
-	m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter , NULL , m_color);
 }
 
 void CGeneraEff::Release(void)

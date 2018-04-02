@@ -66,21 +66,21 @@ void CUI_Boarding_info::Release(void)
 	}
 }
 
-void CUI_Boarding_info::set_boarding_infolist(multimap<int , BOARDING_INFO , greater<int> >& infolist)
+void CUI_Boarding_info::set_boarding_infolist(multimap<int , BOARDING_INFO , greater<int> >& infolist , OBJID eid)
 {
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int j = 0; j < 4; ++j)
+		{
+			((CUI_form*)(m_backform[i][j]))->set_texture(L"");
+			((CUI_wireform*)(m_wireform[i][j]))->set_texturekey(L"");
+			m_occupy[i][j] = true;
+		}
+	}
+
 	if(!infolist.empty())
 	{
 		m_is_active = true;
-
-		for(int i = 0; i < 2; ++i)
-		{
-			for(int j = 0; j < 4; ++j)
-			{
-				((CUI_form*)(m_backform[i][j]))->set_texture(L"");
-				((CUI_wireform*)(m_wireform[i][j]))->set_texturekey(L"");
-				m_occupy[i][j] = true;
-			}
-		}
 
 		multimap<int ,BOARDING_INFO , greater<int>>::iterator iter = infolist.begin();
 		multimap<int ,BOARDING_INFO , greater<int>>::iterator iter_end = infolist.end();
@@ -90,6 +90,11 @@ void CUI_Boarding_info::set_boarding_infolist(multimap<int , BOARDING_INFO , gre
 		TCHAR	tempstr[32] = L"";
 
 
+		int startrow = 0;
+
+		if(OBJ_BUNKER == eid)
+			startrow = 1;
+
 		bool is_escape = false;
 
 		for( ; iter != iter_end; ++iter)
@@ -97,7 +102,7 @@ void CUI_Boarding_info::set_boarding_infolist(multimap<int , BOARDING_INFO , gre
 			is_escape = false;
 			temp_info = iter->second;
 
-			for(int irow = 0; irow < 4; ++irow)
+			for(int irow = startrow; irow < 4; ++irow)
 			{
 				for(int icol = 0; icol < 2; ++icol)
 				{

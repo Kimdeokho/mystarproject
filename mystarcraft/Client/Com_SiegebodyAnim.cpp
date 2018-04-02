@@ -19,6 +19,10 @@ CCom_SiegebodyAnim::~CCom_SiegebodyAnim(void)
 
 void CCom_SiegebodyAnim::Initialize(CObj* pobj)
 {
+	m_banim_end = false;
+	m_bsiegemode = false;
+	m_statkey = L"";
+
 	m_curtex = NULL;
 	m_pobj = pobj;
 
@@ -29,12 +33,19 @@ void CCom_SiegebodyAnim::Initialize(CObj* pobj)
 void CCom_SiegebodyAnim::Update(void)
 {
 	//회전할필요 없다
+	//if(NULL == m_animtexture)
+	//{
+	//	m_curtex = NULL;
+	//	return;
+	//}
 
 	if(true == m_btransforming)
 	{
 		//정변
-
-		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+		float fseed = GETTIME*m_frame.fframespeed;
+		if(fseed > 1)
+			fseed = 1;
+		m_frame.fcurframe += fseed;
 
 		if(false == m_bsiegemode)
 		{
@@ -59,15 +70,8 @@ void CCom_SiegebodyAnim::Update(void)
 				m_frame.fcurframe = 0;
 			}
 
-			//if( NULL !=  m_animtexture[0] )
-			//{
-				//const vector<TEXINFO*> vtemp = m_animtexture[0];
-
-				if( (int)(m_frame.fcurframe) <= m_frame.umax)
-					m_curtex = m_animtexture[0][int(m_frame.fcurframe)];
-			//}
-			//else
-				//m_curtex = NULL;
+			if( (int)(m_frame.fcurframe) <= m_frame.umax)
+				m_curtex = m_animtexture[0][int(m_frame.fcurframe)];
 		}
 
 	}
@@ -96,8 +100,8 @@ void CCom_SiegebodyAnim::Update(void)
 
 void CCom_SiegebodyAnim::Render(void)
 {
-	//if(NULL == m_curtex)
-	//	return;
+	if(NULL == m_curtex)
+		return;
 
 	m_pSprite->SetTransform(&m_objmat);
 	if(TEAM_1 == m_pobj->GetTeamNumber())
@@ -118,7 +122,7 @@ void CCom_SiegebodyAnim::SetAnimation(const TCHAR* statekey)
 	{
 		m_statkey = statekey;
 		m_frame.fcurframe = 0.f;
-		
+
 
 		if(L"SIEGEBODY_TRANS" == statekey)
 		{
@@ -138,17 +142,18 @@ void CCom_SiegebodyAnim::SetAnimation(const TCHAR* statekey)
 				m_frame.fcurframe = float(m_frame.umax - 1);
 				m_btransforming = false;
 			}
-			m_curtex = (*m_generaltex)[0];
+			m_curtex = (*m_generaltex)[ (int)(m_frame.fcurframe) ];
 		}
 		else
 		{
-			//for(int i = 0; i < DIR_CNT; ++i)
-			//{
-				m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey );
-			//}
+			m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , statekey );
 
-			m_frame.umax = m_animtexture[0].size();
-			m_frame.fframespeed = (float)m_frame.umax;
+			if(NULL != m_animtexture)
+			{
+				m_frame.umax = m_animtexture[0].size();
+				m_frame.fframespeed = (float)m_frame.umax;
+				m_curtex = m_animtexture[0][0];
+			}
 		}
 	}
 }

@@ -44,7 +44,7 @@ HRESULT CGeneralTexture::InsertTexture(const wstring& wstrFilePath , const wstri
 			, D3DPOOL_MANAGED
 			, D3DX_DEFAULT
 			, D3DX_DEFAULT
-			, D3DCOLOR_XRGB(0,255,0)/*투명이 되는 D3DCOLOR 의 값 png 비트여야함 */
+			, D3DCOLOR_XRGB(0,0,0)/*투명이 되는 D3DCOLOR 의 값 png 비트여야함 */
 			, &pTexInfo->ImgInfo
 			, NULL
 			, &pTexInfo->pTexture)))

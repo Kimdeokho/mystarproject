@@ -24,13 +24,13 @@ CGasBuilding::CGasBuilding(void)
 
 CGasBuilding::~CGasBuilding(void)
 {
+	Release();
+
 	m_areaidx_vec.clear();
 	m_old_areaidx_vec.clear();
 
 	vector<int>().swap(m_areaidx_vec);
-	vector<int>().swap(m_old_areaidx_vec);
-
-	Release();
+	vector<int>().swap(m_old_areaidx_vec);	
 }
 
 void CGasBuilding::Initialize(void)
@@ -42,6 +42,8 @@ void CGasBuilding::building_area_Initialize(const int& col , const int& row)
 	m_icol = col;
 	m_irow = row;
 
+	m_areaidx_vec.reserve(col*row);
+	m_old_areaidx_vec.reserve(col*row);
 	m_areaidx_vec.resize(col*row);
 	m_old_areaidx_vec.resize(col*row);
 
@@ -93,6 +95,7 @@ void CGasBuilding::building_area_Initialize(const int& col , const int& row)
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
 
+	m_oldidx32 = m_curidx32;
 	m_oldidx64 = m_curidx64;
 }
 void CGasBuilding::Update(void)
@@ -111,9 +114,9 @@ void CGasBuilding::Update(void)
 				MYRECT<float>	collocate_rc;
 				MYRECT<float>	workman_vtx = m_pworkman->GetVertex();
 
-				int stepsize = 16;
+				int stepsize = 32;
 				int loopcnt = 0;
-				int widthcnt = (32/stepsize)*m_irow;
+				int widthcnt = (32/stepsize)*m_irow + 1;
 				int heightcnt = (32/stepsize)*m_icol + 2;
 				int idx64;
 
@@ -238,91 +241,6 @@ void CGasBuilding::Update(void)
 					if(bescape)
 						break;
 
-					//for(int i = 0; i < widthcnt; ++i)
-					//{
-
-					//	temp_pos[0].x = collocate_pos[0].x + i*stepsize;
-
-					//	collocate_rc.left = temp_pos[0].x - workman_vtx.left; 
-					//	collocate_rc.right = temp_pos[0].x + workman_vtx.right;
-					//	collocate_rc.top = temp_pos[0].y - workman_vtx.top;
-					//	collocate_rc.bottom = temp_pos[0].y + workman_vtx.bottom;
-					//	idx64 = CMyMath::Pos_to_index(temp_pos[0] , 64);
-
-					//	CFontMgr::GetInstance()->Setbatch_Font(L"@" , temp_pos[0].x - CScrollMgr::m_fScrollX ,
-					//		temp_pos[0].y - CScrollMgr::m_fScrollY);
-
-					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
-					//	{
-					//		result_pos = temp_pos[0];
-					//		bescape = true;
-					//		break;
-					//	}
-					//}
-					//if(bescape)
-					//	break;
-
-					//for(int i = 0; i < heightcnt; ++i)
-					//{					
-					//	temp_pos[1].y = collocate_pos[1].y - i*stepsize;;
-
-					//	collocate_rc.left = temp_pos[1].x - workman_vtx.left; 
-					//	collocate_rc.right = temp_pos[1].x + workman_vtx.right;
-					//	collocate_rc.top = temp_pos[1].y - workman_vtx.top;
-					//	collocate_rc.bottom = temp_pos[1].y + workman_vtx.bottom;
-					//	idx64 = CMyMath::Pos_to_index(temp_pos[1] , 64);
-
-					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
-					//	{
-					//		result_pos = temp_pos[1];
-					//		bescape = true;
-					//		break;
-					//	}
-					//}
-					//if(bescape)
-					//	break;
-
-					//for(int i = 0; i < widthcnt; ++i)
-					//{					
-					//	temp_pos[2].x = collocate_pos[2].x - i*stepsize;;
-
-					//	collocate_rc.left = temp_pos[2].x - workman_vtx.left; 
-					//	collocate_rc.right = temp_pos[2].x + workman_vtx.right;
-					//	collocate_rc.top = temp_pos[2].y - workman_vtx.top;
-					//	collocate_rc.bottom = temp_pos[2].y + workman_vtx.bottom;
-					//	idx64 = CMyMath::Pos_to_index(temp_pos[2] , 64);
-
-					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
-					//	{
-					//		result_pos = temp_pos[2];
-					//		bescape = true;
-					//		break;
-					//	}
-
-					//}
-					//if(bescape)
-					//	break;
-
-					//for(int i = 0; i < heightcnt; ++i)
-					//{
-					//	temp_pos[3].y = collocate_pos[3].y + i*stepsize;;
-
-					//	collocate_rc.left = temp_pos[3].x - workman_vtx.left; 
-					//	collocate_rc.right = temp_pos[3].x + workman_vtx.right;
-					//	collocate_rc.top = temp_pos[3].y - workman_vtx.top;
-					//	collocate_rc.bottom = temp_pos[3].y + workman_vtx.bottom;
-					//	idx64 = CMyMath::Pos_to_index(temp_pos[3] , 64);
-
-					//	if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
-					//	{
-					//		result_pos = temp_pos[3];
-					//		bescape = true;
-					//		break;
-					//	}
-					//}
-					//if(bescape)
-					//	break;
-
 					//여기서 커맨드센터와 가장 가까운걸 고른다.
 
 					widthcnt += 2;
@@ -341,6 +259,7 @@ void CGasBuilding::Update(void)
 				((CWorkman*)m_pworkman)->setgas_fragment(pfragment);
 
 				
+				m_pworkman->SetActive(true);
 				m_pworkman->SetState(IDLE);
 				m_pworkman->SetOrder(ORDER_RETURN_CARGO);
 				m_pworkman->unit_area_Initialize();
@@ -358,6 +277,7 @@ void CGasBuilding::Render(void)
 
 void CGasBuilding::Release(void)
 {
+	area_release();
 }
 void CGasBuilding::area_release(void)
 {

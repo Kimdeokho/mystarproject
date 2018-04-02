@@ -18,6 +18,8 @@ public:
 	virtual void Dead(void);
 	virtual void Update_Cmdbtn(void);
 	virtual void Update_Wireframe(void);
+
+	virtual void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
 public:
 public:
 	CDropship(void);

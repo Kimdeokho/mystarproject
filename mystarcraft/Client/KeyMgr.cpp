@@ -16,6 +16,7 @@
 #include "Marine.h"
 #include "Tank.h"
 #include "SCV.h"
+#include "Ghost.h"
 #include "Firebat.h"
 #include "Medic.h"
 #include "Goliath.h"
@@ -23,6 +24,7 @@
 #include "Wraith.h"
 #include "Dropship.h"
 #include "Vulture.h"
+#include "Vessle.h"
 
 #include "Comandcenter.h"
 #include "T_gas.h"
@@ -44,6 +46,7 @@ CKeyMgr::CKeyMgr(void)
 	m_bDbClick_ready = false;
 	m_bwork = false;
 	m_bdraging = false;
+	m_select = false;
 
 	memset(&m_downpt , 0 , sizeof(POINT));
 	memset(&m_curpt , 0 , sizeof(POINT));
@@ -291,6 +294,7 @@ void CKeyMgr::Update(void)
 	{
 		OnceKeyDown(i);
 	}
+	OnceKeyDown(VK_ESCAPE);
 
 	MouseOnceKeyDown(VK_LBUTTON);
 	MouseKeyUp(VK_LBUTTON);
@@ -336,6 +340,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			if(true == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
 			{
 				CComanderMgr::GetInstance()->Minimappos_to_screen(vmousept);
+				CArea_Mgr::GetInstance()->SetChoiceTarget(NULL);
 			}
 			else
 			{
@@ -347,14 +352,13 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
 			CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);
 
-
-			CUnitMgr::GetInstance()->Intputkey_reaction(VK_RBUTTON);
-			
+			CUnitMgr::GetInstance()->Intputkey_reaction(VK_RBUTTON);			
 		}
 	}
 	if(true == m_bOnceKeyDown_complete[VK_LBUTTON])
 	{
 		m_bOnceKeyDown_complete[VK_LBUTTON] = false;		
+		m_select = false;
 
 		D3DXVECTOR2 vmousept;
 		if(m_clickwating['A'])
@@ -387,6 +391,23 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			
 			m_bwork = true;
 		}
+		else if(m_clickwating['D'])
+		{
+			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+			{
+				vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+
+				if(false == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+				{
+					vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+					CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+
+					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
+					//CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);
+					CUnitMgr::GetInstance()->Intputkey_reaction('D' , VK_LBUTTON);
+				}
+			}
+		}
 		else if(m_clickwating['I'])
 		{
 			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
@@ -396,6 +417,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				if(false == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
 				{
 					vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+					CArea_Mgr::GetInstance()->TargetChoice(vmousept);
 
 					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
 					CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);	
@@ -414,8 +436,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				{
 					vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 
-					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
-					CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);	
+					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);	
 
 					CUnitMgr::GetInstance()->Intputkey_reaction('U' , VK_LBUTTON);
 				}
@@ -426,6 +447,38 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Intputkey_reaction('S' , VK_LBUTTON);
 
 			m_bwork = true;
+		}
+		else if(m_clickwating['Y'])
+		{
+			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+			{
+				vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+
+				if(false == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+				{
+					vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
+					CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+
+					CUnitMgr::GetInstance()->Intputkey_reaction('Y' , VK_LBUTTON);
+				}
+			}
+		}
+		else if(m_clickwating['N'])
+		{
+			if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+			{
+				vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+
+				if(false == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+				{
+					vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
+					CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);
+
+					CUnitMgr::GetInstance()->Intputkey_reaction('N' , VK_LBUTTON);
+				}
+			}
 		}
 		//else if(m_clickwating['C'])
 		//{
@@ -445,6 +498,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CFontMgr::GetInstance()->Set_KeyInput_Font(L"ÁÂ Å¬¸¯" );
 
 			m_bwork = false;
+			m_select =  true;
 		}
 
 		memset(m_clickwating , 0 , sizeof(m_clickwating));
@@ -577,10 +631,10 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		}
 		else
 		{
-			//if(CUnitMgr::GetInstance()->GetUnitlistempty())
-			//	m_clickwating['D'] = false;
-			//else
-			//	m_clickwating['D'] = true;
+			if(CUnitMgr::GetInstance()->GetUnitlistempty())
+				m_clickwating['D'] = false;
+			else
+				m_clickwating['D'] = true;
 
 			D3DXVECTOR2 vpos;
 			for(int i = 0; i < 10; ++i)
@@ -655,20 +709,20 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			//else
 			//	m_clickwating['C'] = true;
 
-			D3DXVECTOR2 vpos;
-			for(int i = 0; i < 10; ++i)
-			{
-				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-				vpos.x += rand()%50 - 25;
-				vpos.y += rand()%50 - 25;
-				pObj = new CFirebat;
-				CObjMgr::GetInstance()->AddObject(pObj , OBJ_FIREBAT);
-				pObj->SetPos(vpos);
-				pObj->Initialize();
-				objcnt += 1;
-			}
+			//D3DXVECTOR2 vpos;
+			//for(int i = 0; i < 10; ++i)
+			//{
+			//	vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			//	vpos.x += rand()%50 - 25;
+			//	vpos.y += rand()%50 - 25;
+			//	pObj = new CFirebat;
+			//	CObjMgr::GetInstance()->AddObject(pObj , OBJ_FIREBAT);
+			//	pObj->SetPos(vpos);
+			//	pObj->Initialize();
+			//	objcnt += 1;
+			//}
 
-			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+			//CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 			CUnitMgr::GetInstance()->Intputkey_reaction('F');
 		}
 	}
@@ -700,7 +754,7 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 				vpos.x += rand()%50 - 25;
 				vpos.y += rand()%50 - 25;
 				pObj = new CGoliath;
-				CObjMgr::GetInstance()->AddObject(pObj , OBJ_FIREBAT);
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_GHOLATH);
 				pObj->SetPos(vpos);
 				pObj->Initialize();
 				objcnt += 1;
@@ -709,6 +763,45 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 
 			CUnitMgr::GetInstance()->Intputkey_reaction('G');
+		}
+	}
+
+	if(true == m_bOnceKeyDown_complete['H'])
+	{
+		m_bOnceKeyDown_complete['H'] = false;
+		
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'H');
+
+			m_clickwating['B'] = false;
+		}
+		else if(m_clickwating['V'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('V' , 'H');
+
+			m_clickwating['V'] = false;
+		}
+		else
+		{
+			D3DXVECTOR2 vpos;
+			for(int i = 0; i < 10; ++i)
+			{
+				vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vpos.x += rand()%50 - 25;
+				vpos.y += rand()%50 - 25;
+				pObj = new CGhost;
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_GHOST);
+				pObj->SetPos(vpos);
+				pObj->Initialize();
+				objcnt += 1;
+			}
+
+			CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('H');
 		}
 	}
 
@@ -751,11 +844,23 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		CUnitMgr::GetInstance()->Intputkey_reaction('L');
 	}
 
+	if(true == m_bOnceKeyDown_complete['M'])
+	{
+		m_bOnceKeyDown_complete['M'] = false;
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('M');
+	}
+
 	if(true == m_bOnceKeyDown_complete['N'])
 	{
 		m_bOnceKeyDown_complete['N'] = false;
 
 		//m_clickwating['N'] = true;
+
+		if(CUnitMgr::GetInstance()->GetUnitlistempty())
+			m_clickwating['N'] = false;
+		else
+			m_clickwating['N'] = true;
 
 		CUnitMgr::GetInstance()->Intputkey_reaction('N');
 	}
@@ -837,18 +942,18 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Intputkey_reaction('S');
 		}
 
-		//D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-		//for(int i = 0; i < 10; ++i)
-		//{
-		//	vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-		//	vpos.x += rand()%50 - 25;
-		//	vpos.y += rand()%50 - 25;
-		//	pObj = new CSCV;
-		//	CObjMgr::GetInstance()->AddObject(pObj , OBJ_SCV);
-		//	pObj->SetPos(vpos);
-		//	pObj->Initialize();
-		//	objcnt += 1;
-		//}
+		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		for(int i = 0; i < 10; ++i)
+		{
+			vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			vpos.x += rand()%50 - 25;
+			vpos.y += rand()%50 - 25;
+			pObj = new CSCV;
+			CObjMgr::GetInstance()->AddObject(pObj , OBJ_SCV);
+			pObj->SetPos(vpos);
+			pObj->Initialize();
+			objcnt += 1;
+		}
 
 		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 	}
@@ -923,6 +1028,55 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		}		
 	}
 
+	if(true == m_bOnceKeyDown_complete['O'])
+	{
+		m_bOnceKeyDown_complete['O'] = false;
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('O');
+	}
+
+	if(true == m_bOnceKeyDown_complete['P'])
+	{
+		m_bOnceKeyDown_complete['P'] = false;
+
+		CUnitMgr::GetInstance()->Intputkey_reaction('P');
+	}
+
+	if(true == m_bOnceKeyDown_complete['V'])
+	{
+		m_bOnceKeyDown_complete['V'] = false;
+
+		if(m_clickwating['B'])
+		{
+			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
+				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'V');
+
+			m_clickwating['B'] = false;
+		}
+		else
+		{
+			if(CUnitMgr::GetInstance()->GetUnitlistempty())
+				m_clickwating['V'] = false;
+			else
+				m_clickwating['V'] = true;
+
+			CUnitMgr::GetInstance()->Intputkey_reaction('V');
+		}
+
+		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		for(int i = 0; i < 10; ++i)
+		{
+			vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			vpos.x += rand()%50 - 25;
+			vpos.y += rand()%50 - 25;
+			pObj = new CVessle;
+			CObjMgr::GetInstance()->AddObject(pObj , OBJ_VESSEL);
+			pObj->SetPos(vpos);
+			pObj->Initialize();
+			objcnt += 1;
+		}
+	}
+
 	if(true == m_bOnceKeyDown_complete['W'])
 	{
 		m_bOnceKeyDown_complete['W'] = false;
@@ -962,48 +1116,14 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 		}
 	}
 
-
-
-	if(true == m_bOnceKeyDown_complete['O'])
+	if(true == m_bOnceKeyDown_complete['Y'])
 	{
-		m_bOnceKeyDown_complete['O'] = false;
+		m_bOnceKeyDown_complete['Y'] = false;
 
-		CUnitMgr::GetInstance()->Intputkey_reaction('O');
-	}
-
-	if(true == m_bOnceKeyDown_complete['V'])
-	{
-		m_bOnceKeyDown_complete['V'] = false;
-
-		if(m_clickwating['B'])
-		{
-			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
-				CUnitMgr::GetInstance()->Intputkey_reaction('B' , 'V');
-
-			m_clickwating['B'] = false;
-		}
+		if(CUnitMgr::GetInstance()->GetUnitlistempty())
+			m_clickwating['Y'] = false;
 		else
-		{
-			if(CUnitMgr::GetInstance()->GetUnitlistempty())
-				m_clickwating['V'] = false;
-			else
-				m_clickwating['V'] = true;
-
-			CUnitMgr::GetInstance()->Intputkey_reaction('V');
-		}
-
-		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-		for(int i = 0; i < 10; ++i)
-		{
-			vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-			vpos.x += rand()%50 - 25;
-			vpos.y += rand()%50 - 25;
-			pObj = new CVulture;
-			CObjMgr::GetInstance()->AddObject(pObj , OBJ_VULTURE);
-			pObj->SetPos(vpos);
-			pObj->Initialize();
-			objcnt += 1;
-		}
+			m_clickwating['Y'] = true;
 	}
 
 	if(true == m_bOnceKeyDown_complete['Z'])
@@ -1027,8 +1147,14 @@ void CKeyMgr::Intput_oncekey_reaction(void)
 
 		CFontMgr::GetInstance()->Setnumber_combine_Font(L"obj_num%d" , objcnt , 400, 300);
 		CUnitMgr::GetInstance()->Intputkey_reaction('Z');
+	}
+	if(true == m_bOnceKeyDown_complete[VK_ESCAPE])
+	{
+		m_bOnceKeyDown_complete[VK_ESCAPE] = false;
 
+		memset(m_clickwating , 0 , sizeof(m_clickwating));
 
+		CUnitMgr::GetInstance()->Intputkey_reaction(VK_ESCAPE);
 	}
 }
 void CKeyMgr::Intput_turbokey_reaction(void)
@@ -1088,7 +1214,8 @@ void CKeyMgr::Intput_keyup_reaction(void)
 		if( false == CComanderMgr::GetInstance()->intersect_minimap_mousept(m_downpt) )
 		{
 			CFontMgr::GetInstance()->Set_KeyInput_Font(L"ÁÂ Å¬¸¯ UP" );
-			CLineMgr::GetInstance()->Select_unit();
+			if(true == m_select)
+				CLineMgr::GetInstance()->Select_unit();
 		}
 	}
 }

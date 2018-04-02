@@ -30,7 +30,7 @@ void CWraith_Bim::Initialize(void)
 	m_vcurdir = m_vdest_pos - m_vPos;
 	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_LaserAnim(m_matWorld , L"WRAITH_BIM")));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_LaserAnim(m_matWorld , L"WRAITH_BIM", 2)));
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -67,18 +67,18 @@ void CWraith_Bim::Update(void)
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 8*8)
 	{
 		if(NULL != m_ptarget)
-			m_ptarget->SetDamage(6, DAMAGE_NOMAL);
+			m_ptarget->SetDamage(6 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt, DAMAGE_NOMAL);
 
 		m_bdestroy = true;
 		Dead();
 	}	
+
+	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 }
 
 void CWraith_Bim::Render(void)
 {
-	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
-	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
-
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
 
@@ -93,11 +93,23 @@ void CWraith_Bim::Release(void)
 
 void CWraith_Bim::Dead(void)
 {
+	SORT_ID esort_id;
+
+	if(NULL != m_ptarget)
+	{
+		if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType)
+			esort_id = SORT_GROUND;
+		else
+			esort_id = SORT_AIR_EFF;
+	}
+	else
+		esort_id = SORT_GROUND;
+
 	CObj* peff = NULL;
 	if(NULL != m_ptarget)
-		peff = new CGeneraEff(L"BIM_HIT" ,m_ptarget->GetPos()  , D3DXVECTOR2(1.1f , 1.1f), SORT_AIR_EFF , 2.f);
+		peff = new CGeneraEff(L"BIM_HIT" ,m_ptarget->GetPos()  , D3DXVECTOR2(1.1f , 1.1f), esort_id , 2.f);
 	else
-		peff = new CGeneraEff(L"BIM_HIT" ,m_vdest_pos , D3DXVECTOR2(1.1f , 1.1f), SORT_AIR_EFF , 2.f);
+		peff = new CGeneraEff(L"BIM_HIT" ,m_vdest_pos , D3DXVECTOR2(1.1f , 1.1f), esort_id , 2.f);
 
 	peff->Initialize();
 	CObjMgr::GetInstance()->AddEffect(peff);

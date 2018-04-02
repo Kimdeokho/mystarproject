@@ -17,10 +17,16 @@
 #include "UI_MiniUnitDisplay.h"
 #include "ComanderMgr.h"
 #include "Mineral.h"
+#include "Skill.h"
+
 CUnit::CUnit(void)
 {
+	m_com_usingskill = NULL;
 	m_select_ui = NULL;
 	m_miniunit_display = NULL;
+	m_upg_info = NULL;
+	memset(m_upg_feedback , 0 , sizeof(m_upg_feedback));
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 CUnit::~CUnit(void)
@@ -52,7 +58,10 @@ void CUnit::Release(void)
 		m_miniunit_display->SetDestroy(true);
 
 	if(NULL != m_select_ui)
-		m_select_ui->SetDestroy(true);
+		Safe_Delete(m_select_ui);
+
+	if(NULL != m_energybar_ui)
+		Safe_Delete(m_energybar_ui);
 }
 
 void CUnit::Dead(void)

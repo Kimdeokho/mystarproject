@@ -16,9 +16,12 @@
 
 #include "UnitMgr.h"
 #include "FontMgr.h"
+#include "TimeMgr.h"
 
 #include "UI_armyunitlist.h"
 #include "UI_Boarding_info.h"
+
+#include "UI_Cmd_info.h"
 
 IMPLEMENT_SINGLETON(CComanderMgr)
 CComanderMgr::CComanderMgr(void)
@@ -36,7 +39,7 @@ CComanderMgr::~CComanderMgr(void)
 	Safe_Delete(m_building_info);
 	Safe_Delete(m_armyunitlist_info);
 	Safe_Delete(m_boarding_info);
-	Release_Cmdbtn();
+	Safe_Delete(m_cmd_info);
 
 	list<CUI*>::iterator iter = m_wireframe_ui_list.begin();
 	list<CUI*>::iterator iter_end = m_wireframe_ui_list.end();
@@ -58,45 +61,35 @@ void CComanderMgr::Initialize(RACE erace)
 
 	m_main_interface->Initialize();
 
-	m_minimap = new CMinimap;
-	m_minimap->Initialize();
-
-	for(int i = 0; i < 3; ++i)
-	{
-		for(int j = 0; j < 3; ++j)
-		{
-			m_vcmdbtn_pos[ i * 3 + j ].x = float(608 + j * 46);
-			m_vcmdbtn_pos[ i * 3 + j ].y = float(496 + i * 41);
-		}
-	}
-
-	m_cmdbtn_list.reserve(9);
-	m_cmdbtn_list.resize(9);
 
 	memset(m_terran_build , 0 , sizeof(m_terran_build));
 
-	m_pobj_adress = NULL;
-	for(int i = 0; i < 9; ++i)
-	{
-		m_cmdbtn_list[i] = new CCmd_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , false);
-	}
+	D3DXVECTOR2 interface_pos = m_main_interface->GetPos();
 
-	m_temp_cmd_btn = BTN_NONE;
+	m_pobj_adress = NULL;
 	m_old_state = STATE_NONE;
+
+	m_minimap = new CMinimap;
+	m_minimap ->SetPos( D3DXVECTOR2(interface_pos.x + 6 , interface_pos.y + 348) );
+	m_minimap->Initialize();
 
 	m_production_bar = new CProduction_bar;
 	m_production_bar->Initialize();
 
-	m_building_info = new CUI_Building_info(D3DXVECTOR2(280,520));
+	m_building_info = new CUI_Building_info(D3DXVECTOR2(interface_pos.x + 243 , interface_pos.y + 403));
 	m_building_info->Initialize();
 
-	m_armyunitlist_info = new CUI_armyunitlist(D3DXVECTOR2(250,520));
+	m_armyunitlist_info = new CUI_armyunitlist(D3DXVECTOR2(interface_pos.x + 165 , interface_pos.y + 395));
 	m_armyunitlist_info->Initialize();
 	((CUI_armyunitlist*)m_armyunitlist_info)->set_armylist(CUnitMgr::GetInstance()->Getcur_unitlist());
 
 	m_boarding_info = new CUI_Boarding_info;
-	m_boarding_info->SetPos(D3DXVECTOR2(320,520));
+	m_boarding_info->SetPos(D3DXVECTOR2(interface_pos.x + 245 , interface_pos.y + 402));
 	m_boarding_info->Initialize();
+
+	m_cmd_info = new CUI_Cmd_info;
+	m_cmd_info->SetPos( D3DXVECTOR2(interface_pos.x + 510 , interface_pos.y + 360));
+	m_cmd_info->Initialize();
 }
 
 void CComanderMgr::Update(void)
@@ -109,6 +102,7 @@ void CComanderMgr::Update(void)
 	m_production_bar->Update();
 	m_building_info->Update();
 	m_armyunitlist_info->Update();
+	m_cmd_info->Update();
 }
 
 void CComanderMgr::Render(void)
@@ -123,16 +117,7 @@ void CComanderMgr::Render(void)
 	}
 
 	m_main_interface->Render();
-
-
-	for(int i = 0; i < 9; ++i) 
-	{
-		if(NULL == m_cmdbtn_list[i])
-			continue;
-
-		m_cmdbtn_list[i]->Render();
-	}
-
+	
 	list<CUI*>::iterator iter = m_wireframe_ui_list.begin();
 	list<CUI*>::iterator iter_end = m_wireframe_ui_list.end();
 
@@ -143,8 +128,11 @@ void CComanderMgr::Render(void)
 	m_armyunitlist_info->Render();
 	m_production_bar->Render();
 	m_boarding_info->Render();
+	m_cmd_info->Render();
 
 	m_minimap->Render();
+
+	
 }
 
 void CComanderMgr::SetMiniUnit_display(CUI* pui)
@@ -187,170 +175,9 @@ void CComanderMgr::ClearPreview(void)
 {
 	m_vec_preview.clear();
 }
-void CComanderMgr::Update_Cmdbtn(CObj* pobj)
-{
-	//pobj 동적 바인딩으로 변경가능
-	CUI* pui = NULL;
-
-	if(NULL == pobj)
-	{
-		for(int i = 5; i < 9; ++i)
-		{
-			pui = m_cmdbtn_list[i];
-			((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
-		}
-
-		//m_pobj_adress = NULL;
-
-		//서로다른 유닛 여러마리
-		Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-		Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-		Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-		Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-		Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
-	}
-	else
-	{
-		//같은종류
-
-		for(int i = 0; i < 9; ++i)
-		{
-			pui = m_cmdbtn_list[i];
-			((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
-		}
-
-		pobj->Update_Cmdbtn();
-	}
-
-}
 void CComanderMgr::Update_Wireframe(CObj* pobj)
 {
 	pobj->Update_Wireframe();
-}
-void CComanderMgr::Create_Cmdbtn(const int& idx ,const TCHAR* texkey, CMD_BTN ebtn , bool is_active)
-{
-	CUI* pui = NULL;
-	if(NULL != m_cmdbtn_list[idx])
-	{
-		pui = m_cmdbtn_list[idx];
-		if(ebtn == ((CCmd_btn*)pui)->GetCmdbtn_id())
-			return;
-		else
-		{
-			((CCmd_btn*)pui)->Init_btn(texkey , ebtn , m_vcmdbtn_pos[idx] , is_active);
-		}
-	}
-}
-void CComanderMgr::T_Cmdbtn_B_buildsetting(void)
-{
-	//단축키 b를 누르면 나오는 종족 테크트리
-
-	CUI* pui = NULL;
-	for(int i = 0; i < 9; ++i)
-	{
-		pui = m_cmdbtn_list[i];
-		((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
-	}
-
-	Create_Cmdbtn(0 , L"BTN_COMMAND_CENTER" , BTN_COMAND_CENTER);
-	Create_Cmdbtn(1 , L"BTN_SUPPLY" , BTN_SUPPLY );
-	Create_Cmdbtn(2 , L"BTN_T_GAS" , BTN_T_GAS );
-
-	if(0 < m_terran_build[T_COMMANDCENTER])
-	{
-		Create_Cmdbtn(3 , L"BTN_BARRACK" , BTN_BARRACK , true);
-		Create_Cmdbtn(4 , L"BTN_EB" , BTN_EB , true);		
-	}
-	else
-	{
-		Create_Cmdbtn(3 , L"BTN_BARRACK" , BTN_BARRACK , false);
-		Create_Cmdbtn(4 , L"BTN_EB" , BTN_EB , false);		
-	}
-
-	if( 0 < m_terran_build[T_BARRACK])
-	{
-		Create_Cmdbtn(6 , L"BTN_ACADEMY" , BTN_ACADEMY);
-		Create_Cmdbtn(7 , L"BTN_BUNKER" , BTN_BUNKER);
-	}
-	else
-	{
-		Create_Cmdbtn(6 , L"BTN_ACADEMY" , BTN_ACADEMY , false);
-		Create_Cmdbtn(7 , L"BTN_BUNKER" , BTN_BUNKER , false);
-	}
-
-	if( 0 < m_terran_build[T_EB])
-	{
-		Create_Cmdbtn(5 , L"BTN_TURRET" , BTN_TURRET);
-	}
-	else
-		Create_Cmdbtn(5 , L"BTN_TURRET" , BTN_TURRET , false);
-
-}
-void CComanderMgr::T_Cmdbtn_V_buildsetting(void)
-{
-	//단축키 b를 누르면 나오는 종족 테크트리
-
-	CUI* pui = NULL;
-	for(int i = 0; i < 9; ++i)
-	{
-		pui = m_cmdbtn_list[i];
-		((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
-	}
-
-	if( 0 < m_terran_build[T_BARRACK])
-	{
-		Create_Cmdbtn(0 , L"BTN_FACTORY" , BTN_FACTORY);
-	}
-	else
-	{
-		Create_Cmdbtn(0 , L"BTN_FACTORY" , BTN_FACTORY , false);
-	}
-
-	if( 0 < m_terran_build[T_FACTORY])
-	{
-		Create_Cmdbtn(1 , L"BTN_STARPORT" , BTN_STARPORT);
-		Create_Cmdbtn(3 , L"BTN_ARMORY" , BTN_ARMORY);
-	}
-	else
-	{
-		Create_Cmdbtn(1 , L"BTN_STARPORT" , BTN_STARPORT , false);
-		Create_Cmdbtn(3 , L"BTN_ARMORY" , BTN_ARMORY , false);
-	}
-
-	if( 0 < m_terran_build[T_STARPORT])
-	{
-		Create_Cmdbtn(2 , L"BTN_SIENCE" , BTN_SIENCE);
-	}
-	else
-	{
-		Create_Cmdbtn(2 , L"BTN_SIENCE" , BTN_SIENCE , false);
-	}
-
-}
-bool CComanderMgr::Active_Cmdbtn(const int& idx, CMD_BTN ebtn)
-{
-	if(NULL == m_cmdbtn_list[idx])
-		return false;
-	else
-	{
-		CUI* pui = m_cmdbtn_list[idx];
-		if( ebtn == ((CCmd_btn*)pui)->GetCmdbtn_id() )
-		{
-			return true;
-		}
-	}
-	return false;
-}
-void CComanderMgr::Release_Cmdbtn(void)
-{
-	if(!m_cmdbtn_list.empty())
-	{
-		for(int i = 0; i < 9; ++i)
-		{
-			Safe_Delete( m_cmdbtn_list[i] );
-		}
-		m_cmdbtn_list.clear();
-	}
 }
 
 void CComanderMgr::T_BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt)
@@ -363,48 +190,16 @@ int CComanderMgr::Get_T_BuildTech(TERRAN_BUILD_TECH etech )
 }
 void CComanderMgr::Click_cmdbtn(const D3DXVECTOR2& vpt)
 {
-	for(size_t i = 0; i < m_cmdbtn_list.size(); ++i)
-	{
-		if( MyPtInrect( vpt ,  &(m_cmdbtn_list[i]->GetMyRect()) ) )
-		{
-			m_temp_cmd_btn = ((CCmd_btn*)m_cmdbtn_list[i])->GetCmdbtn_id();
-
-			if(BTN_NONE == m_temp_cmd_btn)
-				continue;
-			else
-				return;
-		}
-	}
-
-	m_temp_cmd_btn = BTN_NONE;
-}
-CMD_BTN CComanderMgr::Get_Cmd_btn(void)
-{
-	return m_temp_cmd_btn;
+	((CUI_Cmd_info*)m_cmd_info)->Click_cmdbtn(vpt);
 }
 
-bool CComanderMgr::clear_cmdbtn(void)
-{
-	if(!m_cmdbtn_list.empty())
-	{
-		CUI* pui = NULL;
-		for(int i = 0; i < 9; ++i)
-		{
-			pui = m_cmdbtn_list[i];
-			if(BTN_NONE != ((CCmd_btn*)pui)->GetCmdbtn_id())
-				((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
-		}
-	}
-
-	return true;
-}
-bool CComanderMgr::renewal_wireframe_ui(CObj* pobj , STATE estate)
+bool CComanderMgr::renewal_wireframe_ui(CObj* pobj , STATE state)
 {
 	if(m_pobj_adress != pobj ||
-		m_old_state != estate)
+		m_old_state != state)
 	{		
 		m_pobj_adress = pobj;
-		m_old_state = estate;
+		m_old_state = state;
 
 		if( !m_wireframe_ui_list.empty())
 		{
@@ -452,11 +247,20 @@ void CComanderMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
 		++idx;
 	}
 }
-void CComanderMgr::set_boarding_infolist(multimap<int , BOARDING_INFO , greater<int> >& infolist)
+void CComanderMgr::set_boarding_infolist(multimap<int , BOARDING_INFO , greater<int> >& infolist , OBJID eid)
 {
-	((CUI_Boarding_info*)m_boarding_info)->set_boarding_infolist(infolist);
+	((CUI_Boarding_info*)m_boarding_info)->set_boarding_infolist(infolist , eid);
 }
-const UPG_INFO& CComanderMgr::GetUpginfo(UPGRADE eupg)
+UPG_INFO* CComanderMgr::GetUpginfo()
 {
-	return m_upginfo[eupg];
+	return m_upginfo;
+}
+const CUI* CComanderMgr::GetCmd_info(void)	
+{
+	return m_cmd_info;
+}
+
+const D3DXVECTOR2& CComanderMgr::GetMainInterface_pos(void)
+{
+	return m_main_interface->GetPos();
 }

@@ -11,6 +11,7 @@
 #include "Com_Collision.h"
 #include "Com_Pathfind.h"
 #include "Com_GollegAnim.h"
+#include "Com_CC.h"
 
 #include "TileManager.h"
 
@@ -25,6 +26,12 @@
 #include "UI_Select.h"
 
 #include "Goliath_part.h"
+
+#include "ComanderMgr.h"
+#include "UI_Cmd_info.h"
+#include "UI_Wireframe.h"
+#include "UI_Energy_bar.h"
+#include "Skill_Defensive.h"
 CGoliath::CGoliath(void)
 {
 }
@@ -42,13 +49,15 @@ void CGoliath::Initialize(void)
 	CUnit::Initialize();
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = UNIT;
+	m_ecategory = CATEGORY_UNIT;
 	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_GOLIATH;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = IDLE;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = IDLE;
+	m_unitinfo.order = ORDER_NONE;
+	m_unitinfo.esize = SIZE_SMALL;
+	m_unitinfo.erace = OBJRACE_MECHANIC;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.hp = 125;
 	m_unitinfo.maxhp = m_unitinfo.hp;
@@ -65,10 +74,12 @@ void CGoliath::Initialize(void)
 	m_pgoliath_arm->SetPos(m_vPos);
 	m_pgoliath_arm->SetObjID(m_obj_id);
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 32);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 16);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex , true);
 	m_com_anim = new CCom_GollegAnim(m_matWorld);
+	m_com_cc = new CCom_CC();
 
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , m_com_collision ) ) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
@@ -85,7 +96,10 @@ void CGoliath::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select48" , m_vPos , 8);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 48);
+	m_energybar_ui->Initialize();
+
 }
 
 void CGoliath::Update(void)
@@ -98,55 +112,53 @@ void CGoliath::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
 
-
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
-		m_pgoliath_arm->SetState(IDLE);
+
+		if(ATTACK != m_pgoliath_arm->GetUnitinfo().state)
+			m_pgoliath_arm->SetState(IDLE);
 	}
-	else if(MOVE == m_unitinfo.estate || COLLISION == m_unitinfo.estate)
+	else if(MOVE == m_unitinfo.state || COLLISION == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 		m_pgoliath_arm->Setdir(m_vcurdir);
 		m_pgoliath_arm->SetState(MOVE);
 	}
 
-	if(ORDER_NONE == m_unitinfo.eorder)
+	if(ORDER_NONE == m_unitinfo.order)
 	{
 		m_pgoliath_arm->SetOrder(ORDER_NONE);
 	}
 
 	sync_arm();
-	m_pgoliath_arm->Update();	
+	m_pgoliath_arm->SetActive(m_unitinfo.is_active);
+	m_pgoliath_arm->Update();
+
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CGoliath::Render(void)
 {
-	if( BOARDING == m_unitinfo.estate )
+	if( false == m_unitinfo.is_active )
 		return;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 
+	m_select_ui->Render();
 	m_com_anim->Render();
-
 	m_pgoliath_arm->Render();
+	m_com_cc->Render();
+	m_energybar_ui->Render();
 
 	if(NULL != m_com_pathfind)
 		m_com_pathfind->Render();
 }
 
-void CGoliath::Release(void)
-{
-	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	Safe_Delete(m_pgoliath_arm);
-}
 
 void CGoliath::Inputkey_reaction(const int& nkey)
 {
@@ -157,16 +169,20 @@ void CGoliath::Inputkey_reaction(const int& nkey)
 	}
 	if(VK_RBUTTON == nkey)
 	{
-			if(TRANSFORMING != m_unitinfo.estate)
+			if(TRANSFORMING != m_unitinfo.state)
 			{
-				m_unitinfo.estate = MOVE;
-				m_unitinfo.eorder = ORDER_MOVE;
+				m_unitinfo.state = MOVE;
+				m_unitinfo.order = ORDER_MOVE;
 				m_pgoliath_arm->SetOrder(ORDER_MOVE);
 				m_pgoliath_arm->SetState(MOVE);
 
 				if(NULL != m_com_pathfind)
 				{
 					D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+
+					CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
+					if(NULL != ptarget)
+						m_bmagicbox = false;
 
 					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
@@ -184,8 +200,8 @@ void CGoliath::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
 
-		m_unitinfo.eorder = ORDER_MOVE_ATTACK;
-		m_unitinfo.estate = MOVE;
+		m_unitinfo.order = ORDER_MOVE_ATTACK;
+		m_unitinfo.state = MOVE;
 		m_pgoliath_arm->SetOrder(ORDER_MOVE_ATTACK);
 		m_pgoliath_arm->SetState(MOVE);				
 
@@ -203,6 +219,15 @@ void CGoliath::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	m_pgoliath_arm->Inputkey_reaction(firstkey , secondkey);
 }
 
+void CGoliath::Release(void)
+{
+	CObj::area_release();
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	Safe_Delete(m_pgoliath_arm);
+}
+
 void CGoliath::Dead(void)
 {
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
@@ -213,4 +238,104 @@ void CGoliath::Dead(void)
 void CGoliath::sync_arm(void)
 {
 	((CGoliath_part*)m_pgoliath_arm)->setarm_pos(m_vPos);
+}
+void CGoliath::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
+{
+	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();
+
+	float tempdamage = 0.f;
+
+	if(NULL != pskill)
+	{
+		int shild = ((CSkill_Defensive*)pskill)->GetShild();
+		((CSkill_Defensive*)pskill)->SetDamage(idamage);
+
+		if( shild - idamage > 0)
+			return;
+		else
+			tempdamage = float(idamage - shild); 
+	}
+	else
+		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt);
+
+	if( ARMOR_SMALL == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.5f;
+	}
+	else if( ARMOR_MEDIUM == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.5f;
+		else if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.75f;
+	}
+	else if( ARMOR_LARGE == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.25f;
+	}
+
+	m_unitinfo.hp -= (int)(tempdamage + 0.5f);
+
+	if(m_unitinfo.hp <= 0)
+	{
+		//킬수 + 1 하면 되는디..
+		m_unitinfo.hp = 0;
+		m_bdestroy = true;
+		Dead();
+	}
+	if(m_unitinfo.hp >= m_unitinfo.maxhp)
+		m_unitinfo.hp = m_unitinfo.maxhp;
+}
+void CGoliath::Update_Cmdbtn(void)
+{
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+}
+void CGoliath::Update_Wireframe(void)
+{
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_GOLIATH" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Goliath" ,interface_pos.x + 320 , interface_pos.y + 390 );
+	}
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"공중 공격력:%d + %d" , 20 , m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*4,
+		interface_pos.x + 310 , interface_pos.y + 422 , D3DCOLOR_ARGB(255,255,255,255));
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"지상 공격력:%d + %d" , 12 , m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*1,
+		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"방어력:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt 
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
+
 }

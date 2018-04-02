@@ -40,14 +40,14 @@ void CTurret_head::Initialize(void)
 	m_ebuild_tech = BUILD_NONE;
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = BUILDING;
+	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_TURRET;
 	m_eteamnumber = TEAM_0;
 
-	m_unitinfo.eAttackType = ATTACK_ANYTHING; //°øÁßÀ¸·Î ¹Ù²Ü²¨
+	m_unitinfo.eAttackType = ATTACK_ONLY_AIR; //°øÁßÀ¸·Î ¹Ù²Ü²¨
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = IDLE;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = IDLE;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.hp = 1;
 	m_unitinfo.mp = 0;
@@ -74,7 +74,7 @@ void CTurret_head::Initialize(void)
 
 void CTurret_head::Update(void)
 {
-	if(BUILD == m_unitinfo.estate)
+	if(BUILD == m_unitinfo.state)
 		return;
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -83,11 +83,11 @@ void CTurret_head::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(ATTACK == m_unitinfo.estate)
+	else if(ATTACK == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"ATTACK");
 	}
@@ -96,7 +96,7 @@ void CTurret_head::Update(void)
 
 void CTurret_head::Render(void)
 {
-	if(BUILD == m_unitinfo.estate)
+	if(BUILD == m_unitinfo.state)
 		return;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;

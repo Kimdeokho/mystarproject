@@ -36,6 +36,9 @@ void CCom_AirPathfind::Initialize(CObj* pobj /*= NULL*/)
 
 void CCom_AirPathfind::Update(void)
 {
+	if(TRANSFORMING == m_pobj->GetUnitinfo().state)
+		return;
+
 	m_pTarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
 
 	TargetChase();
@@ -64,12 +67,12 @@ void CCom_AirPathfind::TargetChase(void)
 	{
 		m_target_oldidx = -1;
 		m_fchase_time = 0.f;
-		if( ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().eorder)
+		if( ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
 		{
 			//명령이 어택무브 중이었다면 다시 지형을 찾는다.
 			SetDestPos(m_vgoalpos);
 		}
-		else if(ORDER_NONE == m_pobj->GetUnitinfo().eorder)
+		else if(ORDER_NONE == m_pobj->GetUnitinfo().order)
 		{
 			//m_pobj->SetState(IDLE);
 		}
@@ -87,28 +90,24 @@ void CCom_AirPathfind::Air_MovingUpdate(void)
 	m_vpos += m_vcurdir*GETTIME*(*m_fspeed);
 	if(CMyMath::pos_distance(m_vpos , m_vgoalpos) < 4*4)
 	{
-		m_vpos = m_vgoalpos;
+		//m_vpos = m_vgoalpos;
 		
 		m_is_arrive = true;
+		m_is_moveupdate = false;
 
-		if(ORDER_MOVE == m_pobj->GetUnitinfo().eorder || 
-			ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().eorder)
+		if(ORDER_MOVE == m_pobj->GetUnitinfo().order || 
+			ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
 		{
-			m_is_moveupdate = false;
 			m_pobj->SetOrder(ORDER_NONE);
 		}
-		else if(ORDER_GET_OFF == m_pobj->GetUnitinfo().eorder)
+		else if(ORDER_GET_OFF == m_pobj->GetUnitinfo().order)
 		{
 			CComponent* pcom;
 			pcom = m_pobj->GetComponent(COM_TRANSPORT);
-			if( false == ((CCom_Transport*)pcom)->unit_landing() )
-			{
-				m_is_moveupdate = false;
-				m_pobj->SetState(IDLE);
-				m_pobj->SetOrder(ORDER_NONE);
-			}
-		}
-		
+			((CCom_Transport*)pcom)->set_landing(true);
+			m_pobj->SetState(IDLE);
+			m_pobj->SetOrder(ORDER_NONE);
+		}	
 	}
 	else
 	{
@@ -124,12 +123,13 @@ void CCom_AirPathfind::Release(void)
 {
 
 }
-void CCom_AirPathfind::SetAir_moveupdate(bool is_dupdate)
+void CCom_AirPathfind::SetAir_moveupdate(bool is_update)
 {
-	m_is_moveupdate = is_dupdate;
+	m_is_moveupdate = is_update;
 }
 void CCom_AirPathfind::SetDestPos(const D3DXVECTOR2& vdestpos)
 {
+	//타겟 위치를 조정해준다
 	m_is_moveupdate = true;
 	m_vcurdest_pos = vdestpos;
 }

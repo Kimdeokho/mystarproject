@@ -50,6 +50,8 @@ void CCom_GolarmAnim::SetAnimation(const TCHAR* statekey)
 				m_frame.fframespeed *= 8;
 			if(L"MOVE" == m_statkey)
 				m_frame.fframespeed *= 2;
+
+			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 		}
 	}
 }
@@ -67,10 +69,11 @@ void CCom_GolarmAnim::Update(void)
 		{
 			++m_attackloop;
 
-			if(m_attackloop >= 2)
+			if(m_attackloop >= 3)
 			{
 				m_battack_end = true;
 				m_attackloop = 0;
+				m_pobj->SetState(IDLE);
 			}
 		}
 		m_frame.fcurframe = 0;
@@ -83,10 +86,8 @@ void CCom_GolarmAnim::Update(void)
 			m_battack_end = true;
 	}
 
-	const vector<TEXINFO*> vtemp = m_animtexture[m_texdiridx];
-
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (vtemp)[int(m_frame.fcurframe)];
+		m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 }
 
 void CCom_GolarmAnim::Render(void)

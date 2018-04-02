@@ -61,7 +61,7 @@ void CCom_WBattle::fire(CObj*& ptarget)
 	}
 	else
 	{
-		if(MOVE == m_pobj->GetUnitinfo().estate)
+		if(MOVE == m_pobj->GetUnitinfo().state)
 			m_pobj->SetState(IDLE);
 	}
 }

@@ -46,6 +46,7 @@ void CUI_Select::Update(void)
 	else if(NONE_SELECT == m_eflag)
 	{
 		m_brender = false;
+		return;
 	}
 	else if(BLINK_SELECT == m_eflag)
 	{
@@ -88,7 +89,7 @@ void CUI_Select::Render(void)
 	{		
 		m_matworld._42 += m_fweightY;
 		
-		if(CScrollMgr::inside_camera(m_matworld._41 ,m_matworld._42))
+		//if(CScrollMgr::inside_camera(m_matworld._41 ,m_matworld._42))
 		{
 			m_pSprite->SetTransform(&m_matworld);
 			m_pSprite->Draw(m_texinfo->pTexture , NULL , &m_vcenter , NULL , m_color);

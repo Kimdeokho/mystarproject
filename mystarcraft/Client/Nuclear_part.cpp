@@ -22,6 +22,11 @@
 #include "ComanderMgr.h"
 #include "Comandcenter.h"
 
+#include "UI_Wireframe.h"
+#include "UI_Energy_bar.h"
+
+#include "UI_Cmd_info.h"
+#include "UI_form.h"
 CNuclear_part::CNuclear_part(CObj* pobj)
 {
 	m_mainbuilding = pobj;
@@ -47,13 +52,13 @@ void CNuclear_part::Initialize(void)
 	m_ebuild_tech = T_NC_PART;
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = BUILDING;
-	m_eOBJ_NAME = OBJ_NUCLEAR;
+	m_ecategory = CATEGORY_BUILDING;
+	m_eOBJ_NAME = OBJ_NC_PART;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = BUILD;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = BUILD;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.maxhp = 600;
 	m_unitinfo.mp = 0;
@@ -77,27 +82,39 @@ void CNuclear_part::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 94 , m_vertex.bottom*1.8f);
+	m_energybar_ui->Initialize();
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
+	m_nuclear_cnt = 0;
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 void CNuclear_part::Update(void)
 {
+	D3DXVECTOR2 vpos;
+	vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
+	vpos.x -= CScrollMgr::m_fScrollX;
+	vpos.y -= CScrollMgr::m_fScrollY;
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d", m_upg_info[UPG_T_BCN0].upg_cnt, m_vPos.x - CScrollMgr::m_fScrollX, 
+		m_vPos.y - CScrollMgr::m_fScrollY);
+
+
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
 
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(BUILD == m_unitinfo.estate)
+	else if(BUILD == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
 
@@ -107,19 +124,30 @@ void CNuclear_part::Update(void)
 		if(m_unitinfo.hp >= m_unitinfo.maxhp )
 		{
 			m_unitinfo.hp = m_unitinfo.maxhp;
-			m_unitinfo.estate = IDLE;
+			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
+			m_mainbuilding->SetState(IDLE);
 		}
 	}
 
-	D3DXVECTOR2 vpos;
-	vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
-	vpos.x -= CScrollMgr::m_fScrollX;
-	vpos.y -= CScrollMgr::m_fScrollY;
-	CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
-		m_vPos.y - CScrollMgr::m_fScrollY);
+	if(!m_nuclear.empty())
+	{
+		m_nuclear[0].curtime += GETTIME;
+		
+		if(m_nuclear[0].curtime >= m_nuclear[0].maxtime)
+		{
+			m_upg_info[UPG_T_BCN0].upg_cnt += 1;
+			m_nuclear.clear();
+			m_nuclear_cnt += 1;
+
+			m_unitinfo.state = IDLE;
+		}
+	}
 
 	CTerran_building::fire_eff_update();
+
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CNuclear_part::Render(void)
@@ -127,7 +155,9 @@ void CNuclear_part::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_energybar_ui->Render();
 
 	CTerran_building::fire_eff_render();
 
@@ -137,7 +167,6 @@ void CNuclear_part::Render(void)
 void CNuclear_part::Release(void)
 {
 	CTerran_building::area_release();
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 
 void CNuclear_part::Dead(void)
@@ -151,13 +180,32 @@ void CNuclear_part::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
 	if(NULL != m_mainbuilding)
 		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
 }
-
+int CNuclear_part::GetNuclear_cnt(void)
+{
+	return m_nuclear_cnt;
+}
+void CNuclear_part::SetNuclear_cnt(const int& cnt)
+{
+	m_nuclear_cnt += cnt;
+}
 void CNuclear_part::Inputkey_reaction(const int& nkey)
 {
+	if('N' == nkey)
+	{
+		if(0 == m_nuclear_cnt)
+		{
+			m_unitinfo.state = DEVELOPING;
+			PRODUCTION_INFO temp;
+			temp.maxtime = 5;
+			m_nuclear.push_back(temp);
 
+		}
+	}
 }
 
 void CNuclear_part::Inputkey_reaction(const int& firstkey , const int& secondkey)
@@ -178,3 +226,73 @@ void CNuclear_part::Setlink(bool blink , CObj* pobj)
 		((CCom_PartAnim*)m_com_anim)->play_direction(-1);
 	}
 }
+void CNuclear_part::Update_Cmdbtn(void)
+{
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+
+	if(IDLE == m_unitinfo.state)
+	{
+		if(0 == m_nuclear_cnt)
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_NC_MISSILE" , BTN_NC_MISSILE);
+	}
+}
+
+void CNuclear_part::Update_Wireframe(void)
+{
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe( L"WIRE_NC_PART" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Nuclear Silo" ,interface_pos.x + 320 , interface_pos.y + 390 );
+
+		if(BUILD == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction" , interface_pos.x + 320 , interface_pos.y + 415);
+		}
+		else if(DEVELOPING == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Upgrading" , interface_pos.x + 330 , interface_pos.y + 415);
+
+			pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+			CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+
+			if(!m_nuclear.empty())
+			{
+				pui = new CUI_form(L"BTN_NC_MISSILE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+		}
+	}
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	if(BUILD == m_unitinfo.state)
+	{		
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+	}
+
+	if(!m_nuclear.empty())
+	{
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_nuclear[0].curtime / m_nuclear[0].maxtime );
+	}
+
+}
+

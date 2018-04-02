@@ -54,7 +54,10 @@ void CCom_WTank::fire(CObj*& ptarget)
 			m_attack_time = 0.f;
 			//총알생성
 			//타겟에게 데미지 ㄱㄱㄱㄱ
-			CObj* peff = new CGeneraEff(L"ToongToong" ,ptarget->GetPos() , D3DXVECTOR2(1.3f , 1.3f), SORT_GROUND_EFF);
+			m_targetpos = ptarget->GetPos();
+			m_targetpos -= m_pobj->GetcurDir()*(ptarget->GetVertex().right/2);
+
+			CObj* peff = new CGeneraEff(L"ToongToong" ,m_targetpos , D3DXVECTOR2(1.3f , 1.3f), SORT_GROUND_EFF);
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
@@ -65,12 +68,13 @@ void CCom_WTank::fire(CObj*& ptarget)
 			CObjMgr::GetInstance()->AddEffect(peff);
 			
 
-			(ptarget)->SetDamage( m_weapon_info.damage , m_weapon_info.eDamageType );
+			(ptarget)->SetDamage( m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*3,
+				m_weapon_info.eDamageType );
 		}
 	}
 	else
 	{
-		if(MOVE == m_pobj->GetUnitinfo().estate)
+		if(MOVE == m_pobj->GetUnitinfo().state)
 			m_pobj->SetState(IDLE);
 	}
 }

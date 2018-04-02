@@ -34,32 +34,44 @@ private:
 
 	bool					m_pathfind_pause;
 	bool					m_multithread;
-	bool					m_collision_move;
+	//bool					m_collision_move;
+	bool					m_is_stop;
 	bool					m_bmagicbox;
+	bool					m_is_end;
 	
 	MYRECT<float>			m_prerect;	
 
 	int						m_igoalidx;
 	int						m_curterrain_pathidx;
 	int						m_realpathidx;
+	int						m_terrain_step;
 	int						m_mainstep;
 	int						m_substep;
 	int						m_arrivalrange;
 	int						m_target_oldidx;
 	int						m_refindcnt;
+
+	const int*				m_curobj_idx;
+	int						m_oldobj_idx;
+	
 	float					m_collisionmove_time;
 	float					m_stoptime;
 	float					m_fchase_time;
 	float					m_refind_time; //어택땅할때 최종목표로 다시 길찾기하는 텀
+	float					m_timeoffset;;
 
+	int						m_oldcase;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);
 	virtual void Render(void);
 	virtual void Release(void);
 public:
+	bool arrive_check(const int& terrain_step);
+
 	void gap_initialize(bool bmagicbox);
 	void StartPathfinding(void);
+	void SetMultithread(bool bmulti);
 	void SetPathfindPause(bool bpause);
 	void SetTargetObjID(const int& objid);
 	void ClearPath(void);
@@ -69,6 +81,8 @@ public:
 	void SetFlowField(void);
 	void Setrally_path(const vector<D3DXVECTOR2>& vrally_path);
 	void Target_chase(void);
+public:
+	const D3DXVECTOR2 GetGoalPos(void);
 public:
 	CCom_Pathfind(D3DXVECTOR2& vpos , MYRECT<float>&	rc, const int& mainstep , const int& substep);
 	~CCom_Pathfind(void);

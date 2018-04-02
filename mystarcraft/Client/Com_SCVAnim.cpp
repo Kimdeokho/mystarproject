@@ -61,10 +61,8 @@ void CCom_SCVAnim::Update(void)
 			m_battack_sync = false;
 	}
 
-	const vector<TEXINFO*> vtemp = m_animtexture[m_texdiridx];
-
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (vtemp)[int(m_frame.fcurframe)];
+		m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 }
 
 void CCom_SCVAnim::Render(void)
@@ -116,9 +114,11 @@ void CCom_SCVAnim::SetAnimation(const TCHAR* statekey)
 		{
 			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
-		}
 
-		if(L"ATTACK" == m_statkey)
-			m_frame.fframespeed = (float)m_frame.umax*3.5f;
+			if(L"ATTACK" == m_statkey)
+				m_frame.fframespeed = (float)m_frame.umax*3.5f;
+
+			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
+		}
 	}
 }

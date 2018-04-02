@@ -8,6 +8,7 @@
 #include "GeneraEff.h"
 #include "MyMath.h"
 
+#include "ComanderMgr.h"
 #include "ScrollMgr.h"
 CGoliath_Bullet::CGoliath_Bullet(const int& target_id ,const D3DXVECTOR2& vdesetpos ,const D3DXVECTOR2& subdir)
 {
@@ -61,7 +62,22 @@ void CGoliath_Bullet::Update(void)
 	if(m_trail_time > 0.15f)
 	{
 		m_trail_time = 0.f;
-		CObj* peff = new CGeneraEff(L"TURRET_TRAIL" ,m_vPos , D3DXVECTOR2(1.3f , 1.3f), SORT_AIR_EFF);
+		UPG_INFO* temp_info = CComanderMgr::GetInstance()->GetUpginfo();
+
+		CObj* peff = NULL;
+		//if(temp_info[UPG_T_VFC3].upg_cnt >= 1)
+		//{
+		//	peff = new CGeneraEff(L"TURRET_TRAIL" ,m_vPos , D3DXVECTOR2(1.3f , 1.3f), 
+		//		SORT_AIR_EFF , 1, D3DCOLOR_ARGB(255,120,120,255));
+		//}
+		//else
+		//{
+		//	peff = new CGeneraEff(L"TURRET_TRAIL" ,m_vPos , D3DXVECTOR2(1.3f , 1.3f), 
+		//		SORT_AIR_EFF , 1, D3DCOLOR_ARGB(255,255,255,255));
+		//}
+		peff = new CGeneraEff(L"TURRET_TRAIL" ,m_vPos , D3DXVECTOR2(1.3f , 1.3f), 
+			SORT_AIR_EFF , 1.7f, D3DCOLOR_ARGB(255,255,255,255));
+
 		peff->Initialize();
 		CObjMgr::GetInstance()->AddEffect(peff);
 	}
@@ -92,7 +108,7 @@ void CGoliath_Bullet::Update(void)
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 2)
 	{
 		if(NULL != m_ptarget)
-			m_ptarget->SetDamage(10 , DAMAGE_BOOM);
+			m_ptarget->SetDamage(10 + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt * 2, DAMAGE_BOOM);
 
 		m_bdestroy = true;
 		Dead();
@@ -103,7 +119,7 @@ void CGoliath_Bullet::Update(void)
 
 	if(m_dirpower > 0.23f)
 	{
-		m_sign = -1.f;;
+		m_sign = -1.f;
 	}
 
 	if(m_dirpower <= 0.f)

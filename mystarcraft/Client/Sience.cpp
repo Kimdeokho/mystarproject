@@ -26,6 +26,12 @@
 
 #include "Ghost_addon.h"
 #include "Battle_addon.h"
+
+#include "UI_Cmd_info.h"
+#include "UI_Wireframe.h"
+#include "UI_form.h"
+
+#include "UI_Energy_bar.h"
 CSience::CSience(void)
 {
 }
@@ -50,13 +56,13 @@ void CSience::Initialize(void)
 	m_ebuild_tech = T_SIENCE;
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = BUILDING;
+	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_SIENCE;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = BUILD;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = BUILD;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.maxhp = 850;
 	m_unitinfo.mp = 0;
@@ -80,12 +86,16 @@ void CSience::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select146" , m_vPos , 10);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 146 , m_vertex.bottom*1.6f);
+	m_energybar_ui->Initialize();
 
 	m_is_take_off = false;
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 void CSience::Update(void)
@@ -98,14 +108,12 @@ void CSience::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
 
-
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(BUILD == m_unitinfo.estate)
+	else if(BUILD == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
 
@@ -115,11 +123,11 @@ void CSience::Update(void)
 		if(m_unitinfo.hp >= m_unitinfo.maxhp )
 		{
 			m_unitinfo.hp = m_unitinfo.maxhp;
-			m_unitinfo.estate = IDLE;
+			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
 		}
 	}
-	else if(TAKE_OFF == m_unitinfo.estate)
+	else if(TAKE_OFF == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"AIR");
 
@@ -129,7 +137,7 @@ void CSience::Update(void)
 		{
 			//이륙 완료
 			m_vPos.y = m_vairpos.y - 48.f;
-			m_unitinfo.estate = AIR_IDLE;
+			m_unitinfo.state = AIR_IDLE;
 
 			if(true == m_is_autoinstall)
 			{
@@ -140,7 +148,7 @@ void CSience::Update(void)
 			}
 		}
 	}
-	else if(LANDING == m_unitinfo.estate)
+	else if(LANDING == m_unitinfo.state)
 	{
 		m_vPos.y += GETTIME*20;
 
@@ -186,8 +194,8 @@ void CSience::Update(void)
 			m_vPos.y = m_vgroundpos.y;
 			m_unitinfo.eMoveType = MOVE_GROUND;
 			m_sortID = SORT_GROUND;
-			m_unitinfo.eorder = ORDER_NONE;
-			m_unitinfo.estate = IDLE;
+			m_unitinfo.order = ORDER_NONE;
+			m_unitinfo.state = IDLE;
 
 			CTerran_building::building_area_Initialize(3, 4);
 			COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
@@ -197,7 +205,7 @@ void CSience::Update(void)
 	}
 
 
-	if(ORDER_LANDING_MOVE == m_unitinfo.eorder)
+	if(ORDER_LANDING_MOVE == m_unitinfo.order)
 	{
 		if(true == ((CCom_AirPathfind*)m_com_pathfind)->Getarrive() ) 
 		{
@@ -206,26 +214,26 @@ void CSience::Update(void)
 				if(true == ((CBuilding_Preview*)m_main_preview)->Install_check() &&
 					true == ((CBuilding_Preview*)m_sub_preview)->Install_check())
 				{
-					m_unitinfo.estate = LANDING;
-					m_unitinfo.eorder = ORDER_NONE;
+					m_unitinfo.state = LANDING;
+					m_unitinfo.order = ORDER_NONE;
 				}
 				else
 				{
-					m_unitinfo.estate = AIR_IDLE;
-					m_unitinfo.eorder = ORDER_NONE;
+					m_unitinfo.state = AIR_IDLE;
+					m_unitinfo.order = ORDER_NONE;
 				}
 			}
 			else
 			{
 				if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
 				{
-					m_unitinfo.estate = LANDING;
-					m_unitinfo.eorder = ORDER_NONE;
+					m_unitinfo.state = LANDING;
+					m_unitinfo.order = ORDER_NONE;
 				}
 				else
 				{
-					m_unitinfo.estate = AIR_IDLE;
-					m_unitinfo.eorder = ORDER_NONE;
+					m_unitinfo.state = AIR_IDLE;
+					m_unitinfo.order = ORDER_NONE;
 				}
 			}
 		}
@@ -251,6 +259,13 @@ void CSience::Update(void)
 	//	m_vPos.y - CScrollMgr::m_fScrollY);
 
 	CTerran_building::fire_eff_update();
+
+	CTerran_building::upginfo_update(UPG_T_VI0);
+	CTerran_building::upginfo_update(UPG_T_VI1);
+	CTerran_building::upginfo_update(UPG_T_VI2);
+
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CSience::Render(void)
@@ -258,7 +273,9 @@ void CSience::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_energybar_ui->Render();
 
 	CTerran_building::fire_eff_render();
 
@@ -268,8 +285,6 @@ void CSience::Render(void)
 void CSience::Release(void)
 {
 	CTerran_building::area_release();
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
 	Safe_Delete(m_com_pathfind);
@@ -291,6 +306,7 @@ void CSience::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 	if(NULL != m_partbuilding)
 	{
 		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
@@ -302,21 +318,22 @@ void CSience::Inputkey_reaction(const int& nkey)
 {
 	m_is_preview = false;
 
-	if(TAKE_OFF == m_unitinfo.estate ||
-		LANDING == m_unitinfo.estate)
+	if(TAKE_OFF == m_unitinfo.state ||
+		LANDING == m_unitinfo.state)
 		return;
 
+	MYRECT<float> tempvtx;
 	if('C' == nkey)
 	{
 		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_GHOST_ADDON", T_GHOST_ADDON , 2 , 2 , this);
-		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_GHOST_ADDON", T_GHOST_ADDON , 2 , 2 , this , tempvtx);
+		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this , m_vertex);
 	}
 	if('P' == nkey)
 	{
 		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BATTLE_ADDON", T_BATTLE_ADDON , 2 , 2 , this);
-		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this);
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BATTLE_ADDON", T_BATTLE_ADDON , 2 , 2 , this , tempvtx);
+		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this , m_vertex);
 	}
 	if('L' == nkey)
 	{
@@ -329,11 +346,67 @@ void CSience::Inputkey_reaction(const int& nkey)
 		{
 			//착륙 프리뷰를 킨다
 			m_is_preview = true;
-			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this);			
+			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this , m_vertex);			
 		}		
+	}
+	if('Q' == nkey)
+	{
+		if( false == m_upg_info[UPG_T_VI0].proceeding &&
+			m_upg_info[UPG_T_VI0].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_VI0].proceeding = true;
+			m_upg_info[UPG_T_VI0].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if('W' == nkey)
+	{
+		if( false == m_upg_info[UPG_T_VI1].proceeding &&
+			m_upg_info[UPG_T_VI1].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_VI1].proceeding = true;
+			m_upg_info[UPG_T_VI1].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if('E' == nkey)
+	{
+		if( false == m_upg_info[UPG_T_VI2].proceeding &&
+			m_upg_info[UPG_T_VI2].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_VI2].proceeding = true;
+			m_upg_info[UPG_T_VI2].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
 	}
 	if(VK_LBUTTON == nkey)
 	{
+
+		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
+
+		if(BTN_NONE != eclicked_btn)
+		{
+			if(BTN_TAKE_OFF == eclicked_btn)
+				Inputkey_reaction('L');
+
+			if(BTN_LANDING == eclicked_btn)
+				Inputkey_reaction('L');
+
+			if(BTN_T_VI0 == eclicked_btn)
+				Inputkey_reaction('Q');
+			else if(BTN_T_VI1 == eclicked_btn)
+				Inputkey_reaction('W');
+			else if(BTN_T_VI2 == eclicked_btn)
+				Inputkey_reaction('E');
+			else if(BTN_BATTLE_ADDON == eclicked_btn)
+				Inputkey_reaction('P');
+			else if(BTN_GHOST_ADDON == eclicked_btn)
+				Inputkey_reaction('C');
+
+			return;
+		}
+
 		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive() &&
 			true == ((CBuilding_Preview*)m_sub_preview)->GetActive())
 		{
@@ -401,7 +474,7 @@ void CSience::Inputkey_reaction(const int& nkey)
 				((CBuilding_Preview*)m_main_preview)->SetActive(false);
 				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
 
-				m_unitinfo.eorder = ORDER_LANDING_MOVE;
+				m_unitinfo.order = ORDER_LANDING_MOVE;
 				D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 				int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
 				vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
@@ -420,9 +493,9 @@ void CSience::Inputkey_reaction(const int& nkey)
 		((CBuilding_Preview*)m_main_preview)->SetActive(false);
 		((CBuilding_Preview*)m_sub_preview)->SetActive(false);
 
-		if(AIR_IDLE == m_unitinfo.estate)
+		if(AIR_IDLE == m_unitinfo.state)
 		{
-			m_unitinfo.eorder = ORDER_MOVE;
+			m_unitinfo.order = ORDER_MOVE;
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos);
 		}
@@ -435,21 +508,144 @@ void CSience::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 void CSience::Update_Cmdbtn(void)
 {
-	if(IDLE == m_unitinfo.estate)
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	
+	if(IDLE == m_unitinfo.state)
 	{
 		if( NULL == m_partbuilding )
 		{
-			CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_GHOST_ADDON" , BTN_GHOST_ADDON , true);
-			CComanderMgr::GetInstance()->Create_Cmdbtn(7 , L"BTN_BATTLE_ADDON" , BTN_BATTLE_ADDON , true);
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_GHOST_ADDON" , BTN_GHOST_ADDON , true);
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(7 , L"BTN_BATTLE_ADDON" , BTN_BATTLE_ADDON , true);
 		}
-		
-		CComanderMgr::GetInstance()->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
+	
+		if( false == m_upg_info[UPG_T_VI0].proceeding && m_upg_info[UPG_T_VI0].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VI0" , BTN_T_VI0 , true);
+		}
+		if( false == m_upg_info[UPG_T_VI1].proceeding && m_upg_info[UPG_T_VI1].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VI1" , BTN_T_VI1 , true);
+		}
+		if( false == m_upg_info[UPG_T_VI2].proceeding && m_upg_info[UPG_T_VI2].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_T_VI2" , BTN_T_VI2 , true);
+		}
+
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
 	}
-	else if(AIR_IDLE == m_unitinfo.estate ||
-		TAKE_OFF == m_unitinfo.estate)
+	else if(AIR_IDLE == m_unitinfo.state ||
+		TAKE_OFF == m_unitinfo.state)
 	{
-		CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
-		CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
-		CComanderMgr::GetInstance()->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
 	}
+	else if(DEVELOPING == m_unitinfo.state)
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+}
+void CSience::Update_Wireframe(void)
+{
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_SIENCE" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Sience" ,interface_pos.x + 320 , interface_pos.y + 390 );
+
+		if(BUILD == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction.." , interface_pos.x + 320 , interface_pos.y + 415);
+		}
+		else if(DEVELOPING == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Upgrading" , interface_pos.x + 330 , interface_pos.y + 415);
+
+			pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+			CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+			if(true == m_upg_info[UPG_T_VI0].proceeding && 
+				m_upg_info[UPG_T_VI0].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_VI0" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_VI1].proceeding && 
+				m_upg_info[UPG_T_VI1].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_VI1" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_VI2].proceeding && 
+				m_upg_info[UPG_T_VI2].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_VI2" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+		}
+
+		if( NULL != m_partbuilding )
+		{
+			if(BUILD == m_partbuilding->GetUnitinfo().state)
+			{
+				CFontMgr::GetInstance()->SetInfomation_font(L"Adding on.." , interface_pos.x + 330 , interface_pos.y + 415);
+
+				pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				if(OBJ_BATTLE_ADDON == m_partbuilding->GetOBJNAME())
+				{
+					pui = new CUI_form(L"BTN_BATTLE_ADDON" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+					CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				}
+				else if(OBJ_GHOST_ADDON == m_partbuilding->GetOBJNAME())
+				{
+					pui = new CUI_form(L"BTN_GHOST_ADDON" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+					CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				}
+			}
+		}
+	}
+
+	//--------------------계속해서 갱신받는 부분
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	if(BUILD == m_unitinfo.state)
+	{		
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+	}
+
+	if(true == m_upg_info[UPG_T_VI0].proceeding && m_upg_info[UPG_T_VI0].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VI0].curtime / m_upg_info[UPG_T_VI0].maxtime );
+	else if(true == m_upg_info[UPG_T_VI1].proceeding && m_upg_info[UPG_T_VI1].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VI1].curtime / m_upg_info[UPG_T_VI1].maxtime );
+	else if(true == m_upg_info[UPG_T_VI2].proceeding && m_upg_info[UPG_T_VI2].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VI2].curtime / m_upg_info[UPG_T_VI2].maxtime );
+
+	if( NULL != m_partbuilding )
+	{
+		if(BUILD == m_partbuilding->GetUnitinfo().state)
+		{
+			m_unitinfo.state = ADDING_ON;
+
+			UNITINFO temp = m_partbuilding->GetUnitinfo();
+			CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , temp.hp / (float)temp.maxhp );
+		}
+	}
+	//-------------------------------------------
 }

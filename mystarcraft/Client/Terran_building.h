@@ -13,6 +13,18 @@ protected:
 	CComponent*		m_com_targetsearch;
 	CComponent*		m_com_pathfind;
 	CComponent*		m_com_collision;
+public:
+	UPG_INFO*		m_upg_info;
+public:
+	CObj*			m_mainbuilding;
+	CObj*			m_partbuilding;
+
+	CUI*			m_main_preview;
+	CUI*			m_sub_preview;
+
+	CObj*			m_pfire_eff1;
+	CObj*			m_pfire_eff2;
+	CObj*			m_pfire_eff3;
 protected:
 	vector<int>		m_areaidx_vec;
 	vector<int>		m_old_areaidx_vec;
@@ -26,6 +38,8 @@ protected:
 	D3DXVECTOR2		m_vgroundpos;
 	D3DXVECTOR2		m_vairpos;
 	D3DXVECTOR2		m_weight;//마우스에서 얼만큼 떨어져있는지 가중치
+	//건물프리뷰를 볼때 마우스위치는 0행,0열 즉 좌상단에있다 
+	//pos를 중심으로 옮기기위한 보정값이다
 
 	TERRAN_BUILD_TECH m_ebuild_tech;
 
@@ -40,15 +54,7 @@ protected:
 
 
 
-	CObj*			m_mainbuilding;
-	CObj*			m_partbuilding;
 
-	CUI*			m_main_preview;
-	CUI*			m_sub_preview;
-
-	CObj*			m_pfire_eff1;
-	CObj*			m_pfire_eff2;
-	CObj*			m_pfire_eff3;
 protected:
 	float			m_fbuild_tick;
 	float			m_build_hp;
@@ -74,6 +80,7 @@ public:
 	void SetPartBuilding(CObj* pobj);
 	void Build_Complete(void);
 
+	void	upginfo_update(const UPGRADE& eupg);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

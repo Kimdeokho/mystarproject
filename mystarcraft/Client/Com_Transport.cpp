@@ -10,8 +10,10 @@
 #include "TileManager.h"
 
 #include "Com_Pathfind.h"
-CCom_Transport::CCom_Transport(void)
+CCom_Transport::CCom_Transport(const int& icapacity , const float& timeoffset)
 {
+	m_curcapacity = icapacity;
+	m_timeoffset = timeoffset;
 }
 
 CCom_Transport::~CCom_Transport(void)
@@ -22,14 +24,21 @@ void CCom_Transport::Initialize(CObj* pobj /*= NULL*/)
 {
 	m_pobj = pobj;
 
-	m_curcapacity = 8;
-
 	m_collocate_time = 0.5f;
+
+	m_is_landing = false;
 }
 
 void CCom_Transport::Update(void)
 {
 
+	if(true == m_is_landing)
+	{
+		if(false == unit_landing())
+		{
+			m_is_landing = false;
+		}
+	}
 }
 
 void CCom_Transport::Render(void)
@@ -94,14 +103,14 @@ bool CCom_Transport::setunit(CObj* pobj)
 	}
 	else
 		return false;
-
-
-	//
 }
-
+bool CCom_Transport::empty_boardinglist(void)
+{
+	return m_boarding_unit.empty();
+}
 void CCom_Transport::boarding_wire_ui(void)
 {
-	CComanderMgr::GetInstance()->set_boarding_infolist(m_boarding_unit);
+	CComanderMgr::GetInstance()->set_boarding_infolist(m_boarding_unit , m_pobj->GetOBJNAME());
 }
 
 bool CCom_Transport::unit_landing(void)
@@ -116,7 +125,7 @@ bool CCom_Transport::unit_landing(void)
 
 
 	BOARDING_INFO temp;
-	if(m_collocate_time >= 0.75f)
+	if(m_collocate_time >= m_timeoffset)
 	{
 		CObj* pobj = NULL;
 		m_collocate_time = 0.f;
@@ -152,21 +161,20 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 
 	bool bescape = false;
 
-
 	int idx32 = 0;
 	while(!bescape)
 	{				
-		collocate_pos[0].x = vdrop_pos.x - loopcnt*32; //밑줄 오른쪽방향
-		collocate_pos[0].y = vdrop_pos.y + loopcnt*32;
+		collocate_pos[0].x = vdrop_pos.x - loopcnt*16; //밑줄 오른쪽방향
+		collocate_pos[0].y = vdrop_pos.y + loopcnt*16;
 
-		collocate_pos[1].x = vdrop_pos.x + loopcnt*32; //오른줄 위쪽방향
-		collocate_pos[1].y = vdrop_pos.y + loopcnt*32;
+		collocate_pos[1].x = vdrop_pos.x + loopcnt*16; //오른줄 위쪽방향
+		collocate_pos[1].y = vdrop_pos.y + loopcnt*16;
 
-		collocate_pos[2].x = vdrop_pos.x + loopcnt*32; //윗줄 왼쪽방향
-		collocate_pos[2].y = vdrop_pos.y - loopcnt*32;
+		collocate_pos[2].x = vdrop_pos.x + loopcnt*16; //윗줄 왼쪽방향
+		collocate_pos[2].y = vdrop_pos.y - loopcnt*16;
 
-		collocate_pos[3].x = vdrop_pos.x - loopcnt*32; //왼줄 아래쪽방향
-		collocate_pos[3].y = vdrop_pos.y - loopcnt*32;
+		collocate_pos[3].x = vdrop_pos.x - loopcnt*16; //왼줄 아래쪽방향
+		collocate_pos[3].y = vdrop_pos.y - loopcnt*16;
 
 		memcpy(temp_pos , collocate_pos , sizeof(D3DXVECTOR2)*4);
 
@@ -275,6 +283,7 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 	pobj->SetState(IDLE);
 	pobj->SetOrder(ORDER_NONE);
 	pobj->SetPos(result_pos);
+	pobj->SetActive(true);
 	pobj->unit_area_Initialize();
 
 	//printf("배치완료 \n");
@@ -285,4 +294,9 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 		((CCom_Pathfind*)pcom)->ClearPath();
 		((CCom_Pathfind*)pcom)->SetPathfindPause(true);
 	}
+}
+
+void CCom_Transport::set_landing(bool is_landing)
+{
+	m_is_landing = is_landing;
 }

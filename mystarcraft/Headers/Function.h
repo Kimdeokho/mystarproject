@@ -81,7 +81,23 @@ bool MyIntersectrect(MYRECT<T>* outrect , const MYRECT<T>* A ,const MYRECT<T>* B
 	}
 	return false;
 }
+template<typename T>
+bool MyIntersectrect( const MYRECT<T>* A ,const MYRECT<T>* B)
+{
+	static T maxX , minX;
+	static T maxY , minY;
 
+	maxX = A->left < B->left ? B->left : A->left;
+	minX = A->right < B->right ? A->right : B->right;
+	minY = A->bottom < B->bottom ? A->bottom : B->bottom;
+	maxY = A->top < B->top ? B->top : A->top;
+
+	if(maxX < minX && minY > maxY)
+	{
+		return true;
+	}
+	return false;
+}
 template<typename T>
 T MyMin(const T& a ,const T& b)
 {

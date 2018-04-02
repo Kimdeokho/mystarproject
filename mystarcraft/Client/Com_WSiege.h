@@ -4,7 +4,9 @@
 class CCom_WSiege :
 	public CCom_Weapon
 {
-public:
+private:
+	list<CObj*>		m_injure_list;
+	float			m_splash_range[3];
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

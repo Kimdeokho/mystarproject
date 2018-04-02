@@ -4,6 +4,10 @@
 class CFactory :
 	public CTerran_building
 {
+private:
+	CComponent*		m_com_production;
+public:
+	void Update_Wireframe(void);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

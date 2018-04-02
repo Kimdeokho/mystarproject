@@ -45,8 +45,8 @@ void CCom_Meleesearch::Initialize(CObj* pobj /*= NULL*/)
 
 void CCom_Meleesearch::Update(void)
 {
-	if(/*COLLISION == m_pobj->GetUnitinfo().estate ||*/
-		TRANSFORMING == m_pobj->GetUnitinfo().estate)
+	if(/*COLLISION == m_pobj->GetUnitinfo().state ||*/
+		TRANSFORMING == m_pobj->GetUnitinfo().state)
 		return;
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
@@ -59,6 +59,12 @@ void CCom_Meleesearch::Update(void)
 		//	m_ptarget = NULL; 
 		//	m_target_objid = 0;
 		//}
+
+		if(false == m_ptarget->GetUnitinfo().is_active)
+		{
+			m_ptarget = NULL;
+			m_target_objid = 0;
+		}
 	}
 	else
 	{
@@ -71,7 +77,8 @@ void CCom_Meleesearch::Update(void)
 		((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
 
 
-
+	if(ORDER_USINGSKILL == m_pobj->GetUnitinfo().order)
+		return;
 
 	if(true == m_bforced_target)
 	{
@@ -81,9 +88,9 @@ void CCom_Meleesearch::Update(void)
 		m_myrc.top -= m_meleerangeY;
 		m_myrc.bottom += m_meleerangeY;
 
-		if(RESOURCE != m_ptarget->GetCategory())
+		if(CATEGORY_RESOURCE != m_ptarget->GetCategory())
 		{
-			if( ORDER_MOVE == m_pobj->GetUnitinfo().eorder &&
+			if( ORDER_MOVE == m_pobj->GetUnitinfo().order &&
 				m_pobj->GetTeamNumber() == m_ptarget->GetTeamNumber())
 			{
 				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
@@ -107,8 +114,6 @@ void CCom_Meleesearch::Update(void)
 					}
 					else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
 					{
-						//if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 32*32)
-						//{			
 							//범위에 들어오면
 							m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
 
@@ -116,14 +121,18 @@ void CCom_Meleesearch::Update(void)
 							{
 								m_pobj->SetSelect(NONE_SELECT);
 								m_pobj->area_release();
-								m_pobj->SetState(BOARDING); 
+								m_pobj->SetActive(false); 
 							}
 							else
 							{
 								m_pobj->SetState(IDLE);						
 							}
 							m_pobj->SetOrder(ORDER_NONE);
-						//}
+					}
+					else
+					{
+						m_pobj->SetState(IDLE);
+						m_pobj->SetOrder(ORDER_NONE);
 					}
 
 					m_ptarget = NULL;
@@ -141,7 +150,7 @@ void CCom_Meleesearch::Update(void)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}
 			}
-			else
+			else if(ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
 			{
 				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
 				{
@@ -172,6 +181,9 @@ void CCom_Meleesearch::Update(void)
 				}
 				else
 				{
+					//공격범위 밖, 추적범위 안이면
+					if(ATTACK == m_pobj->GetUnitinfo().state)
+						m_pobj->SetState(MOVE);
 					if(NULL != m_com_pathfind)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}
@@ -181,7 +193,7 @@ void CCom_Meleesearch::Update(void)
 	}
 	else
 	{
-		if(ORDER_MOVE != m_pobj->GetUnitinfo().eorder)
+		if(ORDER_MOVE != m_pobj->GetUnitinfo().order)
 		{
 			m_search_time += GETTIME;
 
@@ -210,19 +222,17 @@ void CCom_Meleesearch::Update(void)
 			m_ptarget = NULL;
 		}
 
-
-
 		if(NULL != m_ptarget)
 		{
-			if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+			if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().order)
 			{
 				m_meleerangeX = 48;
 				m_meleerangeY = 32;
 			}
 			else
 			{
-				m_meleerangeX = 6.f;
-				m_meleerangeY = 6.f;
+				m_meleerangeX = 10.f;
+				m_meleerangeY = 10.f;
 			}
 
 			m_myrc = m_pobj->GetMyRect();
@@ -231,20 +241,7 @@ void CCom_Meleesearch::Update(void)
 			m_myrc.top -= m_meleerangeY;
 			m_myrc.bottom += m_meleerangeY;
 
-			//m_meleesearch_time += GETTIME;
-
-			//if(m_meleesearch_time > 0.2f)
-			//{
-			//	m_meleesearch_time = 0.f;
-			//	if( true == m_bmelee_search &&
-			//		CArea_Mgr::GetInstance()->MeleeAttack_Search(m_pobj ,m_ptarget/*새타겟을 얻기위함*/ , m_myrc , m_search_type))
-			//	{
-			//		m_target_objid = m_ptarget->GetObjNumber();
-			//		m_bmelee_search = false;
-			//	}
-			//}
-
-			if( MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+			if( MyIntersectrect( &m_myrc , &(m_ptarget->GetMyRect()) ) )
 			{
 				m_btarget_search = false;
 				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
@@ -276,6 +273,9 @@ void CCom_Meleesearch::Update(void)
 				}
 				else
 				{
+					if(ATTACK == m_pobj->GetUnitinfo().state)
+						m_pobj->SetState(MOVE);
+
 					if(NULL != m_com_pathfind)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}

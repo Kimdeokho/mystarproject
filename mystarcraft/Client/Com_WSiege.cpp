@@ -31,6 +31,9 @@ void CCom_WSiege::Initialize(CObj* pobj /*= NULL*/)
 	m_bfire = false;
 
 
+	m_splash_range[0] = 10;
+	m_splash_range[1] = 25;
+	m_splash_range[2] = 40;
 }
 
 void CCom_WSiege::fire(CObj*& ptarget)
@@ -63,15 +66,18 @@ void CCom_WSiege::fire(CObj*& ptarget)
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
-			//(ptarget)->SetDamage(m_damage , m_edamagetype);
-			CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, m_weapon_info, ptarget->GetPos(),  
-				10 , 25 , 40 , true);
+			CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, 
+				m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*5,
+				m_weapon_info.eDamageType, ptarget->GetPos(),  
+				m_splash_range , true , m_injure_list);
+
+			m_injure_list.clear();
 		}
 
 	}
 	else
 	{
-		if(MOVE == m_pobj->GetUnitinfo().estate)
+		if(MOVE == m_pobj->GetUnitinfo().state)
 			m_pobj->SetState(IDLE);
 	}
 }

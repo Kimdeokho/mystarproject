@@ -1,6 +1,6 @@
 OBJECT|Resource|Gas|1|..\Texture\General\Resource\Gas\vespingas%d.png
-OBJECT|Resource|Mineral|1|..\Texture\General\Resource\Mineral\mineral%d.png
-OBJECT|Resource|MINERAL_FRAG|1|..\Texture\General\Resource\Mineral_frag\mineral_frag%d.png
+OBJECT|NONE|Mineral|1|..\Texture\General\Resource\Mineral\mineral%d.png
+OBJECT|NONE|MINERAL_FRAG|1|..\Texture\General\Resource\Mineral_frag\mineral_frag%d.png
 OBJECT|Resource|T_GAS_FRAG|1|..\Texture\General\Resource\terran_gasfrag\t_gas_frag%d.png
 OBJECT|Fog|Fog|3|..\Texture\General\Fog\fog%d.png
 OBJECT|Creep|Creep|20|..\Texture\General\Creep\creep%d.png
@@ -14,6 +14,8 @@ EFFECT|SCV_EFF|SCV_EFF|10|..\Texture\General\Effect\scv_eff\scv_eff%d.png
 EFFECT|BIM_HIT|BIM_HIT|10|..\Texture\General\Effect\bim_hit\bim_hit%d.png
 CORPSE|MARINEDEAD|MARINEDEAD|8|..\Texture\General\Corpse\marine_dead\marine_dead%d.png
 CORPSE|MARINEWRECKAGE|MARINEWRECKAGE|3|..\Texture\General\Corpse\marine_wreckage\marine_wreckage%d.png
+CORPSE|GHOSTDEAD|GHOSTDEAD|8|..\Texture\General\Corpse\ghost_dead\dead%d.png
+CORPSE|GHOSTWRECKAGE|GHOSTWRECKAGE|3|..\Texture\General\Corpse\ghost_wreckage\ghost_wreckage%d.png
 CORPSE|MEDICDEAD|MEDICDEAD|9|..\Texture\General\Corpse\medic_dead\medic_dead%d.png
 CORPSE|MEDICWRECKAGE|MEDICWRECKAGE|3|..\Texture\General\Corpse\medic_wreckage\medic_wreckage%d.png
 CORPSE|TBDWRECKAGE|TBDWRECKAGE|4|..\Texture\General\Corpse\TBD_wreckage\TBD_wreckage%d.png
@@ -31,6 +33,7 @@ BUILDING|NONE|STAR_LINK|5|..\Texture\General\terran_build\star_link\star_link%d.
 BUILDING|NONE|GHOST_LINK|5|..\Texture\General\terran_build\ghost_link\ghost_link%d.png
 BUILDING|NONE|BATTLE_LINK|5|..\Texture\General\terran_build\battle_link\battle_link%d.png
 BUILDING|NONE|SUPPLY_PART|6|..\Texture\General\terran_build\supply_part\supply_part%d.png
+UNIT|NONE|VESSLE|1|..\Texture\General\unit\vessle\vessle%d.png
 EFFECT|FIRE_A|FIRE_A|12|..\Texture\General\Effect\terran_fire\fireA\fire_A%d.png
 EFFECT|BIGFIRE_A|BIGFIRE_A|12|..\Texture\General\Effect\terran_fire\fireA\bigfire_A%d.png
 EFFECT|FIRE_B|FIRE_B|12|..\Texture\General\Effect\terran_fire\fireB\fire_B%d.png
@@ -41,4 +44,16 @@ EFFECT|TURRET_TRAIL|TURRET_TRAIL|8|..\Texture\General\Effect\turret_trail\turret
 EFFECT|VULTURE_FIRE|VULTURE_FIRE|8|..\Texture\General\Effect\vulture_fire\vulturefire%d.png
 EFFECT|VULTURE_HIT|VULTURE_HIT|9|..\Texture\General\Effect\vul_hit\vulture_hit%d.png
 EFFECT|MINE_BOOM|MINE_BOOM|10|..\Texture\General\Effect\mine_boom\mine_boom%d.png
+EFFECT|YAMA_READY|YAMA_READY|7|..\Texture\General\Effect\yama_ready\yamaready%d.png
+EFFECT|YAMA_FIRE|YAMA_FIRE|4|..\Texture\General\Effect\yama_fire\yamafire%d.png
+EFFECT|YAMA_HIT|YAMA_HIT|14|..\Texture\General\Effect\yama_hit\yamahit%d.png
+EFFECT|NUCLEAR_BOOM|NUCLEAR_BOOM|26|..\Texture\General\Effect\nuclear_boom\nuclear_boom%d.png
+EFFECT|NUCLEAR_AIM|NUCLEAR_AIM|2|..\Texture\General\Effect\nuclear_aim\aim%d.png
+EFFECT|IRRADIATE|IRRADIATE|6|..\Texture\General\Effect\irradiate\irradiate%d.png
+EFFECT|DEFEN_S|DEFEN_S|5|..\Texture\General\Effect\defensive\defenS%d.png
+EFFECT|DEFEN_M|DEFEN_M|5|..\Texture\General\Effect\defensive\defenM%d.png
+EFFECT|DEFEN_L|DEFEN_L|5|..\Texture\General\Effect\defensive\defenL%d.png
+EFFECT|DEFEN_BL|DEFEN_BL|5|..\Texture\General\Effect\defensive\defenBL%d.png
+EFFECT|DEFEN_BM|DEFEN_BM|5|..\Texture\General\Effect\defensive\defenBM%d.png
+EFFECT|DEFEN_BS|DEFEN_BS|5|..\Texture\General\Effect\defensive\defenBS%d.png
 BULLET|VULTURE_BULLET|VULTURE_BULLET|4|..\Texture\General\bullet\vulture_bullet%d.png

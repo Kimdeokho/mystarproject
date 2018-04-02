@@ -52,7 +52,7 @@ void CCom_SupplyAnim::Update(void)
 
 
 
-	if( IDLE == m_pobj->GetUnitinfo().estate)
+	if( IDLE == m_pobj->GetUnitinfo().state)
 	{
 		m_partframe.fcurframe += GETTIME*m_partframe.fframespeed;
 		if(m_partframe.fcurframe >= m_partframe.umax)

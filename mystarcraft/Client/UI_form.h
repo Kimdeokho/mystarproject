@@ -18,5 +18,6 @@ public:
 public:
 	CUI_form(void);
 	CUI_form(const D3DXVECTOR2& vsize);
+	CUI_form(const TCHAR* texkey , const D3DXVECTOR2& vpos);
 	~CUI_form(void);
 };

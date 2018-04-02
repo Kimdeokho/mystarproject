@@ -4,6 +4,9 @@
 class CAstar;
 
 
+class CSkill;
+typedef boost::unordered_map<SKILL_NAME , CSkill*> SKILL_PAIR;
+
 class CUI;
 class CUnit :
 	public CObj
@@ -13,6 +16,11 @@ protected:
 	CComponent*		m_com_targetsearch;
 	CComponent*		m_com_pathfind;
 	CComponent*		m_com_collision;
+	CComponent*		m_com_usingskill;
+	CComponent*		m_com_cc;
+protected:
+	UPG_INFO*		m_upg_info;
+	bool			m_upg_feedback[UPG_END];
 protected:
 	D3DXMATRIX		m_matshadow;
 protected:

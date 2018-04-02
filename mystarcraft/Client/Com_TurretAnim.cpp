@@ -29,17 +29,35 @@ void CCom_TurretAnim::Initialize(CObj* pobj)
 
 void CCom_TurretAnim::Update(void)
 {
-	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	if(L"BUILD" == m_statkey)
+	{
+		const UNITINFO& unit_info = m_pobj->GetUnitinfo();
+		float curframe = float(unit_info.hp) / float(unit_info.maxhp);
+		m_frame.fcurframe = m_frame.umax * curframe;
+	}
+	else
+		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+
 	if(m_frame.fcurframe >= m_frame.umax)
 	{
 		m_frame.fcurframe = 0.f;
-
-		if(L"BUILD" == m_statkey)
+		if( L"AIR" == m_statkey)
 		{
-			m_pobj->SetState(IDLE);
-			((CTurret*)m_pobj)->SetTurretHead();
+			m_frame.fcurframe = (float)(m_frame.umax - 1);
 		}
 	}
+
+	//m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	//if(m_frame.fcurframe >= m_frame.umax)
+	//{
+	//	m_frame.fcurframe = 0.f;
+
+	//	if(L"BUILD" == m_statkey)
+	//	{
+	//		m_pobj->SetState(IDLE);
+	//		((CTurret*)m_pobj)->SetTurretHead();
+	//	}
+	//}
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
 		m_curtex = (*m_generaltex)[int(m_frame.fcurframe)];

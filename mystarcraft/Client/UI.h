@@ -13,11 +13,14 @@ protected:
 	LPD3DXSPRITE	m_pSprite;
 	D3DCOLOR		m_color;
 protected:
+	bool			m_active;
 	bool			m_bdestroy;
-
 public:
 	void SetDestroy(bool bdestroy);
 	void SetPos(const D3DXVECTOR2& vpos);
+	void SetActive(bool _active);
+public:
+	const D3DXVECTOR2& GetPos(void);
 public:
 	bool GetDestroy(void);
 	const MYRECT<float>& GetMyRect(void);

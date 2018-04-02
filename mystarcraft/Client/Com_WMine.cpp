@@ -26,6 +26,10 @@ void CCom_WMine::Initialize(CObj* pobj /*= NULL*/)
 	m_weapon_info.eDamageType = DAMAGE_BOOM;
 
 	m_bfire = false;
+
+	m_splash_range[0] = 50;
+	m_splash_range[1] = 75;
+	m_splash_range[2] = 100;
 }
 
 void CCom_WMine::Update(void)
@@ -50,8 +54,12 @@ void CCom_WMine::fire(CObj*& ptarget)
 
 		m_attack_time = 0.f;
 
-		CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, m_weapon_info, m_pobj->GetPos(), 
-			50 , 75 , 100 , true);
+		CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, 
+			m_weapon_info.damage , m_weapon_info.eDamageType,
+			m_pobj->GetPos(), 
+			m_splash_range , true , m_injure_list);
+
+		m_injure_list.clear();
 
 		m_pobj->SetDestroy(true);
 		m_pobj->Dead();

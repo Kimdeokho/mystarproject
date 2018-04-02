@@ -47,7 +47,7 @@ void CCom_TurretheadAnim::Update(void)
 	}
 	else
 	{
-		CCom_Animation::DirIdxCalculation32();
+		CCom_Animation::DirIdxCalculation();
 
 		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 
@@ -96,6 +96,7 @@ void CCom_TurretheadAnim::SetAnimation(const TCHAR* statekey)
 		//{
 			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
+			m_curtex = m_animtexture[m_texdiridx][int(m_frame.fcurframe)];
 		//}
 	}
 }

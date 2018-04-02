@@ -28,8 +28,6 @@ void CCom_Wmarine::Initialize(CObj* pobj /*= NULL*/)
 	m_weapon_info.eAirDamageType = DAMAGE_NOMAL;
 
 	m_bfire = false;
-
-	//m_damage = m_pobj->GetUnitinfo().damage;
 }
 void CCom_Wmarine::fire(CObj*&	ptarget )
 {
@@ -37,7 +35,7 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 	{
 		m_pobj->SetState(IDLE);
 		
-		//if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
+		if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
 			m_pobj->SetState(ATTACK);
 			m_bfire = true;
@@ -46,12 +44,11 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 			//총알생성
 			//타겟에게 데미지 ㄱㄱㄱㄱ
 			m_targetpos = ptarget->GetPos();
-			m_targetpos.x += float(rand()%20 - 10);
-			m_targetpos.y += float(rand()%20 - 10);
+			m_targetpos -= m_pobj->GetcurDir()*(ptarget->GetVertex().right/2);
 
 			CObj* peff = NULL;
 
-			if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+			if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().order)
 			{
 				D3DXVECTOR2 vpos = m_pobj->GetPos() + m_pobj->GetcurDir()*17;
 				vpos.y -= 15;
@@ -61,16 +58,19 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 				CObjMgr::GetInstance()->AddEffect(peff);
 			}
 
-			peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 1.5);
+			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType)
+				peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 1.5);
+			else
+				peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1,1), SORT_AIR_EFF , 1.5);
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
-			(ptarget)->SetDamage(m_weapon_info.damage , m_weapon_info.eDamageType);
+			(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_BIO_WEAPON].upg_cnt , m_weapon_info.eDamageType);
 		}
 	}
 	else
 	{
-		if(MOVE == m_pobj->GetUnitinfo().estate)
+		if(MOVE == m_pobj->GetUnitinfo().state)
 			m_pobj->SetState(IDLE);
 	}
 }

@@ -11,12 +11,15 @@
 #include "UI_Select.h"
 #include "ObjMgr.h"
 #include "FontMgr.h"
+
+#include "Workman.h"
 CMineral::CMineral(void)
 {
 }
 
 CMineral::~CMineral(void)
 {
+	Release();
 }
 
 void CMineral::Initialize(void)
@@ -24,15 +27,17 @@ void CMineral::Initialize(void)
 	CObj::unit_area_Initialize();
 
 	m_select_ui = NULL;
-	m_workman = NULL;
+	//m_workman = NULL;
 
 	D3DXMatrixIdentity(&m_matshadow);
-	m_ecategory = RESOURCE;
+	m_ecategory = CATEGORY_RESOURCE;
 	m_eteamnumber = TEAM_NONE;
 	m_sortID = SORT_GROUND;
 	m_eOBJ_NAME = OBJ_MINERAL;
 
-	m_mineral_amount = 50000;
+	m_unitinfo.eMoveType = MOVE_GROUND;
+
+	m_mineral_amount = 50000;	
 
 	m_vertex.left = 32;
 	m_vertex.right = 32;
@@ -53,11 +58,13 @@ void CMineral::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select72" , m_vPos , 9);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
 }
 void CMineral::Update(void)
 {
-	
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , int(m_workman_list.size()) , m_vPos.x - CScrollMgr::m_fScrollX
+		,m_vPos.y - CScrollMgr::m_fScrollY);
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_mineral_amount , m_vPos.x - CScrollMgr::m_fScrollX
 	//	,m_vPos.y - CScrollMgr::m_fScrollY);
 
@@ -70,11 +77,36 @@ void CMineral::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
 
+	if(!m_workman_list.empty())
+	{
+		list<CObj*>::iterator iter = m_workman_list.begin();
+		list<CObj*>::iterator iter_end= m_workman_list.end();
+
+		MYRECT<float> rc;
+		for( ; iter != iter_end; )
+		{
+			rc = (*iter)->GetMyRect();
+			rc.left -= 3;
+			rc.right += 3;
+			rc.top-= 3;
+			rc.bottom += 3;
+			if( false == MyIntersectrect(&m_rect , &rc) )
+			{
+				((CWorkman*)(*iter))->SetMineral_mark(NULL);
+				iter = m_workman_list.erase(iter);
+			}
+			else
+				++iter;
+		}
+	}
+
+	m_select_ui->Update();
 }
 void CMineral::Render(void)
 {
+	m_select_ui->Render();
+
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
@@ -90,22 +122,94 @@ void CMineral::Render(void)
 
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
-void CMineral::Setworkman( const CObj* pworkman)
+bool CMineral::Setworkman( CObj* pworkman)
 {
-	m_workman = pworkman;
+	//if(NULL == m_workman)
+	//	m_workman = pworkman;
+
+	if( m_workman_list.size() < 2)
+	{
+		//list<CObj*>::iterator iter = m_workman_list.begin();
+		//list<CObj*>::iterator iter_end= m_workman_list.end();
+
+		//for( ; iter != iter_end; ++iter)
+		//{
+		//	if( pworkman == (*iter))
+		//		return true;
+		//}
+
+		m_workman_list.push_back(pworkman);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
-void CMineral::decrease_workman()
+bool CMineral::decrease_workman(CObj* pworkman)
 {
-	m_workman = NULL;
+	if(!m_workman_list.empty())
+	{
+		list<CObj*>::iterator iter = m_workman_list.begin();
+		list<CObj*>::iterator iter_end= m_workman_list.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			if( pworkman == (*iter))
+			{
+				m_workman_list.erase(iter);
+				return true;
+			}
+		}
+	}
 	m_workmancnt -= 1;
+	return false;
 }
-const CObj* CMineral::Getworkman(void)
+int CMineral::Getworkman_count(void)
 {
-	return m_workman;
+	return int(m_workman_list.size());
+}
+bool CMineral::Getworkman(CObj* pworkman)
+{
+	if(!m_workman_list.empty())
+	{
+		if(pworkman == m_workman_list.front())
+			return true;
+		else
+			return false;
+	}
+	return false;
+}
+bool CMineral::Check_workman(CObj* pworkman)
+{
+	if(!m_workman_list.empty())
+	{
+		list<CObj*>::iterator iter = m_workman_list.begin();
+		list<CObj*>::iterator iter_end= m_workman_list.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			if( pworkman == (*iter))
+				return true;
+		}
+	}
+	return false;
 }
 void CMineral::Release(void)
 {
+	if(!m_workman_list.empty())
+	{
+		list<CObj*>::iterator iter = m_workman_list.begin();
+		list<CObj*>::iterator iter_end= m_workman_list.end();
 
+		for( ; iter != iter_end; ++iter)
+		{
+			((CWorkman*)(*iter))->SetMineral_mark(NULL);
+		}
+		m_workman_list.clear();
+	}
+
+	Safe_Delete(m_select_ui);
 }
 
 void CMineral::SetMineral_amount(const int& iamount)

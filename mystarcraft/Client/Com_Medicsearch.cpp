@@ -47,9 +47,9 @@ void CCom_Medicsearch::Initialize(CObj* pobj /*= NULL*/)
 
 void CCom_Medicsearch::Update(void)
 {
-	if(COLLISION == m_pobj->GetUnitinfo().estate ||
-		TRANSFORMING == m_pobj->GetUnitinfo().estate ||
-		BOARDING == m_pobj->GetUnitinfo().estate)
+	if(COLLISION == m_pobj->GetUnitinfo().state ||
+		TRANSFORMING == m_pobj->GetUnitinfo().state ||
+		false == m_pobj->GetUnitinfo().is_active)
 		return;
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
@@ -61,21 +61,24 @@ void CCom_Medicsearch::Update(void)
 	}
 	else
 	{
-		if(BOARDING == m_ptarget->GetUnitinfo().estate)
-		{
-			m_ptarget = NULL;
-			m_target_objid = 0;
-		}
+		//if(BOARDING == m_ptarget->GetUnitinfo().state)
+		//{
+		//	m_ptarget = NULL;
+		//	m_target_objid = 0;
+		//}
 	}
 
 	if(NULL != m_com_pathfind)
 		((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
 
+	if(ORDER_USINGSKILL == m_pobj->GetUnitinfo().order)
+		return;
+
 	if(true == m_bforced_target)
 	{
 		if( m_pobj->GetTeamNumber() == m_ptarget->GetTeamNumber())
 		{
-			if(ORDER_MOVE == m_pobj->GetUnitinfo().eorder)
+			if(ORDER_MOVE == m_pobj->GetUnitinfo().order)
 			{
 				if(OBJ_BUNKER == m_ptarget->GetOBJNAME())
 				{
@@ -129,7 +132,7 @@ void CCom_Medicsearch::Update(void)
 						{
 							m_pobj->SetSelect(NONE_SELECT);
 							m_pobj->area_release();
-							m_pobj->SetState(BOARDING); 
+							m_pobj->SetActive(false); 
 						}
 						else
 						{
@@ -148,7 +151,7 @@ void CCom_Medicsearch::Update(void)
 	}
 	else
 	{
-		if(ORDER_MOVE != m_pobj->GetUnitinfo().eorder)
+		if(ORDER_MOVE != m_pobj->GetUnitinfo().order)
 		{
 			m_search_time += GETTIME;
 
@@ -167,7 +170,7 @@ void CCom_Medicsearch::Update(void)
 				m_target_objid = 0;
 			}
 		}
-		else if(ORDER_MOVE == m_pobj->GetUnitinfo().eorder)
+		else if(ORDER_MOVE == m_pobj->GetUnitinfo().order)
 		{
 
 		}
@@ -212,7 +215,7 @@ void CCom_Medicsearch::Update(void)
 				//공격범위 밖, 추적범위 안이면
 				//공격 후딜이 다 끝나고 추적
 
-				if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+				if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().order)
 				{
 					m_ptarget = NULL;
 					m_target_objid = 0;

@@ -21,6 +21,8 @@ TERRAN|BULLET|TURRET_BULLET|IDLE|17|..\Texture\Multi\Bullet\turret_bullet\turret
 TERRAN|BULLET|BATTLE_BIM|IDLE|17|..\Texture\Multi\Bullet\battle_bim\battle_bim%d.png
 TERRAN|BULLET|WRAITH_BIM|IDLE|17|..\Texture\Multi\Bullet\wraith_bim\wraith_bim%d.png
 TERRAN|BULLET|WRAITH_BULLET|IDLE|17|..\Texture\Multi\Bullet\wraith_bullet\wraith_bullet%d.png
+TERRAN|BULLET|YAMA_BIM|IDLE|17|..\Texture\Multi\Bullet\yama_bullet\yamabullet%d.png
+TERRAN|BULLET|NUCLEAR_BULLET|IDLE|17|..\Texture\Multi\Bullet\nuclear_bullet\nuclear%d.png
 TERRAN|UNIT|MEDIC|IDLE|17|..\Texture\Multi\Terran\Unit\medic\idle\medic_idle%d.png
 TERRAN|UNIT|MEDIC|MOVE|119|..\Texture\Multi\Terran\Unit\medic\move\medic_move%d.png
 TERRAN|UNIT|MEDIC|HEAL|34|..\Texture\Multi\Terran\Unit\medic\heal\medic_heal%d.png
@@ -33,3 +35,7 @@ TERRAN|UNIT|BATTLE|IDLE|17|..\Texture\Multi\Terran\Unit\battlecruiser\battlecrui
 TERRAN|UNIT|WRAITH|IDLE|17|..\Texture\Multi\Terran\Unit\wraith\wraith%d.png
 TERRAN|UNIT|DROPSHIP|IDLE|17|..\Texture\Multi\Terran\Unit\dropship\dropship%d.png
 TERRAN|UNIT|VULTURE|IDLE|17|..\Texture\Multi\Terran\Unit\vulture\vulture%d.png
+TERRAN|UNIT|GHOST|IDLE|17|..\Texture\Multi\Terran\Unit\ghost\idle\idle%d.png
+TERRAN|UNIT|GHOST|MOVE|153|..\Texture\Multi\Terran\Unit\ghost\move\move%d.png
+TERRAN|UNIT|GHOST|ATTACK|17|..\Texture\Multi\Terran\Unit\ghost\attack\attack%d.png
+TERRAN|UNIT|GHOST|AIM|17|..\Texture\Multi\Terran\Unit\ghost\aim\aim%d.png

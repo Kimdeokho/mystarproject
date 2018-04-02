@@ -13,6 +13,8 @@ protected:
 
 	float			m_ftimespeed;
 	D3DXVECTOR2		m_vsize;
+
+	D3DCOLOR		m_color;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

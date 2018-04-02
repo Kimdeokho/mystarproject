@@ -10,6 +10,7 @@
 #include "Com_AirPathfind.h"
 #include "Com_AirCollision.h"
 #include "Com_Transport.h"
+#include "Com_CC.h"
 
 #include "ObjMgr.h"
 #include "LineMgr.h"
@@ -24,7 +25,9 @@
 #include "MyMath.h"
 
 #include "UI_Wireframe.h"
-
+#include "UI_Cmd_info.h"
+#include "UI_Energy_bar.h"
+#include "Skill_Defensive.h"
 CDropship::CDropship(void)
 {
 }
@@ -40,13 +43,15 @@ void CDropship::Initialize(void)
 	CUnit::Initialize(); //맵 디스플레이
 
 	m_sortID = SORT_AIR;	
-	m_ecategory = UNIT;
+	m_ecategory = CATEGORY_UNIT;
 	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_DROPSHIP;
 
 	m_unitinfo.eMoveType = MOVE_AIR;
-	m_unitinfo.estate = IDLE;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = IDLE;
+	m_unitinfo.order = ORDER_NONE;
+	m_unitinfo.esize = SIZE_MEDIUM;
+	m_unitinfo.erace = OBJRACE_MECHANIC;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.hp = 150;
 	m_unitinfo.maxhp = 150;
@@ -65,12 +70,14 @@ void CDropship::Initialize(void)
 
 	m_com_anim = new CCom_DropAnim(m_matWorld);
 	m_com_pathfind = new CCom_AirPathfind(m_vPos);
-	m_com_transport = new CCom_Transport;
+	m_com_transport = new CCom_Transport(8 , 0.75f);
+	m_com_cc = new CCom_CC();
 
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE , m_com_pathfind));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_pathfind));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TRANSPORT , m_com_transport));	
 	
 
@@ -82,7 +89,11 @@ void CDropship::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select48" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_AIR);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 48 , m_vertex.bottom*2);
+	m_energybar_ui->Initialize();
+
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 void CDropship::Update(void)
@@ -96,6 +107,7 @@ void CDropship::Update(void)
 		iter->second->Update();
 
 	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CDropship::Render(void)
@@ -103,20 +115,24 @@ void CDropship::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
-	m_com_anim->Render();
+	
+	m_select_ui->Render();
+	m_com_anim->Render();	
+	m_com_cc->Render();
+	m_energybar_ui->Render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
 void CDropship::Inputkey_reaction(const int& nkey)
 {
-	if( BOARDING == m_unitinfo.estate )
+	if( false == m_unitinfo.is_active )
 		return;
 
 	if(VK_RBUTTON == nkey)
 	{
-		m_unitinfo.estate = MOVE;
-		m_unitinfo.eorder = ORDER_MOVE;
+		m_unitinfo.state = MOVE;
+		m_unitinfo.order = ORDER_MOVE;
 
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
@@ -141,10 +157,58 @@ void CDropship::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	{
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
-		m_unitinfo.eorder = ORDER_GET_OFF;
+		m_unitinfo.order = ORDER_GET_OFF;
 	}
 }
+void CDropship::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
+{
+	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();
 
+	float tempdamage = 0.f;
+
+	if(NULL != pskill)
+	{
+		int shild = ((CSkill_Defensive*)pskill)->GetShild();
+		((CSkill_Defensive*)pskill)->SetDamage(idamage);
+
+		if( shild - idamage > 0)
+			return;
+		else
+			tempdamage = float(idamage - shild); 
+	}
+	else
+		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+
+	if( ARMOR_SMALL == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.5f;
+	}
+	else if( ARMOR_MEDIUM == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.5f;
+		else if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.75f;
+	}
+	else if( ARMOR_LARGE == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.25f;
+	}
+
+	m_unitinfo.hp -= (int)(tempdamage + 0.5f);
+
+	if(m_unitinfo.hp <= 0)
+	{
+		//킬수 + 1 하면 되는디..
+		m_unitinfo.hp = 0;
+		m_bdestroy = true;
+		Dead();
+	}
+	if(m_unitinfo.hp >= m_unitinfo.maxhp)
+		m_unitinfo.hp = m_unitinfo.maxhp;
+}
 void CDropship::Release(void)
 {
 	CObj::area_release();
@@ -165,23 +229,27 @@ bool CDropship::setunit(CObj* pobj)
 }
 void CDropship::Update_Cmdbtn(void)
 {
-	CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 
 }
 void CDropship::Update_Wireframe(void)
 {
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.estate))
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
-		pui = new CUI_Wireframe(L"WIRE_DROPSHIP" , D3DXVECTOR2(280,545));
+		pui = new CUI_Wireframe(L"WIRE_DROPSHIP" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
 		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
 
-		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Dropship" , 400 , 510 );
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Dropship" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}
 
 	((CCom_Transport*)m_com_transport)->boarding_wire_ui();
@@ -199,5 +267,11 @@ void CDropship::Update_Wireframe(void)
 
 
 	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
-		280 , 580 , font_color);
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	if(true == ((CCom_Transport*)m_com_transport)->empty_boardinglist())
+	{
+		CFontMgr::GetInstance()->Setbatch_Font(L"방어력:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_AIR_ARMOR].upg_cnt 
+			,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
+	}
 }

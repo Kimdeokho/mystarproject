@@ -28,11 +28,11 @@ void CGoliath_part::Initialize(void)
 
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = IDLE;
-	m_ecategory = UNIT;
+	m_unitinfo.state = IDLE;
+	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_GOLIATH;
 
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.hp = 0;
 	m_unitinfo.mp = 0;
@@ -71,11 +71,12 @@ void CGoliath_part::Update(void)
 		iter->second->Update();
 
 
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
+		m_goliath_leg->SetState(IDLE);
 	}
-	else if(ATTACK == m_unitinfo.estate)
+	else if(ATTACK == m_unitinfo.state)
 	{
 		if(MOVE_AIR == m_etarget_movetype)
 		{
@@ -87,16 +88,24 @@ void CGoliath_part::Update(void)
 		}		
 		m_goliath_leg->SetState(IDLE);
 	}
-	else if(MOVE == m_unitinfo.estate)
+	else if(MOVE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 		m_goliath_leg->SetState(MOVE);
+	}
+
+
+	if( false == m_upg_feedback[UPG_T_VFC3] && m_upg_info[UPG_T_VFC3].upg_cnt >= 1)
+	{
+		m_unitinfo.air_attack_range += 3*32;
+		m_upg_feedback[UPG_T_VFC3] = true;
+		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
 	}
 }
 
 void CGoliath_part::Render(void)
 {
-	if( BOARDING == m_unitinfo.estate )
+	if( false == m_unitinfo.is_active )
 		return;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
@@ -114,8 +123,8 @@ void CGoliath_part::Inputkey_reaction(const int& nkey)
 {
 	if(VK_RBUTTON == nkey)
 	{
-		m_unitinfo.estate = MOVE;
-		m_unitinfo.eorder = ORDER_MOVE;
+		m_unitinfo.state = MOVE;
+		m_unitinfo.order = ORDER_MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);

@@ -24,7 +24,6 @@ CWraith_Bullet::~CWraith_Bullet(void)
 void CWraith_Bullet::Initialize(void)
 {
 	m_sortID = SORT_AIR_EFF;
-
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_dirBulletAnim( m_matWorld , L"WRAITH_BULLET" )));
 
 
@@ -88,19 +87,21 @@ void CWraith_Bullet::Update(void)
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 2)
 	{
 		if(NULL != m_ptarget)
-			m_ptarget->SetDamage(20, DAMAGE_BOOM);
+			m_ptarget->SetDamage(20 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 2, DAMAGE_BOOM);
 
 		m_bdestroy = true;
 		Dead();
 	}
 
 	m_vPos += m_vcurdir*GETTIME*m_accel*m_accel2;
+
+	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
+
 }
 
 void CWraith_Bullet::Render(void)
 {
-	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
-	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();

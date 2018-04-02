@@ -13,14 +13,17 @@ CUI_MainInterface::~CUI_MainInterface(void)
 void CUI_MainInterface::Initialize(void)
 {
 	m_texinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , m_statekey);
-	m_vcenter.x = (float)(m_texinfo->ImgInfo.Width/2);
-	m_vcenter.y = (float)(m_texinfo->ImgInfo.Height/2);
-	m_vcenter.z = 0;
+	m_vcenter.x = 0.f;
+	m_vcenter.y = 0.f;
+	m_vcenter.z = 0.f;
 
 	m_color = D3DCOLOR_ARGB(255,255 , 255 , 255);
 
-	m_vpos.x = BACKBUFFER_SIZEX/2;
-	m_vpos.y = BACKBUFFER_SIZEY/2 + (BACKBUFFER_SIZEY/2 - m_vcenter.y); //원래 위치 //600일땐 360 // 480일땐 240
+	//m_vpos.x = BACKBUFFER_SIZEX/2;
+	//m_vpos.y = BACKBUFFER_SIZEY/2 + (BACKBUFFER_SIZEY/2 - m_vcenter.y); //원래 위치 //600일땐 360 // 480일땐 240
+
+	m_vpos.x = BACKBUFFER_SIZEX/2 - 320; //320은 사진 절반크기
+	m_vpos.y = BACKBUFFER_SIZEY - 480; //480은 사진크기
 	m_matworld._41 = m_vpos.x;
 	m_matworld._42 = m_vpos.y;
 }

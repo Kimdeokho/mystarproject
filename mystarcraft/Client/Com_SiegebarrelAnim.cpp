@@ -21,16 +21,29 @@ CCom_SiegebarrelAnim::~CCom_SiegebarrelAnim(void)
 
 void CCom_SiegebarrelAnim::Initialize(CObj* pobj)
 {
+	m_banim_end = false;
+	m_btransforming = false;
+	m_bsiegemode = false;
+	m_statkey = L"";
+
 	m_pobj = pobj;
 	m_rotation_speed = 40;
 	m_curdiridx = 0;
 
 	SetAnimation(L"SIEGEBARREL_TRANS");
 
+	CCom_Animation::InitTexidx();
+
 }
 
 void CCom_SiegebarrelAnim::Update(void)
 {	
+
+	//if(NULL == m_animtexture)
+	//{
+	//	m_curtex = NULL;
+	//	return;
+	//}
 
 	if(true == m_btransforming)
 	{	//정변
@@ -45,7 +58,6 @@ void CCom_SiegebarrelAnim::Update(void)
 				m_bsiegemode = true;
 				SetAnimation(L"IDLE");
 				//m_pobj->SetState(IDLE);
-
 
 				//여기서 0은 수학좌표계 +X축에 해당한다
 				// 16은 -X축
@@ -147,6 +159,7 @@ void CCom_SiegebarrelAnim::SetAnimation(const TCHAR* statekey)
 				m_frame.fcurframe = float(m_frame.umax - 1);
 				m_btransforming = false;
 			}
+			m_curtex = (*m_generaltex)[ (int)(m_frame.fcurframe) ];
 		}
 		else
 		{

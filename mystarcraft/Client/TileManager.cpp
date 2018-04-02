@@ -29,7 +29,7 @@ void CTileManager::Initialize(void)
 	m_minifog_onidx.reserve(SQ_TILECNTX*SQ_TILECNTX);
 	m_minifog_offidx.reserve(SQ_TILECNTX*SQ_TILECNTX);
 
-	m_heapsort = new CMyHeapSort<FLOW_NODE*>();
+	m_heapsort = new CMyHeapSort<FLOW_NODE*>(128*128);
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 	D3DXMatrixIdentity(&m_matWorld);
 	D3DXMatrixIdentity(&m_fogmat);
@@ -995,7 +995,77 @@ void CTileManager::SetFogoverlap_cnt(const int& idx)
 	m_fogTile[idx]->overlap_cnt += 1;
 
 }
+bool CTileManager::Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest )
+{
+	int iWidth = int(vDest.x - vStart.x);
+	int iHeight = int(vDest.y - vStart.y);
 
+	int e = 0;
+	int icnt = 0;
+	int idx = 0;
+	int iAdd = 32;
+
+	int loopcnt = 0;
+	int isignX = 1;
+	int isignY = 1;
+
+	if(iHeight < 0)
+	{
+		iHeight = -iHeight;
+		isignY *= -1;
+	}
+
+	if(iWidth < 0)
+	{
+		iWidth = -iWidth;
+		isignX *= -1;
+	}
+
+	if(iWidth >= iHeight)
+	{
+		loopcnt = iWidth/SQ_TILESIZEX;
+
+		e = iWidth;
+		for(int i = 1; i < loopcnt + 1; ++i)
+		{
+			e += iHeight*2;
+
+			if(e >= iWidth*2)
+			{
+				icnt += iAdd;
+				e -= iWidth*2;
+			}
+
+			idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
+
+			if(MOVE_NONE == GetTileOption(idx))
+				return false;
+		}
+	}
+	else
+	{
+		loopcnt = iHeight/SQ_TILESIZEY;
+
+		e = iHeight;
+		for(int i = 1; i < loopcnt + 1; ++i)
+		{
+			e += iWidth*2;
+
+			if( e >= iHeight*2)
+			{
+				icnt += iAdd;
+				e -= iHeight*2;
+			}
+
+			idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
+
+			if(MOVE_NONE == GetTileOption(idx))
+				return false;
+		}
+	}
+
+	return true;
+}
 void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype)
 {
 	int iWidth = int(vDest.x - vStart.x);
@@ -1048,9 +1118,6 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 			//시작지점에서 i지점까지 퍼진 X거리이다.
 			X = (vStart.x + i * SQ_TILESIZEX * isignX - vStart.x)*(vStart.x + i * SQ_TILESIZEX * isignX - vStart.x);
 			Y = (vStart.y + icnt * isignY - vStart.y)*(vStart.y + icnt * isignY - vStart.y);
-
-
-
 
 			if(X + Y <= fRadius*fRadius ) //범위안에 있으면
 			{
@@ -1292,9 +1359,16 @@ void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
 
 	}	
 }
+void CTileManager::SetFlowfield_cost_update(const int& icuridx , const int& ioldidx)
+{
+	if(icuridx >= 0)
+		m_flownode[icuridx]->is_unit = true;
+
+	if(ioldidx >= 0)
+		m_flownode[ioldidx]->is_unit = false;
+}
 void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 {
-
 	//D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 	int			goalidx = CMyMath::Pos_to_index(goalpos , 32);
 
@@ -1317,7 +1391,6 @@ void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 	{
 		pnode = m_heapsort->pop_node();
 
-
 		if(NULL == pnode)
 			break;
 
@@ -1328,6 +1401,7 @@ void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 		else
 			curcost = pnode->iCost;
 
+
 		for(int i = 0; i < ASTAR_DIR_END; ++i)
 		{
 			if( i == CENTER)
@@ -1337,7 +1411,6 @@ void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 				continue;
 
 			pushnode = m_flownode[ m_eight_idx[i] ];
-
 
 			if(false == pushnode->bcheck)
 				pushnode->bcheck = true;
@@ -1436,6 +1509,8 @@ void CTileManager::Render_Flowfield(void)
 			m_pSprite->SetTransform(&m_matWorld);
 			m_pSprite->Draw(ptemp->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
 				,D3DCOLOR_ARGB(255,255,255,255));
+
+			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_flownode[idx]->bmove , m_matWorld._41 , m_matWorld._42);
 		}
 	}
 }

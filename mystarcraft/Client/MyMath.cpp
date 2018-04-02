@@ -26,7 +26,7 @@ float  CMyMath::dgree_to_radian(const float& dgree)
 }
 float CMyMath::radian_to_dgree(const float& rad)
 {
-	return (180*rad)/PI;
+	return 180*rad/PI;
 }
 float CMyMath::scala_to_dgree(float& scala)
 {

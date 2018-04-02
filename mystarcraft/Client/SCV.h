@@ -17,8 +17,10 @@ private:
 
 	D3DXVECTOR2		m_vbuild_pos[4];
 	int				m_build_idx;
+
+	bool			m_moveto_building;
 public:
-	void	SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow);
+	void	SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow ,MYRECT<float> vtx);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
@@ -30,6 +32,7 @@ public:
 	virtual void Release(void);
 	virtual void Dead(void);
 
+	virtual void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
 	virtual void Update_Cmdbtn(void);
 	virtual void Update_Wireframe(void);
 public:

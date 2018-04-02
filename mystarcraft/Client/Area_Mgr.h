@@ -19,10 +19,14 @@ private:
 	vector<CObj*>		m_vecmoveobj;
 private:
 	MYRECT<float>	m_unitrc;
+	MYRECT<float>	m_orirc;
+	D3DXVECTOR2		m_voripos;
+	D3DXVECTOR2		m_vprepos;
 private:
 	int				m_idxdir[ASTAR_DIR_END];
 	int				m_idx;
 	MYLINE			m_line[4];
+	int				m_lineidx;
 private:
 	int			m_checkidx;
 	int			m_stepsize;
@@ -49,20 +53,25 @@ public:
 	bool MeleeAttack_Search( CObj* pself , CObj*& ptarget, const MYRECT<float>& myrc ,TARGET_SEARCH_TYPE esearchtype);
 
 	//bool empty_area64(void);
-	bool LineCross(const int& idx , const int& lineidx , CObj* pself , bool movecheck);
+	void Make_rectline(const D3DXVECTOR2& oripos , const D3DXVECTOR2& vpos , const MYRECT<float>& orirect , const MYRECT<float>& prerc);
+	bool LineCross(const int& idx , const int& lineidx , CObj* pself ,const CObj* ptarget);
+	bool LineCross(CObj* ptarget);
 	bool diamond_check( const int& idx , CObj* pself ,const CObj* ptarget);
 
 	int overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself);
-	void Search_Mineral( const int& idx , const int& isearch_range ,CObj* pself , CObj*& pmineral);
+	bool Search_Mineral( const int& idx , const int& isearch_range ,CObj* pself , CObj*& pmineral);
 	CObj* Search_Partbuilding(const int& areaidx , const int& searchidx , OBJID eid);
+	bool Mineral_extractor(const D3DXVECTOR2& vpos ,CObj* pself, CObj*& pmineral);
 	bool Mineral_extractor(const int& isearch_range ,CObj* pself , CObj*& pmineral);
 	void gas_extractor(CObj* pself , const D3DXVECTOR2& vpt);
 public:
 	void Areasize_debugrender(const int& areasize , const int& areacnt);
 
+	void  SetChoiceTarget(CObj* pobj);
 	CObj* GetChoiceTarget(void);
 
-	void  Setsplash_damage(CObj* pmyobj ,const WEAPON_INFO& weaponinfo,  const D3DXVECTOR2& vsplash_pos, const float& range1 , const float& range2, const float& range3 , bool random_splash);
+	void  Setirradi_damage(CObj* pmyobj ,const int& damage , DAMAGE_TYPE edamagetype, const D3DXVECTOR2& vsplash_pos, const float* splash_range  , bool random_splash , list<CObj*>& injurelist);
+	void  Setsplash_damage(CObj* pmyobj ,const int& damage , DAMAGE_TYPE edamagetype, const D3DXVECTOR2& vsplash_pos, const float* splash_range  , bool random_splash , list<CObj*>& injurelist);
 public:
 	CObj* Collision_check(CObj* pself , const int& idx);
 	bool Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );

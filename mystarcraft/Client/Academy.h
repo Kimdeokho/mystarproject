@@ -12,6 +12,9 @@ public:
 	virtual void Dead(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+
+	virtual void Update_Cmdbtn(void);
+	virtual void Update_Wireframe(void);
 public:
 	CAcademy(void);
 	~CAcademy(void);

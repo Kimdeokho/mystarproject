@@ -4,6 +4,7 @@
 
 #include "TimeMgr.h"
 
+#include "ScrollMgr.h"
 IMPLEMENT_SINGLETON(CFontMgr)
 CFontMgr::CFontMgr(void)
 {
@@ -43,6 +44,9 @@ void CFontMgr::FontRender(void)
 {
 	RECT rc = {0};
 
+	m_matfont._11 = 1.0f;
+	m_matfont._22 = 1.0f;
+
 	if(!m_render_fontlist.empty())
 	{
 		list<FONT_INFO>::iterator iter = m_render_fontlist.begin();
@@ -64,18 +68,18 @@ void CFontMgr::FontRender(void)
 
 	if(!m_keyrender.empty())
 	{
-		list<FONT_INFO>::iterator iter = m_keyrender.begin();
-		list<FONT_INFO>::iterator iter_end = m_keyrender.end();
+		//list<FONT_INFO>::iterator iter = m_keyrender.begin();
+		//list<FONT_INFO>::iterator iter_end = m_keyrender.end();
 
-		for( ; iter != iter_end; ++iter)
-		{
-			m_matfont._41 = (*iter).fX;
-			m_matfont._42 = (*iter).fY;
+		//for( ; iter != iter_end; ++iter)
+		//{
+		//	m_matfont._41 = (*iter).fX;
+		//	m_matfont._42 = (*iter).fY;
 
-			m_pSprite->SetTransform(&m_matfont);
-			m_pFont->DrawTextW(m_pSprite, (*iter).font , lstrlen((*iter).font) , &rc , DT_NOCLIP , (*iter).font_color );
+		//	m_pSprite->SetTransform(&m_matfont);
+		//	m_pFont->DrawTextW(m_pSprite, (*iter).font , lstrlen((*iter).font) , &rc , DT_NOCLIP , (*iter).font_color );
 
-		}
+		//}
 	}
 
 
@@ -85,6 +89,8 @@ void CFontMgr::FontRender(void)
 
 		for(size_t i = 0; i < loopcnt; ++i)
 		{
+			m_matfont._11 = 0.85f;
+			m_matfont._22 = 0.85f;
 			m_matfont._41 = m_vecbatchfont[i].fX - lstrlen( m_vecbatchfont[i].font )/2*10;;
 			m_matfont._42 = m_vecbatchfont[i].fY;
 
@@ -127,7 +133,7 @@ void CFontMgr::FontRender(void)
 		{
 			m_matfont._11 = 0.7f;
 			m_matfont._22 = 0.7f;
-			m_matfont._41 = (*iter).fX - lstrlen((*iter).font)/2*10;
+			m_matfont._41 = (*iter).fX - lstrlen((*iter).font)/2*7;
 			m_matfont._42 = (*iter).fY;
 			m_pSprite->SetTransform(&m_matfont);
 			m_pFont->DrawTextW(m_pSprite, (*iter).font , lstrlen((*iter).font) , &rc , DT_NOCLIP , (*iter).font_color );
@@ -200,6 +206,20 @@ void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY , D3D
 	ptemp.fY = posY;
 	ptemp.font_color = _color;
 	lstrcpy(ptemp.font , szfont);
+	m_vecbatchfont.push_back(ptemp);
+}
+void CFontMgr::test_Font(const TCHAR* szfont ,float fval1 , float fval2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
+{
+	/*업데이트단계에서 지속적으로 입력받는 폰트
+	입력받고 렌더 후 지우는 방식이다*/
+	FONT_INFO ptemp;
+
+	ptemp.fX = posX;
+	ptemp.fY = posY;
+	ptemp.font_color = _color;
+
+	_stprintf_s(ptemp.font , _countof(ptemp.font), szfont , fval1, fval2);
+
 	m_vecbatchfont.push_back(ptemp);
 }
 void CFontMgr::Setbatch_Font(const TCHAR* szfont ,const int& num1, const int& num2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)

@@ -51,6 +51,8 @@ void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
 				m_frame.fframespeed *= 8;
 			if(L"MOVE" == m_statkey)
 				m_frame.fframespeed *= 2;
+
+			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 		}
 	}
 }
@@ -86,17 +88,12 @@ void CCom_MarineAnim::Update(void)
 	}
 
 
-	const vector<TEXINFO*> vtemp = m_animtexture[m_texdiridx];
-
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (vtemp)[int(m_frame.fcurframe)];
-
+		m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 }
 
 void CCom_MarineAnim::Render(void)
 {
-	if(NULL == m_curtex)
-		return;
 
 	m_pSprite->SetTransform(&m_objmat);
 	if(TEAM_1 == m_pobj->GetTeamNumber())

@@ -130,28 +130,31 @@ void CLineMgr::Select_unit(void)
 
 		if(m_RectLine[0].x < m_RectLine[2].x)
 		{
-			rc.left = m_RectLine[0].x + CScrollMgr::m_fScrollX;
-			rc.right = m_RectLine[2].x + CScrollMgr::m_fScrollX;
+			rc.left = m_RectLine[0].x + CScrollMgr::m_fScrollX - 0.5f;
+			rc.right = m_RectLine[2].x + CScrollMgr::m_fScrollX + 0.5f;
 		}
 		else
 		{
-			rc.left = m_RectLine[2].x + CScrollMgr::m_fScrollX;
-			rc.right = m_RectLine[0].x + CScrollMgr::m_fScrollX;
+			rc.left = m_RectLine[2].x + CScrollMgr::m_fScrollX - 0.5f;
+			rc.right = m_RectLine[0].x + CScrollMgr::m_fScrollX + 0.5f;
 		}
 
 		if(m_RectLine[0].y < m_RectLine[2].y)
 		{
-			rc.top = m_RectLine[0].y + CScrollMgr::m_fScrollY;
-			rc.bottom = m_RectLine[2].y + CScrollMgr::m_fScrollY;
+			rc.top = m_RectLine[0].y + CScrollMgr::m_fScrollY - 0.5f;
+			rc.bottom = m_RectLine[2].y + CScrollMgr::m_fScrollY + 0.5f;
 		}
 		else
 		{
-			rc.top = m_RectLine[2].y + CScrollMgr::m_fScrollY;
-			rc.bottom = m_RectLine[0].y + CScrollMgr::m_fScrollY;
+			rc.top = m_RectLine[2].y + CScrollMgr::m_fScrollY - 0.5f;
+			rc.bottom = m_RectLine[0].y + CScrollMgr::m_fScrollY + 0.5f;
 		}
 
 		CArea_Mgr::GetInstance()->DragCheck( rc);
 	}
+
+	for(int i = 0; i < 5; ++i)
+		m_RectLine[i] = D3DXVECTOR2(0,0);
 
 	//CUnitMgr::GetInstance()->Update_Cmdbtn();
 	//DragCheck()

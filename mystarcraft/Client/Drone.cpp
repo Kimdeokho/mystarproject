@@ -38,12 +38,12 @@ void CDrone::Initialize(void)
 	
 	
 	m_sortID = SORT_GROUND;
-	m_ecategory = UNIT;
+	m_ecategory = CATEGORY_UNIT;
 	m_eteamnumber = TEAM_0;
 
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = IDLE;
+	m_unitinfo.state = IDLE;
 	m_unitinfo.hp = 40;
 	m_unitinfo.fspeed = 80;
 	m_unitinfo.search_range = 256;
@@ -87,7 +87,7 @@ void CDrone::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select32" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+	//CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 }
 
 void CDrone::Update(void)
@@ -101,27 +101,26 @@ void CDrone::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
-
-
-
-
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(ATTACK == m_unitinfo.estate)
+	else if(ATTACK == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"ATTACK");
 	}
-	else if(MOVE == m_unitinfo.estate || COLLISION == m_unitinfo.estate)
+	else if(MOVE == m_unitinfo.state || COLLISION == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
+
+	m_select_ui->Update();
 }
 
 void CDrone::Render(void)
 {
+	m_select_ui->Render();
+
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 	m_matshadow = m_matWorld;
@@ -156,8 +155,8 @@ void CDrone::Inputkey_reaction(const int& nkey)
 {
 	if(VK_RBUTTON == nkey)
 	{
-		m_unitinfo.estate = MOVE;
-		m_unitinfo.eorder = ORDER_MOVE;
+		m_unitinfo.state = MOVE;
+		m_unitinfo.order = ORDER_MOVE;
 
 		if(NULL != m_com_pathfind)
 		{
@@ -193,8 +192,8 @@ void CDrone::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
-		m_unitinfo.eorder = ORDER_MOVE_ATTACK;
-		m_unitinfo.estate = MOVE;
+		m_unitinfo.order = ORDER_MOVE_ATTACK;
+		m_unitinfo.state = MOVE;
 
 		if(NULL != m_com_pathfind)
 		{

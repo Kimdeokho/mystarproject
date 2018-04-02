@@ -14,7 +14,7 @@ private:
 	bool		m_is_active;
 public:
 	void SetActive(bool is_active);
-	void set_boarding_infolist(multimap< int ,BOARDING_INFO , greater<int>>& infolist);
+	void set_boarding_infolist(multimap< int ,BOARDING_INFO , greater<int>>& infolist , OBJID eid);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

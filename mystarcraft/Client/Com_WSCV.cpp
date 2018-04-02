@@ -70,7 +70,7 @@ void CCom_WSCV::fire(CObj*& ptarget)
 				true == ((CCom_Animation*)m_animation)->GetAttackSync())
 			{
 				//여기서 미네랄 점유일꾼수를 += 1 한다
-				((CMineral*)ptarget)->Setworkman(m_pobj);
+				//((CMineral*)ptarget)->Setworkman(m_pobj);
 				m_bfire = true;
 				CObj* peff = new CGeneraEff(L"SCV_EFF" , m_targetpos , D3DXVECTOR2(1.f , 1.f), SORT_GROUND_EFF , 2.f);
 				peff->Initialize();
@@ -89,17 +89,18 @@ void CCom_WSCV::fire(CObj*& ptarget)
 				pfragment->Initialize();
 
 				((CWorkman*)m_pobj)->setmineral_fragment(pfragment);
+				((CWorkman*)m_pobj)->SetMineral_mark(NULL);
 				m_pobj->SetState(IDLE);
 
 				((CMineral*)ptarget)->SetMineral_amount(-8);
-				((CMineral*)ptarget)->decrease_workman();
+				//((CMineral*)ptarget)->decrease_workman(m_pobj);
 				m_gathertime = 0.f;
 				m_pobj->SetOrder(ORDER_RETURN_CARGO);
 			}
 		}
 		else
 		{
-			if(MOVE == m_pobj->GetUnitinfo().estate)
+			if(MOVE == m_pobj->GetUnitinfo().state)
 				m_pobj->SetState(IDLE);
 		}
 	}

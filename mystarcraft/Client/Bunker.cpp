@@ -6,6 +6,7 @@
 #include "Com_Collision.h"
 #include "Com_fog.h"
 #include "Com_AirPathfind.h"
+#include "Com_Transport.h"
 
 #include "ScrollMgr.h"
 #include "MyMath.h"
@@ -20,6 +21,10 @@
 #include "Corpse.h"
 #include "ComanderMgr.h"
 #include "TimeMgr.h"
+
+#include "UI_Wireframe.h"
+#include "UI_Cmd_info.h"
+#include "UI_Energy_bar.h"
 CBunker::CBunker(void)
 {
 }
@@ -44,13 +49,13 @@ void CBunker::Initialize(void)
 	m_ebuild_tech = T_BUNKER;
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = BUILDING;
+	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_ARMOURY;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = BUILD;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = BUILD;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 
 	m_unitinfo.hp = 0;
@@ -59,12 +64,14 @@ void CBunker::Initialize(void)
 	m_unitinfo.fspeed = 28;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-	m_unitinfo.fbuildtime = 10.f;
+	m_unitinfo.fbuildtime = 2.f;
 
 	m_com_anim = new CCom_TBuildingAnim(L"T_BUNKER" , m_matWorld);
+	m_com_transport = new CCom_Transport(4 , 0);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));		
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TRANSPORT , m_com_transport));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex , false) ) ) ;	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -75,7 +82,9 @@ void CBunker::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 7);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 94);
+	m_energybar_ui->Initialize();
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
@@ -91,14 +100,12 @@ void CBunker::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
 
-
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(BUILD == m_unitinfo.estate)
+	else if(BUILD == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
 
@@ -108,7 +115,7 @@ void CBunker::Update(void)
 		if(m_unitinfo.hp >= m_unitinfo.maxhp )
 		{
 			m_unitinfo.hp = m_unitinfo.maxhp;
-			m_unitinfo.estate = IDLE;
+			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
 		}
 	}
@@ -123,6 +130,8 @@ void CBunker::Update(void)
 	//CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
 	//	m_vPos.y - CScrollMgr::m_fScrollY);
 
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CBunker::Render(void)
@@ -130,7 +139,9 @@ void CBunker::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_energybar_ui->Render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 
@@ -140,7 +151,6 @@ void CBunker::Render(void)
 void CBunker::Release(void)
 {
 	CTerran_building::area_release();
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 
 void CBunker::Dead(void)
@@ -155,36 +165,45 @@ void CBunker::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	if(!m_unitlist.empty())
-	{
-		list<CObj*>::iterator iter = m_unitlist.begin();
-		list<CObj*>::iterator iter_end = m_unitlist.end();
 
-		int icnt = 0;
-		for( ; iter != iter_end; ++iter)
-		{
-			(*iter)->unit_area_Initialize();
-			(*iter)->SetState(IDLE);
-			(*iter)->SetOrder(ORDER_NONE);
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
-			if(0 == icnt)
-				(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y - 16);
-			else if(1 == icnt)
-				(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y - 16);
-			else if(2 == icnt)
-				(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y + 16);
-			else if(3 == icnt)
-				(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y + 16);
+	for(int i = 0; i < 4; ++i)
+	((CCom_Transport*)m_com_transport)->unit_landing();
+	//if(!m_unitlist.empty())
+	//{
+	//	list<CObj*>::iterator iter = m_unitlist.begin();
+	//	list<CObj*>::iterator iter_end = m_unitlist.end();
 
-			++icnt;
-		}
-		m_unitlist.clear();
-	}
+	//	int icnt = 0;
+	//	for( ; iter != iter_end; ++iter)
+	//	{
+	//		(*iter)->unit_area_Initialize();
+	//		(*iter)->SetState(IDLE);
+	//		(*iter)->SetOrder(ORDER_NONE);
+
+	//		if(0 == icnt)
+	//			(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y - 16);
+	//		else if(1 == icnt)
+	//			(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y - 16);
+	//		else if(2 == icnt)
+	//			(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y + 16);
+	//		else if(3 == icnt)
+	//			(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y + 16);
+
+	//		++icnt;
+	//	}
+	//	m_unitlist.clear();
+	//}
 }
 
 void CBunker::Inputkey_reaction(const int& nkey)
 {
-
+	if( 'U' == nkey)
+	{
+		for(int i = 0; i < 4; ++i)
+			((CCom_Transport*)m_com_transport)->unit_landing();
+	}
 }
 
 void CBunker::Inputkey_reaction(const int& firstkey , const int& secondkey)
@@ -193,20 +212,74 @@ void CBunker::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 bool CBunker::UnitEnter_Bunker(CObj* pobj)
 {
+
 	if(OBJ_FIREBAT == pobj->GetOBJNAME() ||
 		OBJ_MARINE == pobj->GetOBJNAME() ||
 		OBJ_MEDIC == pobj->GetOBJNAME() ||
 		OBJ_GHOST == pobj->GetOBJNAME())
-	{
-		if(m_unitlist.size() < 4)
-		{
-			pobj->SetPos(m_vPos);
-			m_unitlist.push_back(pobj);
-			return true;
-		}
-		else
-			return false;
+	{			
+			if( true == ((CCom_Transport*)m_com_transport)->setunit(pobj))
+			{
+				pobj->SetPos(m_vPos);
+				return true;
+			}
+			else
+				return false;
 	}
 	else
 		return false;
+
+}
+void CBunker::Update_Cmdbtn(void)
+{
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+
+	if(IDLE == m_unitinfo.state )
+	{	
+	}
+}
+
+void CBunker::Update_Wireframe(void)
+{
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_BUNKER" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Bunker" ,interface_pos.x + 320 , interface_pos.y + 390 );
+
+		if(BUILD == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction.." , interface_pos.x + 320 , interface_pos.y + 415);
+		}
+	}
+
+	//--------------------계속해서 갱신받는 부분
+
+	((CCom_Transport*)m_com_transport)->boarding_wire_ui();
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	if(BUILD == m_unitinfo.state)
+	{		
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+	}
+
+	//-------------------------------------------
 }

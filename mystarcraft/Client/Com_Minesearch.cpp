@@ -32,8 +32,8 @@ void CCom_Minesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_target_objid = -1;
 	//m_bmelee_search = true;
 
-	m_meleerangeX = 4.5f;
-	m_meleerangeY = 4.5f;
+	m_meleerangeX = 2.5f;
+	m_meleerangeY = 2.5f;
 
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);
 
@@ -57,7 +57,7 @@ void CCom_Minesearch::Update(void)
 		((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
 
 
-	if(ORDER_MOVE != m_pobj->GetUnitinfo().eorder)
+	if(ORDER_MOVE != m_pobj->GetUnitinfo().order)
 	{
 		m_search_time += GETTIME;
 
@@ -94,7 +94,7 @@ void CCom_Minesearch::Update(void)
 	}
 	if(NULL != m_ptarget)
 	{
-		if( BURROW == m_pobj->GetUnitinfo().estate)
+		if( BURROW == m_pobj->GetUnitinfo().state)
 		{
 			m_pobj->SetState(PULL);
 			m_bwait = true;
@@ -129,8 +129,8 @@ void CCom_Minesearch::Update(void)
 	}
 	else
 	{
-		if( IDLE == m_pobj->GetUnitinfo().estate ||
-			MOVE == m_pobj->GetUnitinfo().estate)
+		if( IDLE == m_pobj->GetUnitinfo().state ||
+			MOVE == m_pobj->GetUnitinfo().state)
 		{
 			//´Ù½Ã ¶¥¿¡ ¹ÚÈù´Ù
 			m_bwait = false;

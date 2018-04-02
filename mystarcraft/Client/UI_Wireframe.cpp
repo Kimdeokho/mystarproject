@@ -17,7 +17,7 @@ void CUI_Wireframe::Initialize(void)
 	m_texinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , m_texkey);
 	m_matworld._41 = m_vpos.x;
 	m_matworld._42 = m_vpos.y;
-	m_vcenter = D3DXVECTOR3( 32, 32, 0);
+	m_vcenter = D3DXVECTOR3( 0, 0, 0);
 }
 
 void CUI_Wireframe::Update(void)

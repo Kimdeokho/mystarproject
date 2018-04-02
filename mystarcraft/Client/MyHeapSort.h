@@ -2,13 +2,15 @@
 
 #include "Include.h"
 
-const int MAXHEAP_SIZE = 128*128;
+//const int MAXHEAP_SIZE = 128*128; //전체 타일을 훑기위한..
 
 template<typename T>
 class CMyHeapSort
 {
 private:
-	T	m_nodelist[MAXHEAP_SIZE];
+	T*	m_nodelist;//[MAXHEAP_SIZE];
+	T	m_temp;
+	T	m_temppop;
 	int		m_capacity;
 	int		m_cursize;
 public:
@@ -17,38 +19,53 @@ public:
 	void push_node(T pnode);
 	T pop_node(void);
 	int getsize(void);
+	bool node_full(void);
 	T Render(const int& idx);
 	void Release(void);
 	void Release(PATH_NODE** openidx , boost::pool<>* _pool);
 public:
-	CMyHeapSort();
+	CMyHeapSort(const int& HEAPSIZE);
 	~CMyHeapSort();
 
 };
 
 template<typename T>
-CMyHeapSort<T>::CMyHeapSort(void)
+CMyHeapSort<T>::CMyHeapSort(const int& HEAPSIZE)
 {
+	
 	m_cursize = 0;
-	m_capacity = MAXHEAP_SIZE;
+	m_capacity = HEAPSIZE;
 
-	for(int i = 0; i < MAXHEAP_SIZE; ++i)
+	m_nodelist = new T[HEAPSIZE];
+
+	for(int i = 0; i < HEAPSIZE; ++i)
 		m_nodelist[i] = NULL;
 }
 
 template<typename T>
 CMyHeapSort<T>::~CMyHeapSort(void)
 {
-	Release();
+	//Release();
+	delete[] m_nodelist;
+	m_nodelist = NULL;
 }
 
 template<typename T>
 void CMyHeapSort<T>::swap_node(const int& idx1 , const int& idx2)
 {
-	T temp = NULL;
-	temp = m_nodelist[idx1];
+	//m_temp = NULL;
+	m_temp = m_nodelist[idx1];
 	m_nodelist[idx1] = m_nodelist[idx2];
-	m_nodelist[idx2] = temp;
+	m_nodelist[idx2] = m_temp;
+}
+
+template<typename T>
+bool CMyHeapSort<T>::node_full(void)
+{
+	if(m_cursize >= m_capacity - 1)
+		return false;
+
+	return true;
 }
 
 template<typename T>
@@ -57,9 +74,7 @@ void CMyHeapSort<T>::push_node(T pnode)
 	m_nodelist[m_cursize] = pnode;
 
 	int curidx = m_cursize - 1;
-	int parentidx = int( (curidx - 1)/2 );
-
-
+	int parentidx = int( (curidx - 1) >> 2 );
 
 	while( curidx > 0 )
 	{
@@ -67,7 +82,7 @@ void CMyHeapSort<T>::push_node(T pnode)
 		{
 			swap_node(parentidx , curidx);
 			curidx = parentidx;
-			parentidx = (curidx - 1) / 2;
+			parentidx = (curidx - 1) >> 2;
 		}
 		else
 			break;
@@ -82,7 +97,7 @@ T CMyHeapSort<T>::pop_node(void)
 	if( 0 == m_cursize)
 		return NULL;
 
-	T ptemp = m_nodelist[0];
+	m_temppop = m_nodelist[0];
 
 	m_nodelist[0] = m_nodelist[m_cursize-1];
 	m_nodelist[m_cursize-1] = NULL;
@@ -93,7 +108,8 @@ T CMyHeapSort<T>::pop_node(void)
 
 	while(true)
 	{
-		if(leftchild >= MAXHEAP_SIZE)
+		if(leftchild >= m_capacity ||
+			rightchild >= m_capacity)
 			break;
 		if(m_nodelist[curidx] == NULL)
 			break;
@@ -134,7 +150,7 @@ T CMyHeapSort<T>::pop_node(void)
 			if(m_nodelist[curidx]->iCost >= m_nodelist[rightchild]->iCost &&
 				m_nodelist[curidx]->iCost >= m_nodelist[leftchild]->iCost)
 			{
-				/*두자식 모두 부모보다 작다면*/
+				/*두자식 모두 부모보다 작다면 둘중 더 작은 노드와 교환한다*/
 
 				if(m_nodelist[leftchild]->iCost <= m_nodelist[rightchild]->iCost)
 				{
@@ -175,9 +191,7 @@ T CMyHeapSort<T>::pop_node(void)
 
 	--m_cursize;
 
-	if(ptemp == NULL)
-		int a = 0;
-	return ptemp;
+	return m_temppop;
 }
 
 template<typename T>

@@ -49,6 +49,8 @@ void CCom_FirebatAnim::SetAnimation(const TCHAR* statekey)
 
 			if(L"MOVE" == m_statkey)
 				m_frame.fframespeed *= 2;
+
+			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 		}
 	}
 }
@@ -63,10 +65,8 @@ void CCom_FirebatAnim::Update(void)
 		m_frame.fcurframe = 0;
 	}
 
-	const vector<TEXINFO*> vtemp = m_animtexture[m_texdiridx];
-
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (vtemp)[int(m_frame.fcurframe)];
+		m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 }
 
 void CCom_FirebatAnim::Render(void)

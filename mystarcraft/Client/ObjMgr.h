@@ -24,8 +24,10 @@ private:
 	list<CObj*>				m_aireff_renderlist;
 
 
-	list<CUI*>		m_SelectUI_List;
-	list<CUI*>		m_AirSelectUI_List;
+	//list<CUI*>		m_SelectUI_List;
+	//list<CUI*>		m_AirSelectUI_List;
+	//list<CUI*>		m_energybar_list;
+	//list<CUI*>		m_air_energybar_list;
 	list<CObj*>		m_Effect_List;
 	CObj*			m_obj_alive[MAX_OBJCNT];
 public:
@@ -39,11 +41,15 @@ public:
 	void AddCorpse(CObj* pObj );
 
 
-	void AddSelect_UI(CUI* pui , MOVE_TYPE emovetype);
+	//void AddSelect_UI(CUI* pui , MOVE_TYPE emovetype);
+	//void AddEnergybar_UI(CUI* pui , MOVE_TYPE emovetype);
 	void AddEffect(CObj* peff);
 
 	//void DestroyObj(TERRAN_UNIT_ID eid);
 	CObj* GetCoreBuilding(CObj* pself);
+	void  UpdateSelect_UI(void);
+
+	void  Nuclear_launch(void);
 public:
 	void LoadObj(HANDLE hFile);
 public:

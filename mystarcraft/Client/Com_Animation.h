@@ -13,7 +13,7 @@ protected:
 
 	const vector<TEXINFO*>* 	m_animtexture;/*[]는 방향(각도)을 뜻한다*/
 	const vector<TEXINFO*>* 	m_statetexture;/*방향성은 없지만 상태가 있는 텍스쳐들*/
-	const vector<TEXINFO*>*		m_generaltex;
+	const vector<TEXINFO*>*		m_generaltex; // 그냥 한장한장 넘기는 텍스쳐들
 
 	const TCHAR*				m_objname;
 	const TCHAR*				m_statkey;
@@ -22,6 +22,7 @@ protected:
 	float						m_curdiridx; //회전애니메이션에 쓰일 값
 	int							m_texdiridx; //텍스쳐에 쓰일 방향인덱스
 	int							m_newdiridx;
+
 
 	TEXINFO*					m_curtex;
 
@@ -41,14 +42,13 @@ protected:
 	int							m_olddiridx;
 	
 
-	bool						m_brotationcomplete;
+//	bool						m_brotationcomplete;
 	bool						m_banim_end;
 	bool						m_battack_sync;
 	bool						m_battack_end;
 public:
 	void Dir_Initialize(void);
 	void DirIdxCalculation(void);
-	void DirIdxCalculation32(void);
 public:
 	virtual void Initialize(CObj* pobj) = 0;
 	virtual void Update(void);
@@ -63,6 +63,7 @@ public:
 	int				GetCurDirIdx(void);
 	bool			GetAttackSync(void);
 	bool			GetAttack_end(void);
+
 public:
 	//virtual void SetState(void);
 public:

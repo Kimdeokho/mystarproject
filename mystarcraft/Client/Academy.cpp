@@ -20,6 +20,11 @@
 #include "Corpse.h"
 #include "ComanderMgr.h"
 #include "TimeMgr.h"
+
+#include "UI_Cmd_info.h"
+#include "UI_Wireframe.h"
+#include "UI_form.h"
+#include "UI_Energy_bar.h"
 CAcademy::CAcademy(void)
 {
 }
@@ -44,13 +49,13 @@ void CAcademy::Initialize(void)
 	m_ebuild_tech = T_ACADEMY;
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = BUILDING;
+	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_ACADEMY;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = BUILD;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = BUILD;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.maxhp = 600;
 	m_unitinfo.mp = 0;
@@ -73,10 +78,14 @@ void CAcademy::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select110" , m_vPos , 10);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 110);
+	m_energybar_ui->Initialize();
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 void CAcademy::Update(void)
@@ -89,14 +98,12 @@ void CAcademy::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
 
-
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(BUILD == m_unitinfo.estate)
+	else if(BUILD == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
 
@@ -106,12 +113,21 @@ void CAcademy::Update(void)
 		if(m_unitinfo.hp >= m_unitinfo.maxhp )
 		{
 			m_unitinfo.hp = m_unitinfo.maxhp;
-			m_unitinfo.estate = IDLE;
+			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
 		}
 	}
 
 	CTerran_building::fire_eff_update();
+
+	CTerran_building::upginfo_update(UPG_T_STEAMPACK);
+	CTerran_building::upginfo_update(UPG_T_BA0);
+	CTerran_building::upginfo_update(UPG_T_BA3);
+	CTerran_building::upginfo_update(UPG_T_BA4);
+	CTerran_building::upginfo_update(UPG_T_BA5);
+
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CAcademy::Render(void)
@@ -119,7 +135,9 @@ void CAcademy::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_energybar_ui->Render();
 
 	CTerran_building::fire_eff_render();
 
@@ -129,7 +147,6 @@ void CAcademy::Render(void)
 void CAcademy::Release(void)
 {
 	CTerran_building::area_release();
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 
 void CAcademy::Dead(void)
@@ -143,14 +160,254 @@ void CAcademy::Dead(void)
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	if( true == m_upg_info[UPG_T_STEAMPACK].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_STEAMPACK].obj_num)
+	{
+		m_upg_info[UPG_T_STEAMPACK].proceeding = false;
+		m_upg_info[UPG_T_STEAMPACK].obj_num = 0;
+		m_upg_info[UPG_T_STEAMPACK].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA0].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA0].obj_num)
+	{
+		m_upg_info[UPG_T_BA0].proceeding = false;
+		m_upg_info[UPG_T_BA0].obj_num = 0;
+		m_upg_info[UPG_T_BA0].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA3].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA3].obj_num)
+	{
+		m_upg_info[UPG_T_BA3].proceeding = false;
+		m_upg_info[UPG_T_BA3].obj_num = 0;
+		m_upg_info[UPG_T_BA3].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA4].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA4].obj_num)
+	{
+		m_upg_info[UPG_T_BA4].proceeding = false;
+		m_upg_info[UPG_T_BA4].obj_num = 0;
+		m_upg_info[UPG_T_BA4].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA5].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA5].obj_num)
+	{
+		m_upg_info[UPG_T_BA5].proceeding = false;
+		m_upg_info[UPG_T_BA5].obj_num = 0;
+		m_upg_info[UPG_T_BA5].curtime = 0;
+	}
 }
 
 void CAcademy::Inputkey_reaction(const int& nkey)
 {
+	if(DEVELOPING == m_unitinfo.state)
+		return;
 
+	if( VK_LBUTTON == nkey )
+	{
+		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
+
+		if(BTN_STEAMPACK == eclicked_btn)
+			Inputkey_reaction('W');
+		else if(BTN_T_BA0 == eclicked_btn)
+			Inputkey_reaction('Q');
+		else if(BTN_T_BA3 == eclicked_btn)
+			Inputkey_reaction('A');
+		else if(BTN_T_BA4 == eclicked_btn)
+			Inputkey_reaction('S');
+		else if(BTN_T_BA5 == eclicked_btn)
+			Inputkey_reaction('D');
+	}
+
+	if( 'Q' == nkey )
+	{
+		if( false == m_upg_info[UPG_T_BA0].proceeding &&
+			m_upg_info[UPG_T_BA0].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_BA0].proceeding = true;
+			m_upg_info[UPG_T_BA0].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if( 'W' == nkey )
+	{
+		if( false == m_upg_info[UPG_T_STEAMPACK].proceeding &&
+			m_upg_info[UPG_T_STEAMPACK].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_STEAMPACK].proceeding = true;
+			m_upg_info[UPG_T_STEAMPACK].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if( 'A' == nkey )
+	{
+		if( false == m_upg_info[UPG_T_BA3].proceeding &&
+			m_upg_info[UPG_T_BA3].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_BA3].proceeding = true;
+			m_upg_info[UPG_T_BA3].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if( 'S' == nkey )
+	{
+		if( false == m_upg_info[UPG_T_BA4].proceeding &&
+			m_upg_info[UPG_T_BA4].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_BA4].proceeding = true;
+			m_upg_info[UPG_T_BA4].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if( 'D' == nkey )
+	{
+		if( false == m_upg_info[UPG_T_BA5].proceeding &&
+			m_upg_info[UPG_T_BA5].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_BA5].proceeding = true;
+			m_upg_info[UPG_T_BA5].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
 }
 
 void CAcademy::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
+}
+void CAcademy::Update_Cmdbtn(void)
+{
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+
+	if(IDLE == m_unitinfo.state)
+	{
+		if( false == m_upg_info[UPG_T_BA0].proceeding && m_upg_info[UPG_T_BA0].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BA0" , BTN_T_BA0 , true);
+		}
+		if( false == m_upg_info[UPG_T_STEAMPACK].proceeding && m_upg_info[UPG_T_STEAMPACK].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STEAMPACK" , BTN_STEAMPACK , true);
+		}
+		if( false == m_upg_info[UPG_T_BA3].proceeding && m_upg_info[UPG_T_BA3].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_BA3" , BTN_T_BA3 , true);
+		}
+		if( false == m_upg_info[UPG_T_BA4].proceeding && m_upg_info[UPG_T_BA4].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_T_BA4" , BTN_T_BA4 , true);
+		}
+		if( false == m_upg_info[UPG_T_BA5].proceeding && m_upg_info[UPG_T_BA5].upg_cnt < 1)
+		{
+			((CUI_Cmd_info*)pui)->Create_Cmdbtn(5 , L"BTN_T_BA5" , BTN_T_BA5 , true);
+		}
+	}
+	else if(DEVELOPING == m_unitinfo.state)
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+	else if(AIR_IDLE == m_unitinfo.state ||
+		TAKE_OFF == m_unitinfo.state)
+	{
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
+	}
+
+}
+
+void CAcademy::Update_Wireframe(void)
+{
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_ACADEMY" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Academy" ,interface_pos.x + 320 , interface_pos.y + 390 );
+
+		if(BUILD == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction.." , interface_pos.x + 320 , interface_pos.y + 415);
+		}
+		else if(DEVELOPING == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Upgrading" , interface_pos.x + 330 , interface_pos.y + 415);
+
+			pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+			CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+			if(true == m_upg_info[UPG_T_BA0].proceeding && 
+				m_upg_info[UPG_T_BA0].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_BA0" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_STEAMPACK].proceeding && 
+				m_upg_info[UPG_T_STEAMPACK].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_STEAMPACK" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_BA3].proceeding && 
+				m_upg_info[UPG_T_BA3].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_BA3" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_BA4].proceeding && 
+				m_upg_info[UPG_T_BA4].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_BA4" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_BA5].proceeding && 
+				m_upg_info[UPG_T_BA5].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_BA5" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+		}
+	}
+
+	//--------------------계속해서 갱신받는 부분
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	if(BUILD == m_unitinfo.state)
+	{		
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+	}
+
+	if(true == m_upg_info[UPG_T_STEAMPACK].proceeding && m_upg_info[UPG_T_STEAMPACK].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_STEAMPACK].curtime / m_upg_info[UPG_T_STEAMPACK].maxtime );
+	else if(true == m_upg_info[UPG_T_BA0].proceeding && m_upg_info[UPG_T_BA0].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BA0].curtime / m_upg_info[UPG_T_BA0].maxtime );
+	else if(true == m_upg_info[UPG_T_BA3].proceeding && m_upg_info[UPG_T_BA3].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BA3].curtime / m_upg_info[UPG_T_BA3].maxtime );
+	else if(true == m_upg_info[UPG_T_BA4].proceeding && m_upg_info[UPG_T_BA4].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BA4].curtime / m_upg_info[UPG_T_BA4].maxtime );
+	else if(true == m_upg_info[UPG_T_BA5].proceeding && m_upg_info[UPG_T_BA5].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BA5].curtime / m_upg_info[UPG_T_BA5].maxtime );
+	//-------------------------------------------
 }

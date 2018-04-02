@@ -10,12 +10,14 @@ protected:
 	CComponent*		m_com_anim;
 	CComponent*		m_com_targetsearch;
 	CComponent*		m_com_pathfind;
+	CComponent*		m_com_cc;
 	CComponent*		m_com_collision;
 protected:
 	CMD_STATE		m_ecmd_state;
 protected:
 
 	CUI*			m_miniunit_display;
+	CUI*			m_main_preview;
 
 	CObj*			m_pgas;
 	CObj*			m_pgas_fragment;
@@ -26,7 +28,11 @@ protected:
 	CObj*			m_charge_building;//짓고있는 건물
 
 	bool			m_is_preview;
-	CUI*			m_main_preview;
+	
+
+	UPG_INFO*		m_upg_info;
+
+	MYRECT<float>	m_preview_vtx;
 protected:
 public:
 	virtual void Initialize(void);
@@ -49,6 +55,8 @@ public:
 
 	void SetGas_mark(CObj* pgas);	
 	
+public:
+		bool GetMineral_mark(void);
 public:
 	CWorkman(void);
 	virtual ~CWorkman(void);

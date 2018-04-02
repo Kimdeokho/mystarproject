@@ -1,6 +1,7 @@
 #pragma once
 #include "com_animation.h"
 
+//필요없는 클래스
 class CCom_TurretAnim :
 	public CCom_Animation
 {

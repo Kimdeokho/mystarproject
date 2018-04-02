@@ -3,7 +3,6 @@
 
 #include "TextureMgr.h"
 #include "TimeMgr.h"
-
 #include "ScrollMgr.h"
 CLoopEff::CLoopEff(const TCHAR* texkey ,const D3DXVECTOR2& vpos ,const D3DXVECTOR2& vsize, SORT_ID esortid, const float& ftimespeed)
 {
@@ -41,13 +40,13 @@ void CLoopEff::Update(void)
 		m_frame.fcurframe = 0.f;
 	}
 	m_curtex = (*m_generaltex)[ int(m_frame.fcurframe) ];
+
+	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
+	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 }
 
 void CLoopEff::Render(void)
 {
-
-	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
-	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	//if(CScrollMgr::inside_camera(m_matWorld._41 , m_matWorld._42))
 	{

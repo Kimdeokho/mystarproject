@@ -6,12 +6,12 @@
 #include "TimeMgr.h"
 #include "MouseMgr.h"
 
-
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
 #include "Com_MarineAnim.h"
 #include "Com_Wmarine.h"
 #include "Com_Distancesearch.h"
+#include "Com_CC.h"
 
 #include "Skill_SP.h"
 
@@ -21,6 +21,7 @@
 #include "Com_Collision.h"
 #include "FontMgr.h"
 #include "UI_Select.h"
+#include "UI_Energy_bar.h"
 
 #include "Corpse.h"
 #include "UnitMgr.h"
@@ -30,6 +31,8 @@
 #include "ComanderMgr.h"
 
 #include "UI_Wireframe.h"
+#include "UI_Cmd_info.h"
+#include "Skill_Defensive.h"
 CMarine::CMarine(void)
 {
 }
@@ -44,20 +47,21 @@ void CMarine::Initialize(void)
 	CObj::unit_area_Initialize();
 	CUnit::Initialize(); //맵 디스플레이
 
-	m_curtex = NULL;
 	m_com_pathfind = NULL;
 	m_com_targetsearch = NULL;
 
 	
 	m_sortID = SORT_GROUND;	
-	m_ecategory = UNIT;
+	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_MARINE;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = IDLE;
-	m_unitinfo.eorder = ORDER_NONE;
-	m_unitinfo.eArmorType = ARMOR_SMALL;
+	m_unitinfo.state = IDLE;
+	m_unitinfo.order = ORDER_NONE;
+	m_unitinfo.esize = SIZE_SMALL;
+	m_unitinfo.erace = OBJRACE_CREATURE;
+	m_unitinfo.esize = SIZE_SMALL;
 	m_unitinfo.hp = 40;
 	m_unitinfo.maxhp = m_unitinfo.hp;
 	m_unitinfo.mp = 0;
@@ -74,13 +78,15 @@ void CMarine::Initialize(void)
 	m_vertex.top =  10;
 	m_vertex.bottom = 10;
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
 	m_com_weapon = new CCom_Wmarine();
 	m_com_targetsearch = new CCom_Distancesearch(SEARCH_ONLY_ENEMY);
 	m_com_anim = new CCom_MarineAnim(m_matWorld);
 	m_skill_sp = new CSkill_SP(this , m_com_weapon);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex);
+	m_com_cc = new CCom_CC();
 
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );	
@@ -88,6 +94,7 @@ void CMarine::Initialize(void)
 	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE ,  m_com_pathfind) );
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON ,  m_com_weapon )) ;	
+
 
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -99,8 +106,9 @@ void CMarine::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
 
+	m_energybar_ui = new CUI_Energy_bar(this , 22);
+	m_energybar_ui->Initialize();
 }
 
 void CMarine::Update(void)
@@ -114,34 +122,47 @@ void CMarine::Update(void)
 		iter->second->Update();
 
 
-	m_select_ui->Update();
-	m_skill_sp->Update();
-
-
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(ATTACK == m_unitinfo.estate)
+	else if(ATTACK == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"ATTACK");
 	}
-	else if(MOVE == m_unitinfo.estate || COLLISION == m_unitinfo.estate)
+	else if(MOVE == m_unitinfo.state || COLLISION == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
+
+	if( false == m_upg_feedback[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
+	{
+		m_unitinfo.attack_range += 1*32;
+		m_unitinfo.air_attack_range += 1*32;
+		m_upg_feedback[UPG_T_BA0] = true;
+		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
+	}
+
+	m_skill_sp->Update();
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CMarine::Render(void)
 {
-	if( BOARDING == m_unitinfo.estate ||
-		ORDER_BUNKER_BOARDING == m_unitinfo.eorder)
+	if( false == m_unitinfo.is_active ||
+		ORDER_BUNKER_BOARDING == m_unitinfo.order)
 		return;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_com_cc->Render();
+
+	
+	m_energybar_ui->Render();
 
 	m_com_pathfind->Render();
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
@@ -149,19 +170,22 @@ void CMarine::Render(void)
 
 void CMarine::Inputkey_reaction(const int& nkey)
 {
-	if( BOARDING == m_unitinfo.estate )
+	if( false == m_unitinfo.is_active )
 		return;
 
 	if(VK_RBUTTON == nkey)
 	{
-		m_unitinfo.estate = MOVE;
-		m_unitinfo.eorder = ORDER_MOVE;
+		m_unitinfo.state = MOVE;
+		m_unitinfo.order = ORDER_MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		if(NULL != m_com_pathfind)
 		{
+			if(NULL != ptarget)
+				m_bmagicbox = false;
+
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
@@ -190,13 +214,13 @@ void CMarine::Inputkey_reaction(const int& nkey)
 
 void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
-	if( BOARDING == m_unitinfo.estate )
+	if( false == m_unitinfo.is_active )
 		return;
 
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
-		m_unitinfo.eorder = ORDER_MOVE_ATTACK;
-		m_unitinfo.estate = MOVE;
+		m_unitinfo.order = ORDER_MOVE_ATTACK;
+		m_unitinfo.state = MOVE;
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
 
 		if(NULL != m_com_pathfind)
@@ -230,26 +254,104 @@ void CMarine::Dead(void)
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
 }
+void CMarine::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
+{
+	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();
+
+	float tempdamage = 0.f;
+
+	if(NULL != pskill)
+	{
+		int shild = ((CSkill_Defensive*)pskill)->GetShild();
+		((CSkill_Defensive*)pskill)->SetDamage(idamage);
+
+		if( shild - idamage > 0)
+			return;
+		else
+			tempdamage = float(idamage - shild); 
+	}
+	else
+		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+
+	if( ARMOR_SMALL == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.5f;
+	}
+	else if( ARMOR_MEDIUM == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.5f;
+		else if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.75f;
+	}
+	else if( ARMOR_LARGE == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.25f;
+	}
+
+	m_unitinfo.hp -= (int)(tempdamage + 0.5f);
+
+	if(m_unitinfo.hp <= 0)
+	{
+		//킬수 + 1 하면 되는디..
+		m_unitinfo.hp = 0;
+		m_bdestroy = true;
+		Dead();
+	}
+	else if(m_unitinfo.hp >= m_unitinfo.maxhp)
+		m_unitinfo.hp = m_unitinfo.maxhp;
+}
 void CMarine::Update_Cmdbtn(void)
 {
-	CComanderMgr::GetInstance()->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	CComanderMgr::GetInstance()->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
 
-	CComanderMgr::GetInstance()->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	if( 0 == CComanderMgr::GetInstance()->GetUpginfo()->upg_cnt )
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, false);
+	else
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, true);
 }
 
 void CMarine::Update_Wireframe(void)
 {
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.estate))
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
-		pui = new CUI_Wireframe(L"WIRE_MARINE" , D3DXVECTOR2(280,545));
+		pui = new CUI_Wireframe(L"WIRE_MARINE" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
 		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
 
-		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Marine" , 400 , 510 );
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Marine" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}
+
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	WEAPON_INFO temp_info = ((CCom_Weapon*)m_com_weapon)->GetWeapon_info();
+	CFontMgr::GetInstance()->Setbatch_Font(L"공격력:%d + %d" ,temp_info.damage , m_upg_info[UPG_T_BIO_WEAPON].upg_cnt,
+		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
+	CFontMgr::GetInstance()->Setbatch_Font(L"방어력:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_BIO_ARMOR].upg_cnt 
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }

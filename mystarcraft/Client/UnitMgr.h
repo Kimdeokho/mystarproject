@@ -35,7 +35,7 @@ public:
 	void discharge_unit(void);
 	void Intputkey_reaction(const int& nkey);
 	void Intputkey_reaction(const int& firstkey , const int& secondkey);
-	void order_reaction(ORDER eorder);
+	void order_reaction(ORDER order);
 	void clear_destroy_unitlist(CObj* pobj);
 public:
 	CUnitMgr(void);

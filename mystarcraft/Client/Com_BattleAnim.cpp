@@ -42,6 +42,8 @@ void CCom_BattleAnim::SetAnimation(const TCHAR* statekey)
 		{
 			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
+
+			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 		}
 	}
 }
@@ -55,10 +57,8 @@ void CCom_BattleAnim::Update(void)
 		m_frame.fcurframe = 0;
 	}
 
-	const vector<TEXINFO*> vtemp = m_animtexture[m_texdiridx];
-
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (vtemp)[int(m_frame.fcurframe)];
+		m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 }
 
 void CCom_BattleAnim::Render(void)

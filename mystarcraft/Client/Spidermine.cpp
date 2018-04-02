@@ -10,6 +10,7 @@
 #include "Com_MineAnim.h"
 #include "Com_Minesearch.h"
 #include "Com_WMine.h"
+#include "Com_CC.h"
 
 #include "ObjMgr.h"
 #include "LineMgr.h"
@@ -22,6 +23,8 @@
 #include "Area_Mgr.h"
 #include "MyMath.h"
 #include "GeneraEff.h"
+
+#include "UI_Energy_bar.h"
 CSpidermine::CSpidermine(void)
 {
 }
@@ -42,13 +45,15 @@ void CSpidermine::Initialize(void)
 
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = UNIT;
+	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_VULTURE;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = IDLE;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = IDLE;
+	m_unitinfo.esize = SIZE_SMALL;
+	m_unitinfo.erace = OBJRACE_MECHANIC;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_SMALL;
 	m_unitinfo.hp = 20;
 	m_unitinfo.maxhp = m_unitinfo.hp;
@@ -58,7 +63,7 @@ void CSpidermine::Initialize(void)
 	m_unitinfo.attack_range = 0*32;
 	m_unitinfo.air_attack_range = 0*32;
 	m_unitinfo.search_range = 3*32;
-	m_unitinfo.fog_range = 96;
+	m_unitinfo.fog_range = 3*32;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 
 
@@ -69,7 +74,9 @@ void CSpidermine::Initialize(void)
 
 	m_com_anim = new CCom_MineAnim(m_matWorld);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex , false);
+	m_com_cc = new CCom_CC();
 
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
 	
@@ -86,35 +93,46 @@ void CSpidermine::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 4);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 22);
+	m_energybar_ui->Initialize();
 
 	m_plant_time = 0.f;
 	m_bplant_init = true;
+	m_unitinfo.is_active = false;
 }
 
 void CSpidermine::Update(void)
 {
+
 	if(m_bplant_init)
 		m_plant_time += GETTIME;
 
 	if(m_plant_time > 1.0f)
 	{
-		m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
-		m_com_targetsearch = new CCom_Minesearch(SEARCH_ONLY_ENEMY);
-		m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , m_com_targetsearch ));
-		m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE , m_com_pathfind ));	
+		if(BURROW == m_unitinfo.state)
+		{
+			m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
+			m_com_targetsearch = new CCom_Minesearch(SEARCH_ONLY_ENEMY);
+			m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , m_com_targetsearch ));
+			m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE , m_com_pathfind ));	
 
-		m_com_pathfind->Initialize(this);
-		m_com_targetsearch->Initialize(this);
+			m_com_pathfind->Initialize(this);
+			m_com_targetsearch->Initialize(this);
+			m_unitinfo.is_active = true;
 
+			m_bplant_init = false;
+			m_plant_time = 0.f;
 
-		m_bplant_init = false;
-		m_plant_time = 0.f;
-
-		m_unitinfo.estate = PLANT;
+			return;
+		}
+		m_unitinfo.state = PLANT;
 
 		m_sortID = SORT_CORPSE;
+
+
 	}
+
 
 	CObj::area_update();	
 
@@ -125,31 +143,32 @@ void CSpidermine::Update(void)
 		iter->second->Update();
 
 
-	m_select_ui->Update();
-
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 		m_sortID = SORT_GROUND;
 	}
-	else if(PLANT == m_unitinfo.estate)
+	else if(PLANT == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"PLANT");
 	}
-	else if(BURROW == m_unitinfo.estate)
+	else if(BURROW == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BURROW");
 	}
-	else if(PULL == m_unitinfo.estate)
+	else if(PULL == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"PULL");
 		m_sortID = SORT_GROUND;
 	}
-	else if(MOVE == m_unitinfo.estate)
+	else if(MOVE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 		m_sortID = SORT_GROUND;
 	}
+
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CSpidermine::Render(void)
@@ -157,7 +176,10 @@ void CSpidermine::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_com_cc->Render();
+	m_energybar_ui->Render();
 
 	//m_com_pathfind->Render();
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);

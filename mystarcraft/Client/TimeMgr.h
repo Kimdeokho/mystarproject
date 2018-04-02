@@ -13,11 +13,12 @@ private:
 	LARGE_INTEGER		m_LastTime;
 	LARGE_INTEGER		m_CpuTick;
 
-	float	m_fTime;
-
+	float		m_fTime;
+	const int*	m_fps;
 public:
 	float GetTime(void);
-
+	const int&	GetFps(void);
+	void		SetFps(const int* fps);
 public:
 	HRESULT InitTime(void);
 	void SetTime(void);

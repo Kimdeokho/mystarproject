@@ -55,19 +55,19 @@ void CCom_TBuildingAnim::Update(void)
 void CCom_TBuildingAnim::Render(void)
 {
 	m_objshadow_mat = m_objmat;
-	if(AIR_IDLE == m_pobj->GetUnitinfo().estate)
+	if(AIR_IDLE == m_pobj->GetUnitinfo().state)
 	{
 		m_objshadow_mat._42 += 48;
 		m_pSprite->SetTransform(&m_objshadow_mat);
 		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
 	}
-	else if(TAKE_OFF == m_pobj->GetUnitinfo().estate)
+	else if(TAKE_OFF == m_pobj->GetUnitinfo().state)
 	{
 		m_objshadow_mat._42 = m_vairpos.y - CScrollMgr::m_fScrollY;
 		m_pSprite->SetTransform(&m_objshadow_mat);
 		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0) , NULL , D3DCOLOR_ARGB(100,0,0,0));
 	}
-	else if(LANDING == m_pobj->GetUnitinfo().estate)
+	else if(LANDING == m_pobj->GetUnitinfo().state)
 	{
 		m_objshadow_mat._42 = m_vgroundpos.y - CScrollMgr::m_fScrollY;
 		m_pSprite->SetTransform(&m_objshadow_mat);
@@ -108,6 +108,8 @@ void CCom_TBuildingAnim::SetAnimation(const TCHAR* statekey)
 
 			if(L"BUILD" == m_statkey)
 				m_frame.fframespeed = float(m_frame.umax)/m_fbuildtime;
+			else if(L"PRODUCTION" == m_statkey)
+				m_frame.fframespeed = float(m_frame.umax) * 4;
 			else
 				m_frame.fframespeed = (float)m_frame.umax;
 		}

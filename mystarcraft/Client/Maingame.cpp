@@ -38,6 +38,7 @@ HRESULT CMaingame::Initialize(void)
 	CDevice::GetInstance()->InitDevice();
 	
 	CTimeMgr::GetInstance()->InitTime();
+	CTimeMgr::GetInstance()->SetFps(&m_iFPS);
 	CFontMgr::GetInstance()->Initialize();
 	CLineMgr::GetInstance()->Initialize();
 
@@ -47,23 +48,7 @@ HRESULT CMaingame::Initialize(void)
 
 	CSceneMgr::GetInstance()->SetScene(SCENE_LOGO);
 
-
-	D3DXVECTOR2 vstart , vgoal , vtemp , vnormal1 , vnormal2;
-
-	vstart	= D3DXVECTOR2(0,0);
-	vgoal	= D3DXVECTOR2(-1 , -3);
-	vtemp	= D3DXVECTOR2(-2,-5);
-
-	D3DXVec2Normalize(&vnormal1 , &(vgoal - vstart));
-	D3DXVec2Normalize(&vnormal2 , &(vtemp - vstart));
-
-	float fdot = D3DXVec2Dot(&vnormal1 , &vnormal2);
-
-	printf("내적값 %f\n" , (180*acos(-1.1f))/PI);
-
-
-
-
+	
 	return S_OK;
 }
 
@@ -73,6 +58,7 @@ void CMaingame::Update(void)
 
 	CSceneMgr::GetInstance()->Update();
 
+	m_fTime += GETTIME;
 }
 
 void CMaingame::Render(void)
@@ -95,7 +81,7 @@ void CMaingame::Render(void)
 }
 void CMaingame::RenderFPS(void)
 {
-	m_fTime += GETTIME;
+	//m_fTime += GETTIME;
 	m_iFPS += 1;
 	if(m_fTime >= 1.0f)
 	{

@@ -27,7 +27,7 @@ void CBattle_bim::Initialize(void)
 	m_vcurdir = m_vdest_pos - m_vPos;
 	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_LaserAnim(m_matWorld , L"BATTLE_BIM")));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_LaserAnim(m_matWorld , L"BATTLE_BIM" , 2)));
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -59,12 +59,12 @@ void CBattle_bim::Update(void)
 
 	D3DXVECTOR2 vdir = m_vdest_pos - m_vPos;	
 	D3DXVec2Normalize(&vdir , &vdir);
-	m_vPos += vdir*GETTIME*1100;
+	m_vPos += vdir*GETTIME*1300;
 
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 8*8)
 	{
 		if(NULL != m_ptarget)
-			m_ptarget->SetDamage(25, DAMAGE_NOMAL);
+			m_ptarget->SetDamage(25 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 3, DAMAGE_NOMAL);
 
 		m_bdestroy = true;
 		Dead();
@@ -90,11 +90,23 @@ void CBattle_bim::Release(void)
 
 void CBattle_bim::Dead(void)
 {
+	SORT_ID esort_id;
+
+	if(NULL != m_ptarget)
+	{
+		if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType)
+			esort_id = SORT_GROUND;
+		else
+			esort_id = SORT_AIR_EFF;
+	}
+	else
+		esort_id = SORT_GROUND;
+
 	CObj* peff = NULL;
 	if(NULL != m_ptarget)
-		peff = new CGeneraEff(L"BIM_HIT" ,m_ptarget->GetPos()  , D3DXVECTOR2(1.1f , 1.1f), SORT_AIR_EFF , 2.f);
+		peff = new CGeneraEff(L"BIM_HIT" ,m_ptarget->GetPos()  , D3DXVECTOR2(1.1f , 1.1f), esort_id , 2.f);
 	else
-		peff = new CGeneraEff(L"BIM_HIT" ,m_vdest_pos , D3DXVECTOR2(1.1f , 1.1f), SORT_AIR_EFF , 2.f);
+		peff = new CGeneraEff(L"BIM_HIT" ,m_vdest_pos , D3DXVECTOR2(1.1f , 1.1f), esort_id , 2.f);
 
 	peff->Initialize();
 	CObjMgr::GetInstance()->AddEffect(peff);

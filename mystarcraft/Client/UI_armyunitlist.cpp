@@ -20,11 +20,11 @@ void CUI_armyunitlist::Initialize(void)
 		for(int j = 0; j < 6; ++j)
 		{
 			m_backform[i][j] = new CUI_form;
-			((CUI_form*)m_backform[i][j])->set_texture(L"ARMY_EDGE" , D3DXVECTOR2(m_vpos.x + j*35 , m_vpos.y + i*35));
+			((CUI_form*)m_backform[i][j])->set_texture(L"ARMY_EDGE" , D3DXVECTOR2(m_vpos.x + j*37 , m_vpos.y + i*37));
 			((CUI_form*)m_backform[i][j])->set_active(false);
 
 			m_unitform[i][j] = new CUI_form(D3DXVECTOR2(0.5f , 0.5f));
-			((CUI_form*)m_unitform[i][j])->set_texture(L"" , D3DXVECTOR2(m_vpos.x + j*35 + 1 , m_vpos.y + i*35 + 1));
+			((CUI_form*)m_unitform[i][j])->set_texture(L"" , D3DXVECTOR2(m_vpos.x + j*37 + 1 , m_vpos.y + i*37 + 1));
 			((CUI_form*)m_unitform[i][j])->set_active(false);
 		}
 	}
@@ -133,4 +133,8 @@ void CUI_armyunitlist::set_wireframe(OBJID eid , const int& icol , const int& ir
 		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_FIREBAT");
 	else if(OBJ_DROPSHIP == eid)
 		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_DROPSHIP");
+	else if(OBJ_GHOST == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_GHOST");
+	else if(OBJ_VESSEL == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_VESSEL");
 }

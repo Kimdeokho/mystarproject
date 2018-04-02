@@ -8,6 +8,7 @@
 #include "MyMath.h"
 
 #include "Com_Weapon.h"
+#include "Com_Animation.h"
 #include "Com_Pathfind.h"
 #include "Bunker.h"
 #include "Dropship.h"
@@ -36,30 +37,25 @@ void CCom_Distancesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_com_anim = (m_pobj->GetComponent(COM_ANIMATION));
 	m_com_weapon = (m_pobj->GetComponent(COM_WEAPON));
 
-	m_target_objid = -1;
+
 
 	m_pattack_range = &( m_pobj->GetUnitinfo().attack_range );
 	m_pair_range = &( m_pobj->GetUnitinfo().air_attack_range );
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);	
 
+	m_target_objid = -1;
 	m_search_time = 0.f;
 	m_btarget_search = true;
 
 	m_irange = 0;
-	if(NULL != m_pattack_range && NULL != m_pair_range)
-		m_irange = max(*m_pattack_range , *m_pair_range);
-
-	m_irange = max(m_irange , *m_psearch_range);
+	Range_update();
 }
 
 void CCom_Distancesearch::Update(void)
 {
-	if(COLLISION == m_pobj->GetUnitinfo().estate ||
-		TRANSFORMING == m_pobj->GetUnitinfo().estate ||
-		BOARDING == m_pobj->GetUnitinfo().estate)
-		return;
-
-	if(ORDER_INSTALL_MINE == m_pobj->GetUnitinfo().eorder)
+	if(COLLISION == m_pobj->GetUnitinfo().state ||
+		TRANSFORMING == m_pobj->GetUnitinfo().state ||
+		false == m_pobj->GetUnitinfo().is_active)
 		return;
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
@@ -71,7 +67,7 @@ void CCom_Distancesearch::Update(void)
 	}
 	else
 	{
-		if(BOARDING == m_ptarget->GetUnitinfo().estate)
+		if(false == m_ptarget->GetUnitinfo().is_active)
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
@@ -82,104 +78,124 @@ void CCom_Distancesearch::Update(void)
 	if(NULL != m_com_pathfind)
 		((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
 
+	if(ORDER_USINGSKILL == m_pobj->GetUnitinfo().order)
+		return;
+
 	if(true == m_bforced_target)
 	{
 		//강제타겟이 있을 경우
-		if(RESOURCE != m_ptarget->GetCategory())
+		if(CATEGORY_RESOURCE != m_ptarget->GetCategory())
 		{
-			if( m_pobj->GetTeamNumber() == m_ptarget->GetTeamNumber())
+			if( m_pobj->GetTeamNumber() == m_ptarget->GetTeamNumber() &&
+				ORDER_MOVE == m_pobj->GetUnitinfo().order)
 			{
-				if(ORDER_MOVE == m_pobj->GetUnitinfo().eorder)
+				if(OBJ_BUNKER == m_ptarget->GetOBJNAME())
 				{
-					if(OBJ_BUNKER == m_ptarget->GetOBJNAME())
+					m_myrc= m_pobj->GetMyRect();
+					m_myrc.left -= 2;
+					m_myrc.right += 2;
+					m_myrc.top -= 2;
+					m_myrc.bottom += 2;
+					if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
 					{
-						m_myrc= m_pobj->GetMyRect();
-						m_myrc.left -= 2;
-						m_myrc.right += 2;
-						m_myrc.top -= 2;
-						m_myrc.bottom += 2;
-						if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+						m_bforced_target = false;
+
+						m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+						if( true == ((CBunker*)m_ptarget)->UnitEnter_Bunker(m_pobj) )
 						{
-							m_bforced_target = false;
+							m_pobj->SetSelect(NONE_SELECT);
+							m_pobj->area_release();
+							m_pobj->SetState(IDLE); 
+							m_pobj->SetOrder(ORDER_BUNKER_BOARDING);
 
-							m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+						}
+						else
+						{
+							m_pobj->SetState(IDLE);
+							m_pobj->SetOrder(ORDER_NONE);
+						}
+						m_ptarget = NULL;
+						m_target_objid = 0;
 
-							if( true == ((CBunker*)m_ptarget)->UnitEnter_Bunker(m_pobj) )
+						if(NULL != m_com_pathfind)
+						{
+							((CCom_Pathfind*)m_com_pathfind)->ClearPath();
+							((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+						}
+					}
+					else
+					{
+						if(NULL != m_com_pathfind)
+							((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+					}
+				}
+				else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
+				{
+					if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 32*32)
+					{			
+						//범위에 들어오면
+
+						m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+						CObj* pobj = NULL;
+						if(NULL != m_otherobj)
+							pobj = m_otherobj;
+						else
+							pobj = m_pobj;
+
+						if(true == ((CDropship*)m_ptarget)->setunit(pobj))
+						{
+							m_pobj->SetSelect(NONE_SELECT);
+							m_pobj->area_release();
+							m_pobj->SetActive(false); 
+
+							if(NULL != m_otherobj)
 							{
-								m_pobj->SetSelect(NONE_SELECT);
-								m_pobj->area_release();
-								m_pobj->SetState(IDLE); 
-								m_pobj->SetOrder(ORDER_BUNKER_BOARDING);
-
-							}
-							else
-							{
-								m_pobj->SetState(IDLE);
-								m_pobj->SetOrder(ORDER_NONE);
-							}
-							m_ptarget = NULL;
-							m_target_objid = 0;
-
-							if(NULL != m_com_pathfind)
-							{
-								((CCom_Pathfind*)m_com_pathfind)->ClearPath();
-								((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+								m_otherobj->SetSelect(NONE_SELECT);
+								m_otherobj->area_release();
+								m_otherobj->SetActive(false); 
 							}
 						}
 						else
 						{
-							if(NULL != m_com_pathfind)
-								((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
-						}
-					}
-					else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
-					{
-						if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 32*32)
-						{			
-							//범위에 들어오면
-
-							m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
-
-							CObj* pobj = NULL;
+							m_pobj->SetState(IDLE);
 							if(NULL != m_otherobj)
-								pobj = m_otherobj;
-							else
-								pobj = m_pobj;
-
-							if(true == ((CDropship*)m_ptarget)->setunit(pobj))
-							{
-								m_pobj->SetSelect(NONE_SELECT);
-								m_pobj->area_release();
-								m_pobj->SetState(BOARDING); 
-
-								if(NULL != m_otherobj)
-								{
-									m_otherobj->SetSelect(NONE_SELECT);
-									m_otherobj->area_release();
-									m_otherobj->SetState(BOARDING); 
-								}
-							}
-							else
-							{
-								m_pobj->SetState(IDLE);
-								if(NULL != m_otherobj)
-									m_otherobj->SetState(IDLE);
-							}
-
-							m_pobj->SetOrder(ORDER_NONE);
-							if(NULL != m_otherobj)
-								m_otherobj->SetOrder(ORDER_NONE);
-
-							m_target_objid = 0;
-							m_ptarget = NULL;
-							((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
-							((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+								m_otherobj->SetState(IDLE);
 						}
+
+						m_pobj->SetOrder(ORDER_NONE);
+						if(NULL != m_otherobj)
+							m_otherobj->SetOrder(ORDER_NONE);
+
+						m_target_objid = 0;
+						m_ptarget = NULL;
+						((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 					}
 				}
+				else
+				{
+					m_myrc= m_pobj->GetMyRect();
+					m_myrc.left -= 2;
+					m_myrc.right += 2;
+					m_myrc.top -= 2;
+					m_myrc.bottom += 2;
 
+					if(NULL != m_com_pathfind)
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+					if(MyIntersectrect( &m_myrc , &(m_ptarget->GetMyRect()) ) )
+					{
+						m_pobj->SetState(IDLE);
+						m_pobj->SetOrder(ORDER_NONE);
+						m_target_objid = 0;
+						m_ptarget = NULL;
+						((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+					}
+				}
 			}
-			else
+			else if(ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
 			{
 				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 
 					(*m_pattack_range)*(*m_pattack_range))
@@ -212,6 +228,9 @@ void CCom_Distancesearch::Update(void)
 				}
 				else
 				{
+					//공격범위 밖, 추적범위 안이면
+					if(ATTACK == m_pobj->GetUnitinfo().state)
+						m_pobj->SetState(MOVE);
 					if(NULL != m_com_pathfind)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}
@@ -221,17 +240,18 @@ void CCom_Distancesearch::Update(void)
 	}
 	else
 	{
-		if(ORDER_MOVE != m_pobj->GetUnitinfo().eorder)
+		if(ORDER_MOVE != m_pobj->GetUnitinfo().order)
 		{
 			m_search_time += GETTIME;
 
 			if(true == m_btarget_search &&
 				m_search_time > 0.2f)
-			{
+			{				
 				m_search_time = 0.f;
-				
-
 				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , m_irange , m_search_type);			
+
+				//if(ATTACK == m_pobj->GetUnitinfo().state)
+				//	m_pobj->SetState(IDLE);
 			}
 
 			if(NULL != m_ptarget)
@@ -290,33 +310,36 @@ void CCom_Distancesearch::Update(void)
 				//공격범위 밖, 추적범위 안이면
 				//공격 후딜이 다 끝나고 추적
 
-				if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().eorder)
+
+				if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().order)
 				{
 					m_ptarget = NULL;
 					m_target_objid = 0;
 				}
-				//m_target_objid = 0;
 
-				//m_pobj->SetState(MOVE);
-				//if( NULL != m_com_weapon && 
-				//	false == ((CCom_Weapon*)m_com_weapon)->GetFire())
-				{
-					//공격할 준비가 되었으면
-					if(NULL != m_com_pathfind)
-						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
-				}
+				//공격할 준비가 되었으면
+				if(ATTACK == m_pobj->GetUnitinfo().state)
+					m_pobj->SetState(MOVE);
+
+				if(NULL != m_com_pathfind)
+					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 			}
 		}
 		else
 		{
 			if(OBJ_TURRET == m_pobj->GetOBJNAME())
-			{
 				m_pobj->SetState(IDLE);
-			}
 		}
 	}
 }
-
+void CCom_Distancesearch::Range_update(void)
+{
+	if(NULL != m_pattack_range && NULL != m_pair_range)
+	{
+		m_irange = max(*m_pattack_range , *m_psearch_range);
+		m_irange = max(m_irange , *m_pair_range);
+	}
+}
 void CCom_Distancesearch::Render(void)
 {
 

@@ -12,6 +12,8 @@ public:
 	virtual void Render(void);	
 	virtual void Release(void);
 	virtual void Dead(void);
+
+	virtual void Update_Wireframe(void);
 public:
 	CT_gas(void);
 	CT_gas(CObj* resource_gas);

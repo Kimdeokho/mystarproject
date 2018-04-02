@@ -10,6 +10,8 @@ private:
 
 	int		m_mineral_number;
 	int		m_core_number;
+
+	float	m_fsearch_time;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

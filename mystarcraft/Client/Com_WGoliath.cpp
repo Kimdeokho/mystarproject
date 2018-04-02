@@ -55,7 +55,8 @@ void CCom_WGoliath::fire(CObj*& ptarget)
 				peff = new CGeneraEff(L"GaussGun" ,ptarget->GetPos() , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 2.5f);
 				peff->Initialize();
 				CObjMgr::GetInstance()->AddEffect(peff);
-				(ptarget)->SetDamage(m_weapon_info.damage , m_weapon_info.eDamageType);
+				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt
+					, m_weapon_info.eDamageType);
 
 				((CGoliath_part*)m_pobj)->settarget_movetype(MOVE_GROUND);
 			}
@@ -85,7 +86,7 @@ void CCom_WGoliath::fire(CObj*& ptarget)
 	}
 	else
 	{
-		if(MOVE == m_pobj->GetUnitinfo().estate)
+		if(MOVE == m_pobj->GetUnitinfo().state)
 			m_pobj->SetState(IDLE);
 	}
 }

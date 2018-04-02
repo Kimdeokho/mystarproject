@@ -24,7 +24,7 @@ void CCom_Airsearch::Initialize(CObj* pobj /*= NULL*/)
 	m_pobj = pobj;
 
 
-	m_com_pathfind = (m_pobj->GetComponent(COM_PATHFINDE));
+	m_com_pathfind = (m_pobj->GetComponent(COM_AIR_PATHFIND));
 
 	m_com_anim = (m_pobj->GetComponent(COM_ANIMATION));
 	m_com_weapon = (m_pobj->GetComponent(COM_WEAPON));
@@ -38,8 +38,8 @@ void CCom_Airsearch::Initialize(CObj* pobj /*= NULL*/)
 
 void CCom_Airsearch::Update(void)
 {
-	if(/*COLLISION == m_pobj->GetUnitinfo().estate ||*/
-		TRANSFORMING == m_pobj->GetUnitinfo().estate)
+	if(/*COLLISION == m_pobj->GetUnitinfo().state ||*/
+		TRANSFORMING == m_pobj->GetUnitinfo().state)
 		return;
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
@@ -51,7 +51,7 @@ void CCom_Airsearch::Update(void)
 	}
 	else
 	{
-		if(BOARDING == m_ptarget->GetUnitinfo().estate)
+		if(false == m_ptarget->GetUnitinfo().is_active)
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
@@ -66,58 +66,85 @@ void CCom_Airsearch::Update(void)
 	if(true == m_bforced_target)
 	{
 		//강제타겟이 있을 경우
-		if(RESOURCE != m_ptarget->GetCategory())
+		if(NULL == m_ptarget)
+			return;
+
+		if(CATEGORY_RESOURCE != m_ptarget->GetCategory())
 		{
-
-			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
-			{		
-				if(ORDER_MOVE == m_pobj->GetUnitinfo().eorder)
-				{
-					m_bforced_target = false;
-					m_target_objid = 0;
-					return;
-				}
-				//공격 범위에 들어오면
-				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
-
-				ATTACK_SEARCH_TYPE emy_attacktype = m_pobj->GetUnitinfo().eAttackType;
-				MOVE_TYPE	etarget_movetype = m_ptarget->GetUnitinfo().eMoveType;
-
-				if( ATTACK_ONLY_AIR == emy_attacktype)
-				{
-					if(MOVE_GROUND == etarget_movetype)
-						return;
-				}
-				else if( ATTACK_ONLY_GROUND == emy_attacktype)
-				{
-					if(MOVE_AIR == etarget_movetype)
-						return;
-				}
-
-				if(NULL != m_com_weapon)
-					((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
-
+			if( m_pobj->GetTeamNumber() == m_ptarget->GetTeamNumber() &&
+				ORDER_MOVE == m_pobj->GetUnitinfo().order)
+			{
+				m_myrc= m_pobj->GetMyRect();
+				m_myrc.left -= 2;
+				m_myrc.right += 2;
+				m_myrc.top -= 2;
+				m_myrc.bottom += 2;
 
 				if(NULL != m_com_pathfind)
+					((CCom_AirPathfind*)m_com_pathfind)->SetAir_moveupdate(true);
+				if(MyIntersectrect( &m_myrc , &(m_ptarget->GetMyRect()) ) )
 				{
-					//길찾기 중지
+					m_pobj->SetState(IDLE);
+					m_pobj->SetOrder(ORDER_NONE);
+					m_target_objid = 0;
+					m_ptarget = NULL;
+					((CCom_AirPathfind*)m_com_pathfind)->SetTargetObjID(m_target_objid);
 					((CCom_AirPathfind*)m_com_pathfind)->SetAir_moveupdate(false);
 				}
 			}
 			else
 			{
-				if(NULL != m_com_pathfind)
+				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
+				{		
+					if(ORDER_MOVE == m_pobj->GetUnitinfo().order)
+					{
+						m_bforced_target = false;
+						m_target_objid = 0;
+						return;
+					}
+					//공격 범위에 들어오면
+					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+
+					ATTACK_SEARCH_TYPE emy_attacktype = m_pobj->GetUnitinfo().eAttackType;
+					MOVE_TYPE	etarget_movetype = m_ptarget->GetUnitinfo().eMoveType;
+
+					if( ATTACK_ONLY_AIR == emy_attacktype)
+					{
+						if(MOVE_GROUND == etarget_movetype)
+							return;
+					}
+					else if( ATTACK_ONLY_GROUND == emy_attacktype)
+					{
+						if(MOVE_AIR == etarget_movetype)
+							return;
+					}
+
+					if(NULL != m_com_weapon)
+						((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
+
+
+					if(NULL != m_com_pathfind)
+					{
+						//길찾기 중지
+						((CCom_AirPathfind*)m_com_pathfind)->SetAir_moveupdate(false);
+					}
+				}
+				else
 				{
-					//타겟을 쫓아가자
-					((CCom_AirPathfind*)m_com_pathfind)->SetAir_moveupdate(true);
+					if(NULL != m_com_pathfind)
+					{
+						//타겟을 쫓아가자
+						((CCom_AirPathfind*)m_com_pathfind)->SetAir_moveupdate(true);
+					}
 				}
 			}
+
 		}
 
 	}
 	else
 	{
-		if(ORDER_MOVE != m_pobj->GetUnitinfo().eorder)
+		if(ORDER_MOVE != m_pobj->GetUnitinfo().order)
 		{
 			if(NULL == m_ptarget)
 			{

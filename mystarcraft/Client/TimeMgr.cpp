@@ -31,7 +31,14 @@ float CTimeMgr::GetTime( void )
 {
 	return m_fTime;
 }
-
+const int& CTimeMgr::GetFps(void)
+{
+	return *m_fps;
+}
+void CTimeMgr::SetFps( const int* fps )
+{
+	m_fps = fps;
+}
 void CTimeMgr::SetTime( void )
 {
 	QueryPerformanceCounter(&m_FrameTime);

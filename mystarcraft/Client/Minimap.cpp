@@ -25,55 +25,57 @@ void CMinimap::Initialize(void)
 	m_MinimapTexture = CTileManager::GetInstance()->GetMiniampTexture();
 	m_MinifogTexture = CTileManager::GetInstance()->GetMiniFogmapTexture();
 	
-	m_vweight.x = (BACKBUFFER_SIZEX - 640)/2 + 5;
-	m_vweight.y = BACKBUFFER_SIZEY - 130;
-
-	m_matworld._41 = m_vweight.x;  //85 , 5;
-	m_matworld._42 = m_vweight.y; //470 , 350;
+	m_matworld._41 = m_vpos.x;  
+	m_matworld._42 = m_vpos.y; 
 
 	m_rect.left = m_matworld._41;
 	m_rect.top = m_matworld._42;
 	m_rect.right = m_matworld._41 + 128;
 	m_rect.bottom = m_matworld._42 + 128;
+
+	m_fupdatetime = 0.f;
+	m_bactive = true;
 }
 
 void CMinimap::Update(void)
 {
-	list<CUI*>::iterator iter		= m_miniunit_display.begin();
-	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
-
-	for( ; iter != iter_end; )
+	m_fupdatetime += GETTIME;
+	if(m_fupdatetime >= 0.5f)
 	{
-		if( true == (*iter)->GetDestroy() )
+		m_fupdatetime = 0.f;
+
+		list<CUI*>::iterator iter		= m_miniunit_display.begin();
+		list<CUI*>::iterator iter_end	= m_miniunit_display.end();
+
+		for( ; iter != iter_end; )
 		{
-			Safe_Delete((*iter));
-			iter = m_miniunit_display.erase(iter);
+			if( true == (*iter)->GetDestroy() )
+			{
+				Safe_Delete((*iter));
+				iter = m_miniunit_display.erase(iter);
+			}
+			else
+			{
+				(*iter)->Update();
+				++iter;
+			}
 		}
-		else
-		{
-			(*iter)->Update();
-			++iter;
-		}
+
+		CTileManager::GetInstance()->MinifogUpdate();
 	}
+
 }
 
 void CMinimap::Render(void)
 {
+
 
 	m_pSprite->SetTransform(&m_matworld);
 	m_pSprite->Draw(m_MinimapTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
 		, D3DCOLOR_ARGB(255,255,255,255));
 
 		
-
-	//D3DXMatrixIdentity(&m_matworld);
-	//m_pSprite->SetTransform(&m_matworld);
-
-	//m_pSprite->Draw(m_MinifogTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
-	//	, D3DCOLOR_ARGB(255,255,255,255));
-
-
-	CTileManager::GetInstance()->MinifogUpdate();
+	//CTileManager::GetInstance()->MinifogUpdate();
 
 	m_pSprite->SetTransform(&m_matworld);
 	m_pSprite->Draw(m_MinifogTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
@@ -115,8 +117,8 @@ void CMinimap::SetMinimapCamPos(const D3DXVECTOR2& vmousepos)
 	D3DXVECTOR2 vpt = vmousepos;
 	if(true == MyPtInrect(vmousepos , &m_rect))
 	{
-		vpt.x -= m_vweight.x;
-		vpt.y -= m_vweight.y;
+		vpt.x -= m_vpos.x;
+		vpt.y -= m_vpos.y;
 
 		vpt.x *= 32;
 		vpt.y *= 32;
@@ -144,8 +146,8 @@ void CMinimap::Minimappos_to_screen(D3DXVECTOR2& vmousept)
 	//if(true == MyPtInrect(vpt , &m_rect))
 	{
 
-		vmousept.x -= m_vweight.x; //vweight ¹Ì´Ï¸Ê À§Ä¡
-		vmousept.y -= m_vweight.y;
+		vmousept.x -= m_vpos.x; //vweight ¹Ì´Ï¸Ê À§Ä¡
+		vmousept.y -= m_vpos.y;
 
 		vmousept.x *= 32;
 		vmousept.y *= 32;

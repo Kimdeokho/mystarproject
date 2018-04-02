@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Com_Weapon.h"
 
+#include "ComanderMgr.h"
 CCom_Weapon::CCom_Weapon(void)
 {
 	m_attack_delay = 0.f;
@@ -9,6 +10,8 @@ CCom_Weapon::CCom_Weapon(void)
 	m_air_attack_time = 0.f;
 	m_bfire = false;
 	m_bair_fire = false;
+
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 CCom_Weapon::~CCom_Weapon(void)

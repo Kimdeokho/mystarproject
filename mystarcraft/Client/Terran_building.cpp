@@ -27,7 +27,11 @@ CTerran_building::CTerran_building(void)
 	D3DXMatrixIdentity(&m_matshadow);
 	m_curtex = NULL;
 	m_linktex = NULL;
+
 	m_weight = D3DXVECTOR2(0,0);
+	m_vgroundpos = D3DXVECTOR2(0,0);
+	m_vairpos = D3DXVECTOR2(0,0);
+
 	m_is_preview = false;
 	m_is_partinstall = false;
 	m_is_autoinstall = false;
@@ -35,12 +39,14 @@ CTerran_building::CTerran_building(void)
 	m_is_rally = false;
 
 	m_partbuilding = NULL;
+	m_upg_info = NULL;
 
 	m_main_preview = new CBuilding_Preview;
 	m_sub_preview = new CBuilding_Preview;
 
 	m_fbuild_tick = 0.f;
 	m_build_hp = 0.f;
+
 }
 
 CTerran_building::~CTerran_building(void)
@@ -57,6 +63,9 @@ void CTerran_building::building_area_Initialize(const int& col , const int& row)
 {
 	m_icol = col;
 	m_irow = row;
+
+	m_areaidx_vec.reserve(col*row);
+	m_old_areaidx_vec.reserve(col*row);
 
 	m_areaidx_vec.resize(col*row);
 	m_old_areaidx_vec.resize(col*row);
@@ -164,7 +173,11 @@ void CTerran_building::Release(void)
 	Safe_Delete(m_pfire_eff2);
 	Safe_Delete(m_pfire_eff3);
 
+	if(NULL != m_select_ui)
+		Safe_Delete(m_select_ui);
 
+	if(NULL != m_energybar_ui)
+		Safe_Delete(m_energybar_ui);
 }
 
 void CTerran_building::Dead(void)
@@ -202,7 +215,7 @@ void CTerran_building::TakeOff(void)
 	m_vairpos = m_vPos; //이륙하기전 기존 위치 저장
 	((CCom_TBuildingAnim*)m_com_anim)->SetAirpos(m_vairpos);
 
-	m_unitinfo.estate = TAKE_OFF;
+	m_unitinfo.state = TAKE_OFF;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_sortID = SORT_AIR;
 	m_com_pathfind->Initialize(this);
@@ -216,7 +229,7 @@ void CTerran_building::TakeOff(void)
 }
 void CTerran_building::Landing_move(D3DXVECTOR2 vpos)
 {
-	m_unitinfo.eorder = ORDER_LANDING_MOVE;
+	m_unitinfo.order = ORDER_LANDING_MOVE;
 	m_vgroundpos.y = vpos.y + m_weight.y;//착륙하기전 착륙위치 저장
 	((CCom_TBuildingAnim*)m_com_anim)->SetGroundpos(m_vgroundpos);
 
@@ -243,7 +256,7 @@ void CTerran_building::fire_eff_initialize(void)
 
 void CTerran_building::fire_eff_update(void)
 {
-	if(BUILD == m_unitinfo.estate)
+	if(BUILD == m_unitinfo.state)
 		return;
 
 	float fhp_ratio = float(m_unitinfo.hp) / float(m_unitinfo.maxhp);
@@ -290,234 +303,22 @@ void CTerran_building::Build_Complete(void)
 	CComanderMgr::GetInstance()->T_BuildTech_Update(m_ebuild_tech , 1);
 }
 
-//void CTerran_building::add_production_info(const float& maxtime , PRODUCTION_ID eid , const TCHAR* texkey)
-//{
-//	PRODUCTION_INFO temp;
-//	
-//	temp.maxtime = 7.f;
-//	temp.eid = eid;
-//	temp.texkey = texkey;
-//
-//	if( m_production_list.size() < 5 )
-//	{
-//		m_production_list.push_back(temp);
-//	}
-//}
-//void CTerran_building::update_production(void)
-//{
-//	if(!m_production_list.empty())
-//	{
-//		m_unitinfo.estate = PRODUCTION;
-//		float maxtime = m_production_list.front().maxtime;
-//		m_production_list.front().curtime += GETTIME;
-//
-//		if(m_production_list.front().curtime >= maxtime)
-//		{
-//			//생산 
-//			create_unit(m_production_list.front().eid);
-//			m_production_list.pop_front();
-//			if(m_production_list.empty())
-//				m_unitinfo.estate = IDLE;
-//		}
-//		
-//	}
-//}
-//void CTerran_building::create_unit(PRODUCTION_ID eid)
-//{
-//}
+void CTerran_building::upginfo_update(const UPGRADE& eupg)
+{
+	if(true == m_upg_info[eupg].proceeding &&
+		m_upg_info[eupg].obj_num == m_obj_id)
+	{
+		m_upg_info[eupg].curtime += GETTIME;
 
-//void CTerran_building::unit_collocate(CObj* const pobj)
-//{
-//	MYRECT<float>	collocate_rc;
-//	MYRECT<float>	vtx = pobj->GetVertex();
-//
-//	int stepsize = 16;
-//	int loopcnt = 0;
-//	int widthcnt = (32/stepsize)*m_irow;
-//	int heightcnt = (32/stepsize)*m_icol + 2;
-//	int idx64;
-//
-//	D3DXVECTOR2 collocate_pos[4];
-//	D3DXVECTOR2	temp_pos[4];
-//	D3DXVECTOR2	result_pos;
-//
-//	bool bescape = false;
-//
-//
-//	int idx32 = 0;
-//	while(!bescape)
-//	{				
-//		collocate_pos[0].x = m_vPos.x - m_weight.x - loopcnt*32; //밑줄 오른쪽방향
-//		collocate_pos[0].y = m_vPos.y + m_weight.y + 32 + loopcnt*32;
-//
-//		collocate_pos[1].x = m_vPos.x + m_weight.x + 32 + loopcnt*32; //오른줄 위쪽방향
-//		collocate_pos[1].y = m_vPos.y + m_weight.y + 32 + loopcnt*32;
-//
-//		collocate_pos[2].x = m_vPos.x + m_weight.x + loopcnt*32; //윗줄 왼쪽방향
-//		collocate_pos[2].y = m_vPos.y - m_weight.y - 32 - loopcnt*32;
-//
-//		collocate_pos[3].x = m_vPos.x - m_weight.x - 32 - loopcnt*32; //왼줄 아래쪽방향
-//		collocate_pos[3].y = m_vPos.y - m_weight.y - 32 - loopcnt*32;
-//
-//		memcpy(temp_pos , collocate_pos , sizeof(D3DXVECTOR2)*4);
-//
-//		for(int i = 0; i < widthcnt; ++i)
-//		{
-//			temp_pos[0].x = collocate_pos[0].x + i*stepsize;
-//
-//			collocate_rc.left = temp_pos[0].x - vtx.left; 
-//			collocate_rc.right = temp_pos[0].x + vtx.right;
-//			collocate_rc.top = temp_pos[0].y - vtx.top;
-//			collocate_rc.bottom = temp_pos[0].y + vtx.bottom;
-//			idx64 = CMyMath::Pos_to_index(temp_pos[0] , 64);
-//
-//			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
-//			{				
-//				idx32 = CMyMath::Pos_to_index(temp_pos[0] , 32);
-//				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
-//				{
-//					result_pos = temp_pos[0];
-//					bescape = true;
-//					break;
-//				}
-//			}
-//		}
-//		if(bescape)
-//			break;
-//
-//		for(int i = 0; i < heightcnt; ++i)
-//		{					
-//			temp_pos[1].y = collocate_pos[1].y - i*stepsize;;
-//
-//			collocate_rc.left = temp_pos[1].x - vtx.left; 
-//			collocate_rc.right = temp_pos[1].x + vtx.right;
-//			collocate_rc.top = temp_pos[1].y - vtx.top;
-//			collocate_rc.bottom = temp_pos[1].y + vtx.bottom;
-//			idx64 = CMyMath::Pos_to_index(temp_pos[1] , 64);
-//
-//			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
-//			{
-//				idx32 = CMyMath::Pos_to_index(temp_pos[1] , 32);
-//				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
-//				{
-//					result_pos = temp_pos[1];
-//					bescape = true;
-//					break;
-//				}
-//			}
-//		}
-//		if(bescape)
-//			break;
-//
-//		for(int i = 0; i < widthcnt; ++i)
-//		{					
-//			temp_pos[2].x = collocate_pos[2].x - i*stepsize;;
-//
-//			collocate_rc.left = temp_pos[2].x - vtx.left; 
-//			collocate_rc.right = temp_pos[2].x + vtx.right;
-//			collocate_rc.top = temp_pos[2].y - vtx.top;
-//			collocate_rc.bottom = temp_pos[2].y + vtx.bottom;
-//			idx64 = CMyMath::Pos_to_index(temp_pos[2] , 64);
-//
-//			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
-//			{
-//				idx32 = CMyMath::Pos_to_index(temp_pos[2] , 32);
-//				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
-//				{
-//					result_pos = temp_pos[2];
-//					bescape = true;
-//					break;
-//				}
-//			}
-//
-//		}
-//		if(bescape)
-//			break;
-//
-//		for(int i = 0; i < heightcnt; ++i)
-//		{
-//			temp_pos[3].y = collocate_pos[3].y + i*stepsize;;
-//
-//			collocate_rc.left = temp_pos[3].x - vtx.left; 
-//			collocate_rc.right = temp_pos[3].x + vtx.right;
-//			collocate_rc.top = temp_pos[3].y - vtx.top;
-//			collocate_rc.bottom = temp_pos[3].y + vtx.bottom;
-//			idx64 = CMyMath::Pos_to_index(temp_pos[3] , 64);
-//
-//			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
-//			{
-//				idx32 = CMyMath::Pos_to_index(temp_pos[3] , 32);
-//				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
-//				{
-//					result_pos = temp_pos[3];
-//					bescape = true;
-//					break;
-//				}
-//			}
-//		}
-//		if(bescape)
-//			break;
-//
-//		widthcnt += 2;
-//		heightcnt += 2;
-//		loopcnt += 1;
-//	}
-//
-//	pobj->SetPos(result_pos);
-//}
-//void CTerran_building::rallypoint_pathfinding(void)
-//{
-//	if(!m_rallypath.empty())
-//		m_rallypath.clear();
-//
-//	int tempidx = m_curidx32;
-//	int preidx = m_curidx32;
-//	int igoalidx = CMyMath::Pos_to_index(m_rallypoint , 32);
-//
-//	int icurstepcnt = 0;
-//	const int	istep = 9;
-//	D3DXVECTOR2 temppos;
-//	int	loopcnt = 0;
-//
-//	int	oriidx = 0;
-//	BYTE byfloor = 0;
-//
-//	short*	flowfieldpath = CTileManager::GetInstance()->Get_flowfield_node();
-//
-//	while(true)
-//	{
-//		//일일히 담는것이아니라 n스텝당 한번씩 담자
-//
-//		loopcnt = 0;
-//
-//		temppos = CMyMath::index_to_Pos( flowfieldpath[tempidx]  , SQ_TILECNTX , SQ_TILESIZEX);
-//
-//
-//		if(MOVE_NONE == CTileManager::GetInstance()->GetTileOption(tempidx))
-//		{
-//			// 그지역이 장애물이라면
-//			temppos = CMyMath::index_to_Pos( preidx , SQ_TILECNTX , SQ_TILESIZEX);
-//
-//			m_rallypath.push_back( temppos );
-//
-//			break;
-//		}
-//
-//		if(tempidx == igoalidx)
-//		{
-//			//최종지점 도착
-//			m_rallypath.push_back( m_rallypoint );
-//			break;
-//		}
-//
-//		if( 0 != icurstepcnt &&
-//			0 == icurstepcnt % istep )
-//		{
-//			m_rallypath.push_back( temppos );
-//		}
-//		++icurstepcnt;
-//
-//		preidx = tempidx;
-//		tempidx = flowfieldpath[tempidx]; //다음 경로로 가는 인덱스를 준다
-//	}
-//}
+		if( m_upg_info[eupg].curtime >= m_upg_info[eupg].maxtime )
+		{
+			m_upg_info[eupg].curtime = 0;
+			m_upg_info[eupg].proceeding = false;
+			m_upg_info[eupg].upg_cnt += 1;
+			m_upg_info[eupg].maxtime += 0.f;
+			m_upg_info[eupg].obj_num = 0;
+
+			m_unitinfo.state = IDLE;
+		}
+	}
+}

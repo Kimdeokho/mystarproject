@@ -9,9 +9,15 @@
 #include "UnitMgr.h"
 #include "UI_Select.h"
 
+#include "TileManager.h"
+
+#include "FontMgr.h"
+#include "ScrollMgr.h"
+
 CObj::CObj(void)
 {
 	m_select_ui = NULL;
+	m_energybar_ui = NULL;
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 
 	D3DXMatrixIdentity(&m_matWorld);
@@ -51,21 +57,27 @@ void CObj::unit_area_Initialize(void)
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos.x , m_vPos.y , 64);
 
+	m_oldidx32 = m_curidx32;
 	m_oldidx64 = m_curidx64;
 
 	CArea_Mgr::GetInstance()->SetObj_Area64(m_curidx64 , m_curidx64 , this );
 }
 void CObj::area_update(void)
 {
-	if(BOARDING == m_unitinfo.estate ||
-		ORDER_BUNKER_BOARDING == m_unitinfo.eorder)
+	if(false == m_unitinfo.is_active ||
+		ORDER_BUNKER_BOARDING == m_unitinfo.order)
 		return;
 
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
 
 	if(m_oldidx32 != m_curidx32)
-		m_oldidx32 = m_curidx32;
+	{
+		//if( MOVE != m_unitinfo.state && BURROW != m_unitinfo.state)
+		
+		//CTileManager::GetInstance()->SetFlowfield_cost_update(m_curidx32 , m_oldidx32);
+		m_oldidx32 = m_curidx32;		
+	}
 
 	if(m_oldidx64 != m_curidx64)
 	{
@@ -210,13 +222,21 @@ void CObj::SetSelect(SELECT_FLAG eflag ,D3DCOLOR ecolor)
 	}
 
 	if(eflag == NONE_SELECT)
+	{
 		m_bSelect = false;
+		if(NULL != m_energybar_ui)
+			m_energybar_ui->SetActive(false);
+	}
 	else
+	{
 		m_bSelect = true;
+		if(NULL != m_energybar_ui)
+			m_energybar_ui->SetActive(true);		
+	}
 }
-void CObj::SetState(STATE estate)
+void CObj::SetState(STATE state)
 {
-	m_unitinfo.estate = estate;
+	m_unitinfo.state = state;
 }
 
 CATEGORY CObj::GetCategory(void)
@@ -247,7 +267,7 @@ const D3DXVECTOR2& CObj::GetcurDir(void)
 	return m_vcurdir;
 }
 
-int CObj::Getcuridx(const int& tilesize)
+const int& CObj::Getcuridx(const int& tilesize)
 {
 	if(32 == tilesize)
 	{
@@ -258,35 +278,27 @@ int CObj::Getcuridx(const int& tilesize)
 		return m_curidx64;
 	}
 
-	return -1;
+	return m_curidx32;
 }
-
-// ORDER CObj::GetOrder(void)
-// {
-// 	return m_eorder;
-// }
-
 const MYRECT<float>& CObj::GetVertex(void)
 {
 	return m_vertex;
 }
 
-void CObj::SetOrder(ORDER eorder)
+void CObj::SetOrder(ORDER order)
 {
-	//m_eorder = eorder;
-	m_unitinfo.eorder = eorder;
+	//m_order = order;
+	m_unitinfo.order = order;
 }
-
-// float* CObj::GetSpeed(void)
-// {
-// 	return &m_fspeed;
-// }
 
 const D3DXMATRIX& CObj::GetMat(void)
 {
 	return m_matWorld;
 }
-
+void CObj::SetActive(bool is_active)
+{
+	m_unitinfo.is_active = is_active;
+}
 void CObj::SetSpeed(const float& fspeed)
 {
 	m_unitinfo.fspeed = fspeed;
@@ -295,7 +307,7 @@ void CObj::SetSpeed(const float& fspeed)
 void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
 	//m_hp -= idamage;
-	float tempdamage = (float)idamage;
+	float tempdamage = (float)idamage - m_unitinfo.armor;
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
 		if(DAMAGE_BOOM == edamagetype)
@@ -314,7 +326,7 @@ void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage *= 0.25f;
 	}
 
-	m_unitinfo.hp -= (int)tempdamage;
+	m_unitinfo.hp -= (int)(tempdamage + 0.5f);
 
 	if(m_unitinfo.hp <= 0)
 	{
@@ -331,7 +343,7 @@ void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CObj::SetMP(const int& imp)
 {
-	m_unitinfo.mp -= imp;
+	m_unitinfo.mp += imp;
 
 	if(m_unitinfo.mp <= 0)
 		m_unitinfo.mp = 0;
@@ -395,5 +407,17 @@ void CObj::Update_Wireframe(void)
 {
 
 }
+
+void CObj::SetWait(bool is_wait)
+{
+	m_unitinfo.is_wait = is_wait;
+}
+
+void CObj::SetHP(const int& ihp)
+{
+	m_unitinfo.hp += ihp;
+}
+
+
 
 int CObj::m_globalobj_id;

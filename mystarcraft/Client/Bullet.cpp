@@ -1,9 +1,12 @@
 #include "StdAfx.h"
 #include "Bullet.h"
 
+#include "ComanderMgr.h"
 CBullet::CBullet(void)
 {
 	m_ptarget = NULL;
+
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 CBullet::~CBullet(void)

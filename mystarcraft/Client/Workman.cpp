@@ -17,12 +17,15 @@ CWorkman::CWorkman(void)
 	m_pmineral_fragment = NULL;
 
 	m_charge_building = NULL;
+	m_upg_info = NULL;
 
 	m_is_preview = false;
 
 	m_main_preview = new CBuilding_Preview;
 
 	m_ecmd_state = CMD_BASIC;
+
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 CWorkman::~CWorkman(void)
@@ -62,6 +65,18 @@ void CWorkman::Release(void)
 
 	if( NULL != m_pgas_fragment)
 		m_pgas_fragment->SetDestroy(true);
+
+	if(NULL != m_pmineral)
+	{
+		((CMineral*)m_pmineral)->decrease_workman(this);
+		m_pmineral = NULL;
+	}
+
+	if(NULL != m_select_ui)
+		Safe_Delete(m_select_ui);
+
+	if(NULL != m_energybar_ui)
+		Safe_Delete(m_energybar_ui);
 }
 
 void CWorkman::Inputkey_reaction(const int& nkey)
@@ -84,22 +99,29 @@ void CWorkman::SetGas_mark(CObj* pgas)
 }
 void CWorkman::SetMineral_mark(CObj* pmienral)
 {
-	if(NULL == pmienral && NULL != m_pmineral)
-	{
-		((CMineral*)m_pmineral)->decrease_workman();
-	}
+	//if(NULL == pmienral && NULL != m_pmineral)
+	//{
+	//	((CMineral*)m_pmineral)->decrease_workman(this);
+	//}
 	m_pmineral = pmienral;
 }
-
+bool CWorkman::GetMineral_mark(void)
+{
+	if(NULL == m_pmineral)
+		return false;
+	else
+		return true;
+}
 void CWorkman::setmineral_fragment(CObj* pmienral_frag)
 {
-	m_pmineral_fragment = pmienral_frag;
+	if(NULL == m_pmineral_fragment)
+		m_pmineral_fragment = pmienral_frag;
 }
 
 void CWorkman::setgas_fragment(CObj* pgas_frag)
 {
-
-	m_pgas_fragment = pgas_frag;
+	if(NULL == m_pgas_fragment)
+		m_pgas_fragment = pgas_frag;
 }
 
 void CWorkman::destroy_frag(void)

@@ -29,10 +29,10 @@ void CCom_AirCollision::Initialize(CObj* pobj /*= NULL*/)
 
 	m_fspeed = &(m_pobj->GetUnitinfo().fspeed);
 
-	m_air_vertex.left = m_vertex.left/8;
-	m_air_vertex.right = m_vertex.right/8;
-	m_air_vertex.top = m_vertex.top/8;
-	m_air_vertex.bottom = m_vertex.bottom/8;
+	m_air_vertex.left = m_vertex.left/2;
+	m_air_vertex.right = m_vertex.right/2;
+	m_air_vertex.top = m_vertex.top/2;
+	m_air_vertex.bottom = m_vertex.bottom/2;
 
 	m_rect.left = m_vPos.x - m_air_vertex.left; 
 	m_rect.right = m_vPos.x + m_air_vertex.right;
@@ -50,9 +50,7 @@ void CCom_AirCollision::Update(void)
 	m_rect.top = m_vPos.y - m_air_vertex.top;
 	m_rect.bottom = m_vPos.y + m_air_vertex.bottom;
 
-
 	//충돌되고있을때 ,, 그 해당유닛이 삭제되버리면 힙손상이네!
-
 
 	if(NULL == m_collision_target)
 	{
@@ -73,7 +71,6 @@ void CCom_AirCollision::Update(void)
 				{
 					//영벡터일때 임의의 방향벡터를 준다.
 					//m_collision_vnormal = OFFSET_DIRVEC;
-
 					m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5) );
 					D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
 				}
@@ -92,7 +89,7 @@ void CCom_AirCollision::Update(void)
 		{
 			/*타겟과 충돌이 일어나는 중이라면*/
 
-			m_vPos -= GETTIME* 10 *m_collision_vnormal;
+			m_vPos -= GETTIME* m_collision_vnormal * 10;
 
 		}
 		else

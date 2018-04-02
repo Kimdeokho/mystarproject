@@ -70,6 +70,7 @@ public:
 	void Initialize(void);
 	void Init_eightidx(const int& idx);
 public:
+	void SetFlowfield_cost_update(const int& icuridx , const int& ioldidx);
 	void Flowfield_Pathfinding(const D3DXVECTOR2& goalpos);
 public:
 	void MinifogUpdate(void);
@@ -107,6 +108,7 @@ public:
 	void Creep_decrease_autotile(const int& idx);
 	void Creep_Autotile(const int& idx);
 public:
+	bool Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest );
 	void Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype);
 	void Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int& fRadius ,const int& loopcnt,list<int>& creep_IdxList);
 public:

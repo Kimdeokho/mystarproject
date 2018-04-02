@@ -12,6 +12,11 @@ public:
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
 	virtual void Release(void);
 	virtual void Dead(void);
+
+	virtual void Update_Cmdbtn(void);
+	virtual void Update_Wireframe(void);
+
+	virtual void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
 public:
 	CWraith(void);
 	~CWraith(void);

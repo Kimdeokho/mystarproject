@@ -13,6 +13,8 @@
 #include "Com_Targetsearch.h"
 #include "ComanderMgr.h"
 
+#include "UI_Cmd_info.h"
+
 IMPLEMENT_SINGLETON(CUnitMgr)
 CUnitMgr::CUnitMgr(void)
 {
@@ -97,6 +99,10 @@ void CUnitMgr::clear_destroy_unitlist(CObj* pobj)
 				++iter;
 		}
 	}
+	else
+	{
+		CComanderMgr::GetInstance()->renewal_wireframe_ui(NULL , STATE_NONE);
+	}
 }
 
 void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptarget*/)
@@ -107,29 +113,71 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptar
 
 	CObj* pobj = m_curunitList.front();
 	m_vUnitcenterpt = D3DXVECTOR2(0,0);
-	m_magicbox_unitcnt = 0;
+	
 
 	iter	 = m_curunitList.begin();
 	iter_end = m_curunitList.end();
 
 	CComponent* com_targetsearch = NULL;
+
+	MYRECT<float>	magicbox;
+	magicbox.left = 4096;
+	magicbox.right = 0;
+	magicbox.top = 4096;
+	magicbox.bottom = 0;
+	D3DXVECTOR2 vpos;
+
 	for( ; iter != iter_end; ++iter) 
 	{
-		if(CMyMath::pos_distance(pobj->GetPos() , (*iter)->GetPos()) < 400*400)
-		{
-			++m_magicbox_unitcnt;
-			m_vUnitcenterpt += (*iter)->GetPos();
-			(*iter)->SetMagicBox(true);
-		}
-		else
-			(*iter)->SetMagicBox(false);
+		vpos = (*iter)->GetPos();
+		if( vpos.x <= magicbox.left)
+			magicbox.left = vpos.x;
+		if( vpos.x >= magicbox.right)
+			magicbox.right = vpos.x;
+		if( vpos.y <= magicbox.top)
+			magicbox.top = vpos.y;
+		if( vpos.y >= magicbox.bottom)
+			magicbox.bottom = vpos.y;
+
+		if( MOVE_NOT != (*iter)->GetUnitinfo().eMoveType &&	
+			TRANSFORMING != (*iter)->GetUnitinfo().state &&
+			CATEGORY_UNIT == (*iter)->GetCategory())
+			(*iter)->SetState(MOVE);
+		//if(CMyMath::pos_distance(pobj->GetPos() , (*iter)->GetPos()) < 330*330)
+		//{
+		//	++m_magicbox_unitcnt;
+		//	m_vUnitcenterpt += (*iter)->GetPos();
+		//	(*iter)->SetMagicBox(true);
+		//}
+		//else
+		//	(*iter)->SetMagicBox(false);
 
 		//com_targetsearch = (*iter)->GetComponent(COM_TARGET_SEARCH);
 		//if(NULL != com_targetsearch)
 		//{
 		//	((CCom_Targetsearch*)com_targetsearch)->SetTarget(ptarget);
 		//}
+	}
 
+	iter = m_curunitList.begin();
+	m_magicbox_unitcnt = 0;
+
+	for( ; iter != iter_end; ++iter)
+	{
+		vpos = (*iter)->GetPos();
+
+		if(magicbox.right - magicbox.left <= 200 &&
+			magicbox.bottom - magicbox.top <= 200)
+		{
+			//++m_magicbox_unitcnt;
+			//m_vUnitcenterpt += vpos;
+			(*iter)->SetMagicBox(true);
+		}
+		else
+			(*iter)->SetMagicBox(false);
+
+		++m_magicbox_unitcnt;
+		m_vUnitcenterpt += vpos;
 	}
 
 	m_vUnitcenterpt /= float(m_magicbox_unitcnt);
@@ -174,9 +222,10 @@ void CUnitMgr::Update_UI_Infomation(void)
 {
 	if(!m_curunitList.empty())
 	{
+		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
 		if(1 == m_curunitList.size())
 		{
-			CComanderMgr::GetInstance()->Update_Cmdbtn( m_curunitList.front() );
+			((CUI_Cmd_info*)pui)->Update_Cmdbtn( m_curunitList.front() );
 			CComanderMgr::GetInstance()->Update_Wireframe( m_curunitList.front() );
 		}
 		else
@@ -195,13 +244,13 @@ void CUnitMgr::Update_UI_Infomation(void)
 				}
 			}
 			if(true == bflag)
-				CComanderMgr::GetInstance()->Update_Cmdbtn(NULL);
+				((CUI_Cmd_info*)pui)->Update_Cmdbtn(NULL);
 			else
 			{
 				if(OBJ_SCV == pobj->GetOBJNAME())
-					CComanderMgr::GetInstance()->Update_Cmdbtn(NULL);
+					((CUI_Cmd_info*)pui)->Update_Cmdbtn(NULL);
 				else
-					CComanderMgr::GetInstance()->Update_Cmdbtn(pobj);				
+					((CUI_Cmd_info*)pui)->Update_Cmdbtn(pobj);				
 			}
 
 			CFontMgr::GetInstance()->renewal_infomation_font();
@@ -212,7 +261,9 @@ void CUnitMgr::Update_UI_Infomation(void)
 	else
 	{
 		//명렁 버튼을 비운다
-		CComanderMgr::GetInstance()->clear_cmdbtn();
+		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+		((CUI_Cmd_info*)pui)->clear_btn();
+		//CComanderMgr::GetInstance()->clear_cmdbtn();
 	}
 }
 

@@ -10,8 +10,19 @@
 #include "ComanderMgr.h"
 
 #include "Com_Pathfind.h"
+#include "Com_AirPathfind.h"
 
 #include "SCV.h"
+#include "Tank.h"
+#include "Marine.h"
+#include "Firebat.h"
+#include "Medic.h"
+#include "Vulture.h"
+#include "Tank.h"
+#include "Goliath.h"
+#include "Wraith.h"
+#include "BattleCruiser.h"
+#include "Dropship.h"
 
 CCom_Production_building::CCom_Production_building(const D3DXVECTOR2& vpos , const D3DXVECTOR2& vweight , const int& icol , const int& irow)
 :m_vPos(vpos) , m_weight(vweight) , m_irow(irow) , m_icol(icol)
@@ -38,7 +49,7 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 	MYRECT<float>	collocate_rc;
 	MYRECT<float>	vtx = pobj->GetVertex();
 
-	int stepsize = 16;
+	int stepsize = 8;
 	int loopcnt = 0;
 	int widthcnt = (32/stepsize)*m_irow + 1;
 	int heightcnt = (32/stepsize)*m_icol + 2;
@@ -49,9 +60,8 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 	D3DXVECTOR2	result_pos;
 
 	bool bescape = false;
-
-
 	int idx32 = 0;
+
 	while(!bescape)
 	{				
 		collocate_pos[0].x = m_vPos.x - m_weight.x - loopcnt*32; //밑줄 오른쪽방향
@@ -165,8 +175,8 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 		if(bescape)
 			break;
 
-		widthcnt += 3;
-		heightcnt += 2;
+		widthcnt += (32/stepsize) * 2;
+		heightcnt += (32/stepsize) * 2;
 		loopcnt += 1;
 	}
 
@@ -198,7 +208,6 @@ void CCom_Production_building::rallypoint_pathfinding(void)
 		loopcnt = 0;
 
 		temppos = CMyMath::index_to_Pos( flowfieldpath[tempidx]  , SQ_TILECNTX , SQ_TILESIZEX);
-
 
 		if(MOVE_NONE == CTileManager::GetInstance()->GetTileOption(tempidx))
 		{
@@ -279,20 +288,83 @@ void CCom_Production_building::create_unit(PRODUCTION_ID eid)
 	if(PRODUCTION_SCV == eid)
 	{
 		pobj = new CSCV;
-		pobj->SetPos(m_vPos);
-		pobj->Initialize();
-		unit_collocate(pobj);
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
+	}
+	else if(PRODUCTION_TANK == eid)
+	{
+		pobj = new CTank;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);
+	}
+	else if(PRODUCTION_MARINE == eid)
+	{
+		pobj = new CMarine;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MARINE);
+	}
+	else if(PRODUCTION_MEDIC == eid)
+	{
+		pobj = new CMedic;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);
+	}
+	else if(PRODUCTION_FIREBAT == eid)
+	{
+		pobj = new CFirebat;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);
+	}
+	else if(PRODUCTION_GHOST == eid)
+	{
+	}
+	else if(PRODUCTION_TANK == eid)
+	{
+		pobj = new CTank;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);
+	}
+	else if(PRODUCTION_GOLIATH == eid)
+	{
+		pobj = new CGoliath;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);
+	}
+	else if(PRODUCTION_VULTURE == eid)
+	{
+		pobj = new CVulture;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VULTURE);
+	}
+	else if(PRODUCTION_WRAITH == eid)
+	{
+		pobj = new CWraith;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_WRAITH);
+	}
+	else if(PRODUCTION_DROPSHIP == eid)
+	{
+		pobj = new CDropship;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_DROPSHIP);
+	}
+	else if(PRODUCTION_VESSEL == eid)
+	{
+		pobj = new CVulture;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);
+	}
+	else if(PRODUCTION_BATTLE == eid)
+	{
+		pobj = new CBattleCruiser;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);
+	}
 
-		if(true == m_is_rally)
+	pobj->SetPos(m_vPos);
+	pobj->Initialize();
+	unit_collocate(pobj);
+
+	if(true == m_is_rally)
+	{
+		pobj->SetOrder(ORDER_MOVE);
+		pcom = pobj->GetComponent(COM_PATHFINDE);
+
+		if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
 		{
-			pobj->SetOrder(ORDER_MOVE);
-			pcom = pobj->GetComponent(COM_PATHFINDE);
 			((CCom_Pathfind*)pcom)->SetGoalPos(m_rallypoint , false);
 			((CCom_Pathfind*)pcom)->Setrally_path(m_rallypath);
 		}
-
-
+		else
+			((CCom_AirPathfind*)pcom)->SetGoalPos(m_rallypoint , false);
 	}
 }
 
@@ -300,7 +372,9 @@ void CCom_Production_building::show_production_state()
 {
 	if(!m_production_list.empty())
 	{
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(410,550) , m_production_list.front().curtime / m_production_list.front().maxtime );
+		D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+		//CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(415,550) , m_production_list.front().curtime / m_production_list.front().maxtime );
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 283,interface_pos.y + 430) , m_production_list.front().curtime / m_production_list.front().maxtime );
 		CComanderMgr::GetInstance()->SetBuilding_info(m_production_list);
 	}
 

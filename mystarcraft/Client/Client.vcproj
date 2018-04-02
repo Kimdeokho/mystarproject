@@ -284,14 +284,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Astar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Astar.h"
-					>
-				</File>
-				<File
 					RelativePath=".\ComanderMgr.cpp"
 					>
 				</File>
@@ -455,14 +447,6 @@
 			<Filter
 				Name="Obj"
 				>
-				<File
-					RelativePath=".\Fog_object.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Fog_object.h"
-					>
-				</File>
 				<File
 					RelativePath=".\GasResource.cpp"
 					>
@@ -730,6 +714,14 @@
 							>
 						</File>
 						<File
+							RelativePath=".\Ghost.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Ghost.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Marine.cpp"
 							>
 						</File>
@@ -826,6 +818,14 @@
 							</File>
 							<File
 								RelativePath=".\Dropship.h"
+								>
+							</File>
+							<File
+								RelativePath=".\Vessle.cpp"
+								>
+							</File>
+							<File
+								RelativePath=".\Vessle.h"
 								>
 							</File>
 							<File
@@ -935,6 +935,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Nuclear_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Nuclear_Bullet.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Turret_bullet.cpp"
 						>
 					</File>
@@ -966,6 +974,34 @@
 						RelativePath=".\Wraith_Bullet.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Yama_bim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Yama_bim.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="ETC"
+					>
+					<File
+						RelativePath=".\Fog_object.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Fog_object.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Nuclear_aim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Nuclear_aim.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -977,6 +1013,14 @@
 				</File>
 				<File
 					RelativePath=".\Com_AirCollision.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_CC.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_CC.h"
 					>
 				</File>
 				<File
@@ -1009,6 +1053,14 @@
 				</File>
 				<File
 					RelativePath=".\Com_Transport.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_UsingSkill.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_UsingSkill.h"
 					>
 				</File>
 				<File
@@ -1088,6 +1140,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_FirebatAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_GhostAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_GhostAnim.h"
 						>
 					</File>
 					<File
@@ -1203,19 +1263,19 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Com_TurretAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TurretAnim.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Com_TurretheadAnim.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Com_TurretheadAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_VessleAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_VessleAnim.h"
 						>
 					</File>
 					<File
@@ -1288,6 +1348,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_WFirebat.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WGhost.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WGhost.h"
 						>
 					</File>
 					<File
@@ -1435,6 +1503,14 @@
 					Name="Pathfind"
 					>
 					<File
+						RelativePath=".\Astar.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Astar.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_AirPathfind.cpp"
 						>
 					</File>
@@ -1520,6 +1596,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\UI_Cmd_info.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Cmd_info.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Energy_bar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Energy_bar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UI_form.cpp"
 					>
 				</File>
@@ -1580,11 +1672,35 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Skill_Defensive.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_Defensive.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_irradi.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_irradi.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Skill_SP.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Skill_SP.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Yamaeff.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Yamaeff.h"
 					>
 				</File>
 			</Filter>

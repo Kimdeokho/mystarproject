@@ -18,6 +18,9 @@
 
 #include "SCV.h"
 #include "Medic.h"
+
+#include "MyMath.h"
+#include "ScrollMgr.h"
 CScene_Stage::CScene_Stage(void)
 {
 }
@@ -40,8 +43,8 @@ HRESULT CScene_Stage::Initialize(void)
 	for(int i = 0; i < 10; ++i)
 	{
 		vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-		vpos.x += rand()%50 - 25;
-		vpos.y += rand()%50 - 25;
+		vpos.x = CScrollMgr::m_fScrollX;
+		vpos.y = CScrollMgr::m_fScrollY;
 		pobj = new CSCV;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
 		pobj->SetPos(vpos);
@@ -75,7 +78,7 @@ void CScene_Stage::Render(void)
 	CTileManager::GetInstance()->RenderFog();
 	//CTileManager::GetInstance()->Render_Flowfield();	
 	
-	//CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
+	//CLineMgr::GetInstance()->RenderGrid(32/*Å©±â*/, 128/*°¹¼ö*/);
 	CLineMgr::GetInstance()->RectLineRender();
 
 	CComanderMgr::GetInstance()->Render();
@@ -94,7 +97,7 @@ void CScene_Stage::Release(void)
 
 void CScene_Stage::LoadData(void)
 {
-	HANDLE hFile = CreateFile(L"../Data/map/test3.dat" , 
+	HANDLE hFile = CreateFile(L"../Data/map/test4.dat" , 
 		GENERIC_READ , 0 , NULL , OPEN_EXISTING , 0 , NULL);
 
 	CTileManager::GetInstance()->LoadTileData(hFile);

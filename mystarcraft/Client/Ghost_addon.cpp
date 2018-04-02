@@ -20,6 +20,12 @@
 #include "TimeMgr.h"
 #include "ComanderMgr.h"
 #include "Comandcenter.h"
+
+#include "UI_Cmd_info.h"
+#include "UI_Wireframe.h"
+#include "UI_form.h"
+
+#include "UI_Energy_bar.h"
 CGhost_addon::CGhost_addon(CObj* pobj)
 {
 	m_mainbuilding = pobj;
@@ -45,13 +51,13 @@ void CGhost_addon::Initialize(void)
 	m_ebuild_tech = T_GHOST_ADDON;
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = BUILDING;
+	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_GHOST_ADDON;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = BUILD;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = BUILD;
+	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.maxhp = 750;
 	m_unitinfo.mp = 0;
@@ -75,10 +81,14 @@ void CGhost_addon::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select94" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 94 , m_vertex.bottom*1.8f);
+	m_energybar_ui->Initialize();
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
+	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
 }
 
 void CGhost_addon::Update(void)
@@ -89,13 +99,12 @@ void CGhost_addon::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	m_select_ui->Update();
 
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(BUILD == m_unitinfo.estate)
+	else if(BUILD == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"BUILD");
 
@@ -105,8 +114,9 @@ void CGhost_addon::Update(void)
 		if(m_unitinfo.hp >= m_unitinfo.maxhp )
 		{
 			m_unitinfo.hp = m_unitinfo.maxhp;
-			m_unitinfo.estate = IDLE;
+			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
+			m_mainbuilding->SetState(IDLE);
 		}
 	}
 
@@ -118,6 +128,14 @@ void CGhost_addon::Update(void)
 		m_vPos.y - CScrollMgr::m_fScrollY);
 
 	CTerran_building::fire_eff_update();
+
+	CTerran_building::upginfo_update(UPG_T_VIC0);
+	CTerran_building::upginfo_update(UPG_T_VIC1);
+	CTerran_building::upginfo_update(UPG_T_VIC3);
+	CTerran_building::upginfo_update(UPG_T_VIC4);
+
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CGhost_addon::Render(void)
@@ -125,7 +143,9 @@ void CGhost_addon::Render(void)
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_energybar_ui->Render();
 
 	CTerran_building::fire_eff_render();
 
@@ -135,7 +155,6 @@ void CGhost_addon::Render(void)
 void CGhost_addon::Release(void)
 {
 	CTerran_building::area_release();
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 
 void CGhost_addon::Dead(void)
@@ -149,13 +168,72 @@ void CGhost_addon::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
 	if(NULL != m_mainbuilding)
 		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
 }
 
 void CGhost_addon::Inputkey_reaction(const int& nkey)
 {
+	if(DEVELOPING == m_unitinfo.state)
+		return;
 
+	if( VK_LBUTTON == nkey )
+	{
+		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
+
+		if(BTN_T_VIC0 == eclicked_btn)
+			Inputkey_reaction('Q');
+		else if(BTN_T_VIC0 == eclicked_btn)
+			Inputkey_reaction('W');
+		else if(BTN_T_VIC3 == eclicked_btn)
+			Inputkey_reaction('A');
+		else if(BTN_T_VIC4 == eclicked_btn)
+			Inputkey_reaction('S');
+	}
+
+	if('Q' == nkey)
+	{
+		if( false == m_upg_info[UPG_T_VIC0].proceeding &&
+			m_upg_info[UPG_T_VIC0].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_VIC0].proceeding = true;
+			m_upg_info[UPG_T_VIC0].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if('W' == nkey)
+	{
+		if( false == m_upg_info[UPG_T_VIC1].proceeding &&
+			m_upg_info[UPG_T_VIC1].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_VIC1].proceeding = true;
+			m_upg_info[UPG_T_VIC1].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if('A' == nkey)
+	{
+		if( false == m_upg_info[UPG_T_VIC3].proceeding &&
+			m_upg_info[UPG_T_VIC3].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_VIC3].proceeding = true;
+			m_upg_info[UPG_T_VIC3].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if('S' == nkey)
+	{
+		if( false == m_upg_info[UPG_T_VIC4].proceeding &&
+			m_upg_info[UPG_T_VIC4].upg_cnt == 0)
+		{
+			m_upg_info[UPG_T_VIC4].proceeding = true;
+			m_upg_info[UPG_T_VIC4].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
 }
 
 void CGhost_addon::Inputkey_reaction(const int& firstkey , const int& secondkey)
@@ -176,3 +254,114 @@ void CGhost_addon::Setlink(bool blink , CObj* pobj)
 		((CCom_PartAnim*)m_com_anim)->play_direction(-1);
 	}
 }
+void CGhost_addon::Update_Cmdbtn(void)
+{
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	if(IDLE == m_unitinfo.state )
+	{			
+		if(NULL != m_mainbuilding)
+		{
+			if( false == m_upg_info[UPG_T_VIC0].proceeding && m_upg_info[UPG_T_VIC0].upg_cnt < 1)
+			{
+				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VIC0" , BTN_T_VIC0 , true);
+			}
+			if( false == m_upg_info[UPG_T_VIC1].proceeding && m_upg_info[UPG_T_VIC1].upg_cnt < 1)
+			{
+				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VIC1" , BTN_T_VIC1 , true);
+			}
+			if( false == m_upg_info[UPG_T_VIC3].proceeding && m_upg_info[UPG_T_VIC3].upg_cnt < 1)
+			{
+				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_VIC3" , BTN_T_VIC3 , true);
+			}
+			if( false == m_upg_info[UPG_T_VIC4].proceeding && m_upg_info[UPG_T_VIC4].upg_cnt < 1)
+			{
+				((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_T_VIC4" , BTN_T_VIC4 , true);
+			}
+		}
+
+	}
+	else if(DEVELOPING == m_unitinfo.state)
+		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+}
+
+void CGhost_addon::Update_Wireframe(void)
+{
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe( L"WIRE_GHOST_ADDON" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Covert Ops" ,interface_pos.x + 320 , interface_pos.y + 390 );
+
+		if(BUILD == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction" , interface_pos.x + 320 , interface_pos.y + 415);
+		}
+		else if(DEVELOPING == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Upgrading" , interface_pos.x + 330 , interface_pos.y + 415);
+
+			pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+			CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+			if(true == m_upg_info[UPG_T_VIC0].proceeding && 
+				m_upg_info[UPG_T_VIC0].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_VIC0" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_VIC1].proceeding && 
+				m_upg_info[UPG_T_VIC1].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_VIC1" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_VIC3].proceeding && 
+				m_upg_info[UPG_T_VIC3].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_VIC3" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_T_VIC4].proceeding && 
+				m_upg_info[UPG_T_VIC4].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_T_VIC4" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+		}
+	}
+
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	if(BUILD == m_unitinfo.state)
+	{		
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+	}
+
+	if(true == m_upg_info[UPG_T_VIC0].proceeding && m_upg_info[UPG_T_VIC0].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VIC0].curtime / m_upg_info[UPG_T_VIC0].maxtime );
+	else if(true == m_upg_info[UPG_T_VIC1].proceeding && m_upg_info[UPG_T_VIC1].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VIC1].curtime / m_upg_info[UPG_T_VIC1].maxtime );
+	else if(true == m_upg_info[UPG_T_VIC3].proceeding && m_upg_info[UPG_T_VIC3].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VIC3].curtime / m_upg_info[UPG_T_VIC3].maxtime );
+	else if(true == m_upg_info[UPG_T_VIC4].proceeding && m_upg_info[UPG_T_VIC4].obj_num == m_obj_id)
+		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VIC4].curtime / m_upg_info[UPG_T_VIC4].maxtime );
+}
+

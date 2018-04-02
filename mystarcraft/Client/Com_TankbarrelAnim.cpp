@@ -19,6 +19,7 @@ CCom_TankbarrelAnim::~CCom_TankbarrelAnim(void)
 
 void CCom_TankbarrelAnim::Initialize(CObj* pobj)
 {
+	m_statkey = L"";
 	SetAnimation(L"IDLE");
 	m_pobj = pobj;
 	m_rotation_speed = 50;
@@ -29,6 +30,12 @@ void CCom_TankbarrelAnim::Initialize(CObj* pobj)
 
 void CCom_TankbarrelAnim::Update(void)
 {
+	//if(NULL == m_animtexture)
+	//{
+	//	m_curtex = NULL;
+	//	return;
+	//}
+
 	CCom_Animation::DirIdxCalculation();
 
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
@@ -50,6 +57,9 @@ void CCom_TankbarrelAnim::Update(void)
 }
 void CCom_TankbarrelAnim::Render(void)
 {
+	if(NULL == m_curtex)
+		return;
+
 	m_pSprite->SetTransform(&m_objmat);
 	if(TEAM_1 == m_pobj->GetTeamNumber())
 	{
@@ -84,10 +94,10 @@ void CCom_TankbarrelAnim::SetAnimation(const TCHAR* statekey)
 				//break;
 		//}
 
-		//if(NULL != m_animtexture[0])
-		//{
+		if(NULL != m_animtexture)
+		{
 			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax;
-		//}
+		}
 	}
 }

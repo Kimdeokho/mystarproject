@@ -30,6 +30,10 @@ void CCom_WFirebat::Initialize(CObj* pobj /*= NULL*/)
 	m_attack_delay = 0.9166f;
 
 	m_bfire = false;
+
+	m_splash_range[0] = 10;
+	m_splash_range[1] = 10;
+	m_splash_range[2] = 10;
 }
 
 void CCom_WFirebat::Update(void)
@@ -87,22 +91,24 @@ void CCom_WFirebat::fire(CObj*& ptarget)
 			vsplash_pos[1] = vsplash_pos[0] + vdir * 20;
 			vsplash_pos[2] = vsplash_pos[1] + vdir * 20;
 
+			//m_pobj->GetUnitinfo().eAttackType;
 			for(int i = 0; i < 3; ++i)
 			{				
 				//renderpos.x = vsplash_pos[i].x - CScrollMgr::m_fScrollX;
 				//renderpos.y = vsplash_pos[i].y - CScrollMgr::m_fScrollY;
 				//CFontMgr::GetInstance()->SetNoticeFont(L"@" , renderpos.x , renderpos.y );
 
-				CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, m_weapon_info, vsplash_pos[i], 
-					10 , 10 , 10 , false);
+				CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, 
+					m_weapon_info.damage + m_upg_info[UPG_T_BIO_WEAPON].upg_cnt*2,
+					m_weapon_info.eDamageType,
+					vsplash_pos[i] , m_splash_range , false , m_injure_list);
 			}
-
-			//(ptarget)->SetDamage(m_damage , m_edamagetype);
+			m_injure_list.clear();
 		}
 	}
 	else
 	{
-		if(MOVE == m_pobj->GetUnitinfo().estate)
+		if(MOVE == m_pobj->GetUnitinfo().state)
 			m_pobj->SetState(IDLE);
 	}
 }

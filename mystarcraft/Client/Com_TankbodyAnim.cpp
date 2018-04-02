@@ -18,6 +18,7 @@ CCom_TankbodyAnim::~CCom_TankbodyAnim(void)
 
 void CCom_TankbodyAnim::Initialize(CObj* pobj)
 {
+	m_statkey = L"";
 	m_curtex = NULL;
 
 	SetAnimation(L"IDLE");
@@ -30,6 +31,12 @@ void CCom_TankbodyAnim::Initialize(CObj* pobj)
 
 void CCom_TankbodyAnim::Update(void)
 {
+	//if(NULL == m_animtexture)
+	//{
+	//	m_curtex = NULL;
+	//	return;
+	//}
+
 	CCom_Animation::DirIdxCalculation();
 
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
@@ -85,10 +92,11 @@ void CCom_TankbodyAnim::SetAnimation(const TCHAR* statekey)
 				//break;
 		//}
 
-		//if(NULL != m_animtexture[0])
-		//{
+		if(NULL != m_animtexture)
+		{
 			m_frame.umax = m_animtexture[0].size();
 			m_frame.fframespeed = (float)m_frame.umax*2;
-		//}
+			m_curtex = m_animtexture[m_texdiridx][0];
+		}
 	}
 }

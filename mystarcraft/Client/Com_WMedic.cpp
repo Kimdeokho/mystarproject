@@ -32,6 +32,7 @@ void CCom_WMedic::fire(CObj*& ptarget)
 	if(ptarget->GetUnitinfo().maxhp == ptarget->GetUnitinfo().hp)
 	{
 		m_pobj->SetState(IDLE);
+		ptarget = NULL;
 	}
 	else
 	{
@@ -44,7 +45,15 @@ void CCom_WMedic::fire(CObj*& ptarget)
 			m_pobj->SetMP(-1);
 
 			if(m_pobj->GetUnitinfo().mp > 0)
-				(ptarget)->SetDamage( -m_weapon_info.damage , m_weapon_info.eDamageType);
+			{
+				m_attack_delay = 0.05f;
+				(ptarget)->SetHP(1);
+			}
+			else
+			{
+				m_attack_delay = 1.f;
+				(ptarget)->SetHP(1);
+			}
 		}
 	}
 }

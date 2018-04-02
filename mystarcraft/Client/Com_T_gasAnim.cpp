@@ -27,16 +27,29 @@ void CCom_T_gasAnim::Initialize(CObj* pobj)
 
 void CCom_T_gasAnim::Update(void)
 {
-	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	if(L"BUILD" == m_statkey)
+	{
+		const UNITINFO& unit_info = m_pobj->GetUnitinfo();
+		float curframe = float(unit_info.hp) / float(unit_info.maxhp);
+		m_frame.fcurframe = m_frame.umax * curframe;
+	}
+	else
+		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+
 	if(m_frame.fcurframe >= m_frame.umax)
 	{
 		m_frame.fcurframe = 0.f;
-
-		if(L"BUILD" == m_statkey)
-		{
-			m_pobj->SetState(IDLE);
-		}
 	}
+	//m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	//if(m_frame.fcurframe >= m_frame.umax)
+	//{
+	//	m_frame.fcurframe = 0.f;
+
+	//	if(L"BUILD" == m_statkey)
+	//	{
+	//		m_pobj->SetState(IDLE);
+	//	}
+	//}
 
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
@@ -74,9 +87,7 @@ void CCom_T_gasAnim::SetAnimation(const TCHAR* statekey)
 
 		m_frame.umax = m_generaltex->size();
 
-		if(L"BUILD" == m_statkey)
-			m_frame.fframespeed = 4/m_fbuildtime;
-		else
-			m_frame.fframespeed = (float)m_frame.umax;
+	
+		m_frame.fframespeed = (float)m_frame.umax;
 	}
 }

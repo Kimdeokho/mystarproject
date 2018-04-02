@@ -10,6 +10,7 @@
 #include "Com_Pathfind.h"
 #include "Com_FirebatAnim.h"
 #include "Com_WFirebat.h"
+#include "Com_CC.h"
 #include "Com_Meleesearch.h"
 
 #include "Skill_SP.h"
@@ -28,6 +29,12 @@
 
 #include "MyMath.h"
 #include "GeneraEff.h"
+
+#include "ComanderMgr.h"
+#include "UI_Cmd_info.h"
+#include "UI_Wireframe.h"
+#include "UI_Energy_bar.h"
+#include "Skill_Defensive.h"
 CFirebat::CFirebat(void)
 {
 }
@@ -48,14 +55,16 @@ void CFirebat::Initialize(void)
 
 
 	m_sortID = SORT_GROUND;	
-	m_ecategory = UNIT;
+	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_FIREBAT;
 	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eMoveType = MOVE_GROUND;
-	m_unitinfo.estate = IDLE;
-	m_unitinfo.eorder = ORDER_NONE;
+	m_unitinfo.state = IDLE;
+	m_unitinfo.order = ORDER_NONE;
+	m_unitinfo.esize = SIZE_SMALL;
+	m_unitinfo.erace = OBJRACE_CREATURE;
 	m_unitinfo.eArmorType = ARMOR_SMALL;
 	m_unitinfo.hp = 50;
 	m_unitinfo.maxhp = m_unitinfo.hp;
@@ -77,7 +86,9 @@ void CFirebat::Initialize(void)
 	m_com_anim = new CCom_FirebatAnim(m_matWorld);
 	//m_skill_sp = new CSkill_SP(this , m_com_weapon);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex);
+	m_com_cc = new CCom_CC();
 
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );	
@@ -96,7 +107,9 @@ void CFirebat::Initialize(void)
 
 	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 13);
 	m_select_ui->Initialize();
-	CObjMgr::GetInstance()->AddSelect_UI(m_select_ui , MOVE_GROUND);
+
+	m_energybar_ui = new CUI_Energy_bar(this , 22);
+	m_energybar_ui->Initialize();
 }
 
 void CFirebat::Update(void)
@@ -109,48 +122,52 @@ void CFirebat::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-
-	m_select_ui->Update();
 	//m_skill_sp->Update();
 
 
-	if(IDLE == m_unitinfo.estate)
+	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
 	}
-	else if(ATTACK == m_unitinfo.estate)
+	else if(ATTACK == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"ATTACK");
 	}
-	else if(MOVE == m_unitinfo.estate || COLLISION == m_unitinfo.estate)
+	else if(MOVE == m_unitinfo.state || COLLISION == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
+
+	m_select_ui->Update();
+	m_energybar_ui->Update();
 }
 
 void CFirebat::Render(void)
 {
-	if( BOARDING == m_unitinfo.estate ||
-		ORDER_BUNKER_BOARDING == m_unitinfo.eorder)
+	if( false == m_unitinfo.is_active ||
+		ORDER_BUNKER_BOARDING == m_unitinfo.order)
 		return;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
+	m_select_ui->Render();
 	m_com_anim->Render();
+	m_com_cc->Render();
+	m_energybar_ui->Render();
 
 	m_com_pathfind->Render();
 }
 
 void CFirebat::Inputkey_reaction(const int& nkey)
 {
-	if( BOARDING == m_unitinfo.estate )
+	if( false == m_unitinfo.is_active )
 		return;
 
 	if(VK_RBUTTON == nkey)
 	{
-		m_unitinfo.estate = MOVE;
-		m_unitinfo.eorder = ORDER_MOVE;
+		m_unitinfo.state = MOVE;
+		m_unitinfo.order = ORDER_MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 
@@ -186,13 +203,13 @@ void CFirebat::Inputkey_reaction(const int& nkey)
 
 void CFirebat::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
-	if( BOARDING == m_unitinfo.estate )
+	if( false == m_unitinfo.is_active )
 		return;
 
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
-		m_unitinfo.eorder = ORDER_MOVE_ATTACK;
-		m_unitinfo.estate = MOVE;
+		m_unitinfo.order = ORDER_MOVE_ATTACK;
+		m_unitinfo.state = MOVE;
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
 
 		if(NULL != m_com_pathfind)
@@ -223,4 +240,103 @@ void CFirebat::Dead(void)
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2( 0.7f,0.7f) , SORT_GROUND ,1.4f);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+void CFirebat::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
+{
+	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();
+
+	float tempdamage = 0.f;
+
+	if(NULL != pskill)
+	{
+		int shild = ((CSkill_Defensive*)pskill)->GetShild();
+		((CSkill_Defensive*)pskill)->SetDamage(idamage);
+
+		if( shild - idamage > 0)
+			return;
+		else
+			tempdamage = float(idamage - shild); 
+	}
+	else
+		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+
+	if( ARMOR_SMALL == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.5f;
+	}
+	else if( ARMOR_MEDIUM == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.5f;
+		else if(DAMAGE_BOOM == edamagetype)
+			tempdamage *= 0.75f;
+	}
+	else if( ARMOR_LARGE == m_unitinfo.eArmorType)
+	{
+		if(DAMAGE_VIBRATE == edamagetype)
+			tempdamage *= 0.25f;
+	}
+
+	m_unitinfo.hp -= (int)(tempdamage + 0.5f);
+
+	if(m_unitinfo.hp <= 0)
+	{
+		//킬수 + 1 하면 되는디..
+		m_unitinfo.hp = 0;
+		m_bdestroy = true;
+		Dead();
+	}
+	if(m_unitinfo.hp >= m_unitinfo.maxhp)
+		m_unitinfo.hp = m_unitinfo.maxhp;
+}
+void CFirebat::Update_Cmdbtn(void)
+{
+	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK);
+}
+
+void CFirebat::Update_Wireframe(void)
+{
+	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+
+	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_FIREBAT" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Firebat" ,interface_pos.x + 320 , interface_pos.y + 390 );
+	}
+
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	WEAPON_INFO temp_info = ((CCom_Weapon*)m_com_weapon)->GetWeapon_info();
+	CFontMgr::GetInstance()->Setbatch_Font(L"공격력:%d + %d" ,temp_info.damage , m_upg_info[UPG_T_BIO_WEAPON].upg_cnt*2,
+		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
+	CFontMgr::GetInstance()->Setbatch_Font(L"방어력:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_BIO_ARMOR].upg_cnt 
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
+
 }

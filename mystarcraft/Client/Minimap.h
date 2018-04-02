@@ -11,7 +11,8 @@ private:
 	list<CUI*>			m_miniunit_display;
 	float				m_fupdatetime;
 
-	D3DXVECTOR2			m_vweight;
+	bool				m_bactive;
+
 public:
 	void Setminiunit(CUI* pui);
 	void SetMinimapCamPos(const D3DXVECTOR2& vmousepos);
