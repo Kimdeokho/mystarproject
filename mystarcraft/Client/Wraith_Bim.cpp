@@ -28,7 +28,6 @@ void CWraith_Bim::Initialize(void)
 	m_sortID = SORT_AIR_EFF;
 
 	m_vcurdir = m_vdest_pos - m_vPos;
-	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_LaserAnim(m_matWorld , L"WRAITH_BIM", 2)));
 
@@ -37,6 +36,8 @@ void CWraith_Bim::Initialize(void)
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
+
+	m_ftick_distance = GETTIME*800;
 }
 
 void CWraith_Bim::Update(void)
@@ -62,9 +63,9 @@ void CWraith_Bim::Update(void)
 
 	D3DXVECTOR2 vdir = m_vdest_pos - m_vPos;	
 	D3DXVec2Normalize(&vdir , &vdir);
-	m_vPos += vdir*GETTIME*800;
+	m_vPos += vdir*m_ftick_distance;
 
-	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 8*8)
+	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
 			m_ptarget->SetDamage(6 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt, DAMAGE_NOMAL);

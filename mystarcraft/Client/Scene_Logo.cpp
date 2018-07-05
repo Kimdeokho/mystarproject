@@ -7,6 +7,7 @@
 #include "SceneMgr.h"
 CScene_Logo::CScene_Logo(void):m_pBackTexture(NULL)
 {
+	m_pLoding = NULL;
 }
 
 CScene_Logo::~CScene_Logo(void)
@@ -20,17 +21,25 @@ HRESULT CScene_Logo::Initialize(void)
 
 	if(CTextureMgr::GetInstance()->Read_LodingImgPath(L"../Data/imgpath/LodingImgPath.txt") )
 		ERR_MSG(L"로딩텍스쳐 불러오기 실패");
-	m_pBackTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Scene" , L"Loding800")->pTexture;
+
+	if( 800 == BACKBUFFER_SIZEX)
+		m_pBackTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Scene" , L"Loding800")->pTexture;
+	else if( 640 == BACKBUFFER_SIZEX)
+		m_pBackTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Scene" , L"Loding640")->pTexture;
 
 	m_pLoding = new CLoding(CLoding::LODING_BASIC);
 	m_pLoding->Initialize();
+
 	return S_OK;
 }
 
 void CScene_Logo::Update(void)
 {
 	//if(m_pLoding->GetLoadingComplete())
-	//	CSceneMgr::GetInstance()->SetScene(SCENE_STAGE);
+		//CSceneMgr::GetInstance()->SetScene(SCENE_STAGE);
+
+	if(m_pLoding->GetLoadingComplete())
+		CSceneMgr::GetInstance()->SetScene(SCENE_LOGIN);
 }
 
 void CScene_Logo::Render(void)
@@ -44,8 +53,7 @@ void CScene_Logo::Render(void)
 
 	m_pLoding->Logo_LodingRender();
 
-	if(m_pLoding->GetLoadingComplete())
-		CSceneMgr::GetInstance()->SetScene(SCENE_STAGE);
+
 }
 
 void CScene_Logo::Release(void)

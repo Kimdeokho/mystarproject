@@ -121,24 +121,24 @@ HRESULT CTextureMgr::Insert_MultiTex(const wstring& wstrFilePath , const wstring
 	return S_OK;
 }
 
-HRESULT CTextureMgr::Insert_MultiTex32(const wstring& wstrFilePath , const wstring& wstrObjKey , const wstring& wstrStateKey /*= L"" */ , const int& iCnt /*= 0*/)
-{
-	map<wstring, CTexture*>::iterator	iter = m_MultiTex32.find(wstrObjKey);
-
-	if(iter == m_MultiTex32.end()) //키값을 못찾았다면
-	{
-		CTexture*	pTexture = NULL;
-		pTexture = new CMultiTexture32;
-
-		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
-
-		m_MultiTex32.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
-	}
-	else
-		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
-
-	return S_OK;
-}
+//HRESULT CTextureMgr::Insert_MultiTex32(const wstring& wstrFilePath , const wstring& wstrObjKey , const wstring& wstrStateKey /*= L"" */ , const int& iCnt /*= 0*/)
+//{
+//	map<wstring, CTexture*>::iterator	iter = m_MultiTex32.find(wstrObjKey);
+//
+//	if(iter == m_MultiTex32.end()) //키값을 못찾았다면
+//	{
+//		CTexture*	pTexture = NULL;
+//		pTexture = new CMultiTexture32;
+//
+//		pTexture->InsertTexture(wstrFilePath , wstrStateKey , iCnt);
+//
+//		m_MultiTex32.insert(map<wstring , CTexture*>::value_type(wstrObjKey, pTexture));
+//	}
+//	else
+//		iter->second->InsertTexture(wstrFilePath, wstrStateKey, iCnt);
+//
+//	return S_OK;
+//}
 HRESULT CTextureMgr::Insert_MultiEffTex(const wstring& wstrFilePath , const wstring& wstrObjKey , const int& iCnt)
 {
 	map<wstring, CTexture*>::iterator	iter = m_MultilEffTex.find(wstrObjKey);
@@ -245,45 +245,45 @@ HRESULT CTextureMgr::Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR
 	LoadFile.close();
 	return S_OK;
 }
-HRESULT CTextureMgr::Read_directional32_ImgPath(const wstring& wstrFilePath ,TCHAR* szPath)
-{
-	wifstream	LoadFile;
-
-	LoadFile.open(wstrFilePath.c_str(), ios::in);
-
-	if(!LoadFile.is_open())
-	{
-		ERR_MSG(L"Read_MultiImgPath32 ERROR");
-		return E_FAIL;
-	}
-
-	TCHAR	szKind[MIN_STR] = L""; //종족,오브젝트,타일 등을 구분한다
-	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물,이펙트,자원 세부적인걸 구분한다
-	TCHAR	szObjKey[MIN_STR] = L"";
-	TCHAR	szStateKey[MIN_STR] = L"";
-	TCHAR	szCount[MIN_STR] = L"";
-	TCHAR	szImgPath[MAX_PATH] = L"";
-
-	while(!LoadFile.eof())
-	{
-		LoadFile.getline(szKind, MIN_STR, L'|');
-		LoadFile.getline(szSystem, MIN_STR, L'|');
-		LoadFile.getline(szObjKey, MIN_STR, L'|');
-		LoadFile.getline(szStateKey, MIN_STR, L'|');
-		LoadFile.getline(szCount, MIN_STR, L'|');
-		LoadFile.getline(szImgPath, MAX_PATH);
-
-		int		iCount = _ttoi(szCount);
-
-
-		Insert_MultiTex32(szImgPath, szObjKey, szStateKey, iCount);
-
-		lstrcpy(szPath , szImgPath);
-	}
-
-	LoadFile.close();
-	return S_OK;
-}
+//HRESULT CTextureMgr::Read_directional32_ImgPath(const wstring& wstrFilePath ,TCHAR* szPath)
+//{
+//	wifstream	LoadFile;
+//
+//	LoadFile.open(wstrFilePath.c_str(), ios::in);
+//
+//	if(!LoadFile.is_open())
+//	{
+//		ERR_MSG(L"Read_MultiImgPath32 ERROR");
+//		return E_FAIL;
+//	}
+//
+//	TCHAR	szKind[MIN_STR] = L""; //종족,오브젝트,타일 등을 구분한다
+//	TCHAR	szSystem[MIN_STR] = L""; //유닛인지 건물,이펙트,자원 세부적인걸 구분한다
+//	TCHAR	szObjKey[MIN_STR] = L"";
+//	TCHAR	szStateKey[MIN_STR] = L"";
+//	TCHAR	szCount[MIN_STR] = L"";
+//	TCHAR	szImgPath[MAX_PATH] = L"";
+//
+//	while(!LoadFile.eof())
+//	{
+//		LoadFile.getline(szKind, MIN_STR, L'|');
+//		LoadFile.getline(szSystem, MIN_STR, L'|');
+//		LoadFile.getline(szObjKey, MIN_STR, L'|');
+//		LoadFile.getline(szStateKey, MIN_STR, L'|');
+//		LoadFile.getline(szCount, MIN_STR, L'|');
+//		LoadFile.getline(szImgPath, MAX_PATH);
+//
+//		int		iCount = _ttoi(szCount);
+//
+//
+//		Insert_MultiTex32(szImgPath, szObjKey, szStateKey, iCount);
+//
+//		lstrcpy(szPath , szImgPath);
+//	}
+//
+//	LoadFile.close();
+//	return S_OK;
+//}
 HRESULT CTextureMgr::Read_MultiEff_ImgPath(const wstring& wstrFilePath ,TCHAR* szPath)
 {
 	wifstream	LoadFile;

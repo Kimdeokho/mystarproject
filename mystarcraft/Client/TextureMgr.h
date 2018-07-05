@@ -24,7 +24,7 @@ private:
 public:
 public:
 	HRESULT	Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
-	HRESULT	Read_directional32_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
+	//HRESULT	Read_directional32_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT	Read_MultiEff_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT	Read_StateImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
 	HRESULT Read_GeneralImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
@@ -58,10 +58,10 @@ public:
 		, const wstring& wstrStateKey /*= L"" */
 		, const int& iCnt /*= 0*/ );
 
-	HRESULT Insert_MultiTex32( const wstring& wstrFilePath 
-		, const wstring& wstrObjKey 
-		, const wstring& wstrStateKey /*= L"" */
-		, const int& iCnt /*= 0*/ );
+	//HRESULT Insert_MultiTex32( const wstring& wstrFilePath 
+	//	, const wstring& wstrObjKey 
+	//	, const wstring& wstrStateKey /*= L"" */
+	//	, const int& iCnt /*= 0*/ );
 
 	HRESULT	Insert_GeneralTex(const wstring& wstrFilePath
 		, const wstring& wstrObjKey

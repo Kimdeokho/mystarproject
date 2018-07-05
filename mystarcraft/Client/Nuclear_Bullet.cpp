@@ -42,6 +42,8 @@ void CNuclear_Bullet::Initialize(void)
 	m_splash_range[2] = 8*32;
 
 	m_ftrail_time = 0.f;
+
+	m_ftick_distance = GETTIME*100;
 }
 
 void CNuclear_Bullet::Update(void)
@@ -68,7 +70,7 @@ void CNuclear_Bullet::Update(void)
 	D3DXVECTOR2 vdir = D3DXVECTOR2(0,1);
 	m_vPos += vdir*GETTIME*100;
 
-	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 4*4)
+	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		CArea_Mgr::GetInstance()->Setsplash_damage(this , 500 , DAMAGE_BOOM , m_vdest_pos ,
 			m_splash_range, true, m_injurelist);

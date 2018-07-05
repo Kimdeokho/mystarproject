@@ -33,6 +33,7 @@ protected:
 	float						m_frotation_time;
 	float						m_rotation_speed;
 	float						m_newdgree;
+	float						m_rotation_tick;
 	int							m_rotation_dir;
 
 	D3DXVECTOR3					m_newdirvec;

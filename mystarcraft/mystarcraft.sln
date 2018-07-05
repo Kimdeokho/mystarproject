@@ -6,23 +6,37 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Headers", "Headers", "{FB499E53-873A-47D5-B49E-BBDDCE6532A1}"
 	ProjectSection(SolutionItems) = preProject
 		Headers\Define.h = Headers\Define.h
-		Data\imgpath\directional32ImgPath.txt = Data\imgpath\directional32ImgPath.txt
-		Data\imgpath\directionalImgPath.txt = Data\imgpath\directionalImgPath.txt
 		Headers\Enum.h = Headers\Enum.h
 		Headers\Function.h = Headers\Function.h
-		Data\imgpath\GeneralImgPath.txt = Data\imgpath\GeneralImgPath.txt
 		Headers\Include.h = Headers\Include.h
-		Data\imgpath\LodingImgPath.txt = Data\imgpath\LodingImgPath.txt
-		Data\imgpath\MultiEff_ImgPath.txt = Data\imgpath\MultiEff_ImgPath.txt
-		Data\imgpath\SingleImgPath.txt = Data\imgpath\SingleImgPath.txt
-		Data\imgpath\StateImgPath.txt = Data\imgpath\StateImgPath.txt
 		Headers\Struct.h = Headers\Struct.h
 		Headers\value.h = Headers\value.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tool", "Tool\Tool.vcproj", "{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lowlib", "Lowlib\Lowlib.vcproj", "{6165841A-99DE-4696-9EA6-EF00CBD56AC9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PacketGenerator", "PacketGenerator\PacketGenerator.vcproj", "{3997BC73-B3A5-46A7-8213-4C27CA784DE4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LowLib", "LowLib\LowLib.vcproj", "{101D222E-1FCB-4D18-8A9D-A3EC24B474AD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameServer", "GameServer\GameServer.vcproj", "{3C3AFA88-C805-4C06-86D4-0CD79606C661}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImgPath", "ImgPath", "{4BF8AC12-3EAE-4EA5-97E5-A922A41AAB73}"
+	ProjectSection(SolutionItems) = preProject
+		Data\imgpath\directional32ImgPath.txt = Data\imgpath\directional32ImgPath.txt
+		Data\imgpath\directionalImgPath.txt = Data\imgpath\directionalImgPath.txt
+		Data\imgpath\GeneralImgPath.txt = Data\imgpath\GeneralImgPath.txt
+		Data\imgpath\LodingImgPath.txt = Data\imgpath\LodingImgPath.txt
+		Data\imgpath\MultiEff_ImgPath.txt = Data\imgpath\MultiEff_ImgPath.txt
+		Data\imgpath\SingleImgPath.txt = Data\imgpath\SingleImgPath.txt
+		Data\imgpath\StateImgPath.txt = Data\imgpath\StateImgPath.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packet", "Packet", "{7EA0865C-8448-410E-B129-1BE1665EEA32}"
+	ProjectSection(SolutionItems) = preProject
+		Packet\TcpProtocol.h = Packet\TcpProtocol.h
+		Packet\UdpProtocol.h = Packet\UdpProtocol.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,12 +52,23 @@ Global
 		{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}.Debug|Win32.Build.0 = Debug|Win32
 		{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}.Release|Win32.ActiveCfg = Release|Win32
 		{336A57EB-38CC-4522-9ECC-9E2D3DDF4D1F}.Release|Win32.Build.0 = Release|Win32
-		{6165841A-99DE-4696-9EA6-EF00CBD56AC9}.Debug|Win32.ActiveCfg = Debug|Win32
-		{6165841A-99DE-4696-9EA6-EF00CBD56AC9}.Debug|Win32.Build.0 = Debug|Win32
-		{6165841A-99DE-4696-9EA6-EF00CBD56AC9}.Release|Win32.ActiveCfg = Release|Win32
-		{6165841A-99DE-4696-9EA6-EF00CBD56AC9}.Release|Win32.Build.0 = Release|Win32
+		{3997BC73-B3A5-46A7-8213-4C27CA784DE4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3997BC73-B3A5-46A7-8213-4C27CA784DE4}.Debug|Win32.Build.0 = Debug|Win32
+		{3997BC73-B3A5-46A7-8213-4C27CA784DE4}.Release|Win32.ActiveCfg = Release|Win32
+		{3997BC73-B3A5-46A7-8213-4C27CA784DE4}.Release|Win32.Build.0 = Release|Win32
+		{101D222E-1FCB-4D18-8A9D-A3EC24B474AD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{101D222E-1FCB-4D18-8A9D-A3EC24B474AD}.Debug|Win32.Build.0 = Debug|Win32
+		{101D222E-1FCB-4D18-8A9D-A3EC24B474AD}.Release|Win32.ActiveCfg = Release|Win32
+		{101D222E-1FCB-4D18-8A9D-A3EC24B474AD}.Release|Win32.Build.0 = Release|Win32
+		{3C3AFA88-C805-4C06-86D4-0CD79606C661}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3C3AFA88-C805-4C06-86D4-0CD79606C661}.Debug|Win32.Build.0 = Debug|Win32
+		{3C3AFA88-C805-4C06-86D4-0CD79606C661}.Release|Win32.ActiveCfg = Release|Win32
+		{3C3AFA88-C805-4C06-86D4-0CD79606C661}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4BF8AC12-3EAE-4EA5-97E5-A922A41AAB73} = {FB499E53-873A-47D5-B49E-BBDDCE6532A1}
 	EndGlobalSection
 EndGlobal

@@ -69,7 +69,7 @@ typedef struct creepinfo
 	unsigned short		   creep_bit;
 	short				   creep_sequence;
 	bool				   bcreep_install;
-	
+
 	creepinfo()
 	{		
 		creep_sequence = 0;
@@ -103,12 +103,14 @@ typedef struct fontinfo
 	float fY;
 	D3DCOLOR font_color;
 	TCHAR font[260];
+	bool  left_align;
 	fontinfo()
 	{
 		fnotice_time = 0.f;
 		fX = 0.f;
 		fY = 0.f;
 		font_color = D3DCOLOR_ARGB(255,0,255,0);
+		left_align = false;
 	}
 }FONT_INFO;
 
@@ -130,7 +132,7 @@ typedef struct tagImgPath
 
 typedef struct tagAstarNode
 {
-	float				iCost; //거리비용 G + H
+	int					iCost; //거리비용 G + H
 	float				G;//현재노드와 시작점의 거리
 	float				H;//현재 노드와 도착점의 거리
 	float				X; //길 못찾았을때를 대비한 가중치
@@ -156,14 +158,12 @@ typedef struct tagFlowFieldNode
 	short			idestidx;
 	bool			bcheck;
 	bool			bmove;
-	bool			is_unit;
 	tagFlowFieldNode()
 	{
 		index = 0;
 		iCost = 0;
 		idestidx = 0;
 		bcheck = false;
-		is_unit = false;
 		bmove =  true;
 	}
 }FLOW_NODE;
@@ -226,7 +226,7 @@ typedef struct tagunitinfo
 {
 	MOVE_TYPE			eMoveType;           /*땅인지 비행인지*/
 	ATTACK_SEARCH_TYPE	eAttackType;     /*땅만공격 하는지 , 공중만 공격하는건지, 아무거나 다하는지*/
-	
+
 	ARMOR_TYPE			eArmorType;
 	STATE				state; // 상태
 	ORDER				order; //받은 명령
@@ -341,3 +341,14 @@ typedef struct tag_boarding
 		texkey = L"";
 	}
 }BOARDING_INFO;
+
+
+typedef struct tagsession_info
+{
+	WCHAR			USER_ID[32];
+	DWORD_PTR		SESSION_ID;
+	WCHAR			VIRTUAL_ADDRESS[32];
+	USHORT			VIRTUAL_PORT;
+	WCHAR			REAL_ADDRESS[32];
+	USHORT			REAL_PORT;
+}SESSION_INFO;

@@ -67,7 +67,6 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	bool arrive_check(const int& terrain_step);
 
 	void gap_initialize(bool bmagicbox);
 	void StartPathfinding(void);

@@ -516,7 +516,7 @@ void CTileManager::SightOffRender(const int& idx)
 		m_minifog_offidx.push_back(idx);
 	}
 }
-void CTileManager::SightOnRender(const int& idx ,const int& irange , list<int>& sightoff_list , bool* fogsearch , MOVE_TYPE etype)
+void CTileManager::SightOnRender(const int& idx ,const int& irange , vector<int>& sightoff_list , bool* fogsearch , MOVE_TYPE etype)
 {
 	//range는 가급적 홀수
 
@@ -747,6 +747,7 @@ void CTileManager::CopySurface(LPDIRECT3DTEXTURE9 ptexturemap)
 
 	ptexturemap->GetSurfaceLevel(0, &pSurface);
 
+	//pBackBuffer를 pSurface에 담는다
 	pdevice->StretchRect(pBackBuffer , NULL, pSurface ,NULL , D3DTEXF_NONE);
 
 	pBackBuffer->Release();
@@ -912,8 +913,6 @@ void CTileManager::ReadyMiniMap(void)
 
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
-		
-
 		for(int j = 0; j < SQ_TILECNTX; ++j)
 		{
 			//CDevice::GetInstance()->Render_Begin();
@@ -963,6 +962,11 @@ void CTileManager::ReadyMiniMap(void)
 	CDevice::GetInstance()->Render_End();
 
 	CopySurface(m_MinimapTexture);
+
+	CDevice::GetInstance()->GetDevice()->Clear(0 , NULL
+		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
+		, D3DCOLOR_XRGB(0,0,0), 1.f , 0);
+
 	//CDevice::GetInstance()->GetDevice()->Present(NULL, NULL , NULL , NULL);
 
 }
@@ -1066,7 +1070,7 @@ bool CTileManager::Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECT
 
 	return true;
 }
-void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,list<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype)
+void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,vector<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype)
 {
 	int iWidth = int(vDest.x - vStart.x);
 	int iHeight = int(vDest.y - vStart.y);
@@ -1132,6 +1136,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						SetFogoverlap_cnt(idx);
 						light_IdxList.push_back(idx);						
 					}
+
 					if(ishade_range >= 0.8f)
 					{
 						SetFogSquence(idx , 1);
@@ -1153,6 +1158,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 							SetFogoverlap_cnt(idx);
 							light_IdxList.push_back(idx);						
 						}
+
 						if(ishade_range >= 0.8f)
 						{
 							SetFogSquence(idx , 1);
@@ -1359,18 +1365,11 @@ void CTileManager::GetFlowfield_Path(const int& idx , vector<int>& path)
 
 	}	
 }
-void CTileManager::SetFlowfield_cost_update(const int& icuridx , const int& ioldidx)
-{
-	if(icuridx >= 0)
-		m_flownode[icuridx]->is_unit = true;
-
-	if(ioldidx >= 0)
-		m_flownode[ioldidx]->is_unit = false;
-}
 void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 {
 	//D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 	int			goalidx = CMyMath::Pos_to_index(goalpos , 32);
+
 
 	for(int i = 0; i < 16384; ++i)
 	{
@@ -1382,6 +1381,7 @@ void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 	FLOW_NODE* pushnode = NULL;
 
 	m_heapsort->push_node(pnode);
+
 	pnode->bcheck = true;
 	if(10000 != pnode->iCost)
 		pnode->iCost = 0;
@@ -1430,7 +1430,7 @@ void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 			if(false == pushnode->bmove)
 				pushnode->iCost += 10000;
 
-			m_heapsort->push_node(pushnode);			
+			m_heapsort->push_node(pushnode);
 		}
 	}
 
@@ -1603,6 +1603,10 @@ void CTileManager::Release(void)
 		}
 	}
 	m_MinimapTexture->Release();
+
+	vector<int> temp1 , temp2;
+	temp1.swap(m_minifog_offidx);
+	temp2.swap(m_minifog_onidx);
 }
 
 LPDIRECT3DTEXTURE9 CTileManager::GetMiniampTexture(void)

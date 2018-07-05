@@ -41,11 +41,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Headers;&quot;C:\Boost\include\boost-1_63&quot;"
+				AdditionalIncludeDirectories="../Headers;&quot;C:\Boost\include\boost-1_63&quot;;../LowLib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib ../Debug/LowLib.lib"
+				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib ws2_32.lib Mswsock.lib ../LowLib/Debug/LowLib.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\Boost\library\boost\lib\i386"
 				GenerateDebugInformation="true"
@@ -117,9 +117,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="../Headers;&quot;C:\Boost\include\boost-1_63&quot;"
+				AdditionalIncludeDirectories="../Headers;&quot;C:\Boost\include\boost-1_63&quot;;../LowLib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib ../Debug/LowLib.lib"
+				AdditionalDependencies="d3d9.lib d3dx9.lib shlwapi.lib ws2_32.lib Mswsock.lib ../LowLib/Release/LowLib.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\Boost\library\boost\lib\i386"
 				GenerateDebugInformation="true"
@@ -403,16 +403,140 @@
 					RelativePath=".\UnitMgr.h"
 					>
 				</File>
+				<Filter
+					Name="Input"
+					>
+					<File
+						RelativePath=".\Input_Interface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Interface.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Loby.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Loby.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Login.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Login.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Room.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Room.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Stage.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Stage.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="UI"
+					>
+					<File
+						RelativePath=".\Loby_UIMgr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Loby_UIMgr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Login_UIMgr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Login_UIMgr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Room_UIMgr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Room_UIMgr.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Session"
+					>
+					<File
+						RelativePath=".\RoomSession_Mgr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\RoomSession_Mgr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Session_Mgr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Session_Mgr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TestSession.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TestSession.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Scene"
 				>
+				<File
+					RelativePath=".\Scene_Loby.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Loby.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Login.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Login.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Scene_Logo.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Scene_Logo.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Room.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Room.h"
 					>
 				</File>
 				<File
@@ -1620,6 +1744,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\UI_IME.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_IME.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UI_MainInterface.cpp"
 					>
 				</File>
@@ -1659,6 +1791,114 @@
 					RelativePath=".\UI_Wireframe.h"
 					>
 				</File>
+				<File
+					RelativePath=".\UIRoot.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIRoot.h"
+					>
+				</File>
+				<Filter
+					Name="Login"
+					>
+					<File
+						RelativePath=".\UI_Connect.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_Connect.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Loby"
+					>
+					<File
+						RelativePath=".\UI_CreateRoom.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_CreateRoom.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_Join.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_Join.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RCreateC.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RCreateC.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RCreateOK.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RCreateOK.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomList.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomList.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomPopup.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomPopup.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Room"
+					>
+					<File
+						RelativePath=".\UI_Chat.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_Chat.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_IDslot.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_IDslot.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomExitBtn.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomExitBtn.h"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomInfo.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_RoomInfo.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Skill"

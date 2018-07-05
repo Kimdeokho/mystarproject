@@ -40,25 +40,31 @@ void CMinimap::Initialize(void)
 void CMinimap::Update(void)
 {
 	m_fupdatetime += GETTIME;
+
+	list<CUI*>::iterator iter		= m_miniunit_display.begin();
+	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
+
+	for( ; iter != iter_end; )
+	{
+		if( true == (*iter)->GetDestroy() )
+		{
+			Safe_Delete((*iter));
+			iter = m_miniunit_display.erase(iter);
+		}
+		else
+			++iter;
+	}
+
 	if(m_fupdatetime >= 0.5f)
 	{
+		iter		= m_miniunit_display.begin();
+		iter_end	= m_miniunit_display.end();
+
 		m_fupdatetime = 0.f;
 
-		list<CUI*>::iterator iter		= m_miniunit_display.begin();
-		list<CUI*>::iterator iter_end	= m_miniunit_display.end();
-
-		for( ; iter != iter_end; )
+		for( ; iter != iter_end; ++iter)
 		{
-			if( true == (*iter)->GetDestroy() )
-			{
-				Safe_Delete((*iter));
-				iter = m_miniunit_display.erase(iter);
-			}
-			else
-			{
-				(*iter)->Update();
-				++iter;
-			}
+			(*iter)->Update();
 		}
 
 		CTileManager::GetInstance()->MinifogUpdate();

@@ -12,6 +12,7 @@
 #include "KeyMgr.h"
 #include "Area_Mgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
 
 
 CMaingame::CMaingame(void)
@@ -26,10 +27,11 @@ CMaingame::~CMaingame(void)
 
 HRESULT CMaingame::Initialize(void)
 {
-	//공중유닛은 Y소팅을 하지 않는다 그냥 생산된 순서대로 렌더를 실행한다
+	//AllocConsole();
+	//freopen( "CONOUT$",  "wt", stdout);
 
-	AllocConsole();
-	freopen( "CONOUT$",  "wt", stdout);
+	WSADATA WsaData;
+	WSAStartup(MAKEWORD(2, 2), &WsaData);	// 2.2 버전을 로드합니다.
 
 	m_fTime = 0.f;
 	m_iFPS = 0;
@@ -37,61 +39,46 @@ HRESULT CMaingame::Initialize(void)
 	lstrcpy(m_szFPS , L"hello world");
 	CDevice::GetInstance()->InitDevice();
 	
-	CTimeMgr::GetInstance()->InitTime();
+	//CTimeMgr::GetInstance()->InitTime();
 	CTimeMgr::GetInstance()->SetFps(&m_iFPS);
 	CFontMgr::GetInstance()->Initialize();
 	CLineMgr::GetInstance()->Initialize();
+	CSession_Mgr::GetInstance()->Initialize();
+	
 
 	m_pFont = CFontMgr::GetInstance();
 	m_pDevice = CDevice::GetInstance();
-	CKeyMgr::GetInstance();
 
 	CSceneMgr::GetInstance()->SetScene(SCENE_LOGO);
 
-	
 	return S_OK;
 }
 
 void CMaingame::Update(void)
 {
-	CTimeMgr::GetInstance()->SetTime();
+	//CTimeMgr::GetInstance()->SetTime();
 
-	CSceneMgr::GetInstance()->Update();
-
-	m_fTime += GETTIME;
+	CSession_Mgr::GetInstance()->Update();
+	CSceneMgr::GetInstance()->Update();	
 }
 
 void CMaingame::Render(void)
-{	
+{		
+	//뷰포트 또는 뷰포트내의 직사각형 세트를 지정한 RGBA 색에 클리어 해, 
+	//깊이 버퍼를 클리어 해, 스텐실 버퍼를 삭제한다.
 	m_pDevice->GetDevice()->Clear(0 , NULL
 		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
-		, D3DCOLOR_XRGB(0,0,255), 1.f , 0);
+		, D3DCOLOR_XRGB(0,0,0), 1.f , 0);
 
 
 	m_pDevice->Render_Begin();
 
-
-
-	CSceneMgr::GetInstance()->Render();
-
-	RenderFPS();
+	CSceneMgr::GetInstance()->Render();	
 
 	m_pDevice->Render_End();	
 	m_pDevice->GetDevice()->Present(NULL, NULL , NULL , NULL);
+	//장치가 소유하는 백 버퍼의 순서 중(안)에서, 다음의 버퍼의 컨텐츠를 제시한다.
 }
-void CMaingame::RenderFPS(void)
-{
-	//m_fTime += GETTIME;
-	m_iFPS += 1;
-	if(m_fTime >= 1.0f)
-	{
-		wsprintf(m_szFPS , L"FPS %d" , m_iFPS);
-		m_fTime = 0.f;
-		m_iFPS = 0;
-	}
-	m_pFont->FontRender(m_szFPS , 40 , 0 , D3DCOLOR_ARGB(255,0,255,0));
-}
-
 void CMaingame::Release(void)
 {
 	CObjMgr::DestroyInstance();
@@ -101,10 +88,11 @@ void CMaingame::Release(void)
 	CDevice::DestroyInstance();
 	CTextureMgr::DestroyInstance();
 	CTileManager::DestroyInstance();
+	CSession_Mgr::DestroyInstance();
 	
 	CKeyMgr::DestroyInstance();
 	CArea_Mgr::DestroyInstance();
 	CLineMgr::DestroyInstance();
 
-	FreeConsole();
+	//FreeConsole();
 }

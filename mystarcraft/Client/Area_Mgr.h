@@ -25,7 +25,7 @@ private:
 private:
 	int				m_idxdir[ASTAR_DIR_END];
 	int				m_idx;
-	MYLINE			m_line[4];
+	MYLINE			m_line[5];
 	int				m_lineidx;
 private:
 	int			m_checkidx;
@@ -34,10 +34,12 @@ private:
 	UNITINFO	m_target_unitinfo;
 public:
 public:
-	
+	bool OBB_Collision( CObj* pself ,const CObj* ptarget);
+	bool OBB_Collision(CObj* ptarget);
 	void SetObj_Area64(const int& curidx , const int& oldidx , CObj* pobj );
-	bool Check_Area(const MYRECT<float>& rc, D3DXVECTOR2& vpos ,const MYRECT<float>& center_rc, const D3DXVECTOR2& vcenterpos , const int& stepsize , CObj* pself ,const CObj* ptarget);
-	bool PathFind_Area(const int& idx , D3DXVECTOR2& vpos , CObj* pself , const CObj* ptarget);
+	bool Check_Area(const MYRECT<float>& prerc , D3DXVECTOR2& vprepos ,const MYRECT<float>& center_rc, const D3DXVECTOR2& vcenterpos, CObj* pself , CObj* ptarget , const int& stepsize);
+
+	bool PathFind_Area(D3DXVECTOR2& vpos , CObj* pself , CObj* ptarget);
 	bool CollisionCheck_Area( const int& idx , CObj* pself , const CObj* ptarget);
 	
 	void Calculator_eightidx(const int& idx , const int& tilecnt);
@@ -85,6 +87,7 @@ public:
 	void	TargetChoice(const D3DXVECTOR2& vpos);
 public:
 	void ReleaseObj_Area64(const int& curidx , CObj* pobj);
+	bool PointLine_Overlap(const D3DXVECTOR2& _vpos, MYLINE* _line);
 public:
 	CArea_Mgr(void);
 	~CArea_Mgr(void);

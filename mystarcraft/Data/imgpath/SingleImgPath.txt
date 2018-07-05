@@ -1,6 +1,7 @@
 DebugTile|White|..\Texture\Single\DebugTile\white.png
 DebugTile|tile8x8|..\Texture\Single\DebugTile\tile8x8.png
 DebugTile|tile2x2|..\Texture\Single\DebugTile\tile2x2.png
+DebugTile|tile1x1|..\Texture\Single\DebugTile\tile1x1.png
 ETC|Startbase|..\Texture\Single\ETC\startbase.png
 Fog|fogmask300|..\Texture\Single\Fog\fogmask300.png
 Fog|fogmask100|..\Texture\Single\Fog\fogmask100.png
@@ -154,3 +155,16 @@ UI|BOARDING_VULTURE|..\Texture\Single\UI\wire_boarding\vulture.png
 UI|BOARDING_TANK|..\Texture\Single\UI\wire_boarding\tank.png
 UI|BOARDING_GOLIATH|..\Texture\Single\UI\wire_boarding\goliath.png
 UI|BOARDING_GHOST|..\Texture\Single\UI\wire_boarding\ghost.png
+UI|LOGIN_IME|..\Texture\Single\UI\pStatus.png
+UI|ROOMLIST|..\Texture\Single\UI\pRoomList.png
+UI|OK|..\Texture\Single\UI\pok.png
+UI|CANCLE|..\Texture\Single\UI\pcancel.png
+UI|CHAT|..\Texture\Single\UI\pchat.png
+UI|LIST|..\Texture\Single\UI\plist.png
+UI|INFO|..\Texture\Single\UI\pinfo.png
+UI|POPUP|..\Texture\Single\UI\pepopup.png
+UI|ID_SLOT|..\Texture\Single\UI\id_slot.png
+SCENE|LOGIN_SCENE800|..\Texture\Single\Scene\login_scene800.png
+SCENE|LOGIN_SCENE640|..\Texture\Single\Scene\login_scene640.png
+SCENE|LOBY_SCENE800|..\Texture\Single\Scene\loby_scene800.png
+SCENE|LOBY_SCENE640|..\Texture\Single\Scene\loby_scene640.png

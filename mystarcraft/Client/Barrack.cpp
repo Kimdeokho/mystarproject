@@ -97,6 +97,7 @@ void CBarrack::Initialize(void)
 
 void CBarrack::Update(void)
 {
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , 0 , m_vPos.x , m_vPos.y);
 	CTerran_building::building_area_update();	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();

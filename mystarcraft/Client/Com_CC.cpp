@@ -51,7 +51,7 @@ void CCom_CC::Update(void)
 			if( true == iter->second->GetDestroy() )
 			{
 				Safe_Delete(iter->second);
-				iter = m_buffs.erase(iter);
+				iter = m_debuffs.erase(iter);
 			}
 			else
 			{

@@ -229,9 +229,12 @@ void CObj::SetSelect(SELECT_FLAG eflag ,D3DCOLOR ecolor)
 	}
 	else
 	{
-		m_bSelect = true;
-		if(NULL != m_energybar_ui)
-			m_energybar_ui->SetActive(true);		
+		if(eflag != BLINK_SELECT)
+		{
+			m_bSelect = true;
+			if(NULL != m_energybar_ui)
+				m_energybar_ui->SetActive(true);		
+		}
 	}
 }
 void CObj::SetState(STATE state)

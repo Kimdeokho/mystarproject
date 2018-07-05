@@ -3,7 +3,7 @@
 
 #include "TextureMgr.h"
 CUI_MiniUnitDisplay::CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos)
-:m_vpos(vobjpos)
+:m_vminipos(vobjpos)
 {
 	m_statekey = L"DebugTile";
 }
@@ -31,8 +31,8 @@ void CUI_MiniUnitDisplay::Initialize(void)
 void CUI_MiniUnitDisplay::Update(void)
 {	
 
-	m_matworld._41 = m_vpos.x * 0.03125f + m_vweight.x;
-	m_matworld._42 = m_vpos.y * 0.03125f+ m_vweight.y;
+	m_matworld._41 = m_vminipos.x * 0.03125f + m_vweight.x;
+	m_matworld._42 = m_vminipos.y * 0.03125f+ m_vweight.y;
 }
 
 void CUI_MiniUnitDisplay::Render(void)

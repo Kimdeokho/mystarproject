@@ -49,7 +49,7 @@ inline bool	sort_compare(const TERRAIN_INFO* lhs , const TERRAIN_INFO* rhs)
 
 
 template<typename T>
-bool MyPtInrect(const D3DXVECTOR2& vpos ,const MYRECT<T>* rect)
+inline bool MyPtInrect(const D3DXVECTOR2& vpos ,const MYRECT<T>* rect)
 {
 	if(vpos.x > rect->left &&
 		vpos.x < rect->right &&
@@ -98,13 +98,52 @@ bool MyIntersectrect( const MYRECT<T>* A ,const MYRECT<T>* B)
 	}
 	return false;
 }
+
+//template<typename T>
+//inline bool MyIntersectrect(MYRECT<T>* outrect , const MYRECT<T>* A ,const MYRECT<T>* B)
+//{
+//	static T maxX , minX;
+//	static T maxY , minY;
+//
+//	maxX = A->left < B->left ? B->left : A->left;
+//	minX = A->right < B->right ? A->right : B->right;
+//	minY = A->bottom < B->bottom ? A->bottom : B->bottom;
+//	maxY = A->top < B->top ? B->top : A->top;
+//
+//	if(maxX < minX && minY > maxY)
+//	{
+//		outrect->left = maxX;
+//		outrect->right = minX;
+//		outrect->top = maxY;
+//		outrect->bottom = minY;
+//		return true;
+//	}
+//	return false;
+//}
+//template<typename T>
+//inline bool MyIntersectrect( const MYRECT<T>* A ,const MYRECT<T>* B)
+//{
+//	static T maxX , minX;
+//	static T maxY , minY;
+//
+//	maxX = A->left < B->left ? B->left : A->left;
+//	minX = A->right < B->right ? A->right : B->right;
+//	minY = A->bottom < B->bottom ? A->bottom : B->bottom;
+//	maxY = A->top < B->top ? B->top : A->top;
+//
+//	if(maxX < minX && minY > maxY)
+//	{
+//		return true;
+//	}
+//	return false;
+//}
 template<typename T>
-T MyMin(const T& a ,const T& b)
+inline T MyMin(const T& a ,const T& b)
 {
 	return a > b ? b : a;
 }
 template<typename T>
-T MyMax(const T& a ,const T& b)
+inline T MyMax(const T& a ,const T& b)
 {
 	return a > b ? a : b;
 }

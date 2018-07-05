@@ -63,8 +63,7 @@ void CMineral::Initialize(void)
 void CMineral::Update(void)
 {
 
-	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , int(m_workman_list.size()) , m_vPos.x - CScrollMgr::m_fScrollX
-		,m_vPos.y - CScrollMgr::m_fScrollY);
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , int(m_workman_list.size()) , m_vPos.x ,m_vPos.y );
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_mineral_amount , m_vPos.x - CScrollMgr::m_fScrollX
 	//	,m_vPos.y - CScrollMgr::m_fScrollY);
 
@@ -86,6 +85,12 @@ void CMineral::Update(void)
 		MYRECT<float> rc;
 		for( ; iter != iter_end; )
 		{
+			if(true == (*iter)->GetDestroy() )
+			{
+				iter = m_workman_list.erase(iter);
+				continue;;
+			}
+
 			rc = (*iter)->GetMyRect();
 			rc.left -= 3;
 			rc.right += 3;
@@ -120,7 +125,7 @@ void CMineral::Render(void)
 	m_pSprite->SetTransform(&m_matWorld);
 	m_pSprite->Draw((*m_vecTex)[0]->pTexture , NULL , &D3DXVECTOR3(32,48,0) , NULL , D3DCOLOR_ARGB(255,255,255,255));
 
-	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 bool CMineral::Setworkman( CObj* pworkman)
 {
@@ -158,16 +163,17 @@ bool CMineral::decrease_workman(CObj* pworkman)
 			if( pworkman == (*iter))
 			{
 				m_workman_list.erase(iter);
-				return true;
+				break;
+				//return true;
 			}
 		}
 	}
 	m_workmancnt -= 1;
-	return false;
+	return true;
 }
-int CMineral::Getworkman_count(void)
+unsigned CMineral::Getworkman_count(void)
 {
-	return int(m_workman_list.size());
+	return m_workman_list.size();
 }
 bool CMineral::Getworkman(CObj* pworkman)
 {

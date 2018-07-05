@@ -2,11 +2,14 @@
 #include "Bullet.h"
 
 #include "ComanderMgr.h"
+#include "TimeMgr.h"
 CBullet::CBullet(void)
 {
 	m_ptarget = NULL;
 
 	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
+
+	m_ftick_distance = 0.f;
 }
 
 CBullet::~CBullet(void)

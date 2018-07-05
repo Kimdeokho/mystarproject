@@ -38,17 +38,18 @@ void CCom_TankbarrelAnim::Update(void)
 
 	CCom_Animation::DirIdxCalculation();
 
-	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
-	if(m_frame.fcurframe >= m_frame.umax)
-		m_frame.fcurframe = 0;
+	//m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+	//if(m_frame.fcurframe >= m_frame.umax)
+	//	m_frame.fcurframe = 0;
 
 
 	//if(NULL !=  m_animtexture[m_texdiridx] )
 	//{
 		//const vector<TEXINFO*>* vtemp = m_animtexture[m_texdiridx];
 
-		if( (int)(m_frame.fcurframe) <= m_frame.umax)
-			m_curtex = m_animtexture[m_texdiridx][int(m_frame.fcurframe)];
+	//printf("%d\n" , m_texdiridx);
+		//if( (int)(m_frame.fcurframe) <= m_frame.umax)
+			m_curtex = m_animtexture[m_texdiridx][0];
 	//}
 	//else
 		//m_curtex = NULL;

@@ -174,11 +174,14 @@ void CTankbarrel::Inputkey_reaction(const int& nkey)
 			m_btransform_ready = false;
 			if(false == m_bsiegemode)
 			{
-				m_vcurdir = CMyMath::dgree_to_dir(2*22.5f);
+				//m_vcurdir = CMyMath::dgree_to_dir(2*22.5f);
+				m_vcurdir = CMyMath::dgree_to_dir(4*11.25f);
 			}
 			else
 			{
-				m_vcurdir = CMyMath::dgree_to_dir(10*22.5f);
+				//m_vcurdir = CMyMath::dgree_to_dir(10*22.5f);
+				m_vcurdir = CMyMath::dgree_to_dir(20*11.25f);
+				//((CCom_Animation*)m_com_anim)->Dir_Initialize();
 			}
 
 			COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_TARGET_SEARCH);

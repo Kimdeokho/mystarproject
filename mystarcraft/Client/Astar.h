@@ -10,7 +10,6 @@ class CAstar //유닛마다 가지고 있어야할듯 싶다.
 {
 private: //유닛사이 이동 AStar
 	CMyHeapSort<PATH_NODE*>*					m_openlist; //pop용도
-
 	//boost::unordered_map<int , PATH_NODE*>	m_idxopenlist; //검색용
 	//boost::unordered_map<int , PATH_NODE*>	m_closelist;   //검색용
 
@@ -63,7 +62,7 @@ private:
 	float					m_unit_diagonalstep;
 	bool					m_bweightG;
 
-	const CObj*				m_ptarget;
+	CObj*					m_ptarget;
 	MYRECT<float>			m_vertex;
 	int						m_range;
 public:
@@ -74,7 +73,7 @@ public:
 	//void TerrainPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos);
 	//void TerrainPath_calculation_Update(const D3DXVECTOR2& goalpos);
 	void UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos, const int& stepsize, const vector<D3DXVECTOR2>& terrain_path , const int& terrain_idx);
-	void UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CObj* ptarget);
+	void UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* ptarget);
 	void Path_Render(void);
 	bool Check_idx(const D3DXVECTOR2& vpos);
 	bool Check_CloseList(const D3DXVECTOR2& vpos);

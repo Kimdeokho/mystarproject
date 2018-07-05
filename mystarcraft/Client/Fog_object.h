@@ -16,6 +16,6 @@ public:
 	virtual void Release(void);
 	virtual void Dead(void);
 public:
-	CFog_object(const int& irange , const float& fogtime , const D3DXVECTOR2& vpos);
+	CFog_object(const int& irange , const float& fogtime , const D3DXVECTOR2& vpos , MOVE_TYPE emovetype);
 	~CFog_object(void);
 };

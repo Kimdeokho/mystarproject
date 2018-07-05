@@ -4,7 +4,7 @@ OBJECT|NONE|MINERAL_FRAG|1|..\Texture\General\Resource\Mineral_frag\mineral_frag
 OBJECT|Resource|T_GAS_FRAG|1|..\Texture\General\Resource\terran_gasfrag\t_gas_frag%d.png
 OBJECT|Fog|Fog|3|..\Texture\General\Fog\fog%d.png
 OBJECT|Creep|Creep|20|..\Texture\General\Creep\creep%d.png
-EFFECT|GaussGun|GaussGun|15|..\Texture\General\Effect\gaussgun\gaussgun_eff%d.png
+EFFECT|GaussGun|GaussGun|15|..\Texture\General\Effect\gaussgun\gaussgun_eff%d.bmp
 EFFECT|ToongToong|ToongToong|10|..\Texture\General\Effect\toongtoong\toongtoong_eff%d.png
 EFFECT|SMALLBANG|SMALLBANG|9|..\Texture\General\Effect\smallbang\smallbang%d.png
 EFFECT|LARGEBANG|LARGEBANG|10|..\Texture\General\Effect\largebang\largebang%d.png

@@ -52,7 +52,7 @@ void CCom_WGoliath::fire(CObj*& ptarget)
 			{
 				CObj* peff = NULL;
 
-				peff = new CGeneraEff(L"GaussGun" ,ptarget->GetPos() , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 2.5f);
+				peff = new CGeneraEff(L"GaussGun" ,ptarget->GetPos() , D3DXVECTOR2(1.5f,1.5f), SORT_GROUND_EFF , 1.5f);
 				peff->Initialize();
 				CObjMgr::GetInstance()->AddEffect(peff);
 				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt
@@ -70,12 +70,12 @@ void CCom_WGoliath::fire(CObj*& ptarget)
 				D3DXVECTOR2 subdir2 = D3DXVECTOR2(-vdir.y, vdir.x);
 
 
-				CObj* pbullet = new CGoliath_Bullet(ptarget->GetObjNumber() , ptarget->GetPos() , subdir);
+				CObj* pbullet = new CGoliath_Bullet(ptarget->GetObjNumber() , ptarget->GetPos() ,LEFT);
 				pbullet->SetPos(m_pobj->GetPos().x , m_pobj->GetPos().y );
 				pbullet->Initialize();
 				CObjMgr::GetInstance()->AddObject(pbullet , OBJ_BULLET);
 
-				pbullet = new CGoliath_Bullet(ptarget->GetObjNumber() , ptarget->GetPos() , subdir2);
+				pbullet = new CGoliath_Bullet(ptarget->GetObjNumber() , ptarget->GetPos() , RIGHT);
 				pbullet->SetPos(m_pobj->GetPos().x , m_pobj->GetPos().y );
 				pbullet->Initialize();
 				CObjMgr::GetInstance()->AddObject(pbullet , OBJ_BULLET);

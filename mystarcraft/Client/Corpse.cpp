@@ -36,6 +36,7 @@ void CCorpse::Initialize(void)
 	m_frame.fcurframe = 0.f;
 
 	m_sortID = SORT_CORPSE;
+	
 }
 
 void CCorpse::Update(void)
@@ -63,7 +64,7 @@ void CCorpse::Update(void)
 			m_curtex = (*m_generaltex)[0];
 
 			m_frame.umax = m_generaltex->size();
-			m_frame.fframespeed = 0.08f;
+			m_frame.fframespeed = 0.08f;	
 			m_vcenter = D3DXVECTOR3( float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2) , 0 );
 		}
 		else

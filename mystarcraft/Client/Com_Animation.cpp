@@ -54,6 +54,8 @@ void CCom_Animation::InitTexidx(void)
 
 	m_newdiridx = (int)( (m_newdgree/11.25f) + 0.5f) % 32;
 	m_curdiridx = (float)m_newdiridx;
+
+	//m_texdiridx = (int)m_newdiridx;
 }
 void CCom_Animation::SetAnimation(const TCHAR* statekey)
 {
@@ -86,25 +88,24 @@ void CCom_Animation::Dir_Initialize(void)
 	}
 	else
 		m_objmat._11 = 1;
-
-
-	//m_pobj->Setdiridx( m_texdiridx );
-
 }
 void CCom_Animation::DirIdxCalculation(void)
-{
-
+{	
 	float       fdot;
 
 	D3DXVECTOR2	curdir = m_pobj->GetcurDir(); 
 	fdot = D3DXVec2Dot(&curdir , &OFFSET_DIRVEC);
 
+	//CFontMgr::GetInstance()->test_Font(L"%f , %f" , fdot , fdot ,m_pobj->GetPos().x , m_pobj->GetPos().y);
+	
 	m_newdgree = CMyMath::scala_to_dgree(fdot);
 
 	if(m_pobj->GetcurDir().x < 0)
 		m_newdgree = 360 - m_newdgree;
 
 	m_newdiridx = (int)( (m_newdgree/11.25f) + 0.5f) % 32;
+	
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_newdiridx ,m_pobj->GetPos().x , m_pobj->GetPos().y);
 
 	if(m_newdiridx != (int)m_curdiridx)
 	{
@@ -134,15 +135,18 @@ void CCom_Animation::DirIdxCalculation(void)
 		//m_bsw = true;
 	}
 
-	if((int)m_curdiridx != m_newdiridx)
-	{
-		float rotation_speed = GETTIME*m_rotation_dir*m_rotation_speed;
-		if(rotation_speed > 1.f)
-			rotation_speed = 1;
-		if(rotation_speed < -1.f)
-			rotation_speed = -1.f;
+	//if( m_newdiridx != (int)m_curdiridx)
+	m_rotation_tick = GETTIME*m_rotation_dir*m_rotation_speed;
 
-		m_curdiridx += rotation_speed;
+	if( abs(m_newdiridx - (int)m_curdiridx) > abs( (int)m_rotation_tick) )
+	{		
+		//float rotation_speed = GETTIME*m_rotation_dir*m_rotation_speed;
+		//if( (int)rotation_speed >= 1)
+		//	rotation_speed = 1.f;
+		//if( (int)rotation_speed <= -1)
+		//	rotation_speed = -1.f;
+
+		m_curdiridx += m_rotation_tick;
 
 		if(m_curdiridx < 0)
 			m_curdiridx = 31.99f;
@@ -153,17 +157,10 @@ void CCom_Animation::DirIdxCalculation(void)
 	}
 	else
 	{
-		//m_brotationcomplete = true;
-		//방향 전부 돌림
-		//if(m_bsw)
-		//{
-		//	m_bsw = false;
-		//	m_brotationcomplete = true;
-		//}
+		m_curdiridx = (float)m_newdiridx;
 	}
 
 	m_texdiridx = (int)m_curdiridx;
-
 	if(m_texdiridx > 16)
 	{
 		m_texdiridx = 32 - m_texdiridx;
@@ -172,8 +169,6 @@ void CCom_Animation::DirIdxCalculation(void)
 	else
 		m_objmat._11 = 1;
 
-
-	//m_pobj->Setdiridx( m_texdiridx );
 }
 
 void CCom_Animation::Render(void)
@@ -202,8 +197,6 @@ bool CCom_Animation::GetRotationComplete(void)
 		return false;
 	else
 		return true;
-
-	//공중일땐 도 바껴야겠지..
 
 }
 int CCom_Animation::GetCurDirIdx(void)

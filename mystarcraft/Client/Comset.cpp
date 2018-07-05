@@ -200,7 +200,7 @@ void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 		CObj* pobj = NULL;
 
-		pobj = new CFog_object(320*2 , 10.f , vmousept);
+		pobj = new CFog_object(320*2 , 10.f , vmousept , MOVE_AIR);
 		pobj->Initialize();
 
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FOG);

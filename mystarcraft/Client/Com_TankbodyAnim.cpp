@@ -40,11 +40,11 @@ void CCom_TankbodyAnim::Update(void)
 	CCom_Animation::DirIdxCalculation();
 
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+
 	if(m_frame.fcurframe >= m_frame.umax)
 	{
 		m_frame.fcurframe = 0;
 	}
-
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
 		m_curtex = m_animtexture[m_texdiridx][int(m_frame.fcurframe)];

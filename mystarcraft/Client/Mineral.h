@@ -17,7 +17,7 @@ public:
 	void SetMineral_amount(const int& iamount);
 	
 	bool Getworkman(CObj* pworkman);
-	int	 Getworkman_count(void);
+	unsigned	 Getworkman_count(void);
 
 	bool Check_workman(CObj* pworkman);
 	bool decrease_workman(CObj* pworkman);

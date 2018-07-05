@@ -66,7 +66,7 @@ public:
 	void	Minimappos_to_screen(D3DXVECTOR2& vmousepos);
 	bool	intersect_minimap_mousept(const D3DXVECTOR2& vmouse);
 	
-	void	ClearPreview(void);	
+	void	ClearPreview(void);
 public:
 	CComanderMgr(void);
 	~CComanderMgr(void);

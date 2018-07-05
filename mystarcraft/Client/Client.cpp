@@ -9,10 +9,16 @@
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
-HINSTANCE hInst;								// 현재 인스턴스입니다.
+
 TCHAR szTitle[MAX_LOADSTRING];					// 제목 표시줄 텍스트입니다.
 TCHAR szWindowClass[MAX_LOADSTRING];			// 기본 창 클래스 이름입니다.
+
+HINSTANCE g_hInst;								// 현재 인스턴스입니다.
 HWND	g_hWnd;
+BYTE WriteBuffer[MAX_BUFFER_LENGTH];
+BYTE ReadBuffer[MAX_BUFFER_LENGTH];
+WNDPROC    g_OldEditProc1, g_OldEditProc2;
+HWND       g_hEdit1, g_hEdit2;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -134,7 +140,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-   hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+   g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance, NULL);
@@ -171,6 +177,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC hdc;
 
+	//포커스가 서로다르더라도 메시지가 입력되면 호출된다.
+
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -180,7 +188,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_ABOUT:
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
@@ -189,12 +197,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+	case WM_CREATE:		
+		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
+		//SetWindowLong(g_hEdit2,GWL_WNDPROC,(LONG)g_OldEditProc2);
+		//SetWindowLong(g_hEdit1,GWL_WNDPROC,(LONG)g_OldEditProc1);
 		PostQuitMessage(0);
 		break;
 	default:
@@ -202,6 +214,96 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
+
+
+// 입력된 내용을 저장하는 에디트 윈도우를 서브 클래싱한 프로시저
+
+LRESULT CALLBACK EditSubProc1(HWND hWnd,UINT iMessage,WPARAM wParam,LPARAM lParam)
+{
+	switch (iMessage)
+	{
+		// 키가 눌리면 발생되는 메시지들(WM_CHAR, WM_KEYUP, WM_KEYDOWN)과
+		// 에디트 윈도우에서만 발생되는 메시지들(WM_PASTE, WM_CLEAR, WM_UNDO)을
+		// 막습니다.
+
+	case WM_CHAR:
+	case WM_KEYUP:      
+	case WM_KEYDOWN:
+	case WM_PASTE:
+	case WM_CLEAR:
+	case WM_UNDO:
+		return 0;
+		// 잘라내기 메시지는 복사 메시지로 바꿔치기 합니다.
+	case WM_CUT:
+		iMessage=WM_COPY;
+		break;
+	}
+
+	return CallWindowProc(g_OldEditProc1,hWnd,iMessage,wParam,lParam);
+
+}
+
+// 입력받는 에디트 윈도우를 서브 클래싱한 프로시저
+LRESULT CALLBACK EditSubProc2(HWND hWnd,UINT iMessage,WPARAM wParam,LPARAM lParam)
+{
+	int   nLen1, nLen2;
+	TCHAR  szStr[1025];
+
+	switch (iMessage)
+	{
+	case WM_CHAR:
+		// 엔터를 누를때 나는 소리를 잠재우기 위해
+		// 엔터가 눌릴때 발생되는 WM_CHAR메시지는 막습니다.
+		if (wParam==VK_RETURN)  return 0;
+		break;
+	case WM_KEYDOWN:
+		if (wParam==VK_RETURN)  // 엔터가 눌리면...
+		{
+			// 두 에디트 윈도우에 입력된 문자열의 갯수를 구해서
+			// nLen1과 nLen2변수에 저장합니다.
+
+			nLen1=GetWindowTextLength(g_hEdit1);
+			nLen2=GetWindowTextLength(hWnd); // 이 함수내에서 hWnd는 hEdit2값과 같습니다.
+
+			// 입력윈도우에 입력된 문자열을  szStr변수에 저장합니다.
+			GetWindowText(hWnd, szStr, 1024);
+
+			// 뒷부분에 개행문자를 붙여주고...
+			lstrcat(szStr, L"\r\n");
+
+			// 첫번째 에디트 윈도우에 커서를 맨 끝으로 가도록 만든뒤
+			SendMessage(g_hEdit1, EM_SETSEL, nLen1, nLen1);
+
+			// szStr 변수에 저장된 내용을 추가합니다.
+			SendMessage(g_hEdit1, EM_REPLACESEL, FALSE, (LPARAM)szStr);
+
+			// 두번째 에디트 윈도우의 내용을 "모두선택" 한 뒤
+			SendMessage(hWnd, EM_SETSEL, 0, nLen2);
+
+			// "삭제" 합니다.
+			SendMessage(hWnd, WM_CLEAR, 0, 0);
+
+			// 두번째 윈도우에 포커스를 줍니다.
+			SetFocus(hWnd);
+
+			return 0;
+		}
+		break;
+	}
+
+	return CallWindowProc(g_OldEditProc2,hWnd,iMessage,wParam,lParam);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // 정보 대화 상자의 메시지 처리기입니다.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

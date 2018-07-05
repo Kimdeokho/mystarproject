@@ -28,7 +28,7 @@ void CGeneraEff::Initialize(void)
 
 	m_generaltex = CTextureMgr::GetInstance()->GetGeneralTexture(m_texname);
 	m_curtex = (*m_generaltex)[0];
-	m_vcenter = D3DXVECTOR3( float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2) , 0 );
+	m_vcenter = D3DXVECTOR3( float(m_curtex->ImgInfo.Width)/2 , float(m_curtex->ImgInfo.Height)/2 , 0 );
 
 	m_frame.fcurframe = 0.f;
 	m_frame.umax = m_generaltex->size();

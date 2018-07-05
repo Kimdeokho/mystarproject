@@ -32,3 +32,9 @@
 
 #define GETTIME		CTimeMgr::GetInstance()->GetTime()
 
+#define READ_TCP_PACKET(PROTOCOL)\
+	S_##PROTOCOL Data;\
+	READ_##PROTOCOL(m_Read_TCPBuf, Data);
+
+#define WRITE_TCP_PACKET(PROTOCOL , PACKET , WRITE)\
+	CSession_Mgr::GetInstance()->Write_TCP_Packet(PROTOCOL , PACKET , WRITE)

@@ -131,7 +131,7 @@ void CSCV::Initialize(void)
 }
 
 void CSCV::Update(void)
-{
+{	
 	CObj::area_update();
 	CWorkman::Fragment_Pos_update();
 
@@ -267,7 +267,7 @@ void CSCV::Render(void)
 	m_energybar_ui->Render();
 
 	m_com_pathfind->Render();
-	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
 void CSCV::Inputkey_reaction(const int& nkey)
@@ -352,10 +352,16 @@ void CSCV::Inputkey_reaction(const int& nkey)
 
 		if(NULL != m_com_pathfind)
 		{
-			if(NULL != ptarget)
-				m_bmagicbox = false;
+			D3DXVECTOR2 goalpos;
 
-			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+/*
+			if(NULL != ptarget)
+			{
+				m_bmagicbox = false;
+				goalpos = ptarget->GetPos(); //이거하면 가스우클릭할때 뻑난다..
+			}
+			else*/
+			goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
@@ -654,6 +660,7 @@ void CSCV::SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , cons
 	//자원이 모자르면 못보여줌
 	//버튼 비활성화면 못보여줌
 
+	m_ecmd_state = CMD_BUILDING;
 	m_is_preview = true;
 	((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(objkey ,ebuild, icol , irow , this , vtx);
 	

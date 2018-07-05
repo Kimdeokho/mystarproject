@@ -10,13 +10,14 @@
 
 #include "ComanderMgr.h"
 #include "ScrollMgr.h"
-CGoliath_Bullet::CGoliath_Bullet(const int& target_id ,const D3DXVECTOR2& vdesetpos ,const D3DXVECTOR2& subdir)
+CGoliath_Bullet::CGoliath_Bullet(const int& target_id ,const D3DXVECTOR2& vdesetpos , DWORD dir)
 {
 	m_ptarget = NULL;
 	m_target_id = target_id;
 	m_vdest_pos = vdesetpos;
 
-	m_subdir = subdir;
+	m_dir = dir;
+	//m_subdir = subdir;
 }
 
 CGoliath_Bullet::~CGoliath_Bullet(void)
@@ -28,14 +29,11 @@ void CGoliath_Bullet::Initialize(void)
 {
 	m_sortID = SORT_AIR_EFF;
 
+
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_dirBulletAnim(m_matWorld , L"TURRET_BULLET" )));
 
-
-	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
-	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
-
-	for( ; iter != iter_end; ++iter)
-		iter->second->Initialize(this);
+	m_vcurdir = m_vdest_pos - m_vPos;
+	m_fdistance = CMyMath::pos_distance(m_vPos , m_vdest_pos) / 1.3f;
 
 	m_trail_time = 0.15f;
 	m_accel = 10.f;
@@ -43,6 +41,13 @@ void CGoliath_Bullet::Initialize(void)
 
 	m_dirpower = 0.f;
 	m_sign = 1.f;
+
+	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
+	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
+
+	for( ; iter != iter_end; ++iter)
+		iter->second->Initialize(this);
+
 }
 
 void CGoliath_Bullet::Update(void)
@@ -104,8 +109,10 @@ void CGoliath_Bullet::Update(void)
 
 	m_vcurdir = m_vdest_pos - m_vPos;
 	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
+	//m_ftick_distance = GETTIME*m_accel*m_accel2;
+	m_ftick_distance = GETTIME*m_accel;
 
-	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 2)
+	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
 			m_ptarget->SetDamage(10 + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt * 2, DAMAGE_BOOM);
@@ -115,9 +122,9 @@ void CGoliath_Bullet::Update(void)
 	}
 
 
-	m_dirpower += GETTIME * m_sign;
+	m_dirpower += GETTIME * m_sign * 13.f;
 
-	if(m_dirpower > 0.23f)
+	if(m_dirpower > 3.f)
 	{
 		m_sign = -1.f;
 	}
@@ -128,7 +135,22 @@ void CGoliath_Bullet::Update(void)
 		m_sign = 0.f;
 	}
 	
-	m_vPos += m_vcurdir*GETTIME*m_accel*m_accel2 + m_subdir*m_dirpower;
+	if(LEFT == m_dir)
+	{
+		m_subdir.x = m_vcurdir.y;
+		m_subdir.y = -m_vcurdir.x;
+	}
+	else if(RIGHT == m_dir)
+	{
+		m_subdir.x = -m_vcurdir.y;
+		m_subdir.y = m_vcurdir.x;
+	}
+
+	m_vPos += m_vcurdir*m_ftick_distance + m_subdir * m_dirpower;
+
+	//D3DXVECTOR2 temp = m_vcurdir + m_subdir*m_dirpower;
+	//D3DXVec2Normalize(&temp , &temp);
+	//m_vPos += temp * m_ftick_distance;
 }
 
 void CGoliath_Bullet::Render(void)

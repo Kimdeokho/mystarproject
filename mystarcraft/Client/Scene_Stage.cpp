@@ -15,12 +15,15 @@
 
 #include "ScrollMgr.h"
 #include "Area_Mgr.h"
+#include "TimeMgr.h"
+
+#include "Device.h"
 
 #include "SCV.h"
 #include "Medic.h"
-
 #include "MyMath.h"
 #include "ScrollMgr.h"
+#include "Input_Stage.h"
 CScene_Stage::CScene_Stage(void)
 {
 }
@@ -32,7 +35,9 @@ CScene_Stage::~CScene_Stage(void)
 
 HRESULT CScene_Stage::Initialize(void)
 {
-		
+	m_fTime = 0.f;
+	m_iFPS = 0;
+	CKeyMgr::GetInstance()->SetInput_Device(SCENE_STAGE);
 	CUnitMgr::GetInstance()->Initialize();
 	CTileManager::GetInstance()->Initialize();
 	CComanderMgr::GetInstance()->Initialize(TERRAN);
@@ -56,26 +61,35 @@ HRESULT CScene_Stage::Initialize(void)
 		pobj->Initialize();
 	}
 
+	CTimeMgr::GetInstance()->InitTime();
 	return S_OK;
 }
 
 void CScene_Stage::Update(void)
 {
+	CTimeMgr::GetInstance()->SetTime();
+
 	CKeyMgr::GetInstance()->Update();
 	CMouseMgr::GetInstance()->Update();
-	CObjMgr::GetInstance()->Update();
-
-	CComanderMgr::GetInstance()->Update();
 	CScrollMgr::update();
+	CComanderMgr::GetInstance()->Update();
+	
+
+	static float time = 0.f;
+	time += GETTIME;
+
+	CObjMgr::GetInstance()->Update();	
 
 	//CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
+
+	m_fTime += GETTIME;
 }
 void CScene_Stage::Render(void)
 {
 	CTileManager::GetInstance()->RenderTile();
 	CObjMgr::GetInstance()->Render();
 
-	CTileManager::GetInstance()->RenderFog();
+	//CTileManager::GetInstance()->RenderFog();
 	//CTileManager::GetInstance()->Render_Flowfield();	
 	
 	//CLineMgr::GetInstance()->RenderGrid(32/*Å©±â*/, 128/*°¹¼ö*/);
@@ -84,6 +98,23 @@ void CScene_Stage::Render(void)
 	CComanderMgr::GetInstance()->Render();
 
 	CFontMgr::GetInstance()->FontRender();
+
+
+	CTimeMgr::GetInstance()->FPS_fix();
+	RenderFPS();
+}
+void CScene_Stage::RenderFPS(void)
+{
+	m_iFPS += 1;
+
+	if(m_fTime >= 1.0f)
+	{
+
+		wsprintf(m_szFPS , L"FPS %d" , m_iFPS);
+		m_fTime = 0.f;
+		m_iFPS = 0;
+	}
+	CFontMgr::GetInstance()->FontRender(m_szFPS , 40 , 0 , D3DCOLOR_ARGB(255,0,255,0));
 }
 void CScene_Stage::Release(void)
 {
@@ -98,7 +129,7 @@ void CScene_Stage::Release(void)
 void CScene_Stage::LoadData(void)
 {
 	HANDLE hFile = CreateFile(L"../Data/map/test4.dat" , 
-		GENERIC_READ , 0 , NULL , OPEN_EXISTING , 0 , NULL);
+		GENERIC_READ , FILE_SHARE_READ , NULL , OPEN_EXISTING , 0 , NULL);
 
 	CTileManager::GetInstance()->LoadTileData(hFile);
 	CObjMgr::GetInstance()->LoadObj(hFile);

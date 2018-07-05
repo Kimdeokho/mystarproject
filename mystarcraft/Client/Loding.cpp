@@ -77,7 +77,7 @@ void CLoding::Logo_LodingRender(void)
 	//if(true == m_bLodingRender)
 	//CFontMgr::GetInstance()->FontRender(m_szPath , 400.f,500.f , D3DCOLOR_ARGB(255,255,255,255));
 
-	CFontMgr::GetInstance()->SetFontInfo(m_szPath , 400.f , 500.f ,D3DCOLOR_ARGB(255,255,255,255));
+	CFontMgr::GetInstance()->Setbatch_Font(m_szPath , (float)BACKBUFFER_SIZEX / 2.f, (float)BACKBUFFER_SIZEY / 1.2f ,D3DCOLOR_ARGB(255,255,255,255));
 	CFontMgr::GetInstance()->FontRender();
 }
 

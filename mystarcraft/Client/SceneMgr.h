@@ -13,6 +13,8 @@ private:
 	SCENEID		m_eCurScene;
 public:
 	HRESULT SetScene(SCENEID eSceneID);
+	SCENEID	GetScene(void);
+public:
 	void Update(void);
 	void Render(void);
 	void Release(void);

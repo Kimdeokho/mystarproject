@@ -11,6 +11,8 @@ protected:
 	D3DXVECTOR2 m_old_targetpos;
 
 	UPG_INFO*	m_upg_info;
+
+	float		m_ftick_distance;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

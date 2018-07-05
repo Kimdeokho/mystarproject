@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Define.h"
+#include "Include.h"
 
-const int MAX_KEY = 255;
 
-class CObj;
+class CInput_Interface;
 class CKeyMgr
 {
 	DECLARE_SINGLETON(CKeyMgr)
@@ -31,17 +30,7 @@ private:
 	bool	m_bcombinefirst[MAX_KEY];
 	bool	m_bcombinesecond[MAX_KEY];
 
-
-	D3DXVECTOR2	m_downpt;
-	D3DXVECTOR2 m_curpt;
-
-	int objcnt;
-	int m_nkey;
-
-	bool	m_clickwating[MAX_KEY];
-	bool	m_bwork; //미니맵 클릭시 곧바로 이동방지
-	bool	m_select; // 단축키+ 클릭시 유닛선택되는거 방지
-	bool	m_bdraging;
+	CInput_Interface*	m_input;
 public:
 	void TurboKeyDown(const int& nkey);
 	void OnceKeyDown(const int& nkey);
@@ -50,13 +39,15 @@ public:
 	void MouseKeyUp(const int& nkey);
 	void DbClick(const int& nkey);
 	void Update(void);
-	bool GetLbdraging(void);
+	//bool GetLbdraging(void);
 public:
-	void Intput_turbokey_reaction(void);
-	void Intput_oncekey_reaction(void);
-	void Intput_keyup_reaction(void);
-	void Intput_dbclick_reaction(void);
-	void Intput_combine_reaction(void);
+	bool GetOnceKeyDown_Check(const int& nkey );
+	bool GetKeyUp_Check(const int& nkey );
+	bool GetTurboKeyDown_Check(const int& nkey );	
+	bool GetDbClick_Check(const int& nkey );	
+	bool GetCombineKey_Check(const int& firstkey , const int& secondkey);
+public:
+	void	SetInput_Device(SCENEID escene);
 public:
 	CKeyMgr(void);
 	~CKeyMgr(void);

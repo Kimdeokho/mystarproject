@@ -21,6 +21,8 @@ void CCom_dirBulletAnim::Initialize(CObj* pobj)
 	m_rotation_speed = 120;
 	m_pobj = pobj;
 	SetAnimation(L"IDLE");
+
+	InitTexidx();
 }
 
 void CCom_dirBulletAnim::Update(void)

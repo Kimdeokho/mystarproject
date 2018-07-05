@@ -93,10 +93,12 @@ void CCom_WSCV::fire(CObj*& ptarget)
 				m_pobj->SetState(IDLE);
 
 				((CMineral*)ptarget)->SetMineral_amount(-8);
-				//((CMineral*)ptarget)->decrease_workman(m_pobj);
+				((CMineral*)ptarget)->decrease_workman(m_pobj);
 				m_gathertime = 0.f;
 				m_pobj->SetOrder(ORDER_RETURN_CARGO);
 			}
+			else
+				((CWorkman*)m_pobj)->SetMineral_mark(ptarget);
 		}
 		else
 		{
@@ -106,7 +108,6 @@ void CCom_WSCV::fire(CObj*& ptarget)
 	}
 	else if( OBJ_GAS == ptarget->GetOBJNAME() )
 	{
-
 	}
 	//else if( OBJ_COMMAND == ptarget->GetOBJNAME() )
 	//{

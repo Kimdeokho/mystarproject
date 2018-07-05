@@ -38,9 +38,9 @@ void CUnitMgr::Initialize(void)
 	m_magicbox_unitcnt	= 0;
 	m_vGoalIdx			= 0;
 }
-
 void CUnitMgr::SetUnit(CObj* pobj)
 {
+	//pobj->SetSelect(GENERAL_SELECT);
 	m_curunitList.push_back(pobj);
 }
 

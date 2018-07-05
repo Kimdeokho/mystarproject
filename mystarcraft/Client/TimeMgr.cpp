@@ -29,7 +29,8 @@ HRESULT CTimeMgr::InitTime( void )
 
 float CTimeMgr::GetTime( void )
 {
-	return m_fTime;
+	//return m_fTime; //이걸 상수로 반환한다면?
+	return FIXTIME;
 }
 const int& CTimeMgr::GetFps(void)
 {
@@ -43,18 +44,34 @@ void CTimeMgr::SetTime( void )
 {
 	QueryPerformanceCounter(&m_FrameTime);
 
-	if(m_FrameTime.QuadPart - m_LastTime.QuadPart > m_CpuTick.QuadPart)
+	if(m_FrameTime.QuadPart - m_LastTime.QuadPart > m_CpuTick.QuadPart) //1초가 지났다는소리
 	{
-		QueryPerformanceFrequency(&m_CpuTick);
+		QueryPerformanceFrequency(&m_CpuTick); //CPU Tick을 갱신해준다
 
 		m_LastTime.QuadPart = m_FrameTime.QuadPart;
 	}
 
+
 	m_fTime = float(m_FrameTime.QuadPart - m_FixTime.QuadPart) / m_CpuTick.QuadPart;
-
+	if(m_fTime < FIXTIME )
+	{
+		Sleep( DWORD( (FIXTIME - m_fTime) *1000 ));
+		//Sleep( (0.0167 - (update~render까지 걸린시간)) *1000);
+	}
+	QueryPerformanceCounter(&m_FrameTime);
 	m_FixTime = m_FrameTime;
-
+	
 	//ex 30프레임 밑으로 내려가면 m_ftime을 강제로 30프레임에 대한 ms로 수정해보자
+}
 
+void CTimeMgr::FPS_fix(void)
+{
+	//m_fTime = float(m_FrameTime.QuadPart - m_FixTime.QuadPart) / m_CpuTick.QuadPart;
+	//m_FixTime = m_FrameTime;
+	//if(m_fTime < 0.03333f )
+	//{
+	//	Sleep( DWORD((0.03333f - m_fTime) *1000));
+	//	//Sleep( (0.0167 - (update~render까지 걸린시간)) *1000);
+	//}	
 }
 

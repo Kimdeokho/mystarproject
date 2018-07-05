@@ -89,9 +89,13 @@ void CFontMgr::FontRender(void)
 
 		for(size_t i = 0; i < loopcnt; ++i)
 		{
-			m_matfont._11 = 0.85f;
-			m_matfont._22 = 0.85f;
-			m_matfont._41 = m_vecbatchfont[i].fX - lstrlen( m_vecbatchfont[i].font )/2*10;;
+			//m_matfont._11 = 0.85f;
+			//m_matfont._22 = 0.85f;
+
+			if(true == m_vecbatchfont[i].left_align)
+				m_matfont._41 = m_vecbatchfont[i].fX;
+			else
+				m_matfont._41 = m_vecbatchfont[i].fX - float(lstrlen( m_vecbatchfont[i].font ))/2.f*10;;
 			m_matfont._42 = m_vecbatchfont[i].fY;
 
 			m_pSprite->SetTransform(&m_matfont);
@@ -109,7 +113,7 @@ void CFontMgr::FontRender(void)
 		{
 			(*iter).fnotice_time += GETTIME;
 
-			if( (*iter).fnotice_time > 5.0f)
+			if( (*iter).fnotice_time > 1.f)
 			{
 				iter = m_list_noticefont.erase(iter);
 			}
@@ -182,21 +186,22 @@ void CFontMgr::Set_KeyInput_Font(const TCHAR* szfont , D3DCOLOR _color /*= D3DCO
 
 
 }
-void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
+void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int& font_number , float posX , float posY ,D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/ , bool left_align /*= false*/)
 {
 		/*업데이트단계에서 지속적으로 입력받는 폰트
 	입력받고 렌더 후 지우는 방식이다*/
 	FONT_INFO ptemp;
 
-	ptemp.fX = posX;
-	ptemp.fY = posY;
+	ptemp.fX = posX - CScrollMgr::m_fScrollX;
+	ptemp.fY = posY - CScrollMgr::m_fScrollY;
 	ptemp.font_color = _color;
+	ptemp.left_align = left_align;
 
 	wsprintf(ptemp.font , szfont , font_number);
 
 	m_vecbatchfont.push_back(ptemp);
 }
-void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
+void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY ,  D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/, bool left_align /*= false*/)
 {
 	/*업데이트단계에서 지속적으로 입력받는 폰트
 	입력받고 렌더 후 지우는 방식이다*/
@@ -205,10 +210,11 @@ void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY , D3D
 	ptemp.fX = posX;
 	ptemp.fY = posY;
 	ptemp.font_color = _color;
+	ptemp.left_align = left_align;
 	lstrcpy(ptemp.font , szfont);
 	m_vecbatchfont.push_back(ptemp);
 }
-void CFontMgr::test_Font(const TCHAR* szfont ,float fval1 , float fval2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
+void CFontMgr::Setbatch_Font(const TCHAR* szfont ,const int& num1, const int& num2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/ , bool left_align /*= false*/)
 {
 	/*업데이트단계에서 지속적으로 입력받는 폰트
 	입력받고 렌더 후 지우는 방식이다*/
@@ -217,20 +223,7 @@ void CFontMgr::test_Font(const TCHAR* szfont ,float fval1 , float fval2, float p
 	ptemp.fX = posX;
 	ptemp.fY = posY;
 	ptemp.font_color = _color;
-
-	_stprintf_s(ptemp.font , _countof(ptemp.font), szfont , fval1, fval2);
-
-	m_vecbatchfont.push_back(ptemp);
-}
-void CFontMgr::Setbatch_Font(const TCHAR* szfont ,const int& num1, const int& num2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
-{
-	/*업데이트단계에서 지속적으로 입력받는 폰트
-	입력받고 렌더 후 지우는 방식이다*/
-	FONT_INFO ptemp;
-
-	ptemp.fX = posX;
-	ptemp.fY = posY;
-	ptemp.font_color = _color;
+	ptemp.left_align = left_align;
 	
 	wsprintf(ptemp.font , szfont , num1, num2);
 
@@ -257,8 +250,8 @@ void CFontMgr::SetNoticeFont(const TCHAR* szfont , float posX , float posY , D3D
 	/*한번 입력받고 몇초동안 지속적으로 렌더 후 삭제되는 폰트*/
 	FONT_INFO ptemp;
 
-	ptemp.fX = posX;
-	ptemp.fY = posY;
+	ptemp.fX = posX- CScrollMgr::m_fScrollX;
+	ptemp.fY = posY - CScrollMgr::m_fScrollY;
 	ptemp.font_color = _color;
 
 	lstrcpy(ptemp.font , szfont);

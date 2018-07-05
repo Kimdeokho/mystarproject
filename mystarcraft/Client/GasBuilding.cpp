@@ -260,6 +260,7 @@ void CGasBuilding::Update(void)
 
 				
 				m_pworkman->SetActive(true);
+				m_pworkman->SetSelect(NONE_SELECT);
 				m_pworkman->SetState(IDLE);
 				m_pworkman->SetOrder(ORDER_RETURN_CARGO);
 				m_pworkman->unit_area_Initialize();

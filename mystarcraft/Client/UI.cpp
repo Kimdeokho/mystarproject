@@ -4,6 +4,8 @@
 #include "Device.h"
 CUI::CUI(void)
 {
+	m_texinfo = NULL;
+	m_parentmat = NULL;
 	m_pSprite = CDevice::GetInstance()->GetSprite();
 	D3DXMatrixIdentity(&m_matworld);
 	m_color = D3DCOLOR_ARGB(255,255,255,255);
@@ -62,4 +64,29 @@ const D3DXVECTOR2& CUI::GetPos(void)
 void CUI::SetActive(bool _active)
 {
 	m_active = _active;
+}
+
+void CUI::SetColor(D3DCOLOR ecolor)
+{
+	m_color = ecolor;
+}
+
+void CUI::UI_Reaction(void)
+{
+
+}
+
+bool CUI::UI_ptinrect(const D3DXVECTOR2 vpos)
+{
+	return false;
+}
+
+void CUI::SetParentMat(D3DXMATRIX* parmat)
+{
+	m_parentmat = parmat;
+}
+
+D3DXMATRIX* CUI::GetMatrix_Adress(void)
+{
+	return &m_matworld;
 }

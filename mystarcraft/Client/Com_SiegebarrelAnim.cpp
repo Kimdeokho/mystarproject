@@ -154,6 +154,7 @@ void CCom_SiegebarrelAnim::SetAnimation(const TCHAR* statekey)
 			}
 			else
 			{
+				m_objmat._11 = 1;
 				m_frame.umax = m_generaltex->size();
 				m_frame.fframespeed = float(m_frame.umax);
 				m_frame.fcurframe = float(m_frame.umax - 1);

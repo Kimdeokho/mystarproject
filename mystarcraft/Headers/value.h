@@ -37,6 +37,8 @@ const int	DIR_CNT17 = 17;
 
 const D3DXVECTOR2	OFFSET_DIRVEC = D3DXVECTOR2(0.f,-1.f);
 const float PI = 3.141592f;
+
+const int MAX_KEY = 255;
 //const int   MOVE_OK = 0;
 //const int   MOVE_NONE = 1;
 

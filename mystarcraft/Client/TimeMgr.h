@@ -2,6 +2,7 @@
 
 #include "Include.h"
 
+const float FIXTIME = 0.03333f;
 class CTimeMgr
 {
 public:
@@ -22,7 +23,7 @@ public:
 public:
 	HRESULT InitTime(void);
 	void SetTime(void);
-
+	void FPS_fix(void);
 private:
 	CTimeMgr(void);
 public:

@@ -94,5 +94,7 @@ bool CMyMath::linecross_check(const MYLINE& line1 , const MYLINE& line2)
 
 D3DXVECTOR2 CMyMath::dgree_to_dir(const float& dgree)
 {
+	//0도는 좌표 1,0이다 
+	//90도는 좌표 0,1이다
 	return D3DXVECTOR2( cosf(dgree_to_radian(dgree)) , sinf(dgree_to_radian(dgree)));
 }

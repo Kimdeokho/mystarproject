@@ -17,6 +17,8 @@ private:
 	D3DXVECTOR2		m_vGoalPos;
 	int				m_vGoalIdx;
 	int				m_magicbox_unitcnt;
+
+	int				m_unitcnt;
 public:
 	void SetUnit(CObj* pobj);
 public:

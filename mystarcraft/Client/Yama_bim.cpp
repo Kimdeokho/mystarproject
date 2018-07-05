@@ -34,6 +34,7 @@ void CYama_bim::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
+	m_ftick_distance = GETTIME*1000;
 }
 
 void CYama_bim::Update(void)
@@ -67,9 +68,9 @@ void CYama_bim::Update(void)
 
 	D3DXVECTOR2 vdir = m_vdest_pos - m_vPos;	
 	D3DXVec2Normalize(&vdir , &vdir);
-	m_vPos += vdir*GETTIME*1000;
+	m_vPos += vdir*m_ftick_distance;
 
-	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 4*4)
+	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
 			m_ptarget->SetDamage(260, DAMAGE_BOOM);

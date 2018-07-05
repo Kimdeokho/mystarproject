@@ -5,7 +5,8 @@ class CCom_fog :
 	public CComponent
 {
 private:
-	list<int>			m_Sightoff_List;
+	//list<int>			m_Sightoff_List;
+	vector<int>			m_Sightoff_List;
 	bool				m_sightoffsw;
 	bool				m_InitSight;
 	bool				m_fogsearch[SQ_TILECNTY*SQ_TILECNTX];

@@ -27,15 +27,18 @@ void CWraith_Bullet::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_dirBulletAnim( m_matWorld , L"WRAITH_BULLET" )));
 
 
+	m_vcurdir = m_vdest_pos - m_vPos;
+	m_trail_time = 0.55f;
+	m_accel = 10.f;
+	m_accel2 = 0.1f;
+
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-	m_trail_time = 0.55f;
-	m_accel = 10.f;
-	m_accel2 = 0.1f;
+
 }
 
 void CWraith_Bullet::Update(void)
@@ -83,8 +86,9 @@ void CWraith_Bullet::Update(void)
 
 	m_vcurdir = m_vdest_pos - m_vPos;
 	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
+	m_ftick_distance = GETTIME*m_accel*m_accel2;
 
-	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 2)
+	if( int(CMyMath::pos_distance(m_vPos , m_vdest_pos)) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
 			m_ptarget->SetDamage(20 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 2, DAMAGE_BOOM);
@@ -93,7 +97,7 @@ void CWraith_Bullet::Update(void)
 		Dead();
 	}
 
-	m_vPos += m_vcurdir*GETTIME*m_accel*m_accel2;
+	m_vPos += m_vcurdir*m_ftick_distance;
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;

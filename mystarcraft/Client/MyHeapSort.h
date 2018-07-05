@@ -22,7 +22,6 @@ public:
 	bool node_full(void);
 	T Render(const int& idx);
 	void Release(void);
-	void Release(PATH_NODE** openidx , boost::pool<>* _pool);
 public:
 	CMyHeapSort(const int& HEAPSIZE);
 	~CMyHeapSort();
@@ -71,10 +70,12 @@ bool CMyHeapSort<T>::node_full(void)
 template<typename T>
 void CMyHeapSort<T>::push_node(T pnode)
 {
-	m_nodelist[m_cursize] = pnode;
+	//실수로 대소비교할 생각은 그냥 하지말자
 
-	int curidx = m_cursize - 1;
-	int parentidx = int( (curidx - 1) >> 2 );
+	m_nodelist[m_cursize] = pnode;
+	++m_cursize;
+	unsigned int curidx = m_cursize - 1;
+	unsigned int parentidx = int( (curidx - 1)  >> 1 ); 
 
 	while( curidx > 0 )
 	{
@@ -82,13 +83,11 @@ void CMyHeapSort<T>::push_node(T pnode)
 		{
 			swap_node(parentidx , curidx);
 			curidx = parentidx;
-			parentidx = (curidx - 1) >> 2;
+			parentidx = (curidx - 1) >> 1;
 		}
 		else
 			break;
 	}
-
-	++m_cursize;
 }
 
 template<typename T>
@@ -114,71 +113,53 @@ T CMyHeapSort<T>::pop_node(void)
 		if(m_nodelist[curidx] == NULL)
 			break;
 
-		if(m_nodelist[leftchild] != NULL &&
-			m_nodelist[rightchild] == NULL)
+		if(m_nodelist[leftchild] != NULL )
 		{
-			/*왼쪽 자식 하나 뿐이라면*/
-
-			if(m_nodelist[curidx]->iCost >= m_nodelist[leftchild]->iCost)
-			{
-				/*부모보다 자식의 값이 작다면*/
-				swap_node(leftchild , curidx);
-				curidx = leftchild;
-			}
-			else
-				break;
-		}
-		else if(m_nodelist[rightchild] != NULL &&
-			m_nodelist[leftchild] == NULL)
-		{
-			/*오른쪽 자식 하나 뿐이라면*/
-
-			if(m_nodelist[curidx]->iCost >= m_nodelist[rightchild]->iCost)
-			{
-				/*부모보다 자식의 값이 작다면*/
-				swap_node(rightchild , curidx);
-				curidx = rightchild;
-			}
-			else
-				break;
-		}
-		else if(m_nodelist[rightchild] != NULL &&
-			m_nodelist[leftchild] != NULL)
-		{
-			/*자식 둘다 있을때*/
-
-			if(m_nodelist[curidx]->iCost >= m_nodelist[rightchild]->iCost &&
-				m_nodelist[curidx]->iCost >= m_nodelist[leftchild]->iCost)
-			{
-				/*두자식 모두 부모보다 작다면 둘중 더 작은 노드와 교환한다*/
-
-				if(m_nodelist[leftchild]->iCost <= m_nodelist[rightchild]->iCost)
+			if(m_nodelist[rightchild] != NULL)//둘다 있다
+			{				
+				if(m_nodelist[curidx]->iCost >= m_nodelist[rightchild]->iCost &&
+					m_nodelist[curidx]->iCost >= m_nodelist[leftchild]->iCost)
 				{
-					/*왼쪽이 더 작다*/
+					/*두자식 모두 부모보다 작다면 둘중 더 작은 노드와 교환한다*/
+
+					if(m_nodelist[leftchild]->iCost <= m_nodelist[rightchild]->iCost)/*왼쪽이 더 작다*/
+					{						
+						swap_node(leftchild , curidx);
+						curidx = leftchild;
+					}
+					else/*오른쪽이 더 작다*/
+					{						
+						swap_node(rightchild , curidx);
+						curidx = rightchild;
+					}
+				}
+				else if( m_nodelist[curidx]->iCost >= m_nodelist[rightchild]->iCost )
+				{
+					/*왼쪽이 부모보다 크고 오른쪽 자식이 작다면*/
+					swap_node(rightchild , curidx);
+					curidx = rightchild;
+				}
+				else if( m_nodelist[curidx]->iCost >= m_nodelist[leftchild]->iCost )
+				{
+					/*오른쪽이 부모보다 크고 왼쪽 자식이 작다면*/
 					swap_node(leftchild , curidx);
 					curidx = leftchild;
 				}
 				else
-				{
-					/*오른쪽이 더 작다*/
-					swap_node(rightchild , curidx);
-					curidx = rightchild;
-				}
-			}
-			else if( m_nodelist[curidx]->iCost >= m_nodelist[rightchild]->iCost )
-			{
-				/*왼쪽이 부모보다 크고 오른쪽 자식이 작다면*/
-				swap_node(rightchild , curidx);
-				curidx = rightchild;
-			}
-			else if( m_nodelist[curidx]->iCost >= m_nodelist[leftchild]->iCost )
-			{
-				/*오른쪽이 부모보다 크고 왼쪽 자식이 작다면*/
-				swap_node(leftchild , curidx);
-				curidx = leftchild;
+					break;//두 자식모두 부모보다 크다면
 			}
 			else
-				break;//두 자식모두 부모보다 크다면
+			{
+				/*왼쪽 자식 하나 뿐이라면*/
+				if(m_nodelist[curidx]->iCost >= m_nodelist[leftchild]->iCost)
+				{
+					/*부모보다 자식의 값이 작다면*/
+					swap_node(leftchild , curidx);
+					curidx = leftchild;
+				}
+				else
+					break;
+			}
 
 		}
 		else if(m_nodelist[rightchild] == NULL &&
@@ -206,19 +187,6 @@ T CMyHeapSort<T>::Render(const int& idx)
 		return NULL;
 
 	return m_nodelist[idx];
-}
-template<typename T>
-void CMyHeapSort<T>::Release(PATH_NODE** openidx , boost::pool<>* _pool)
-{
-	for(int i = 0; i < m_cursize; ++i)
-	{
-		openidx[ m_nodelist[i]->index ] = NULL;
-
-		_pool->free(m_nodelist[i]);
-		//delete m_nodelist[i];
-		m_nodelist[i] = NULL;
-	}
-	m_cursize = 0;
 }
 
 template<typename T>

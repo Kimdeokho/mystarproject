@@ -76,6 +76,7 @@ void CTank::Initialize(void)
 	m_vertex.top =  16;
 	m_vertex.bottom = 16;
 
+
 	m_bsiegemode = false;
 	m_btransform_ready = false;
 
@@ -129,7 +130,6 @@ void CTank::Update(void)
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
-
 
 	if(IDLE == m_unitinfo.state)
 	{
@@ -226,13 +226,16 @@ void CTank::Render(void)
 
 	m_select_ui->Render();
 	m_com_anim->Render();
-	m_tankbarrel->Render();
-	m_com_cc->Render();
 
+	m_tankbarrel->Render();
+
+	m_com_cc->Render();
 	m_energybar_ui->Render();
 
 	if(NULL != m_com_pathfind)
 		m_com_pathfind->Render();
+
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 void CTank::Transform(void)
 {
@@ -329,10 +332,10 @@ void CTank::Inputkey_reaction(const int& nkey)
 		{
 			if(TRANSFORMING != m_unitinfo.state)
 			{
-				//m_unitinfo.state = MOVE;
+				m_unitinfo.state = MOVE;
 				m_unitinfo.order = ORDER_MOVE;
 				m_tankbarrel->SetOrder(ORDER_MOVE);
-				//m_tankbarrel->SetState(MOVE);
+				m_tankbarrel->SetState(MOVE);
 
 				if(NULL != m_com_pathfind)
 				{
@@ -373,9 +376,9 @@ void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			if(TRANSFORMING != m_unitinfo.state)
 			{
 				m_unitinfo.order = ORDER_MOVE_ATTACK;
-				//m_unitinfo.state = MOVE;
+				m_unitinfo.state = MOVE;
 				m_tankbarrel->SetOrder(ORDER_MOVE_ATTACK);
-				//m_tankbarrel->SetState(MOVE);				
+				m_tankbarrel->SetState(MOVE);				
 
 				if(NULL != m_com_pathfind)
 				{

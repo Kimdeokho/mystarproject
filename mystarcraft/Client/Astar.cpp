@@ -105,7 +105,7 @@ void CAstar::Init_eightpos_rect(const D3DXVECTOR2& vpos , const MYRECT<float>& r
 		m_eight_vpos[RIGHT_UP].x = m_eight_vpos[CENTER].x + stepsize;
 		m_eight_vpos[RIGHT_UP].y = m_eight_vpos[CENTER].y - stepsize;
 	}
-	
+
 
 	if(vpos.x <= 4096 - stepsize &&
 		vpos.y <= 4096 - stepsize )
@@ -227,39 +227,38 @@ void CAstar::Make_UnitNode( PATH_NODE* parent_node ,const D3DXVECTOR2& vpos , co
 
 	pnewnode->pParent = parent_node;
 	pnewnode->index = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
-	pnewnode->vPos = vpos;
+	pnewnode->vPos = vpos;	
 
-
-
-
-
-	m_openlist->push_node(pnewnode);
-
-	if( D3DXVec2Dot(&m_destdir , &(pnewnode->vPos - parent_node->vPos) ) >= 0)
-	{
-		//90도보다 작다
-		pnewnode->G = parent_node->G + g_distance*g_distance;
-		pnewnode->X = parent_node->X + g_distance*g_distance*2;
-	}
+	
+	//pnewnode->X = parent_node->X + g_distance*(1.f - fabsf(fdot));
+	float fdot = D3DXVec2Dot(&m_destdir , &(pnewnode->vPos - parent_node->vPos));
+	if( fdot >= 0.1f) //0보다 크다면 90도보다 작다
+		pnewnode->X = parent_node->X + g_distance*fdot;
 	else
-	{
-		pnewnode->G = parent_node->G + g_distance*g_distance*2;
-		pnewnode->X = parent_node->X + g_distance*g_distance;
-	}
+		pnewnode->X = parent_node->X + g_distance*fdot/2;
 
+	pnewnode->G = parent_node->G + g_distance*g_distance;
 	pnewnode->H = CMyMath::pos_distance(vpos , m_vGoal_pos);
-	pnewnode->iCost = pnewnode->G + pnewnode->H;
 
-	//m_idxfind[pnewnode->index] = true;
+	//int idx1 , idx2;
+	//idx1 = CMyMath::Pos_to_index(vpos , 32);
+	//idx2 = CMyMath::Pos_to_index(m_vGoal_pos , 32);
+	//pnewnode->G += 1;
+	//pnewnode->H = CMyMath::idx_distance(idx1 , idx2 , 128 , 32);
+
+	pnewnode->iCost = (int)(pnewnode->G + pnewnode->H);
 
 
 	m_irow = int(pnewnode->vPos.x / (4096 / m_widthcnt) );
 	m_icol = int(pnewnode->vPos.y / m_unit_stepsize);
 	m_maskidx = int(pnewnode->vPos.x / m_unit_stepsize) % 32;
 	m_findidx[m_icol * m_widthcnt + m_irow] |= m_mask[m_maskidx];
+
+	m_openlist->push_node(pnewnode);
 }
 void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const int& stepsize, const vector<D3DXVECTOR2>& terrain_path , const int& terrain_idx)
 {	
+
 	memset(m_findidx , 0 , sizeof(m_findidx));
 	//memset(m_idxfind , 0 , sizeof(m_idxfind));
 	Release_unit_closelist();
@@ -271,15 +270,25 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 			m_terrain_end = true;
 		else
 			m_terrain_end = false;
+
+		m_maxnodecnt += 100;
+		if(m_maxnodecnt > MAXPATH_IDX)
+			m_maxnodecnt = MAXPATH_IDX;
+	}
+	else
+	{
+		m_maxnodecnt += 100;
+		if(m_maxnodecnt > MAXPATH_IDX/2)
+			m_maxnodecnt = MAXPATH_IDX/2;
 	}
 
 	m_is_escape = false;
 
-	
+
 	m_unit_stepsize = 32;
 	//m_unit_stepsize = stepsize;
 	m_tilecnt = int(SQ_TILECNTX*(float)SQ_TILESIZEX/(float)m_unit_stepsize);
-	
+
 	if(8 == m_unit_stepsize)
 		m_unit_diagonalstep = 11.3f;
 	else if(16 == m_unit_stepsize)
@@ -298,26 +307,21 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 	pnode->X = 0;
 	pnode->G = 0;	
 	pnode->H = CMyMath::pos_distance(startpos , goalpos);
-	pnode->iCost = pnode->G + pnode->H;
+	pnode->iCost = int(pnode->G + pnode->H);
 	pnode->index = m_startindex;
 	pnode->vPos = startpos;
 	pnode->pParent = NULL;
 	m_openlist->push_node(pnode);
 
 
-	//m_idxfind[pnode->index] = true;
 	m_widthcnt = (4096 / m_unit_stepsize)/32;
-	m_irow = int(pnode->vPos.x / (4096 / m_widthcnt) );
-	m_icol = int(pnode->vPos.y / m_unit_stepsize);
-	m_maskidx = int(pnode->vPos.x / m_unit_stepsize) % 32;
-	m_findidx[m_icol * m_widthcnt + m_irow] |= m_mask[m_maskidx];
 
 	m_dummynodeH = pnode;
 	m_dummynodeX = pnode;
 
 	m_destdir = goalpos - startpos;
 }
-void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CObj* ptarget)
+void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* ptarget)
 {
 
 	PATH_NODE* pnode;
@@ -328,62 +332,30 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 
 	m_ptarget = ptarget;
 
-	int irow , icol , maskidx = 0; 
-	while(true)
+	int accrue= 0; 
+	D3DXVECTOR2 tempv_center;
+	MYRECT<float> temprc_center;
+	while(accrue <= 20) //보류 조건
 	{
+		++accrue;
+
 		pnode = m_openlist->pop_node();
 
 		if(NULL != pnode)
 		{
 			//비트연산으로 스텝사이즈 트루 펄스여부,,,
-			//m_idxfind[pnode->index] = true;
-		
-			irow = int(pnode->vPos.x / (4096 / m_widthcnt));
-			icol = int(pnode->vPos.y / m_unit_stepsize);
-			maskidx = int(pnode->vPos.x / m_unit_stepsize) % 32;
-			m_findidx[icol * m_widthcnt + irow] |= m_mask[maskidx];
+			if(m_dummynodeX->X <= pnode->X) //도착점에서 먼곳으로
+				m_dummynodeX = pnode;
 
-			if(NULL != m_ptarget)
-			{
-				range = m_range;
-				if( CMyMath::pos_distance( pnode->vPos , m_vGoal_pos) < range*range)
-				{
-					if(CTileManager::GetInstance()->Bresenham_Tilecheck(pnode->vPos , m_vGoal_pos))
-					{
-						m_pathpool_idx = 0;
-
-						while(NULL != pnode)
-						{
-							vecpath.push_back(pnode->vPos);
-							pnode = pnode->pParent;
-						}					
-						break;
-					}
-				}
-			}
-			else
-			{
-				range = 200;
-				if( !m_terrain_end && CMyMath::pos_distance( pnode->vPos , m_vGoal_pos) < range*range)
-				{
-					if(CTileManager::GetInstance()->Bresenham_Tilecheck(pnode->vPos , m_vGoal_pos))
-					{
-						m_pathpool_idx = 0;
-
-						while(NULL != pnode)
-						{
-							vecpath.push_back(pnode->vPos);
-							pnode = pnode->pParent;
-						}					
-						break;
-					}
-				}
-			}
+			if(m_dummynodeH->H >= pnode->H)// 도착점과 가까운곳으로
+				m_dummynodeH = pnode;
 		}
 
 		if(NULL == pnode)
 		{
 			//dummyH
+			m_maxnodecnt = -50;
+
 			while(NULL != m_dummynodeH)
 			{
 				vecpath.push_back(m_dummynodeH->vPos);
@@ -392,52 +364,16 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 			break;
 		}	
 
-		if(GETTIME > 0.016f)
+		if(pnode->index == m_goalidx)
 		{
-			m_pathpool_idx = 0;
-			//원래는 pnode
-			if(!m_terrain_end)
+			m_maxnodecnt = MAXPATH_IDX;
+			//pnode->vPos = m_vGoal_pos;
+			while(NULL != pnode)
 			{
-				while(NULL != m_dummynodeX)
-				{
-					vecpath.push_back(m_dummynodeX->vPos);
-					m_dummynodeX = m_dummynodeX->pParent;
-				}					
-				break;
+				vecpath.push_back(pnode->vPos);
+				pnode = pnode->pParent;
 			}
-			else
-			{
-				while(NULL != m_dummynodeH)
-				{
-					vecpath.push_back(m_dummynodeH->vPos);
-					m_dummynodeH = m_dummynodeH->pParent;
-				}					
-				break;
-			}
-
-			//if(NULL == m_ptarget)
-			//{
-			//	if( true == m_terrain_end)
-			//	{
-			//		while(NULL != m_dummynodeH)
-			//		{
-			//			vecpath.push_back(m_dummynodeH->vPos);
-			//			m_dummynodeH = m_dummynodeH->pParent;
-			//		}		
-			//	}
-			//	break;
-			//}
-			//else
-			//{
-			//	m_pathpool_idx = 0;
-			//	//원래는 pnode
-			//	while(NULL != m_dummynodeX)
-			//	{
-			//		vecpath.push_back(m_dummynodeX->vPos);
-			//		m_dummynodeX = m_dummynodeX->pParent;
-			//	}					
-			//	break;
-			//}
+			break;
 		}
 
 		if( true == m_is_escape )
@@ -445,10 +381,15 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 			m_is_escape = false;
 			m_pathpool_idx = 0;
 
-			while(NULL != pnode)
+			PATH_NODE* tempnode = NULL;
+			if(NULL == m_ptarget)
+				tempnode = m_dummynodeH;
+			else
+				tempnode = m_dummynodeX;
+			while(NULL != tempnode)
 			{
-				vecpath.push_back(pnode->vPos);
-				pnode = pnode->pParent;
+				vecpath.push_back(tempnode->vPos);
+				tempnode = tempnode->pParent;
 			}
 			break;
 		}
@@ -466,10 +407,17 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 			}
 			else
 			{
-				while(NULL != m_dummynodeH)
+				m_maxnodecnt = 50;
+				PATH_NODE* tempnode = NULL;
+				if(NULL == m_ptarget)
+					tempnode = m_dummynodeH;
+				else
+					tempnode = m_dummynodeX;
+
+				while(NULL != tempnode)
 				{
-					vecpath.push_back(m_dummynodeH->vPos);
-					m_dummynodeH = m_dummynodeH->pParent;
+					vecpath.push_back(tempnode->vPos);
+					tempnode = tempnode->pParent;
 				}
 			}
 
@@ -478,22 +426,6 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 			break;
 		}			
 
-		if(pnode->index == m_goalidx)
-		{
-			pnode->vPos = m_vGoal_pos;
-			while(NULL != pnode)
-			{
-				vecpath.push_back(pnode->vPos);
-				pnode = pnode->pParent;
-			}
-			break;
-		}
-
-		if(m_dummynodeX->X <= pnode->X) //도착점에서 먼곳으로
-			m_dummynodeX = pnode;
-
-		if(m_dummynodeH->H >= pnode->H)// 도착점과 가까운곳으로
-			m_dummynodeH = pnode;
 
 		temprect.left = pnode->vPos.x - m_vertex.left;
 		temprect.right = pnode->vPos.x + m_vertex.right;
@@ -502,9 +434,10 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 
 		Init_eightpos_rect(pnode->vPos , temprect , m_unit_stepsize);
 
-		
-		int idx = 0;
-		for(int i = 1; i < ASTAR_DIR_END; ++i)
+
+		tempv_center = m_eight_vpos[CENTER];
+		temprc_center = m_eight_rect[CENTER];
+		for(int i = 0; i < ASTAR_DIR_END; ++i)
 		{
 			if( i >= 5)
 				gdistance = m_unit_diagonalstep;
@@ -516,8 +449,16 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 				Check_OpenList(m_eight_vpos[i] , pnode)*/
 				Check_idx(m_eight_vpos[i]))
 			{
-				if( m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , m_eight_rect[CENTER] , m_eight_vpos[CENTER] , m_unit_stepsize , m_pObj , m_ptarget ) )
-					Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
+				if( m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , temprc_center , tempv_center , m_pObj , m_ptarget , m_unit_stepsize) )
+				{
+					//if(CENTER == i)
+					//{
+						//if((int)CMyMath::pos_distance(m_eight_vpos[i] , tempv_center) > 2*2)
+						//Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
+					//}
+					//else
+						Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
+				}
 				else
 				{
 					if( CMyMath::Pos_to_index( m_eight_vpos[i] , m_unit_stepsize) == m_goalidx)
@@ -525,9 +466,14 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , const CO
 						m_is_escape = true;
 						break;
 					}
-				}
+				} 
 			}
 		}
+
+		m_irow = int(pnode->vPos.x / (4096 / m_widthcnt));
+		m_icol = int(pnode->vPos.y / m_unit_stepsize);
+		m_maskidx = int(pnode->vPos.x / m_unit_stepsize) % 32;
+		m_findidx[m_icol * m_widthcnt + m_irow] |= m_mask[m_maskidx];
 	}
 }
 bool CAstar::Check_TileOption(const int& idx)
@@ -566,19 +512,19 @@ bool CAstar::Check_idx(const D3DXVECTOR2& vpos)
 	m_irow = int(vpos.x / (4096 / m_widthcnt));
 	m_icol = int(vpos.y / m_unit_stepsize);
 	m_maskidx = int(vpos.x / m_unit_stepsize) % 32;
-	
+
 	if(m_findidx[m_icol * m_widthcnt + m_irow] & m_mask[m_maskidx])
 		return false;
 	else
 		return true;
-;
+	;
 }
 bool CAstar::Check_CloseList(const D3DXVECTOR2& vpos)
 {
 	int idx = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
 
 	//if( m_closelist.end() != m_closelist.find(idx) )
-		return false;
+	return false;
 
 
 	return true;
@@ -589,9 +535,9 @@ bool CAstar::Check_OpenList(const D3DXVECTOR2& idxpos , PATH_NODE* parentnode)
 	int idx = CMyMath::Pos_to_index( idxpos , m_unit_stepsize );
 
 	//if(m_idxopenlist.end() != m_idxopenlist.find(idx))
-		return false;
+	return false;
 
-		return true;
+	return true;
 }
 
 void CAstar::Release(void)
@@ -606,79 +552,79 @@ void CAstar::Release_unit_closelist(void)
 {
 	m_pathpool_idx = 0;
 	//if(!m_closelist.empty())
-		//m_closelist.clear();
+	//m_closelist.clear();
 }
 void CAstar::Release_unit_openlist(void)
 {
 	m_openlist->Release();
 
 	//if(!m_idxopenlist.empty())
-		//m_idxopenlist.clear();
+	//m_idxopenlist.clear();
 
 }
 
 void CAstar::Path_Render(void)
 {
 
-	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"tile8x8");
+	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"tile8x8");
 
-	//D3DXMATRIX	tempmat;
-	//D3DXMatrixIdentity(&tempmat);
+	D3DXMATRIX	tempmat;
+	D3DXMatrixIdentity(&tempmat);
 
-	////if(!m_unit_path.empty())
-	////{
-	////	for(size_t i = 0; i < m_unit_path.size(); ++i)
-	////	{
-	////		tempmat._41 = m_unit_path[i].x - CScrollMgr::m_fScrollX;
-	////		tempmat._42 = m_unit_path[i].y - CScrollMgr::m_fScrollY;
-
-	////		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-
-	////		if(0 == i)
-	////			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-	////		else if( i == m_unit_path.size() - 1)
-	////			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-	////		else
-	////			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	////	}
-
-	////	//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
-	////	//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
-	////	//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-	////	//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	////}
-
-	////if(!m_closelist.empty())
-	////{
-	////	boost::unordered_map<int , PATH_NODE*>::iterator iter = m_closelist.begin();
-	////	boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_closelist.end();
-
-	////	for( ; iter != iter_end; ++iter)
-	////	{
-	////		tempmat._41 = iter->second->vPos.x - CScrollMgr::m_fScrollX;
-	////		tempmat._42 = iter->second->vPos.y - CScrollMgr::m_fScrollY;
-
-	////		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-
-	////		CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,0));
-	////	}
-	////}
-
-	//PATH_NODE* pnode = NULL;
-	//int idx = 0;
-	//while(true)
+	//if(!m_unit_path.empty())
 	//{
-	//	pnode = m_openlist->Render(idx);
-	//	if(NULL == pnode)
-	//		break;
+	//	for(size_t i = 0; i < m_unit_path.size(); ++i)
+	//	{
+	//		tempmat._41 = m_unit_path[i].x - CScrollMgr::m_fScrollX;
+	//		tempmat._42 = m_unit_path[i].y - CScrollMgr::m_fScrollY;
 
-	//	++idx;
+	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
 
-	//	tempmat._41 = pnode->vPos.x - CScrollMgr::m_fScrollX;
-	//	tempmat._42 = pnode->vPos.y - CScrollMgr::m_fScrollY;
+	//		if(0 == i)
+	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
+	//		else if( i == m_unit_path.size() - 1)
+	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
+	//		else
+	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
+	//	}
 
-	//	CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-
-	//	CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,255,255));
+	//	//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
+	//	//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
+	//	//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+	//	//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
 	//}
+
+	//if(!m_closelist.empty())
+	//{
+	//	boost::unordered_map<int , PATH_NODE*>::iterator iter = m_closelist.begin();
+	//	boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_closelist.end();
+
+	//	for( ; iter != iter_end; ++iter)
+	//	{
+	//		tempmat._41 = iter->second->vPos.x - CScrollMgr::m_fScrollX;
+	//		tempmat._42 = iter->second->vPos.y - CScrollMgr::m_fScrollY;
+
+	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+
+	//		CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,0));
+	//	}
+	//}
+
+	PATH_NODE* pnode = NULL;
+	int idx = 0;
+	while(true)
+	{
+		pnode = m_openlist->Render(idx);
+		if(NULL == pnode)
+			break;
+
+		++idx;
+
+		tempmat._41 = pnode->vPos.x - CScrollMgr::m_fScrollX;
+		tempmat._42 = pnode->vPos.y - CScrollMgr::m_fScrollY;
+
+		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+
+		CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
 }

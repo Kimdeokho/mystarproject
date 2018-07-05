@@ -28,6 +28,10 @@ void CTurret_bullet::Initialize(void)
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_dirBulletAnim( m_matWorld , L"TURRET_BULLET" )));
 
+	m_vcurdir = m_vdest_pos - m_vPos;
+	m_trail_time = 0.15f;
+	m_accel = 10.f;
+	m_accel2 = 0.1f;
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -35,9 +39,7 @@ void CTurret_bullet::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-	m_trail_time = 0.15f;
-	m_accel = 10.f;
-	m_accel2 = 0.1f;
+
 }
 
 void CTurret_bullet::Update(void)
@@ -85,8 +87,9 @@ void CTurret_bullet::Update(void)
 
 	m_vcurdir = m_vdest_pos - m_vPos;
 	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
+	m_ftick_distance = GETTIME*m_accel*m_accel2;
 
-	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 2)
+	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
 			m_ptarget->SetDamage(20, DAMAGE_BOOM);
@@ -95,7 +98,7 @@ void CTurret_bullet::Update(void)
 		Dead();
 	}
 
-	m_vPos += m_vcurdir*GETTIME*m_accel*m_accel2;
+	m_vPos += m_vcurdir*m_ftick_distance;
 }
 
 void CTurret_bullet::Render(void)

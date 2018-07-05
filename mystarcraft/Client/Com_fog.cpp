@@ -26,6 +26,8 @@ void CCom_fog::Initialize(CObj* pobj)
 	memset(m_fogsearch , 0 , sizeof(m_fogsearch));
 
 	m_oldidx32 = -1;
+
+	m_Sightoff_List.reserve( (BACKBUFFER_SIZEX/SQ_TILESIZEX) * (BACKBUFFER_SIZEY/SQ_TILESIZEY)*2);
 }
 void CCom_fog::Update(void)
 {
@@ -38,17 +40,26 @@ void CCom_fog::Update(void)
 	{
 		if(!m_Sightoff_List.empty() )
 		{
-			//vector·Î ¹Ù²ã¾ßÇÒµí
-			list<int>::iterator iter = m_Sightoff_List.begin();
-			list<int>::iterator iter_end = m_Sightoff_List.end();
+			DWORD	fogsize = m_Sightoff_List.size();
 
-			for( ; iter != iter_end; ++iter)
+			for(DWORD i = 0; i < fogsize; ++i)
 			{
-				m_fogsearch[(*iter)] = false;
-				CTileManager::GetInstance()->SightOffRender(*iter);
+				m_fogsearch[ m_Sightoff_List[i] ] = false;
+				CTileManager::GetInstance()->SightOffRender(m_Sightoff_List[i]);
 			}
-
 			m_Sightoff_List.clear();
+
+			//vector·Î ¹Ù²ã¾ßÇÒµí
+			//list<int>::iterator iter = m_Sightoff_List.begin();
+			//list<int>::iterator iter_end = m_Sightoff_List.end();
+
+			//for( ; iter != iter_end; ++iter)
+			//{
+			//	m_fogsearch[(*iter)] = false;
+			//	CTileManager::GetInstance()->SightOffRender(*iter);
+			//}
+
+			//m_Sightoff_List.clear();
 			//printf("¾È°³ ²ô±â\n");
 		}
 		m_fogtime = 0.f;
@@ -70,16 +81,28 @@ void CCom_fog::Release(void)
 	m_pobj = NULL;
 	if(!m_Sightoff_List.empty())
 	{
-		list<int>::iterator iter = m_Sightoff_List.begin();
-		list<int>::iterator iter_end = m_Sightoff_List.end();
+		//list<int>::iterator iter = m_Sightoff_List.begin();
+		//list<int>::iterator iter_end = m_Sightoff_List.end();
 
-		for( ; iter != iter_end; ++iter)
+		//for( ; iter != iter_end; ++iter)
+		//{
+		//	m_fogsearch[(*iter)] = false;
+		//	CTileManager::GetInstance()->SightOffRender(*iter);
+		//}
+
+		//m_Sightoff_List.clear();
+
+		DWORD	fogsize = m_Sightoff_List.size();
+
+		for(DWORD i = 0; i < fogsize; ++i)
 		{
-			m_fogsearch[(*iter)] = false;
-			CTileManager::GetInstance()->SightOffRender(*iter);
+			m_fogsearch[ m_Sightoff_List[i] ] = false;
+			CTileManager::GetInstance()->SightOffRender(m_Sightoff_List[i]);
 		}
-
 		m_Sightoff_List.clear();
 	}
+
+	vector<int> temp;
+	temp.swap(m_Sightoff_List);
 }
 

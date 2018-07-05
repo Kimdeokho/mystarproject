@@ -81,6 +81,21 @@ HRESULT CDevice::InitDevice( void )
 		return E_FAIL;
 	}
 
+
+	//m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE,true);	    //alpha blending enabled
+	//m_pDevice->SetRenderState(D3DRS_SRCBLEND,D3DBLEND_SRCALPHA);	//source blend factor
+	//m_pDevice->SetRenderState(D3DRS_DESTBLEND,D3DBLEND_INVSRCALPHA);	//dest blend factor
+	//m_pDevice->SetTextureStageState(0,D3DTSS_ALPHAARG1,D3DTA_TEXTURE);	//alpha from texture
+
+	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE); 
+	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE); 
+	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+	//m_pDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
+
+	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE); 
+	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE); 
+	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+
 	return S_OK;
 }
 
@@ -126,7 +141,10 @@ void CDevice::Render_Begin( void )
 	//	, D3DCOLOR_XRGB(0,0,255)/*0xff0000ff*/, 1.f, 0);
 
 	m_pDevice->BeginScene();
-	m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
+
+
+	m_pSprite->Begin(D3DXSPRITE_ALPHABLEND );
+
 }
 
 void CDevice::Render_End( void )

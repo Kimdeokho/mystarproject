@@ -297,6 +297,7 @@ void CObjMgr::Destroy_Update(void)
 }
 void CObjMgr::Render(void)
 {
+
 	if(!m_rendersort[SORT_CORPSE].empty())
 	{
 		multimap<float,CObj*>::iterator iter = m_rendersort[SORT_CORPSE].begin();

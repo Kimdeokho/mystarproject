@@ -58,7 +58,7 @@ void CMouseMgr::Update(void)
 
 	if(NULL != GetFocus() )
 	{
-		if(false == CKeyMgr::GetInstance()->GetLbdraging())
+		if(false == CKeyMgr::GetInstance()->GetTurboKeyDown_Check(VK_LBUTTON))
 		{
 			RECT Clip;
 			GetClientRect(g_hWnd , &Clip);
@@ -108,7 +108,7 @@ void CMouseMgr::Init_clickpos(void)
 {
 	//클릭 한 순간의 위치를 저장한다
 	/*만든 이유, N마리의 유닛의 함수를 실행하는 과정에서 마우스의 위치를 필요로 할때
-	 일일히 GetcursorPos를 호출하면 안된다 이유는 비동기이기 때문 좀더 자세히 설명하자면
+	 일일히 GetcursorPos를 호출하면 안된다 이유는 비동기 때문인데 좀더 자세히 설명하자면
 	 1~10번 유닛의 함수를을 순차적으로 실행하는 과정에서 마우스의 위치를 조금만이라도 움직이면
 	 1번 유닛과 10번유닛이 서로 다른 마우스의 좌표를 가지는 상황이 나올 수 있다.
 	 따라서 이 함수는 클릭한 순간 좌표를 저장한 다음 같은 좌표를 다른 오브젝트에게 뿌려주기 위함이다*/

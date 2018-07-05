@@ -4,7 +4,7 @@
 class CUI_MiniUnitDisplay :
 	public CUI
 {
-	const D3DXVECTOR2& m_vpos;
+	const D3DXVECTOR2& m_vminipos;
 	D3DXVECTOR2			m_vweight;
 public:
 	virtual void Initialize(void);

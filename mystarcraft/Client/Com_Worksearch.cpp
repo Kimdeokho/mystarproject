@@ -6,6 +6,7 @@
 #include "Area_Mgr.h"
 #include "MyMath.h"
 #include "TimeMgr.h"
+#include "FontMgr.h"
 
 #include "Com_Weapon.h"
 #include "Com_Pathfind.h"
@@ -71,7 +72,7 @@ void CCom_Worksearch::Update(void)
 
 			if(OBJ_MINERAL == m_ptarget->GetOBJNAME())
 			{
-				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+				if(MyIntersectrect( &m_myrc , &(m_ptarget->GetMyRect()) ) )
 				{
 					//미네랄이면 미네랄을 이미 누가 점유하고있는가?
 					/*점유 하고 있다면 ... 다른 미네랄을 찾는다
@@ -114,35 +115,13 @@ void CCom_Worksearch::Update(void)
 							if(NULL != m_com_weapon)
 								((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
 						}
+						else
+							m_pobj->SetOrder(ORDER_RETURN_CARGO);
 					}
-
-					//const CObj* otherworkman = ((CMineral*)m_ptarget)->Getworkman();
-
-					//if( NULL != otherworkman &&
-					//	m_pobj != otherworkman )
-					//{
-					//		//다시 찾아~
-					//	CArea_Mgr::GetInstance()->Search_Mineral(m_pobj->Getcuridx(64),  255 , m_pobj , m_ptarget);
-					//	m_target_objid = m_ptarget->GetObjNumber();						
-					//}
-					//else
-					//{
-					//	if(false == ((CWorkman*)m_pobj)->ismineral_fragment())
-					//	{
-					//		((CWorkman*)m_pobj)->SetMineral_mark(m_ptarget);
-					//		((CMineral*)m_ptarget)->Setworkman(m_pobj);
-
-					//		m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
-					//		if(NULL != m_com_weapon)
-					//			((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
-
-					//		if(NULL != m_com_pathfind)
-					//		{
-					//			((CCom_Pathfind*)m_com_pathfind)->ClearPath();
-					//			((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
-					//		}
-					//	}
-					//}
+				}
+				else
+				{
+					CFontMgr::GetInstance()->Setbatch_Font(L"X%d" , 0 , m_pobj->GetPos().x ,m_pobj->GetPos().y );
 				}
 
 			}
@@ -205,7 +184,7 @@ void CCom_Worksearch::Update(void)
 			((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_core_center->GetObjNumber());
 			((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 
-			if(MyIntersectrect(&m_outrc , &m_myrc , &(m_core_center->GetMyRect()) ) )
+			if(MyIntersectrect(&m_myrc , &(m_core_center->GetMyRect()) ) )
 			{
 				//미네랄 or 가스 입수
 				((CWorkman*)m_pobj)->destroy_frag(); //여기서 자원이 추가된다

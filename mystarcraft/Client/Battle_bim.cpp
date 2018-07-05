@@ -25,7 +25,6 @@ void CBattle_bim::Initialize(void)
 	m_sortID = SORT_AIR_EFF;
 
 	m_vcurdir = m_vdest_pos - m_vPos;
-	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_LaserAnim(m_matWorld , L"BATTLE_BIM" , 2)));
 
@@ -34,6 +33,8 @@ void CBattle_bim::Initialize(void)
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
+
+	m_ftick_distance = GETTIME*1000;
 }
 
 void CBattle_bim::Update(void)
@@ -59,9 +60,9 @@ void CBattle_bim::Update(void)
 
 	D3DXVECTOR2 vdir = m_vdest_pos - m_vPos;	
 	D3DXVec2Normalize(&vdir , &vdir);
-	m_vPos += vdir*GETTIME*1300;
+	m_vPos += vdir*m_ftick_distance;
 
-	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < 8*8)
+	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
 			m_ptarget->SetDamage(25 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 3, DAMAGE_NOMAL);
