@@ -13,6 +13,7 @@
 #include "Area_Mgr.h"
 #include "LineMgr.h"
 #include "Session_Mgr.h"
+#include "RoomSession_Mgr.h"
 
 
 CMaingame::CMaingame(void)
@@ -27,8 +28,8 @@ CMaingame::~CMaingame(void)
 
 HRESULT CMaingame::Initialize(void)
 {
-	//AllocConsole();
-	//freopen( "CONOUT$",  "wt", stdout);
+//	AllocConsole();
+//	freopen( "CONOUT$",  "wt", stdout);
 
 	WSADATA WsaData;
 	WSAStartup(MAKEWORD(2, 2), &WsaData);	// 2.2 버전을 로드합니다.
@@ -51,6 +52,7 @@ HRESULT CMaingame::Initialize(void)
 
 	CSceneMgr::GetInstance()->SetScene(SCENE_LOGO);
 
+	srand(unsigned(10));
 	return S_OK;
 }
 
@@ -93,6 +95,7 @@ void CMaingame::Release(void)
 	CKeyMgr::DestroyInstance();
 	CArea_Mgr::DestroyInstance();
 	CLineMgr::DestroyInstance();
+	CRoomSession_Mgr::DestroyInstance();
 
 	//FreeConsole();
 }

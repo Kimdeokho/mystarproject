@@ -4,7 +4,7 @@
 #include "Cmd_btn.h"
 #include "Obj.h"
 
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 CUI_Cmd_info::CUI_Cmd_info(void)
 {
 }
@@ -102,7 +102,7 @@ void CUI_Cmd_info::T_Cmdbtn_B_buildsetting(void)
 	Create_Cmdbtn(1 , L"BTN_SUPPLY" , BTN_SUPPLY );
 	Create_Cmdbtn(2 , L"BTN_T_GAS" , BTN_T_GAS );
 
-	if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_COMMANDCENTER))
+	if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_COMMANDCENTER))
 	{
 		Create_Cmdbtn(3 , L"BTN_BARRACK" , BTN_BARRACK , true);
 		Create_Cmdbtn(4 , L"BTN_EB" , BTN_EB , true);		
@@ -113,7 +113,7 @@ void CUI_Cmd_info::T_Cmdbtn_B_buildsetting(void)
 		Create_Cmdbtn(4 , L"BTN_EB" , BTN_EB , false);		
 	}
 
-	if( 0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_BARRACK))
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_BARRACK))
 	{
 		Create_Cmdbtn(6 , L"BTN_ACADEMY" , BTN_ACADEMY);
 		Create_Cmdbtn(7 , L"BTN_BUNKER" , BTN_BUNKER);
@@ -124,7 +124,7 @@ void CUI_Cmd_info::T_Cmdbtn_B_buildsetting(void)
 		Create_Cmdbtn(7 , L"BTN_BUNKER" , BTN_BUNKER , false);
 	}
 
-	if( 0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_EB) )
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_EB) )
 	{
 		Create_Cmdbtn(5 , L"BTN_TURRET" , BTN_TURRET);
 	}
@@ -141,7 +141,7 @@ void CUI_Cmd_info::T_Cmdbtn_V_buildsetting(void)
 		((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
 	}
 
-	if( 0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_BARRACK) )
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_BARRACK) )
 	{
 		Create_Cmdbtn(0 , L"BTN_FACTORY" , BTN_FACTORY);
 	}
@@ -150,7 +150,7 @@ void CUI_Cmd_info::T_Cmdbtn_V_buildsetting(void)
 		Create_Cmdbtn(0 , L"BTN_FACTORY" , BTN_FACTORY , false);
 	}
 
-	if( 0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_FACTORY) )
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_FACTORY) )
 	{
 		Create_Cmdbtn(1 , L"BTN_STARPORT" , BTN_STARPORT);
 		Create_Cmdbtn(3 , L"BTN_ARMORY" , BTN_ARMORY);
@@ -161,7 +161,7 @@ void CUI_Cmd_info::T_Cmdbtn_V_buildsetting(void)
 		Create_Cmdbtn(3 , L"BTN_ARMORY" , BTN_ARMORY , false);
 	}
 
-	if( 0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_STARPORT) )
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_STARPORT) )
 	{
 		Create_Cmdbtn(2 , L"BTN_SIENCE" , BTN_SIENCE);
 	}

@@ -4,7 +4,9 @@
 #include "Scene_Stage.h"
 #include "Scene_Login.h"
 #include "Scene_Loby.h"
+#include "Scene_StagePre.h"
 #include "Scene_Room.h"
+#include "Scene_Test.h"
 
 IMPLEMENT_SINGLETON(CSceneMgr)
 
@@ -19,7 +21,9 @@ CSceneMgr::CSceneMgr(void)
 	m_pSceneObj[SCENE_STAGE] = new CScene_Stage;
 	m_pSceneObj[SCENE_LOGIN] = new CScene_Login;
 	m_pSceneObj[SCENE_LOBY] = new CScene_Loby;
+	m_pSceneObj[SCENE_STAGEPRE] = new CScene_StagePre;
 	m_pSceneObj[SCENE_ROOM] = new CScene_Room;
+	m_pSceneObj[SCENE_TEST] = new CScene_Test;
 }
 
 CSceneMgr::~CSceneMgr(void)

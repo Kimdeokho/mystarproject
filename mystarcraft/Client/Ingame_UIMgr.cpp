@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "Device.h"
 
 #include "TextureMgr.h"
@@ -23,15 +23,15 @@
 
 #include "UI_Cmd_info.h"
 
-IMPLEMENT_SINGLETON(CComanderMgr)
-CComanderMgr::CComanderMgr(void)
+IMPLEMENT_SINGLETON(CIngame_UIMgr)
+CIngame_UIMgr::CIngame_UIMgr(void)
 {
 	m_total_mineral = 0;
 	m_total_gas = 0;
 	
 }
 
-CComanderMgr::~CComanderMgr(void)
+CIngame_UIMgr::~CIngame_UIMgr(void)
 {
 	Safe_Delete(m_main_interface);
 	Safe_Delete(m_minimap);
@@ -52,12 +52,14 @@ CComanderMgr::~CComanderMgr(void)
 
 }
 
-void CComanderMgr::Initialize(RACE erace)
+void CIngame_UIMgr::Initialize(RACE erace)
 {
 	m_erace = erace;
 
 	if(TERRAN == m_erace)
 		m_main_interface = new CUI_MainInterface(L"terran_interface");
+	else if(ZERG == m_erace)
+		m_main_interface = new CUI_MainInterface(L"zerg_interface");
 
 	m_main_interface->Initialize();
 
@@ -92,7 +94,7 @@ void CComanderMgr::Initialize(RACE erace)
 	m_cmd_info->Initialize();
 }
 
-void CComanderMgr::Update(void)
+void CIngame_UIMgr::Update(void)
 {
 	m_minimap->Update();
 
@@ -105,7 +107,7 @@ void CComanderMgr::Update(void)
 	m_cmd_info->Update();
 }
 
-void CComanderMgr::Render(void)
+void CIngame_UIMgr::Render(void)
 {
 	if(!m_vec_preview.empty())
 	{
@@ -135,21 +137,21 @@ void CComanderMgr::Render(void)
 	
 }
 
-void CComanderMgr::SetMiniUnit_display(CUI* pui)
+void CIngame_UIMgr::SetMiniUnit_display(CUI* pui)
 {
 	((CMinimap*)m_minimap)->Setminiunit(pui);
 }
 
 
-void CComanderMgr::SetMinimapCamPos(const D3DXVECTOR2& vmousepos)
+void CIngame_UIMgr::SetMinimapCamPos(const D3DXVECTOR2& vmousepos)
 {
 	((CMinimap*)m_minimap)->SetMinimapCamPos(vmousepos);
 }
-void CComanderMgr::Minimappos_to_screen(D3DXVECTOR2& vmousepos)
+void CIngame_UIMgr::Minimappos_to_screen(D3DXVECTOR2& vmousepos)
 {
 	((CMinimap*)m_minimap)->Minimappos_to_screen(vmousepos);
 }
-bool	CComanderMgr::intersect_minimap_mousept(const D3DXVECTOR2& vmouse)
+bool	CIngame_UIMgr::intersect_minimap_mousept(const D3DXVECTOR2& vmouse)
 {
 
 	if( MyPtInrect(vmouse , &(m_minimap->GetMyRect())) )
@@ -157,43 +159,43 @@ bool	CComanderMgr::intersect_minimap_mousept(const D3DXVECTOR2& vmouse)
 
 	return false;
 }
-void CComanderMgr::SetMineral(const int& amount)
+void CIngame_UIMgr::SetMineral(const int& amount)
 {
 	m_total_mineral += amount;
 }
 
-void CComanderMgr::SetGas(const int& amount)
+void CIngame_UIMgr::SetGas(const int& amount)
 {
 	m_total_gas += amount;
 }
 
-void CComanderMgr::SetPreview(CUI* building_preview)
+void CIngame_UIMgr::SetPreview(CUI* building_preview)
 {
 	m_vec_preview.push_back(building_preview);
 }
-void CComanderMgr::ClearPreview(void)
+void CIngame_UIMgr::ClearPreview(void)
 {
 	m_vec_preview.clear();
 }
-void CComanderMgr::Update_Wireframe(CObj* pobj)
+void CIngame_UIMgr::Update_Wireframe(CObj* pobj)
 {
 	pobj->Update_Wireframe();
 }
 
-void CComanderMgr::T_BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt)
+void CIngame_UIMgr::T_BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt)
 {
 	m_terran_build[etech] += cnt;
 }
-int CComanderMgr::Get_T_BuildTech(TERRAN_BUILD_TECH etech )
+int CIngame_UIMgr::Get_T_BuildTech(TERRAN_BUILD_TECH etech )
 {
 	return m_terran_build[etech];
 }
-void CComanderMgr::Click_cmdbtn(const D3DXVECTOR2& vpt)
+void CIngame_UIMgr::Click_cmdbtn(const D3DXVECTOR2& vpt)
 {
 	((CUI_Cmd_info*)m_cmd_info)->Click_cmdbtn(vpt);
 }
 
-bool CComanderMgr::renewal_wireframe_ui(CObj* pobj , STATE state)
+bool CIngame_UIMgr::renewal_wireframe_ui(CObj* pobj , STATE state)
 {
 	if(m_pobj_adress != pobj ||
 		m_old_state != state)
@@ -224,15 +226,15 @@ bool CComanderMgr::renewal_wireframe_ui(CObj* pobj , STATE state)
 		return false;
 	}
 }
-void CComanderMgr::add_wireframe_ui(CUI* pui)
+void CIngame_UIMgr::add_wireframe_ui(CUI* pui)
 {
 	m_wireframe_ui_list.push_back(pui);
 }
-void CComanderMgr::SetProduction_info(const D3DXVECTOR2& vpos , const float& ratioX)
+void CIngame_UIMgr::SetProduction_info(const D3DXVECTOR2& vpos , const float& ratioX)
 {
 	((CProduction_bar*)m_production_bar)->SetProduction_info(vpos , ratioX);
 }
-void CComanderMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
+void CIngame_UIMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
 {
 	((CUI_Building_info*)m_building_info)->SetActive(true);
 	((CUI_Building_info*)m_building_info)->InitNumber();
@@ -247,20 +249,20 @@ void CComanderMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
 		++idx;
 	}
 }
-void CComanderMgr::set_boarding_infolist(multimap<int , BOARDING_INFO , greater<int> >& infolist , OBJID eid)
+void CIngame_UIMgr::set_boarding_infolist(multimap<int , BOARDING_INFO , greater<int> >& infolist , OBJID eid)
 {
 	((CUI_Boarding_info*)m_boarding_info)->set_boarding_infolist(infolist , eid);
 }
-UPG_INFO* CComanderMgr::GetUpginfo()
+UPG_INFO* CIngame_UIMgr::GetUpginfo()
 {
 	return m_upginfo;
 }
-const CUI* CComanderMgr::GetCmd_info(void)	
+const CUI* CIngame_UIMgr::GetCmd_info(void)	
 {
 	return m_cmd_info;
 }
 
-const D3DXVECTOR2& CComanderMgr::GetMainInterface_pos(void)
+const D3DXVECTOR2& CIngame_UIMgr::GetMainInterface_pos(void)
 {
 	return m_main_interface->GetPos();
 }

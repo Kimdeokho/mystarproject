@@ -28,7 +28,7 @@
 #include "Area_Mgr.h"
 #include "MyMath.h"
 
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "UI_Wireframe.h"
 #include "UI_Cmd_info.h"
@@ -305,7 +305,7 @@ void CMarine::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CMarine::Update_Cmdbtn(void)
 {
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
@@ -313,7 +313,7 @@ void CMarine::Update_Cmdbtn(void)
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 
-	if( 0 == CComanderMgr::GetInstance()->GetUpginfo()->upg_cnt )
+	if( 0 == CIngame_UIMgr::GetInstance()->GetUpginfo()->upg_cnt )
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, false);
 	else
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, true);
@@ -321,14 +321,14 @@ void CMarine::Update_Cmdbtn(void)
 
 void CMarine::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_MARINE" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Marine" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}

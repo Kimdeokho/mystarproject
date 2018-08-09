@@ -14,6 +14,7 @@ public:
 public:
 	void	SaveObj(HANDLE h);
 	void	LoadObj(HANDLE h);
+	void	Save_StartBaseCnt(HANDLE h);
 public:
 	void Render(void);
 	void MinimapRender(const float fratioX , const float fratioY);

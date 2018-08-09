@@ -51,7 +51,7 @@ private:
 	CConnectedUser			*mRootUser;
 
 	DWORD					mRemainGameTime;
-
+	USHORT					mLoadCnt;
 	//////////////////////////////////////////////////////////////////////////
 	// 게임관련 변수들
 	CConnectedUser			*mBallUser;
@@ -95,6 +95,7 @@ public:
 	inline DWORD			SetMapIndex(DWORD mapIndex){CThreadSync Sync;mMapIndex=mapIndex;return TRUE;}
 	inline USHORT			GetCurrentUserCount(VOID){CThreadSync Sync;return mCurrentUserCount;}
 	inline CConnectedUser*	GetRootUser(VOID){CThreadSync Sync;return mRootUser;}
+	inline VOID				SetLoadComplete(VOID){CThreadSync Sync; ++mLoadCnt;}
 
 	DWORD					GetTeam(CConnectedUser *player);
 

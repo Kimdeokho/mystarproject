@@ -18,7 +18,6 @@ private:
 	D3DXVECTOR2		m_vbuild_pos[4];
 	int				m_build_idx;
 
-	bool			m_moveto_building;
 public:
 	void	SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow ,MYRECT<float> vtx);
 public:
@@ -27,6 +26,8 @@ public:
 	virtual void Render(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+	virtual void Input_cmd(const int& nkey, bool* waitkey);
+	virtual void Input_cmd(const int& firstkey , const int& secondkey);
 	virtual void Create_Building(void);
 	virtual void Create_Building(CObj* pgas_resorce);
 	virtual void Release(void);

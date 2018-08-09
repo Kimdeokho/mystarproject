@@ -72,6 +72,9 @@ bool CUI_RCreateOK::UI_ptinrect(const D3DXVECTOR2 vpos)
 void CUI_RCreateOK::UI_Reaction()
 {
 	CLoby_UIMgr::GetInstance()->Create_Room();
+/*
+	CLoby_UIMgr::GetInstance()->Exit(LB_ROOM_CREATE);
+	CLoby_UIMgr::GetInstance()->Room_Popup(false);*/
 }
 
 void CUI_RCreateOK::Init_State(void)

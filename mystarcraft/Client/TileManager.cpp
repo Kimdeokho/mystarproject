@@ -9,6 +9,8 @@
 #include "FontMgr.h"
 #include "MyHeapSort.h"
 #include "UnitMgr.h"
+#include "Obj.h"
+#include "Area_Mgr.h"
 
 IMPLEMENT_SINGLETON(CTileManager)
 
@@ -112,34 +114,31 @@ void CTileManager::RenderTile(void)
 
 
 	/*타일 옵션 디버그 확인용*/
-	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
-	//int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
-	//int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
-	//int idx;
-	//for(int i = 0; i < CULLINGCNTY; ++i)
-	//{
-	//	for(int j = 0; j < CULLINGCNTX; ++j)
-	//	{
-	//		idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
-	//		if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
-	//			continue;
+/*
+	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
+	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
+	int idx;
+	for(int i = 0; i < CULLINGCNTY; ++i)
+	{
+		for(int j = 0; j < CULLINGCNTX; ++j)
+		{
+			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
+			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
+				continue;
 
-	//		m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
-	//		m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
+			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
 
-	//		if(MOVE_OK == m_sqTile[idx]->byOption)
-	//			continue;
+			if(MOVE_OK == m_sqTile[idx]->byOption)
+				continue;
 
-
-	//		m_pSprite->SetTransform(&m_matWorld);
-	//		m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
-	//			,D3DCOLOR_ARGB(255,0,0,0));
-	//	}
-	//}
-
-
-	//CreepAlgorithm();
-	//FogAlgorithm();
+			m_pSprite->SetTransform(&m_matWorld);
+			m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
+				,D3DCOLOR_ARGB(255,0,0,0));
+		}
+	}
+*/
 
 	RenderCreep();
 	//Flowfield_Render();
@@ -758,7 +757,10 @@ void CTileManager::LoadTileData(HANDLE hFile)
 {
 	DWORD dwbyte;
 	int mapsize = 0;
+	int	basecnt = 0;
 	int sortsize = -1;
+
+	ReadFile(hFile , &basecnt, sizeof(int), &dwbyte, NULL); //임시,
 
 	ReadFile(hFile , &mapsize, sizeof(int), &dwbyte, NULL);
 	m_mapsize = mapsize;
@@ -768,6 +770,15 @@ void CTileManager::LoadTileData(HANDLE hFile)
 	TILE* tempTile = NULL;
 	TERRAIN_INFO* tempterrain = NULL;
 
+
+	int idx64 = 0;
+	MYRECT<float> temprc;
+	MYRECT<float> tempvtx;
+	tempvtx.left = 16;
+	tempvtx.right = 16;
+	tempvtx.top = 16;
+	tempvtx.bottom = 16;
+
 	for(int i = 0; i < mapsize; ++i)
 	{
 		tempTile = new TILE();
@@ -775,6 +786,22 @@ void CTileManager::LoadTileData(HANDLE hFile)
 
 		m_sqTile[i] = tempTile;
 
+		if(MOVE_NONE == m_sqTile[i]->byOption)
+		{
+/*
+			idx64 = CMyMath::Pos_to_index(m_sqTile[i]->vPos , 64);
+			temprc.left = m_sqTile[i]->vPos.x - 16;
+			temprc.right = m_sqTile[i]->vPos.x + 16;
+			temprc.top = m_sqTile[i]->vPos.y - 16;
+			temprc.bottom = m_sqTile[i]->vPos.y + 16;
+
+			CObj* tempobj = new CObj;		
+			tempobj->SetPos(m_sqTile[i]->vPos);
+			tempobj->SetMyrect(temprc);
+			tempobj->SetVertex(tempvtx);
+			CArea_Mgr::GetInstance()->SetObj_Area64(idx64 , idx64 , tempobj);
+			CArea_Mgr::GetInstance()->setobstacle(tempobj);*/
+		}
 	}
 
 	for(int i = 0; i < mapsize; ++i)
@@ -911,6 +938,9 @@ void CTileManager::ReadyMiniMap(void)
 
 	CDevice::GetInstance()->Render_Begin();
 
+	float ratioX = BACKBUFFER_SIZEX / 4096.f;
+	float ratioY = BACKBUFFER_SIZEY / 4096.f;
+
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
 		for(int j = 0; j < SQ_TILECNTX; ++j)
@@ -919,13 +949,15 @@ void CTileManager::ReadyMiniMap(void)
 
 			idx = i * SQ_TILECNTX + j;
 
-			tempmat._11 = 0.2f;
-			tempmat._22 = 0.15f;
-			tempmat._41 = m_sqTile[idx]->vPos.x * 0.2f;
-			tempmat._42 = m_sqTile[idx]->vPos.y * 0.15f;
+			//tempmat._11 = 0.2f;
+			//tempmat._22 = 0.15f;
+			//tempmat._41 = m_sqTile[idx]->vPos.x * 0.2f;
+			//tempmat._42 = m_sqTile[idx]->vPos.y * 0.15f;
 
-
-
+			tempmat._11 = ratioX;
+			tempmat._22 = ratioY;
+			tempmat._41 = m_sqTile[idx]->vPos.x * ratioX;
+			tempmat._42 = m_sqTile[idx]->vPos.y * ratioY;
 
 			m_pSprite->SetTransform(&tempmat);
 
@@ -949,7 +981,7 @@ void CTileManager::ReadyMiniMap(void)
 					pTexture = (*m_HillTex[byGroup_ID])[byGroup_sequence]->pTexture;
 
 				m_pSprite->Draw(pTexture , NULL , &D3DXVECTOR3(16, 16 , 0) , NULL ,
-					m_TileColor);
+					m_TileColor); //백버퍼크기에 그려넣는 작업이다..
 				
 			}
 			//CDevice::GetInstance()->Render_End();

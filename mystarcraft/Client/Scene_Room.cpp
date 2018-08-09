@@ -31,8 +31,11 @@ HRESULT CScene_Room::Initialize(void)
 		m_pBackTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"SCENE" , L"LOBY_SCENE640")->pTexture;
 
 	CKeyMgr::GetInstance()->SetInput_Device(SCENE_ROOM);
+
+	//CRoomSession_Mgr::GetInstance()->Initialize();
 	CRoom_UIMgr::GetInstance()->Initialize();
-	CRoomSession_Mgr::GetInstance()->Initialize();
+	
+	
 
 	CTimeMgr::GetInstance()->InitTime();
 
@@ -62,5 +65,5 @@ void CScene_Room::Render(void)
 void CScene_Room::Release(void)
 {
 	CRoom_UIMgr::DestroyInstance();
-	CRoomSession_Mgr::DestroyInstance();
+	//CRoomSession_Mgr::DestroyInstance();
 }

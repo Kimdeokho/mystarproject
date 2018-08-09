@@ -1,10 +1,16 @@
 #pragma once
+#include "input_interface.h"
 
 #include "value.h"
-#include "Input_Interface.h"
 
-class CInput_Stage : public CInput_Interface
+class CMyCommandList;
+class CInput_Stage :
+	public CInput_Interface
 {
+	//t
+private:
+	CMyCommandList*		m_cmdlist; //공유가 아니라 복사해야한다..
+
 private:
 	D3DXVECTOR2	m_downpt;
 	D3DXVECTOR2 m_curpt;
@@ -15,8 +21,11 @@ private:
 
 	int			objcnt;
 public:
-	void Intput_turbokey_reaction(void);
+	CMyCommandList*		GetCmdList(void){ return m_cmdlist; }
+	void				ClearCmdList(void); 
+public:
 	void Intput_oncekey_reaction(void);
+	void Intput_turbokey_reaction(void);	
 	void Intput_keyup_reaction(void);
 	void Intput_dbclick_reaction(void);
 	void Intput_combine_reaction(void);

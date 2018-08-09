@@ -67,9 +67,9 @@ VOID CNetworkSession::ReliableUdpThreadCallback(VOID)
 		case WAIT_OBJECT_0:
 			return;
 
-		case WAIT_OBJECT_0 + 1:
+		case WAIT_OBJECT_0 + 1: //2
 NEXT_DATA:
-			// Write 일 경우 Pop을 해주고
+			// mReliableUdpThreadWakeUpEvent ,Write 일 경우 Pop을 해주고
 			if (mReliableWriteQueue.Pop(&Object, Data, DataLength, RemoteAddress, RemotePort))
 			{
 				// 데이터가 있을 경우
@@ -95,6 +95,14 @@ RETRY:
 			break;
 		}
 	}
+
+	//A호스트 , B호스트가 있다고하자
+	/*
+		A호스트 측에서 B호스트 측으로 패킷을 보낼경우
+		B호스트는 A호스트가 보낸 패킷을 Read하여 ACK9999를 보내게 되어잇다
+		이때 A호스트는 B호스트로부터 ACK9999를 받기전까지 다음 메세지를 보내지 않고 대기한다
+		ACK9999를 받게되면 다음메세지를 보낼 준비가 완료 된다.
+	*/
 }
 
 BOOL CNetworkSession::Begin(VOID)
@@ -686,6 +694,7 @@ BOOL CNetworkSession::ReadFromForEventSelect(LPSTR remoteAddress, USHORT &remote
 
 BOOL CNetworkSession::WriteTo(LPCSTR remoteAddress, USHORT remotePort, BYTE *data, DWORD dataLength)
 {
+	// 1
 	CThreadSync Sync;
 
 	if (!mSocket)
@@ -708,6 +717,7 @@ BOOL CNetworkSession::WriteTo(LPCSTR remoteAddress, USHORT remotePort, BYTE *dat
 
 BOOL CNetworkSession::WriteTo2(LPSTR remoteAddress, USHORT remotePort, BYTE *data, DWORD dataLength)
 {
+	//3
 	CThreadSync Sync;
 
 	if (!mSocket)

@@ -54,6 +54,12 @@ void CCom_TBuildingAnim::Update(void)
 
 void CCom_TBuildingAnim::Render(void)
 {
+	D3DCOLOR ecolor;
+	if(TEAM_1 == m_pobj->GetTeamNumber())
+		ecolor = D3DCOLOR_ARGB(255, 255, 0, 0);
+	else
+		ecolor = D3DCOLOR_ARGB(255, 255, 255, 255);
+
 	m_objshadow_mat = m_objmat;
 	if(AIR_IDLE == m_pobj->GetUnitinfo().state)
 	{
@@ -84,7 +90,7 @@ void CCom_TBuildingAnim::Render(void)
 
 	m_pSprite->SetTransform(&m_objmat);
 	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-		, NULL , D3DCOLOR_ARGB(255,255,255,255));
+		, NULL , ecolor);
 }
 
 void CCom_TBuildingAnim::Release(void)

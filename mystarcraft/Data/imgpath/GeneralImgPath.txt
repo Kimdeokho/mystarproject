@@ -1,7 +1,7 @@
 OBJECT|Resource|Gas|1|..\Texture\General\Resource\Gas\vespingas%d.png
-OBJECT|NONE|Mineral|1|..\Texture\General\Resource\Mineral\mineral%d.png
+OBJECT|Resource|Mineral|1|..\Texture\General\Resource\Mineral\mineral%d.png
 OBJECT|NONE|MINERAL_FRAG|1|..\Texture\General\Resource\Mineral_frag\mineral_frag%d.png
-OBJECT|Resource|T_GAS_FRAG|1|..\Texture\General\Resource\terran_gasfrag\t_gas_frag%d.png
+OBJECT|NONE|T_GAS_FRAG|1|..\Texture\General\Resource\terran_gasfrag\t_gas_frag%d.png
 OBJECT|Fog|Fog|3|..\Texture\General\Fog\fog%d.png
 OBJECT|Creep|Creep|20|..\Texture\General\Creep\creep%d.png
 EFFECT|GaussGun|GaussGun|15|..\Texture\General\Effect\gaussgun\gaussgun_eff%d.bmp

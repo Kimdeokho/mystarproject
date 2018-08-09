@@ -11,11 +11,12 @@
 #include "Com_TBuildingAnim.h"
 
 #include "UnitMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "LoopEff.h"
 #include "TimeMgr.h"
 
 #include "TileManager.h"
+#include "FontMgr.h"
 
 #include "SCV.h"
 CTerran_building::CTerran_building(void)
@@ -52,7 +53,7 @@ CTerran_building::CTerran_building(void)
 CTerran_building::~CTerran_building(void)
 {
 	Release();
-	CComanderMgr::GetInstance()->T_BuildTech_Update(m_ebuild_tech , -1);
+	CIngame_UIMgr::GetInstance()->T_BuildTech_Update(m_ebuild_tech , -1);
 }
 
 void CTerran_building::Initialize(void)
@@ -123,6 +124,7 @@ void CTerran_building::building_pos_Initialize(const int& col , const int& row)
 
 void CTerran_building::building_area_update(void)
 {
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
 
@@ -165,7 +167,7 @@ void CTerran_building::Release(void)
 	vector<int>().swap(m_areaidx_vec);
 	vector<int>().swap(m_old_areaidx_vec);
 
-	CComanderMgr::GetInstance()->ClearPreview();
+	CIngame_UIMgr::GetInstance()->ClearPreview();
 	Safe_Delete(m_main_preview);
 	Safe_Delete(m_sub_preview);
 
@@ -300,7 +302,7 @@ void CTerran_building::fire_eff_render(void)
 
 void CTerran_building::Build_Complete(void)
 {
-	CComanderMgr::GetInstance()->T_BuildTech_Update(m_ebuild_tech , 1);
+	CIngame_UIMgr::GetInstance()->T_BuildTech_Update(m_ebuild_tech , 1);
 }
 
 void CTerran_building::upginfo_update(const UPGRADE& eupg)

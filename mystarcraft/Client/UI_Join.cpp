@@ -86,10 +86,20 @@ bool CUI_Join::UI_ptinrect(const D3DXVECTOR2 vpos)
 void CUI_Join::UI_Reaction(void)
 {
 	//방 입장
-	if(CLoby_UIMgr::GetInstance()->GetRoomIdx() >= 0)
+	//if(CLoby_UIMgr::GetInstance()->GetRoomIdx() >= 0)
+	//{
+	//	CLoby_UIMgr::GetInstance()->Exit(LB_ROOM_JOIN);
+	//	CLoby_UIMgr::GetInstance()->Room_Popup(false);
+	//}
+
+	USHORT roomidx = CLoby_UIMgr::GetInstance()->GetRoomIdx();
+	if( roomidx >= 0)
 	{
-		CLoby_UIMgr::GetInstance()->Exit(LB_ROOM_JOIN);
-		CLoby_UIMgr::GetInstance()->Room_Popup(false);
+		//먼저 방장의 세션아이디를 알 수있는 패킷을 보낸다
+		//방장세션을 받으면 Exit플래그를 수행한다.
+		WRITE_TCP_PACKET(PT_ROOM_GET_MASTER_INFO
+			, WriteBuffer ,WRITE_PT_ROOM_GET_MASTER_INFO(WriteBuffer
+			,roomidx));
 	}
 }
 

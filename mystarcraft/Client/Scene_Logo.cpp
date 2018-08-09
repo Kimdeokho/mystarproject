@@ -36,7 +36,7 @@ HRESULT CScene_Logo::Initialize(void)
 void CScene_Logo::Update(void)
 {
 	//if(m_pLoding->GetLoadingComplete())
-		//CSceneMgr::GetInstance()->SetScene(SCENE_STAGE);
+	//	CSceneMgr::GetInstance()->SetScene(SCENE_TEST);
 
 	if(m_pLoding->GetLoadingComplete())
 		CSceneMgr::GetInstance()->SetScene(SCENE_LOGIN);

@@ -8,6 +8,7 @@ class CArea_Mgr
 	DECLARE_SINGLETON(CArea_Mgr)
 private:
 	list<CObj*>	m_Area64[64*64];
+	list<CObj*>	m_obstacle_list;
 	//list<CObj*>	m_Area256[16*16];
 	//list<CObj*>	m_Area512[8*8]; //공격할 대상 탐지
 
@@ -34,6 +35,7 @@ private:
 	UNITINFO	m_target_unitinfo;
 public:
 public:
+	void setobstacle(CObj* pobj);
 	bool OBB_Collision( CObj* pself ,const CObj* ptarget);
 	bool OBB_Collision(CObj* ptarget);
 	void SetObj_Area64(const int& curidx , const int& oldidx , CObj* pobj );
@@ -46,7 +48,7 @@ public:
 	void SelectCheck(const int& idx , const D3DXVECTOR2& vpos);
 	void DragCheck( const MYRECT<float>& rc);
 	bool Choice_unit(const int& idx , const D3DXVECTOR2& vpos);
-	void Choice_unit(const int& idx, const MYRECT<float>& rc);
+	bool Choice_unit(const int& idx, const MYRECT<float>& rc);
 	void Choice_building(const int& idx, const MYRECT<float>& rc);
 	
 	bool DummyCheck(const int& idx, const MYRECT<float>& rc);

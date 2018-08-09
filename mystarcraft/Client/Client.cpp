@@ -197,6 +197,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+	case WM_ACTIVATE:
+		wmId = LOWORD(wParam);
+		switch(wmId)
+		{
+		case WA_CLICKACTIVE: //클릭 활성화
+			SetFocus(g_hWnd);
+			break;
+		case WA_INACTIVE: //비활성화
+			SetFocus(NULL);
+			break;
+		case WA_ACTIVE : //클릭 이외의 방법으로 활성화
+			SetFocus(g_hWnd);
+			break;
+		}
+		break;
 	case WM_CREATE:		
 		break;
 	case WM_PAINT:

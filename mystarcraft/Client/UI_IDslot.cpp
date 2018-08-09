@@ -57,7 +57,7 @@ void CUI_IDslot::UI_Reaction(void)
 
 void CUI_IDslot::Release(void)
 {
-
+	lstrcpy(m_text , L"");
 }
 
 void CUI_IDslot::SetUser(const WCHAR* szid)

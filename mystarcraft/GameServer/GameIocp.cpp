@@ -366,12 +366,19 @@ VOID CGameIocp::OnIoRead(VOID *object, DWORD dataLength)
 				onPT_ROOM_ENTER(ConnectedUser , Packet);
 			else if(Protocol == PT_ROOMLIST_RENEWAL)
 				onPT_ROOMLIST_RENEWAL(ConnectedUser , Packet);
+			else if(Protocol == PT_ROOM_GET_MASTER_INFO)
+				onPT_ROOM_GET_MASTER_INFO(ConnectedUser , Packet);
 			// Room관련 패킷
 			else if(Protocol == PT_ROOM_LEAVE)
 				onPT_ROOM_LEAVE(ConnectedUser , Packet);
 			else if(Protocol == PT_ROOM_SENDCHAT)
 				onPT_ROOM_SENDCHAT(ConnectedUser , Packet);
-
+			else if(Protocol == PT_ROOM_TRIBE_CHANGE)
+				onPT_ROOM_TRIBE_CHANGE(ConnectedUser , Packet);
+			else if(Protocol == PT_ROOM_USER_RENEWAL)
+				onPT_ROOM_USER_RENEWAL(ConnectedUser , Packet);
+			else if(Protocol == PT_LOAD_COMPLETE)
+				onPT_LOAD_COMPLETE(ConnectedUser , Packet);
 
 //#ifdef _INCLUDE_DATABASE
 //			else if (Protocol == PT_CHANNEL_NICKNAME)				// PROTOCOL : PT_CHANNEL_NICKNAME

@@ -103,15 +103,18 @@ void CLoby_UIMgr::Update(void)
 				if(roomidx >= 0)
 				{
 					WRITE_TCP_PACKET(PT_ROOM_ENTER , WriteBuffer , WRITE_PT_ROOM_ENTER(WriteBuffer,
-						USHORT(roomidx) ) );
+						USHORT(roomidx) ) );					
+					
 					CSceneMgr::GetInstance()->SetScene(SCENE_ROOM);
-				}				
+					
+				}
 			}
 			else if(LB_ROOM_CREATE == m_flag)
 			{
+/*
 				const TCHAR* tsz = m_roompopup->GetRoomTitle();
 				WRITE_TCP_PACKET(PT_CREATE_ROOM , WriteBuffer , WRITE_PT_CREATE_ROOM(WriteBuffer
-					,tsz));
+					,tsz));*/
 
 				CSceneMgr::GetInstance()->SetScene(SCENE_ROOM);
 			}
@@ -216,8 +219,9 @@ void CLoby_UIMgr::Room_Popup(bool is_popup)
 }
 void CLoby_UIMgr::Create_Room(void)
 {
-	Exit(LB_ROOM_CREATE);
-	Room_Popup(false);
+	const TCHAR* tsz = m_roompopup->GetRoomTitle();
+	WRITE_TCP_PACKET(PT_CREATE_ROOM , WriteBuffer , WRITE_PT_CREATE_ROOM(WriteBuffer
+		,tsz));
 }
 
 void CLoby_UIMgr::Add_RoomTitle(const S_PT_ROOMLIST_RENEWAL_M& roominfo)

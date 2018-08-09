@@ -4,7 +4,7 @@
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
 #include "MouseMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Com_fog.h"
 #include "Com_VessleAnim.h"
@@ -70,7 +70,7 @@ void CVessle::Initialize(void)
 	m_vertex.top =  25;
 	m_vertex.bottom = 25;
 
-	m_com_targetsearch = new CCom_Airsearch();
+	//m_com_targetsearch = new CCom_Airsearch();
 	m_com_anim = new CCom_VessleAnim(m_matWorld);
 	m_com_pathfind = new CCom_AirPathfind(m_vPos);
 	m_com_usingskill = new CCom_UsingSkill();
@@ -79,7 +79,7 @@ void CVessle::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );
+	//m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_pathfind));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_USINGSKILL , m_com_usingskill));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
@@ -96,7 +96,7 @@ void CVessle::Initialize(void)
 	m_energybar_ui = new CUI_Energy_bar(this , 62 , m_vertex.bottom);
 	m_energybar_ui->Initialize();
 
-	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
+	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
 
 void CVessle::Update(void)
@@ -139,7 +139,7 @@ void CVessle::Inputkey_reaction(const int& nkey)
 		m_unitinfo.order = ORDER_MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
-		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
+		//((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
@@ -218,7 +218,7 @@ void CVessle::Dead(void)
 
 void CVessle::Update_Cmdbtn(void)
 {
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
@@ -233,14 +233,14 @@ void CVessle::Update_Cmdbtn(void)
 
 void CVessle::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_VESSEL" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Sience Vessel" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}

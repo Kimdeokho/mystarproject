@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Com_Transport.h"
 
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "Obj.h"
 
 #include "TimeMgr.h"
@@ -110,7 +110,7 @@ bool CCom_Transport::empty_boardinglist(void)
 }
 void CCom_Transport::boarding_wire_ui(void)
 {
-	CComanderMgr::GetInstance()->set_boarding_infolist(m_boarding_unit , m_pobj->GetOBJNAME());
+	CIngame_UIMgr::GetInstance()->set_boarding_infolist(m_boarding_unit , m_pobj->GetOBJNAME());
 }
 
 bool CCom_Transport::unit_landing(void)

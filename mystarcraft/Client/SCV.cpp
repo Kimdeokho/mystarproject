@@ -20,7 +20,7 @@
 #include "FontMgr.h"
 
 #include "MyMath.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "GeneraEff.h"
 
@@ -46,13 +46,16 @@
 #include "UI_Cmd_info.h"
 #include "UI_Energy_bar.h"
 #include "Skill_Defensive.h"
-CSCV::CSCV(void)
-{
-}
 CSCV::CSCV(const D3DXVECTOR2& vpos)
 {
 	m_vPos = vpos;
 }
+
+CSCV::CSCV(void)
+{
+
+}
+
 CSCV::~CSCV(void)
 {
 	Release();
@@ -63,7 +66,6 @@ void CSCV::Initialize(void)
 	CObj::unit_area_Initialize();
 	CWorkman::Initialize();
 
-	m_eteamnumber = TEAM_0;
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_SCV;
 	m_sortID = SORT_GROUND;
@@ -125,7 +127,6 @@ void CSCV::Initialize(void)
 	m_fterm_time = 0.f;
 	m_vnormal = D3DXVECTOR2(0 ,0 );
 	m_moveon = false;
-	m_moveto_building = false;
 	m_movetime = 0.f;
 	m_build_idx = 0;
 }
@@ -245,7 +246,7 @@ void CSCV::Update(void)
 	if(true == m_is_preview)
 	{
 		((CBuilding_Preview*)m_main_preview)->SetPos(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
-		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
+		CIngame_UIMgr::GetInstance()->SetPreview(m_main_preview);
 	}
 
 	m_select_ui->Update();
@@ -272,29 +273,28 @@ void CSCV::Render(void)
 
 void CSCV::Inputkey_reaction(const int& nkey)
 {
-	m_is_preview = false;
-
 	if(false == m_unitinfo.is_active)
 		return;
 
 	
 	if(VK_LBUTTON == nkey)
 	{
-		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
+		//if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
+		if(true == m_is_preview)
 		{
 			m_ecmd_state = CMD_BASIC;
 			D3DXVECTOR2  vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
 			CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 
-			m_is_preview = true;
+			//m_is_preview = true;
+			
 			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
 			{				
 				COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_TARGET_SEARCH);
 				iter->second = m_com_worksearch;
 				((CCom_Targetsearch*)m_com_worksearch)->SetTarget(ptarget);
 
-				m_moveto_building = true;
 				m_unitinfo.order = ORDER_MOVE_BUILD;
 				m_preview_info = ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo();
 
@@ -305,17 +305,17 @@ void CSCV::Inputkey_reaction(const int& nkey)
 				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 
 				((CBuilding_Preview*)m_main_preview)->SetActive(false);
+				m_is_preview = false;
 
 				//위치에 도착하면 건물생성
 			}			
 		}
 	}
+
+	m_is_preview = false;
 	if(VK_RBUTTON == nkey)
 	{
-		m_moveto_building = false;
-
-		((CBuilding_Preview*)m_main_preview)->SetActive(false);
-
+		/*((CBuilding_Preview*)m_main_preview)->SetActive(false);*/
 		m_unitinfo.state = MOVE;
 		m_unitinfo.order = ORDER_MOVE;
 
@@ -354,13 +354,6 @@ void CSCV::Inputkey_reaction(const int& nkey)
 		{
 			D3DXVECTOR2 goalpos;
 
-/*
-			if(NULL != ptarget)
-			{
-				m_bmagicbox = false;
-				goalpos = ptarget->GetPos(); //이거하면 가스우클릭할때 뻑난다..
-			}
-			else*/
 			goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
@@ -368,20 +361,6 @@ void CSCV::Inputkey_reaction(const int& nkey)
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
-	}
-
-	if('B' == nkey)
-	{
-		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
-		if( true == ((CUI_Cmd_info*)pui)->active_cmdbtn(6 , BTN_B_BUILD) )
-			m_ecmd_state = CMD_B_VIEW;			
-	}
-
-	if('V' == nkey)
-	{
-		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
-		if( true == ((CUI_Cmd_info*)pui)->active_cmdbtn(7 , BTN_V_BUILD) )
-			m_ecmd_state = CMD_V_VIEW;
 	}
 
 	if('W' == nkey)
@@ -403,7 +382,6 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 	if('A' == firstkey && VK_LBUTTON == secondkey)
 	{
-		m_moveto_building = false;
 		CWorkman::SetMineral_mark(NULL);
 
 		m_unitinfo.order = ORDER_MOVE_ATTACK;
@@ -424,8 +402,52 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 		CWorkman::SetMineral_mark(NULL);
 	}
+}
+void CSCV::Input_cmd(const int& nkey , bool* waitkey)
+{
+	m_is_preview = false;
 
-	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
+	if(false == m_unitinfo.is_active)
+		return;
+
+	if(VK_RBUTTON == nkey)
+	{
+		((CBuilding_Preview*)m_main_preview)->SetActive(false);
+	}
+
+	if(VK_LBUTTON == nkey)
+	{
+		//여기서 명령을 입력하고 
+	}
+
+	if('B' == nkey)
+	{
+		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+		if( true == ((CUI_Cmd_info*)pui)->active_cmdbtn(6 , BTN_B_BUILD) )
+		{
+			m_ecmd_state = CMD_B_VIEW;
+			waitkey[nkey] = true;
+		}
+	}
+
+	if('V' == nkey)
+	{
+		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+		if( true == ((CUI_Cmd_info*)pui)->active_cmdbtn(7 , BTN_V_BUILD) )
+		{
+			m_ecmd_state = CMD_V_VIEW;
+			waitkey[nkey] = true;
+		}
+	}
+
+	if(VK_ESCAPE == nkey)
+	{
+		m_ecmd_state = CMD_BASIC;
+	}
+}
+void CSCV::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size()) //이건 할필요 없을지도 모른다.
 	{
 		if('B' == firstkey && 'A' == secondkey)
 		{
@@ -490,9 +512,7 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			SetPreview_info(L"T_STARPORT" , T_STARPORT , 3 , 4 , vtx);
 		}
 	}
-
 }
-
 void CSCV::Release(void)
 {
 	CObj::area_release();
@@ -516,8 +536,6 @@ void CSCV::Dead(void)
 
 void CSCV::Create_Building(void)
 {
-
-
 	CObj* pobj = NULL;
 	if(CMyMath::Pos_to_index(m_vPos , 32) == 
 		CMyMath::Pos_to_index(m_preview_info.vcenter_pos , 32))
@@ -535,79 +553,64 @@ void CSCV::Create_Building(void)
 		if(T_COMMANDCENTER == m_preview_info.ebuild)
 		{
 			pobj = new CComandcenter;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMMAND);			
 		}
 		else if(T_FACTORY == m_preview_info.ebuild)
 		{
 			pobj = new CFactory;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_FACTORY);
 		}
 		else if(T_STARPORT == m_preview_info.ebuild)
 		{
 			pobj = new CStarport;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_STARPORT);
 		}
 		else if(T_SIENCE == m_preview_info.ebuild)
 		{
 			pobj = new CSience;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_SIENCE);
 		}
 		else if(T_BARRACK == m_preview_info.ebuild)
 		{
 			pobj = new CBarrack;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_BARRACK);
 		}
 		else if(T_EB == m_preview_info.ebuild)
 		{
 			pobj = new CEngineering;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_EB);
 		}
 		else if(T_SUPPLY == m_preview_info.ebuild)
 		{
 			pobj = new CSupplydepot;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_SUPPLY);
 		}
 		else if(T_ACADEMY == m_preview_info.ebuild)
 		{
 			pobj = new CAcademy;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_ACADEMY);
 		}
 		else if(T_ARMOURY == m_preview_info.ebuild)
 		{
 			pobj = new CArmoury;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_ARMOURY);
 		}
 		else if(T_BUNKER == m_preview_info.ebuild)
 		{
 			pobj = new CBunker;
-			pobj->SetPos(m_preview_info.vpos );
-			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_BUNKER);
 		}
 		else if(T_TURRET == m_preview_info.ebuild)
 		{
 			pobj = new CTurret;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_TURRET);
+		}
+
+		if(NULL != pobj)
+		{
+			pobj->SetTeamNumber(m_eteamnumber);
 			pobj->SetPos(m_preview_info.vpos );
 			pobj->Initialize();
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_TURRET);
 		}
 
 		m_charge_building = pobj;
@@ -622,9 +625,6 @@ void CSCV::Create_Building(CObj* pgas_resorce)
 {
 	CObj* pobj = NULL;
 
-	//if(CMyMath::Pos_to_index(m_vPos , 32) == 
-	//	CMyMath::Pos_to_index(m_preview_info.vcenter_pos , 32))
-	/*if(CMyMath::pos_distance(m_vPos , m_preview_info.vcenter_pos) < 64*64)*/
 	if(CMyMath::Pos_to_index(m_vPos , 32) == 
 		CMyMath::Pos_to_index(m_preview_info.vcenter_pos , 32))
 	{
@@ -656,7 +656,7 @@ void CSCV::Create_Building(CObj* pgas_resorce)
 }
 void CSCV::SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow ,MYRECT<float> vtx)
 {
-	//CComanderMgr::GetInstance()->Release_Cmdbtn(); 여기 수정해야함
+	//CIngame_UIMgr::GetInstance()->Release_Cmdbtn(); 여기 수정해야함
 	//자원이 모자르면 못보여줌
 	//버튼 비활성화면 못보여줌
 
@@ -716,7 +716,7 @@ void CSCV::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CSCV::Update_Cmdbtn(void)
 {	
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
 	if(CMD_BUILDING == m_ecmd_state)
 	{
@@ -748,14 +748,14 @@ void CSCV::Update_Cmdbtn(void)
 
 void CSCV::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{		
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_SCV" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran SCV" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}
@@ -776,7 +776,7 @@ void CSCV::Update_Wireframe(void)
 		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
 
 	WEAPON_INFO temp_info = ((CCom_Weapon*)m_com_weapon)->GetWeapon_info();
-	CFontMgr::GetInstance()->Setbatch_Font(L"공격력: %d" ,temp_info.damage ,
+	CFontMgr::GetInstance()->Setbatch_Font(L"공격력: %d + %d" ,temp_info.damage , 0,
 		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
 	CFontMgr::GetInstance()->Setbatch_Font(L"방어력:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_BIO_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));

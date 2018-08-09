@@ -62,3 +62,35 @@ VOID CGameIocp::onPT_ROOM_SENDCHAT(CConnectedUser* connectedUser, BYTE *packet)
 			Data.SESSION_ID));
 	}
 }
+VOID CGameIocp::onPT_ROOM_TRIBE_CHANGE(CConnectedUser* connectedUser, BYTE *packet)
+{
+	BYTE	WriteBuffer[MAX_BUFFER_LENGTH]	= {0,};
+	READ_PACKET(PT_ROOM_TRIBE_CHANGE);
+	CLog::WriteLog(_T("# Read packet : PT_ROOM_RACE_CHANGE %s , %d\n")
+		, Data.TRIBE , Data.SLOTIDX);
+
+	connectedUser->SetTribe(Data.TRIBE);
+	CRoom* proom = connectedUser->GetEnteredRoom();
+	if(NULL != proom)
+	{
+		proom->WriteAll(PT_ROOM_TRIBE_CHANGE_M , WriteBuffer , 
+			WRITE_PT_ROOM_TRIBE_CHANGE_M(WriteBuffer , 
+			Data.TRIBE,
+			Data.SLOTIDX));
+	}
+}
+VOID CGameIocp::onPT_LOAD_COMPLETE(CConnectedUser* connectedUser, BYTE *packet)
+{
+	BYTE	WriteBuffer[MAX_BUFFER_LENGTH]	= {0,};
+	READ_PACKET(PT_LOAD_COMPLETE);
+	CLog::WriteLog(_T("# Read packet : PT_LOAD_COMPLETE \n"));
+
+
+	CRoom* proom = connectedUser->GetEnteredRoom();
+	proom->SetLoadComplete();
+	if(TRUE == proom->IsAllLoadComplete())
+	{
+		proom->WriteAll(PT_LOAD_COMPLETE_SUCC_M , WriteBuffer , 
+			WRITE_PT_LOAD_COMPLETE_SUCC_M(WriteBuffer));
+	}
+}

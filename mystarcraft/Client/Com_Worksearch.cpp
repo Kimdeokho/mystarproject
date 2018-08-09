@@ -13,7 +13,7 @@
 #include "Mineral.h"
 #include "GasBuilding.h"
 #include "Workman.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Comandcenter.h"
 #include "T_gas.h"

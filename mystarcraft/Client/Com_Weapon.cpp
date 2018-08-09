@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Com_Weapon.h"
 
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 CCom_Weapon::CCom_Weapon(void)
 {
 	m_attack_delay = 0.f;
@@ -11,7 +11,7 @@ CCom_Weapon::CCom_Weapon(void)
 	m_bfire = false;
 	m_bair_fire = false;
 
-	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
+	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
 
 CCom_Weapon::~CCom_Weapon(void)

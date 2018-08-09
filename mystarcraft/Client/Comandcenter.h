@@ -28,5 +28,6 @@ public:
 	virtual void Update_Wireframe(void);
 public:
 	CComandcenter(void);
+	CComandcenter(const float fbuildtime);
 	~CComandcenter(void);
 };

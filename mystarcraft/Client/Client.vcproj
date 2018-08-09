@@ -177,10 +177,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Client.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -281,14 +277,6 @@
 				</File>
 				<File
 					RelativePath=".\Area_Mgr.h"
-					>
-				</File>
-				<File
-					RelativePath=".\ComanderMgr.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ComanderMgr.h"
 					>
 				</File>
 				<File
@@ -446,10 +434,26 @@
 						RelativePath=".\Input_Stage.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Input_Test.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Input_Test.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="UI"
 					>
+					<File
+						RelativePath=".\Ingame_UIMgr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Ingame_UIMgr.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Loby_UIMgr.cpp"
 						>
@@ -545,6 +549,22 @@
 				</File>
 				<File
 					RelativePath=".\Scene_Stage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_StagePre.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_StagePre.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Test.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene_Test.h"
 					>
 				</File>
 				<File
@@ -1728,6 +1748,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\UI_Combobox.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Combobox.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UI_Energy_bar.cpp"
 					>
 				</File>
@@ -1898,6 +1926,14 @@
 						RelativePath=".\UI_RoomInfo.h"
 						>
 					</File>
+					<File
+						RelativePath=".\UI_StartBtn.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\UI_StartBtn.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -1944,16 +1980,68 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Command"
+				>
+				<File
+					RelativePath=".\MyCmd_Attack.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_Attack.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_Move.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_Move.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCommand.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCommand.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCommandList.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCommandList.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TurnData.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TurnData.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="99.Default"
+				>
+				<File
+					RelativePath=".\Client.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Client.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="헤더 파일"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\Client.h"
-				>
-			</File>
 			<File
 				RelativePath=".\Resource.h"
 				>

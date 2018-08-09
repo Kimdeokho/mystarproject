@@ -6,7 +6,7 @@
 #include "ScrollMgr.h"
 #include "MyMath.h"
 #include "MouseMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "UnitMgr.h"
 IMPLEMENT_SINGLETON(CLineMgr)

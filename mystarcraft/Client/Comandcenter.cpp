@@ -19,7 +19,7 @@
 #include "FontMgr.h"
 #include "Corpse.h"
 #include "TimeMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Building_Preview.h"
 #include "MouseMgr.h"
@@ -39,6 +39,11 @@
 #include "UI_Energy_bar.h"
 CComandcenter::CComandcenter(void)
 {
+}
+
+CComandcenter::CComandcenter(const float fbuildtime)
+{
+	m_unitinfo.fbuildtime = fbuildtime;
 }
 
 CComandcenter::~CComandcenter(void)
@@ -63,7 +68,6 @@ void CComandcenter::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_COMMAND;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -75,7 +79,6 @@ void CComandcenter::Initialize(void)
 	m_unitinfo.fspeed = 28;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 512;
-	m_unitinfo.fbuildtime = 2.f;
 
 
 	m_production_tex = CTextureMgr::GetInstance()->GetStateTexture_vecset( L"COMMANDCENTER" , L"PRODUCTION");
@@ -103,7 +106,12 @@ void CComandcenter::Initialize(void)
 
 	m_is_take_off = false;
 
-	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
+	if(fabsf(m_unitinfo.fbuildtime) < FLT_EPSILON)
+	{
+		m_build_hp = (float)m_unitinfo.maxhp;
+	}
+	else
+		m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 
 
@@ -299,8 +307,8 @@ void CComandcenter::Update(void)
 		vpos.x -= m_irow*32;
 		vpos.y -= m_weight.y;
 		((CBuilding_Preview*)m_sub_preview)->SetPos(vpos);
-		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
-		CComanderMgr::GetInstance()->SetPreview(m_sub_preview);
+		CIngame_UIMgr::GetInstance()->SetPreview(m_main_preview);
+		CIngame_UIMgr::GetInstance()->SetPreview(m_sub_preview);
 	}
 
 	//vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
@@ -392,7 +400,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 	}
 	if(VK_LBUTTON == nkey)
 	{
-		const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
 
 		if(BTN_TAKE_OFF == eclicked_btn)
@@ -563,7 +571,7 @@ void CComandcenter::Dead(void)
 }
 void CComandcenter::Update_Cmdbtn(void)
 {
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state )
 	{			
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_SCV" , BTN_SCV , true);
@@ -571,12 +579,12 @@ void CComandcenter::Update_Cmdbtn(void)
 
 		if( NULL == m_partbuilding )
 		{
-			if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_ACADEMY))
+			if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_ACADEMY))
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , true);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , false);
 
-			if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_GHOST_ADDON))
+			if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_GHOST_ADDON))
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , true);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , false);
@@ -603,14 +611,14 @@ void CComandcenter::Update_Cmdbtn(void)
 
 void CComandcenter::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{		
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_COMMAND" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Command Center" ,interface_pos.x + 320 , interface_pos.y + 390 );
 
@@ -626,16 +634,16 @@ void CComandcenter::Update_Wireframe(void)
 				CFontMgr::GetInstance()->SetInfomation_font(L"Adding on.." , interface_pos.x + 330 , interface_pos.y + 415);
 
 				pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 				if(OBJ_COMSET == m_partbuilding->GetOBJNAME())
 				{
 					pui = new CUI_form(L"BTN_COMSET" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-					CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+					CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 				}
 				else if(OBJ_NC_PART == m_partbuilding->GetOBJNAME())
 				{
 					pui = new CUI_form(L"BTN_NC_PART" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-					CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+					CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 				}
 			}
 		}
@@ -659,7 +667,7 @@ void CComandcenter::Update_Wireframe(void)
 
 	if(BUILD == m_unitinfo.state)
 	{		
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
 
 	((CCom_Production_building*)m_com_production)->show_production_state();
@@ -671,7 +679,7 @@ void CComandcenter::Update_Wireframe(void)
 			m_unitinfo.state = ADDING_ON;
 			
 			UNITINFO temp = m_partbuilding->GetUnitinfo();
-			CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , temp.hp / (float)temp.maxhp );
+			CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , temp.hp / (float)temp.maxhp );
 		}
 	}
 	//-------------------------------------------

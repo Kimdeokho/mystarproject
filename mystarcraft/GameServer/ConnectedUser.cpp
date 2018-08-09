@@ -11,6 +11,7 @@
 CConnectedUser::CConnectedUser(VOID)
 {
 	ZeroMemory(mUserID, sizeof(mUserID));
+	ZeroMemory(mTribe, sizeof(mTribe));
 	ZeroMemory(mVirtualAddress, sizeof(mVirtualAddress));
 	ZeroMemory(mRealAddress, sizeof(mRealAddress));
 	ZeroMemory(mNickName, sizeof(mNickName));
@@ -52,6 +53,7 @@ BOOL CConnectedUser::Begin(VOID)
 	CThreadSync Sync;
 
 	ZeroMemory(mUserID, sizeof(mUserID));
+	ZeroMemory(mTribe, sizeof(mTribe));
 	ZeroMemory(mVirtualAddress, sizeof(mVirtualAddress));
 	ZeroMemory(mRealAddress, sizeof(mRealAddress));
 	ZeroMemory(mNickName, sizeof(mNickName));
@@ -91,6 +93,7 @@ BOOL CConnectedUser::End(VOID)
 	CThreadSync Sync;
 
 	ZeroMemory(mUserID, sizeof(mUserID));
+	ZeroMemory(mTribe, sizeof(mTribe));
 	ZeroMemory(mVirtualAddress, sizeof(mVirtualAddress));
 	ZeroMemory(mRealAddress, sizeof(mRealAddress));
 	ZeroMemory(mNickName, sizeof(mNickName));

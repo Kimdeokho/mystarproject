@@ -63,7 +63,7 @@ void CMineral::Initialize(void)
 void CMineral::Update(void)
 {
 
-	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , int(m_workman_list.size()) , m_vPos.x ,m_vPos.y );
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , int(m_workman_list.size()) , m_vPos.x ,m_vPos.y );
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_mineral_amount , m_vPos.x - CScrollMgr::m_fScrollX
 	//	,m_vPos.y - CScrollMgr::m_fScrollY);
 

@@ -10,9 +10,7 @@
 #include "UI_Select.h"
 
 #include "TileManager.h"
-
 #include "FontMgr.h"
-#include "ScrollMgr.h"
 
 CObj::CObj(void)
 {
@@ -22,6 +20,10 @@ CObj::CObj(void)
 
 	D3DXMatrixIdentity(&m_matWorld);
 	m_ePosKind = STATIC_OBJ;
+	m_sortID = SORT_END;
+	m_eteamnumber = TEAM_NONE;
+	m_ecategory = CATEGORY_RESOURCE;
+	m_eOBJ_NAME = OBJ_NONE;
 	
 
 	m_curidx32 = -1;
@@ -64,6 +66,7 @@ void CObj::unit_area_Initialize(void)
 }
 void CObj::area_update(void)
 {
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
 	if(false == m_unitinfo.is_active ||
 		ORDER_BUNKER_BOARDING == m_unitinfo.order)
 		return;
@@ -419,6 +422,16 @@ void CObj::SetWait(bool is_wait)
 void CObj::SetHP(const int& ihp)
 {
 	m_unitinfo.hp += ihp;
+}
+
+void CObj::SetMyrect(MYRECT<float> temprc)
+{
+	m_rect = temprc;
+}
+
+void CObj::SetVertex(MYRECT<float> tempvtx)
+{
+	m_vertex = tempvtx;
 }
 
 

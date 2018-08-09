@@ -55,7 +55,6 @@ protected:
 	UNITINFO			m_unitinfo;
 
 protected:
-	/*struct*/
 protected:
 	bool			m_bdestroy;
 	bool			m_bSelect;
@@ -66,6 +65,8 @@ public:
 	virtual void Render(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+	virtual void Input_cmd(const int& nkey , bool* waitkey){};
+	virtual void Input_cmd(const int& firstkey , const int& secondkey){};
 	virtual void Release(void);
 	virtual void Dead(void);
 	virtual void Update_Cmdbtn(void);
@@ -93,6 +94,8 @@ public:
 	void SetDestroy(bool bdestroy);
 
 	void SetHP(const int& ihp);
+	void SetMyrect(MYRECT<float> temprc);
+	void SetVertex(MYRECT<float> tempvtx);
 public:
 	const D3DXMATRIX&		GetMat(void);
 	int						GetObjNumber(void);

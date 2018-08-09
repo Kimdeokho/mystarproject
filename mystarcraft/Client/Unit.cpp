@@ -15,7 +15,7 @@
 #include "Device.h"
 
 #include "UI_MiniUnitDisplay.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "Mineral.h"
 #include "Skill.h"
 
@@ -26,7 +26,7 @@ CUnit::CUnit(void)
 	m_miniunit_display = NULL;
 	m_upg_info = NULL;
 	memset(m_upg_feedback , 0 , sizeof(m_upg_feedback));
-	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
+	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
 
 CUnit::~CUnit(void)
@@ -39,7 +39,7 @@ void CUnit::Initialize(void)
 {
 	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos);
 	m_miniunit_display->Initialize();
-	CComanderMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }
 
 void CUnit::Update(void)

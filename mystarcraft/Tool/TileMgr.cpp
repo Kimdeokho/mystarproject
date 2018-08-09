@@ -956,6 +956,10 @@ void CTileMgr::SaveTile(HANDLE h)
 }
 void CTileMgr::LoadTile(HANDLE h)
 {
+	DWORD dwbyte;
+	int basecnt = 0;
+	ReadFile(h , &basecnt, sizeof(int) , &dwbyte , NULL); //이건 일단 그냥 받아만 두자..
+
 	for(size_t i = 0; i < m_sqTile.size(); ++i)
 	{
 		list<TERRAIN_INFO*>::iterator iter = m_terrainInfo_List[i].begin();
@@ -965,14 +969,12 @@ void CTileMgr::LoadTile(HANDLE h)
 
 		m_terrainInfo_List[i].clear();
 	}
-	//m_terrainInfo_List.clear();
-	//vector<list<TERRAIN_INFO*>>().swap(m_terrainInfo_List);
 
-	DWORD dwbyte;
+	
 	int	mapsize = 0;
 	int sortsize = -1;
 
-	//맵사이즈 -> 타일옵션 -> 터레인정보 순으로 로드한다.
+	//베이스 갯수 , 맵사이즈 -> 타일옵션 -> 터레인정보 순으로 로드한다.
 
 	ReadFile(h , &mapsize, sizeof(int) , &dwbyte , NULL);
 	//m_sqTile.reserve(mapsize);

@@ -10,6 +10,7 @@ public:
 
 private:
 	WCHAR				mUserID[32];
+	WCHAR				mTribe[32];
 	
 	WCHAR				mVirtualAddress[32];
 	WCHAR				mRealAddress[32];
@@ -47,6 +48,7 @@ public:
 
 	BOOL				Reload(SOCKET listenSocket);
 
+	inline BOOL			SetTribe(const WCHAR* tribe) {CThreadSync Sync;if (!tribe)return FALSE;wcscpy_s(mTribe,tribe);return TRUE;}
 	inline BOOL			SetIsConnected(BOOL isConnected){CThreadSync Sync;mIsConnected = isConnected;return TRUE;}
 	inline BOOL			GetIsConnected(VOID){CThreadSync Sync;return mIsConnected;}
 	inline BOOL			SetIsReady(BOOL isReady){CThreadSync Sync;mIsReady = isReady;return TRUE;}
@@ -63,6 +65,7 @@ public:
 	inline USER_STATUS	GetStatus(VOID){CThreadSync Sync;return mStatus;}
 	inline BOOL			SetEnteredRoom(CRoom *room){CThreadSync Sync;mEnteredRoom = room;return TRUE;}
 	inline CRoom*		GetEnteredRoom(VOID){CThreadSync Sync;return mEnteredRoom;}
+	inline const WCHAR*	GetTribe(VOID){CThreadSync Sync;return mTribe;}
 	inline const WCHAR*	GetUserID(VOID){CThreadSync Sync;return mUserID;}
 	inline const WCHAR*	GetRealAddress(VOID){CThreadSync Sync;return mRealAddress;}
 	inline const WCHAR*	GetVirtualAddress(VOID){CThreadSync Sync;return mVirtualAddress;}

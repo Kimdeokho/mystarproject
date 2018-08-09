@@ -15,6 +15,8 @@
 #include "MyMath.h"
 #include "Nuclear_part.h"
 
+#include "SCv.h"
+#include "Comandcenter.h"
 IMPLEMENT_SINGLETON(CObjMgr)
 CObjMgr::CObjMgr(void)
 {
@@ -68,50 +70,6 @@ void CObjMgr::Update(void)
 			(*iter_eff)->Update();
 		}
 	}
-
-	//if(!m_SelectUI_List.empty())
-	//{
-	//	list<CUI*>::iterator iter_eff = m_SelectUI_List.begin();
-	//	list<CUI*>::iterator iter_eff_end = m_SelectUI_List.end();
-
-	//	for( ; iter_eff != iter_eff_end; ++iter_eff)
-	//	{
-	//		(*iter_eff)->Update();
-	//	}
-	//}
-
-	//if(!m_AirSelectUI_List.empty())
-	//{
-	//	list<CUI*>::iterator iter_eff = m_AirSelectUI_List.begin();
-	//	list<CUI*>::iterator iter_eff_end = m_AirSelectUI_List.end();
-
-	//	for( ; iter_eff != iter_eff_end; ++iter_eff)
-	//	{
-	//		(*iter_eff)->Update();
-	//	}
-	//}
-
-	//if(!m_energybar_list.empty())
-	//{
-	//	list<CUI*>::iterator iter_eff = m_energybar_list.begin();
-	//	list<CUI*>::iterator iter_eff_end = m_energybar_list.end();
-
-	//	for( ; iter_eff != iter_eff_end; ++iter_eff)
-	//	{
-	//		(*iter_eff)->Update();
-	//	}
-	//}
-
-	//if(!m_air_energybar_list.empty())
-	//{
-	//	list<CUI*>::iterator iter_eff = m_air_energybar_list.begin();
-	//	list<CUI*>::iterator iter_eff_end = m_air_energybar_list.end();
-
-	//	for( ; iter_eff != iter_eff_end; ++iter_eff)
-	//	{
-	//		(*iter_eff)->Update();
-	//	}
-	//}
 
 	Destroy_Update();
 }
@@ -217,83 +175,6 @@ void CObjMgr::Destroy_Update(void)
 			}
 		}
 	}
-
-
-	//if(!m_SelectUI_List.empty())
-	//{
-	//	list<CUI*>::iterator iter = m_SelectUI_List.begin();
-	//	list<CUI*>::iterator iter_end = m_SelectUI_List.end();
-
-	//	for( ; iter != iter_end; )
-	//	{
-	//		if(true == (*iter)->GetDestroy() )
-	//		{
-	//			Safe_Delete(*iter);
-	//			iter = m_SelectUI_List.erase(iter);
-	//			continue;
-	//		}
-	//		else
-	//		{
-	//			++iter;
-	//		}
-	//	}
-	//}
-
-	//if(!m_AirSelectUI_List.empty())
-	//{
-	//	list<CUI*>::iterator iter = m_AirSelectUI_List.begin();
-	//	list<CUI*>::iterator iter_end = m_AirSelectUI_List.end();
-
-	//	for( ; iter != iter_end; )
-	//	{
-	//		if(true == (*iter)->GetDestroy() )
-	//		{
-	//			Safe_Delete(*iter);
-	//			iter = m_AirSelectUI_List.erase(iter);
-	//			continue;
-	//		}
-	//		else
-	//		{
-	//			++iter;
-	//		}
-	//	}
-	//}
-
-	//if(!m_energybar_list.empty())
-	//{
-	//	list<CUI*>::iterator iter = m_energybar_list.begin();
-	//	list<CUI*>::iterator iter_end = m_energybar_list.end();
-
-	//	for( ; iter != iter_end; )
-	//	{
-	//		if(true == (*iter)->GetDestroy() )
-	//		{
-	//			Safe_Delete(*iter);
-	//			iter = m_energybar_list.erase(iter);
-	//			continue;
-	//		}
-	//		else
-	//			++iter;
-	//	}
-	//}
-
-	//if(!m_air_energybar_list.empty())
-	//{
-	//	list<CUI*>::iterator iter = m_air_energybar_list.begin();
-	//	list<CUI*>::iterator iter_end = m_air_energybar_list.end();
-
-	//	for( ; iter != iter_end; )
-	//	{
-	//		if(true == (*iter)->GetDestroy() )
-	//		{
-	//			Safe_Delete(*iter);
-	//			iter = m_air_energybar_list.erase(iter);
-	//			continue;
-	//		}
-	//		else
-	//			++iter;
-	//	}
-	//}
 }
 void CObjMgr::Render(void)
 {
@@ -376,15 +257,6 @@ void CObjMgr::Render(void)
 		}
 		m_aireff_renderlist.clear();
 	}
-
-	//if(!m_air_energybar_list.empty())
-	//{
-	//	list<CUI*>::iterator iter = m_air_energybar_list.begin();
-	//	list<CUI*>::iterator iter_end = m_air_energybar_list.end();
-
-	//	for( ; iter != iter_end; ++iter)
-	//		(*iter)->Render();
-	//}
 }
 void CObjMgr::LoadObj(HANDLE hFile)
 {
@@ -393,6 +265,7 @@ void CObjMgr::LoadObj(HANDLE hFile)
 	WCHAR		objname[MIN_STR] = L"";
 	CObj*		pObj = NULL;
 
+	vector<D3DXVECTOR2>	base_list;
 	while(TRUE)
 	{
 		ReadFile(hFile , &vPos , sizeof(D3DXVECTOR2) , &dwbyte , NULL);
@@ -401,7 +274,9 @@ void CObjMgr::LoadObj(HANDLE hFile)
 			break;
 
 		if(!wcscmp(objname ,L"Startbase"))
-			continue;
+		{
+			base_list.push_back(vPos);
+		}
 
 		if(!wcscmp(objname ,L"Mineral"))
 		{
@@ -418,13 +293,8 @@ void CObjMgr::LoadObj(HANDLE hFile)
 			pObj->Initialize();
 			AddObject(pObj , OBJ_GAS);
 		}
-		//else if(!wcscmp(objname ,L"Startbase"))
-		//{
-		//	pObj = new CStartBase;
-		//	AddObject(pObj , OBJ_STARTBASE);
-		//}
-
 	}
+
 }
 bool CObjMgr::obj_place(CObj* pobj)
 {
@@ -470,20 +340,6 @@ void CObjMgr::AddObject(CObj* pObj , OBJID eid)
 		}
 	}
 }
-//void CObjMgr::AddSelect_UI(CUI* pui , MOVE_TYPE emovetype)
-//{
-//	if(MOVE_GROUND == emovetype)
-//		m_SelectUI_List.push_back(pui);
-//	else if(MOVE_AIR == emovetype)
-//		m_AirSelectUI_List.push_back(pui);
-//}
-//void CObjMgr::AddEnergybar_UI(CUI* pui , MOVE_TYPE emovetype)
-//{
-//	if(MOVE_GROUND == emovetype)
-//		m_energybar_list.push_back(pui);
-//	else if(MOVE_AIR == emovetype)
-//		m_air_energybar_list.push_back(pui);
-//}
 void CObjMgr::AddEffect(CObj* peff)
 {
 	m_Effect_List.push_back(peff);
@@ -524,40 +380,6 @@ void CObjMgr::Release()
 		m_rendersort[i].clear();
 	}
 
-	//list<CUI*>::iterator iter_UI = m_SelectUI_List.begin();
-	//list<CUI*>::iterator iterUI_end = m_SelectUI_List.end();
-
-	//for( ; iter_UI != iterUI_end; ++iter_UI)
-	//	Safe_Delete((*iter_UI));
-
-	//m_SelectUI_List.clear();
-
-
-	//iter_UI = m_AirSelectUI_List.begin();
-	//iterUI_end = m_AirSelectUI_List.end();
-
-	//for( ; iter_UI != iterUI_end; ++iter_UI)
-	//	Safe_Delete((*iter_UI));
-
-	//m_AirSelectUI_List.clear();
-
-	//iter_UI = m_energybar_list.begin();
-	//iterUI_end = m_energybar_list.end();
-
-	//for( ; iter_UI != iterUI_end; ++iter_UI)
-	//	Safe_Delete((*iter_UI));
-
-	//m_energybar_list.clear();
-
-	//iter_UI = m_air_energybar_list.begin();
-	//iterUI_end = m_air_energybar_list.end();
-
-	//for( ; iter_UI != iterUI_end; ++iter_UI)
-	//	Safe_Delete((*iter_UI));
-
-	//m_air_energybar_list.clear();
-
-
 	list<CObj*>::iterator iter_eff = m_Effect_List.begin();
 	list<CObj*>::iterator iter_eff_end = m_Effect_List.end();
 
@@ -577,7 +399,7 @@ void CObjMgr::AddCorpse(CObj* pObj)
 
 CObj* CObjMgr::GetCoreBuilding(CObj* pself)
 {
-	float fminval = 10000000;
+	float fminval = FLT_MAX;
 	CObj* pbuilding = NULL;
 
 	if(!m_ObjList[OBJ_COMMAND].empty())
@@ -622,5 +444,45 @@ void CObjMgr::Nuclear_launch(void)
 			}
 		}
 	}
+}
+
+void CObjMgr::Place_Terran(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
+{
+	CObj* pobj = new CComandcenter(0.f);
+	vpos.x -= 48;
+	vpos.y -= 32;
+	pobj->SetPos(vpos);
+	pobj->SetTeamNumber(eteam);
+	pobj->Initialize();
+	AddObject(pobj , OBJ_COMMAND);
+
+	MYRECT<float> build_vtx = pobj->GetVertex();
+	MYRECT<float> unit_vtx;
+	D3DXVECTOR2 collocate_pos;
+	CObj*	pscv;
+
+	vpos = pobj->GetPos();
+	for(int i = 0; i < 4; ++i)
+	{		
+		pscv = new CSCV;
+		collocate_pos.x = vpos.x - build_vtx.left +	23.f*i;
+		collocate_pos.y = vpos.y + build_vtx.bottom + 11.5f;
+
+		pscv->SetPos(collocate_pos);		
+		pscv->SetTeamNumber(eteam);
+		pscv->Initialize();
+		AddObject(pscv , OBJ_SCV);
+		//pscv->Initialize();
+	}
+}
+
+void CObjMgr::Place_Zerg(D3DXVECTOR2 vpos)
+{
+
+}
+
+CObj* CObjMgr::GetObj(const USHORT objnum)
+{
+	return m_obj_alive[objnum];
 }
 

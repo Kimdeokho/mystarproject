@@ -10,6 +10,7 @@
 
 #include "Loby_UIMgr.h"
 #include "Session_Mgr.h"
+#include "RoomSession_Mgr.h"
 
 CScene_Loby::CScene_Loby(void)
 {
@@ -36,6 +37,8 @@ HRESULT CScene_Loby::Initialize(void)
 
 	WRITE_TCP_PACKET(PT_ROOMLIST_RENEWAL , WriteBuffer
 		, WRITE_PT_ROOMLIST_RENEWAL(WriteBuffer));
+
+	CRoomSession_Mgr::GetInstance()->Release_sessioninfo();
 	return S_OK;
 }
 

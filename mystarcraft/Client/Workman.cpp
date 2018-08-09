@@ -2,7 +2,7 @@
 #include "Workman.h"
 
 #include "UI_MiniUnitDisplay.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "Mineral.h"
 
 #include "Building_Preview.h"
@@ -25,12 +25,12 @@ CWorkman::CWorkman(void)
 
 	m_ecmd_state = CMD_BASIC;
 
-	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
+	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
 
 CWorkman::~CWorkman(void)
 {
-	CComanderMgr::GetInstance()->ClearPreview();
+	CIngame_UIMgr::GetInstance()->ClearPreview();
 	Safe_Delete(m_main_preview);
 	Release();
 }
@@ -39,7 +39,7 @@ void CWorkman::Initialize(void)
 {
 	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos);
 	m_miniunit_display->Initialize();
-	CComanderMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }
 
 void CWorkman::Update(void)
@@ -131,7 +131,7 @@ void CWorkman::destroy_frag(void)
 		m_pmineral_fragment->SetDestroy(true);
 		m_pmineral_fragment = NULL;
 
-		CComanderMgr::GetInstance()->SetMineral(8);
+		CIngame_UIMgr::GetInstance()->SetMineral(8);
 		//여기에 미네랄 자원 ++
 	}
 
@@ -140,7 +140,7 @@ void CWorkman::destroy_frag(void)
 		m_pgas_fragment->SetDestroy(true);
 		m_pgas_fragment = NULL;
 
-		CComanderMgr::GetInstance()->SetGas(8);
+		CIngame_UIMgr::GetInstance()->SetGas(8);
 		//여기에 가스 자원 ++
 	}
 }

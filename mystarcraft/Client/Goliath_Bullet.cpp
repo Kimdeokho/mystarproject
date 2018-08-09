@@ -8,7 +8,7 @@
 #include "GeneraEff.h"
 #include "MyMath.h"
 
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "ScrollMgr.h"
 CGoliath_Bullet::CGoliath_Bullet(const int& target_id ,const D3DXVECTOR2& vdesetpos , DWORD dir)
 {
@@ -67,7 +67,7 @@ void CGoliath_Bullet::Update(void)
 	if(m_trail_time > 0.15f)
 	{
 		m_trail_time = 0.f;
-		UPG_INFO* temp_info = CComanderMgr::GetInstance()->GetUpginfo();
+		UPG_INFO* temp_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 
 		CObj* peff = NULL;
 		//if(temp_info[UPG_T_VFC3].upg_cnt >= 1)

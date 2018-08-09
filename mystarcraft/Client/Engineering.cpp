@@ -19,7 +19,7 @@
 #include "FontMgr.h"
 #include "Corpse.h"
 #include "TimeMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Building_Preview.h"
 #include "MouseMgr.h"
@@ -92,7 +92,7 @@ void CEngineering::Initialize(void)
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
 
-	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
+	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
 
 void CEngineering::Update(void)
@@ -187,8 +187,8 @@ void CEngineering::Update(void)
 		vpos.x -= m_irow*32;
 		vpos.y -= m_weight.y;
 		((CBuilding_Preview*)m_sub_preview)->SetPos(vpos);
-		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
-		CComanderMgr::GetInstance()->SetPreview(m_sub_preview);
+		CIngame_UIMgr::GetInstance()->SetPreview(m_main_preview);
+		CIngame_UIMgr::GetInstance()->SetPreview(m_sub_preview);
 	}
 
 	CTerran_building::fire_eff_update();
@@ -327,7 +327,7 @@ void CEngineering::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_BIO_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_WEAPON].upg_cnt &&
-				CComanderMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -346,7 +346,7 @@ void CEngineering::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_BIO_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_ARMOR].upg_cnt &&
-				CComanderMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -366,14 +366,14 @@ void CEngineering::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 void CEngineering::Update_Cmdbtn(void)
 {
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
 	if(IDLE == m_unitinfo.state)
 	{
 		if( false == m_upg_info[UPG_T_BIO_WEAPON].proceeding && m_upg_info[UPG_T_BIO_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_WEAPON].upg_cnt &&
-				CComanderMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BEW" , BTN_T_BEW , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BEW" , BTN_T_BEW , true);
@@ -381,7 +381,7 @@ void CEngineering::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_BIO_ARMOR].proceeding && m_upg_info[UPG_T_BIO_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_ARMOR].upg_cnt &&
-				CComanderMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_BEA" , BTN_T_BEA , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_BEA" , BTN_T_BEA , true);
@@ -402,14 +402,14 @@ void CEngineering::Update_Cmdbtn(void)
 
 void CEngineering::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{		
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_ENGINEERING" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Engineering" ,interface_pos.x + 320 , interface_pos.y + 390 );
 
@@ -422,19 +422,19 @@ void CEngineering::Update_Wireframe(void)
 			CFontMgr::GetInstance()->SetInfomation_font(L"Upgrading" , interface_pos.x + 330 , interface_pos.y + 415);
 
 			pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-			CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+			CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 			if(true == m_upg_info[UPG_T_BIO_WEAPON].proceeding && 
 				m_upg_info[UPG_T_BIO_WEAPON].obj_num == m_obj_id)
 			{
 				pui = new CUI_form(L"BTN_T_BEW" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 			}
 			else if(true == m_upg_info[UPG_T_BIO_ARMOR].proceeding && 
 				m_upg_info[UPG_T_BIO_ARMOR].obj_num == m_obj_id)
 			{
 				pui = new CUI_form(L"BTN_T_BEA" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 			}
 		}
 	}
@@ -456,12 +456,12 @@ void CEngineering::Update_Wireframe(void)
 		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
 
 	if(BUILD == m_unitinfo.state)		
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 
 
 	if(true == m_upg_info[UPG_T_BIO_WEAPON].proceeding && m_upg_info[UPG_T_BIO_WEAPON].obj_num == m_obj_id)
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BIO_WEAPON].curtime / m_upg_info[UPG_T_BIO_WEAPON].maxtime );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BIO_WEAPON].curtime / m_upg_info[UPG_T_BIO_WEAPON].maxtime );
 	else if(true == m_upg_info[UPG_T_BIO_ARMOR].proceeding && m_upg_info[UPG_T_BIO_ARMOR].obj_num == m_obj_id)
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BIO_ARMOR].curtime / m_upg_info[UPG_T_BIO_ARMOR].maxtime );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BIO_ARMOR].curtime / m_upg_info[UPG_T_BIO_ARMOR].maxtime );
 	//-------------------------------------------
 }

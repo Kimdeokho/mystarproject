@@ -4,7 +4,7 @@
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
 #include "MouseMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Com_fog.h"
 #include "Com_Airsearch.h"
@@ -94,7 +94,7 @@ void CWraith::Initialize(void)
 	m_energybar_ui = new CUI_Energy_bar(this , 32 , m_vertex.bottom*2);
 	m_energybar_ui->Initialize();
 
-	m_upg_info = CComanderMgr::GetInstance()->GetUpginfo();
+	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
 
 void CWraith::Update(void)
@@ -222,7 +222,7 @@ void CWraith::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CWraith::Update_Cmdbtn(void)
 {
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
 	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
@@ -232,14 +232,14 @@ void CWraith::Update_Cmdbtn(void)
 }
 void CWraith::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_WRAITH" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Wraith" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}

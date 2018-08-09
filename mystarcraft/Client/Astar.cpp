@@ -230,14 +230,16 @@ void CAstar::Make_UnitNode( PATH_NODE* parent_node ,const D3DXVECTOR2& vpos , co
 	pnewnode->vPos = vpos;	
 
 	
-	//pnewnode->X = parent_node->X + g_distance*(1.f - fabsf(fdot));
-	float fdot = D3DXVec2Dot(&m_destdir , &(pnewnode->vPos - parent_node->vPos));
+	D3DXVECTOR2 vtemp;
+	D3DXVec2Normalize(&vtemp , &(pnewnode->vPos - parent_node->vPos));
+	float fdot = D3DXVec2Dot(&m_destdir , &vtemp);
 	if( fdot >= 0.1f) //0보다 크다면 90도보다 작다
 		pnewnode->X = parent_node->X + g_distance*fdot;
 	else
 		pnewnode->X = parent_node->X + g_distance*fdot/2;
 
-	pnewnode->G = parent_node->G + g_distance*g_distance;
+	//pnewnode->G = parent_node->G + g_distance*g_distance;
+	pnewnode->G = parent_node->G + CMyMath::pos_distance(pnewnode->vPos , parent_node->vPos);
 	pnewnode->H = CMyMath::pos_distance(vpos , m_vGoal_pos);
 
 	//int idx1 , idx2;
@@ -451,13 +453,8 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			{
 				if( m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , temprc_center , tempv_center , m_pObj , m_ptarget , m_unit_stepsize) )
 				{
-					//if(CENTER == i)
-					//{
-						//if((int)CMyMath::pos_distance(m_eight_vpos[i] , tempv_center) > 2*2)
-						//Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
-					//}
-					//else
-						Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
+					//조정된 위치가 장애물일경우 노드를 만들지않는다
+					Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
 				}
 				else
 				{

@@ -7,7 +7,7 @@
 #include "TileManager.h"
 #include "TimeMgr.h"
 #include "ObjMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Com_Pathfind.h"
 #include "Com_AirPathfind.h"
@@ -23,6 +23,7 @@
 #include "Wraith.h"
 #include "BattleCruiser.h"
 #include "Dropship.h"
+#include "Ghost.h"
 
 CCom_Production_building::CCom_Production_building(const D3DXVECTOR2& vpos , const D3DXVECTOR2& vweight , const int& icol , const int& irow)
 :m_vPos(vpos) , m_weight(vweight) , m_irow(irow) , m_icol(icol)
@@ -48,6 +49,7 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 {
 	MYRECT<float>	collocate_rc;
 	MYRECT<float>	vtx = pobj->GetVertex();
+	MYRECT<float>	building_vtx = m_pobj->GetVertex();
 
 	int stepsize = 8;
 	int loopcnt = 0;
@@ -62,25 +64,42 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 	bool bescape = false;
 	int idx32 = 0;
 
+	
 	while(!bescape)
 	{				
 		collocate_pos[0].x = m_vPos.x - m_weight.x - loopcnt*32; //밑줄 오른쪽방향
-		collocate_pos[0].y = m_vPos.y + m_weight.y + 32 + loopcnt*32;
+		collocate_pos[0].y = m_vPos.y + building_vtx.bottom + vtx.top + loopcnt*32;
 
-		collocate_pos[1].x = m_vPos.x + m_weight.x + 32 + loopcnt*32; //오른줄 위쪽방향
-		collocate_pos[1].y = m_vPos.y + m_weight.y + 32 + loopcnt*32;
+		collocate_pos[1].x = m_vPos.x + building_vtx.right + vtx.left + loopcnt*32; //오른줄 위쪽방향
+		collocate_pos[1].y = m_vPos.y + m_weight.y + loopcnt*32;
 
 		collocate_pos[2].x = m_vPos.x + m_weight.x + loopcnt*32; //윗줄 왼쪽방향
-		collocate_pos[2].y = m_vPos.y - m_weight.y - 32 - loopcnt*32;
+		collocate_pos[2].y = m_vPos.y - building_vtx.top - vtx.bottom - loopcnt*32;
 
-		collocate_pos[3].x = m_vPos.x - m_weight.x - 32 - loopcnt*32; //왼줄 아래쪽방향
+		collocate_pos[3].x = m_vPos.x - building_vtx.left - vtx.right - loopcnt*32; //왼줄 아래쪽방향
 		collocate_pos[3].y = m_vPos.y - m_weight.y - 32 - loopcnt*32;
+
 
 		memcpy(temp_pos , collocate_pos , sizeof(D3DXVECTOR2)*4);
 
-		for(int i = 0; i < widthcnt; ++i)
+		int begin[4] = {0};
+		int end[4] = {0};
+
+		begin[0] = (int)collocate_pos[0].x;
+		end[0] = int(m_vPos.x + building_vtx.right + loopcnt*32);
+
+		begin[1] = (int)collocate_pos[1].y;
+		end[1] = int(m_vPos.y - building_vtx.top - loopcnt*32);
+
+		begin[2] = (int)collocate_pos[2].x;
+		end[2] = int(m_vPos.x - building_vtx.left - loopcnt*32);
+
+		begin[3] = (int)collocate_pos[3].y;
+		end[3] = int(m_vPos.y + building_vtx.bottom + loopcnt*32);
+
+		for( int i = begin[0]; i < end[0]; i += stepsize)
 		{
-			temp_pos[0].x = collocate_pos[0].x + i*stepsize;
+			temp_pos[0].x = (float)i;
 
 			collocate_rc.left = temp_pos[0].x - vtx.left; 
 			collocate_rc.right = temp_pos[0].x + vtx.right;
@@ -102,9 +121,9 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 		if(bescape)
 			break;
 
-		for(int i = 0; i < heightcnt; ++i)
+		for( int i = begin[1]; i >= end[1]; i -= stepsize)
 		{					
-			temp_pos[1].y = collocate_pos[1].y - i*stepsize;;
+			temp_pos[1].y = (float)i;
 
 			collocate_rc.left = temp_pos[1].x - vtx.left; 
 			collocate_rc.right = temp_pos[1].x + vtx.right;
@@ -126,9 +145,9 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 		if(bescape)
 			break;
 
-		for(int i = 0; i < widthcnt; ++i)
+		for( int i = begin[2]; i >= end[2]; i -= stepsize)
 		{					
-			temp_pos[2].x = collocate_pos[2].x - i*stepsize;;
+			temp_pos[2].x = (float)i;
 
 			collocate_rc.left = temp_pos[2].x - vtx.left; 
 			collocate_rc.right = temp_pos[2].x + vtx.right;
@@ -151,9 +170,9 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 		if(bescape)
 			break;
 
-		for(int i = 0; i < heightcnt; ++i)
+		for( int i = begin[3]; i < end[3]; i += stepsize)
 		{
-			temp_pos[3].y = collocate_pos[3].y + i*stepsize;;
+			temp_pos[3].y = (float)i;
 
 			collocate_rc.left = temp_pos[3].x - vtx.left; 
 			collocate_rc.right = temp_pos[3].x + vtx.right;
@@ -287,7 +306,7 @@ void CCom_Production_building::create_unit(PRODUCTION_ID eid)
 
 	if(PRODUCTION_SCV == eid)
 	{
-		pobj = new CSCV;
+		pobj = new CSCV(m_vPos);
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
 	}
 	else if(PRODUCTION_TANK == eid)
@@ -312,6 +331,8 @@ void CCom_Production_building::create_unit(PRODUCTION_ID eid)
 	}
 	else if(PRODUCTION_GHOST == eid)
 	{
+		pobj = new CGhost;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST);
 	}
 	else if(PRODUCTION_TANK == eid)
 	{
@@ -372,10 +393,10 @@ void CCom_Production_building::show_production_state()
 {
 	if(!m_production_list.empty())
 	{
-		D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
-		//CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(415,550) , m_production_list.front().curtime / m_production_list.front().maxtime );
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 283,interface_pos.y + 430) , m_production_list.front().curtime / m_production_list.front().maxtime );
-		CComanderMgr::GetInstance()->SetBuilding_info(m_production_list);
+		D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
+		//CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(415,550) , m_production_list.front().curtime / m_production_list.front().maxtime );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 283,interface_pos.y + 430) , m_production_list.front().curtime / m_production_list.front().maxtime );
+		CIngame_UIMgr::GetInstance()->SetBuilding_info(m_production_list);
 	}
 
 }

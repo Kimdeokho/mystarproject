@@ -28,6 +28,8 @@ public:
 	D3DXVECTOR2		GetUnitCentterPt(void);
 	int				GetGoalidx(void);
 	list<CObj*>*	Getcur_unitlist(void);
+	bool			Unit_Unification(void);
+	void			Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& vgoalpos);
 	void			Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos);
 
 public:
@@ -37,8 +39,11 @@ public:
 	void discharge_unit(void);
 	void Intputkey_reaction(const int& nkey);
 	void Intputkey_reaction(const int& firstkey , const int& secondkey);
+	void Input_cmd(const int& nkey, bool* waitkey);
+	void Input_cmd(const int& firstkey , const int& secondkey);
 	void order_reaction(ORDER order);
 	void clear_destroy_unitlist(CObj* pobj);
+	
 public:
 	CUnitMgr(void);
 	~CUnitMgr(void);

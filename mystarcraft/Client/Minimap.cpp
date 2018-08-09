@@ -88,9 +88,6 @@ void CMinimap::Render(void)
 		, D3DCOLOR_ARGB(255,255,255,255));
 
 
-
-
-
 	list<CUI*>::iterator iter		= m_miniunit_display.begin();
 	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
 

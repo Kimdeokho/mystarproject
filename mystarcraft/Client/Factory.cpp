@@ -20,7 +20,7 @@
 #include "FontMgr.h"
 #include "Corpse.h"
 #include "TimeMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Building_Preview.h"
 #include "MouseMgr.h"
@@ -233,8 +233,8 @@ void CFactory::Update(void)
 		vpos.x -= m_irow*32;
 		vpos.y -= m_weight.y;
 		((CBuilding_Preview*)m_sub_preview)->SetPos(vpos);
-		CComanderMgr::GetInstance()->SetPreview(m_main_preview);
-		CComanderMgr::GetInstance()->SetPreview(m_sub_preview);
+		CIngame_UIMgr::GetInstance()->SetPreview(m_main_preview);
+		CIngame_UIMgr::GetInstance()->SetPreview(m_sub_preview);
 	}
 
 	//vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
@@ -449,17 +449,17 @@ void CFactory::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 void CFactory::Update_Cmdbtn(void)
 {
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state || PRODUCTION == m_unitinfo.state)
 	{
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_VULTURE" , BTN_VULTURE , true);
 
-		if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_FAC_ADDON))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_FAC_ADDON))
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_SIEGETANK" , BTN_SIEGETANK , true);
 		else
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_SIEGETANK" , BTN_SIEGETANK , false);
 
-		if(0 < CComanderMgr::GetInstance()->Get_T_BuildTech(T_ARMOURY))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_ARMOURY))
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GOLIATH" , BTN_GOLIATH , true);
 		else
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GOLIATH" , BTN_GOLIATH, false);
@@ -488,14 +488,14 @@ void CFactory::Update_Cmdbtn(void)
 }
 void CFactory::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{		
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_FACTORY" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Factory" ,interface_pos.x + 320 , interface_pos.y + 390 );
 
@@ -511,10 +511,10 @@ void CFactory::Update_Wireframe(void)
 				CFontMgr::GetInstance()->SetInfomation_font(L"Adding on.." , interface_pos.x + 330 , interface_pos.y + 415);
 
 				pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 				pui = new CUI_form(L"BTN_FAC_ADDON" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
-				CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 			}
 		}
 	}
@@ -536,7 +536,7 @@ void CFactory::Update_Wireframe(void)
 
 	if(BUILD == m_unitinfo.state)
 	{		
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
 
 	((CCom_Production_building*)m_com_production)->show_production_state();
@@ -548,7 +548,7 @@ void CFactory::Update_Wireframe(void)
 			m_unitinfo.state = ADDING_ON;
 
 			UNITINFO temp = m_partbuilding->GetUnitinfo();
-			CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , temp.hp / (float)temp.maxhp );
+			CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , temp.hp / (float)temp.maxhp );
 		}
 	}
 }

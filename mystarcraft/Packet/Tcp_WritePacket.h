@@ -108,6 +108,26 @@ inline DWORD WRITE_PT_ROOMLIST_RENEWAL_M(BYTE *buffer, S_PT_ROOMLIST_RENEWAL_M &
 	return Stream->GetLength();
 }
 
+inline DWORD WRITE_PT_ROOM_GET_MASTER_INFO(BYTE *buffer, S_PT_ROOM_GET_MASTER_INFO &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteUSHORT(parameter.ROOM_IDX);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_GET_MASTER_INFO_SUCC_U(BYTE *buffer, S_PT_ROOM_GET_MASTER_INFO_SUCC_U &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteDWORD_PTR(parameter.MASTERSESSION_ID);
+
+	return Stream->GetLength();
+}
+
 inline DWORD WRITE_PT_ROOM_ENTER(BYTE *buffer, S_PT_ROOM_ENTER &parameter)
 {
 	CStreamSP Stream;
@@ -124,7 +144,28 @@ inline DWORD WRITE_PT_ROOM_ENTER_SUCC_U(BYTE *buffer, S_PT_ROOM_ENTER_SUCC_U &pa
 	Stream->SetBuffer(buffer);
 
 	Stream->WriteWCHARs(parameter.TITLE, 32);
+	Stream->WriteDWORD_PTR(parameter.MASTERSESSION_ID);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_USER_RENEWAL(BYTE *buffer, S_PT_ROOM_USER_RENEWAL &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteWCHARs(parameter.TRIBE, 32);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_USER_RENEWAL_SUCC_U(BYTE *buffer, S_PT_ROOM_USER_RENEWAL_SUCC_U &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
 	Stream->WriteBytes((BYTE*) parameter.ROOM_USER_INFO, sizeof(SLOT_USER_DATA) * 8);
+	Stream->WriteDWORD_PTR(parameter.MASTERSESSION_ID);
 
 	return Stream->GetLength();
 }
@@ -140,7 +181,8 @@ inline DWORD WRITE_PT_ROOM_USER_ENTRY_M(BYTE *buffer, S_PT_ROOM_USER_ENTRY_M &pa
 	Stream->WriteUSHORT(parameter.VIRTUAL_PORT);
 	Stream->WriteWCHARs(parameter.REAL_ADDRESS, 32);
 	Stream->WriteUSHORT(parameter.REAL_PORT);
-	Stream->WriteUSHORT(parameter.SLOT_DIX);
+	Stream->WriteUSHORT(parameter.SLOT_IDX);
+	Stream->WriteWCHARs(parameter.TRIBE, 32);
 
 	return Stream->GetLength();
 }
@@ -163,8 +205,48 @@ inline DWORD WRITE_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer, S_PT_ROOM_RECEIVE_CHAT_M
 	Stream->SetBuffer(buffer);
 
 	Stream->WriteWCHARs(parameter.USER_ID, 32);
-	Stream->WriteWCHARs(parameter.MESSAGE, 32);
+	Stream->WriteWCHARs(parameter.MESSAGE, 128);
 	Stream->WriteDWORD_PTR(parameter.SESSION_ID);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_TRIBE_CHANGE(BYTE *buffer, S_PT_ROOM_TRIBE_CHANGE &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteWCHARs(parameter.TRIBE, 32);
+	Stream->WriteUSHORT(parameter.SLOTIDX);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_TRIBE_CHANGE_M(BYTE *buffer, S_PT_ROOM_TRIBE_CHANGE_M &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteWCHARs(parameter.TRIBE, 32);
+	Stream->WriteUSHORT(parameter.SLOTIDX);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_LOAD_COMPLETE(BYTE *buffer, S_PT_LOAD_COMPLETE &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_LOAD_COMPLETE_SUCC_M(BYTE *buffer, S_PT_LOAD_COMPLETE_SUCC_M &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
 
 	return Stream->GetLength();
 }
@@ -293,6 +375,26 @@ inline DWORD WRITE_PT_ROOMLIST_RENEWAL_M(BYTE *buffer,const WCHAR *title, DWORD_
 	return Stream->GetLength();
 }
 
+inline DWORD WRITE_PT_ROOM_GET_MASTER_INFO(BYTE *buffer, USHORT room_idx)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteUSHORT(room_idx);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_GET_MASTER_INFO_SUCC_U(BYTE *buffer, DWORD_PTR mastersession_id)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteDWORD_PTR(mastersession_id);
+
+	return Stream->GetLength();
+}
+
 inline DWORD WRITE_PT_ROOM_ENTER(BYTE *buffer, USHORT room_idx)
 {
 	CStreamSP Stream;
@@ -303,7 +405,7 @@ inline DWORD WRITE_PT_ROOM_ENTER(BYTE *buffer, USHORT room_idx)
 	return Stream->GetLength();
 }
 
-inline DWORD WRITE_PT_ROOM_ENTER_SUCC_U(BYTE *buffer,const WCHAR *title,const SLOT_USER_DATA *room_user_info)
+inline DWORD WRITE_PT_ROOM_ENTER_SUCC_U(BYTE *buffer,const WCHAR *title, DWORD_PTR mastersession_id)
 {
 	CStreamSP Stream;
 	Stream->SetBuffer(buffer);
@@ -311,12 +413,35 @@ inline DWORD WRITE_PT_ROOM_ENTER_SUCC_U(BYTE *buffer,const WCHAR *title,const SL
 	WCHAR _title[32] = {0,};
 	wcsncpy_s(_title , 32 , title, _TRUNCATE);
 	Stream->WriteWCHARs(_title, 32);
-	Stream->WriteBytes((BYTE*) room_user_info, sizeof(SLOT_USER_DATA) * 8);
+	Stream->WriteDWORD_PTR(mastersession_id);
 
 	return Stream->GetLength();
 }
 
-inline DWORD WRITE_PT_ROOM_USER_ENTRY_M(BYTE *buffer,const WCHAR *user_id, DWORD_PTR session_id,const WCHAR *virtual_address, USHORT virtual_port,const WCHAR *real_address, USHORT real_port, USHORT slot_dix)
+inline DWORD WRITE_PT_ROOM_USER_RENEWAL(BYTE *buffer,const WCHAR *tribe)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	WCHAR _tribe[32] = {0,};
+	wcsncpy_s(_tribe , 32 , tribe, _TRUNCATE);
+	Stream->WriteWCHARs(_tribe, 32);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_USER_RENEWAL_SUCC_U(BYTE *buffer,const SLOT_USER_DATA *room_user_info, DWORD_PTR mastersession_id)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	Stream->WriteBytes((BYTE*) room_user_info, sizeof(SLOT_USER_DATA) * 8);
+	Stream->WriteDWORD_PTR(mastersession_id);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_USER_ENTRY_M(BYTE *buffer,const WCHAR *user_id, DWORD_PTR session_id,const WCHAR *virtual_address, USHORT virtual_port,const WCHAR *real_address, USHORT real_port, USHORT slot_idx,const WCHAR *tribe)
 {
 	CStreamSP Stream;
 	Stream->SetBuffer(buffer);
@@ -333,7 +458,10 @@ inline DWORD WRITE_PT_ROOM_USER_ENTRY_M(BYTE *buffer,const WCHAR *user_id, DWORD
 	wcsncpy_s(_real_address , 32 , real_address, _TRUNCATE);
 	Stream->WriteWCHARs(_real_address, 32);
 	Stream->WriteUSHORT(real_port);
-	Stream->WriteUSHORT(slot_dix);
+	Stream->WriteUSHORT(slot_idx);
+	WCHAR _tribe[32] = {0,};
+	wcsncpy_s(_tribe , 32 , tribe, _TRUNCATE);
+	Stream->WriteWCHARs(_tribe, 32);
 
 	return Stream->GetLength();
 }
@@ -362,10 +490,54 @@ inline DWORD WRITE_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer,const WCHAR *user_id,cons
 	WCHAR _user_id[32] = {0,};
 	wcsncpy_s(_user_id , 32 , user_id, _TRUNCATE);
 	Stream->WriteWCHARs(_user_id, 32);
-	WCHAR _message[32] = {0,};
-	wcsncpy_s(_message , 32 , message, _TRUNCATE);
-	Stream->WriteWCHARs(_message, 32);
+	WCHAR _message[128] = {0,};
+	wcsncpy_s(_message , 128 , message, _TRUNCATE);
+	Stream->WriteWCHARs(_message, 128);
 	Stream->WriteDWORD_PTR(session_id);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_TRIBE_CHANGE(BYTE *buffer,const WCHAR *tribe, USHORT slotidx)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	WCHAR _tribe[32] = {0,};
+	wcsncpy_s(_tribe , 32 , tribe, _TRUNCATE);
+	Stream->WriteWCHARs(_tribe, 32);
+	Stream->WriteUSHORT(slotidx);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_ROOM_TRIBE_CHANGE_M(BYTE *buffer,const WCHAR *tribe, USHORT slotidx)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+	WCHAR _tribe[32] = {0,};
+	wcsncpy_s(_tribe , 32 , tribe, _TRUNCATE);
+	Stream->WriteWCHARs(_tribe, 32);
+	Stream->WriteUSHORT(slotidx);
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_LOAD_COMPLETE(BYTE *buffer)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PT_LOAD_COMPLETE_SUCC_M(BYTE *buffer)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
 
 	return Stream->GetLength();
 }

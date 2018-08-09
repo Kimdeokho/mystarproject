@@ -164,6 +164,10 @@ UI|LIST|..\Texture\Single\UI\plist.png
 UI|INFO|..\Texture\Single\UI\pinfo.png
 UI|POPUP|..\Texture\Single\UI\pepopup.png
 UI|ID_SLOT|..\Texture\Single\UI\id_slot.png
+UI|COMBO_SLOT|..\Texture\Single\UI\combo_slot.png
+UI|COMBO_MIDDLE|..\Texture\Single\UI\ui_combo.png
+UI|COMBO_END|..\Texture\Single\UI\ui_comboend.png
+UI|ARROW|..\Texture\Single\UI\arrow.png
 SCENE|LOGIN_SCENE800|..\Texture\Single\Scene\login_scene800.png
 SCENE|LOGIN_SCENE640|..\Texture\Single\Scene\login_scene640.png
 SCENE|LOBY_SCENE800|..\Texture\Single\Scene\loby_scene800.png

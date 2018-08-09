@@ -19,7 +19,7 @@
 #include "FontMgr.h"
 #include "Corpse.h"
 #include "TimeMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "Comandcenter.h"
 
 #include "LoopEff.h"
@@ -188,9 +188,9 @@ void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		D3DXVECTOR2 vmousept;
 		vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
 
-		if(true == CComanderMgr::GetInstance()->intersect_minimap_mousept(vmousept))
+		if(true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(vmousept))
 		{
-			CComanderMgr::GetInstance()->Minimappos_to_screen(vmousept);
+			CIngame_UIMgr::GetInstance()->Minimappos_to_screen(vmousept);
 			//어택땅을 미니맵에 클릭시 미니맵 위치를 화면위치로 바꿔준다
 		}
 		else
@@ -223,7 +223,7 @@ void CComset::Setlink(bool blink , CObj* pobj)
 
 void CComset::Update_Cmdbtn(void)
 {
-	const CUI* pui = CComanderMgr::GetInstance()->GetCmd_info();
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state )
 	{			
 		if(NULL != m_mainbuilding)
@@ -233,14 +233,14 @@ void CComset::Update_Cmdbtn(void)
 
 void CComset::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{		
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_COMSET" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font( L"Terran Comset" ,interface_pos.x + 320 , interface_pos.y + 390 );
 
@@ -267,6 +267,6 @@ void CComset::Update_Wireframe(void)
 
 	if(BUILD == m_unitinfo.state)
 	{		
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
 }

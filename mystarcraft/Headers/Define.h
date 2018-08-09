@@ -35,6 +35,11 @@
 #define READ_TCP_PACKET(PROTOCOL)\
 	S_##PROTOCOL Data;\
 	READ_##PROTOCOL(m_Read_TCPBuf, Data);
+#define READ_UDP_PACKET(PROTOCOL)\
+	S_##PROTOCOL Data;\
+	READ_##PROTOCOL(m_Read_UDPBuf, Data);
 
 #define WRITE_TCP_PACKET(PROTOCOL , PACKET , WRITE)\
 	CSession_Mgr::GetInstance()->Write_TCP_Packet(PROTOCOL , PACKET , WRITE)
+#define WRITEALL_UDP_PACKET(PROTOCOL , PACKET , WRITE)\
+	CRoomSession_Mgr::GetInstance()->WriteAll(PROTOCOL , PACKET , WRITE)

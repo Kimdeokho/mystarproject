@@ -40,16 +40,16 @@ public:
 	void AddObject(CObj* pObj , OBJID eid);
 	void AddCorpse(CObj* pObj );
 
-
-	//void AddSelect_UI(CUI* pui , MOVE_TYPE emovetype);
-	//void AddEnergybar_UI(CUI* pui , MOVE_TYPE emovetype);
 	void AddEffect(CObj* peff);
 
-	//void DestroyObj(TERRAN_UNIT_ID eid);
 	CObj* GetCoreBuilding(CObj* pself);
 	void  UpdateSelect_UI(void);
 
+	void  Place_Terran(D3DXVECTOR2 vpos , TEAM_NUMBER eteam);
+	void  Place_Zerg(D3DXVECTOR2 vpos);
 	void  Nuclear_launch(void);
+
+	CObj*	GetObj(const USHORT objnum);
 public:
 	void LoadObj(HANDLE hFile);
 public:

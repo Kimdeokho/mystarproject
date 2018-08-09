@@ -125,7 +125,7 @@ void CTileDebug::Set_TileOption(TILE_OPTION eOption)
 		{
 			for(int i = 0; i < 3; ++i)
 				for(int j = 0; j < 4; ++j)
-					CTileMgr::GetInstance()->SetTileOption(m_StartbasePos[i][j] , MOVE_NONE);
+					CTileMgr::GetInstance()->SetTileOption(m_StartbasePos[i][j] , MOVE_OK);
 
 			break;
 		}

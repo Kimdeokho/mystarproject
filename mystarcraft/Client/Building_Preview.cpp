@@ -206,7 +206,7 @@ void CBuilding_Preview::Render(void)
 			else
 			{
 				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
-					op == MOVE_OK &&
+					op == MOVE_OK || OP_STARTBASE == op &&
 					FOG_BLACK != fog_sight)
 				{
 					tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );

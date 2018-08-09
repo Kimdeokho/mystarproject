@@ -11,7 +11,7 @@
 #include "Area_Mgr.h"
 #include "UnitMgr.h"
 #include "ObjMgr.h"
-#include "ComanderMgr.h"
+#include "Ingame_UIMgr.h"
 #include "TimeMgr.h"
 #include "LineMgr.h"
 #include "FontMgr.h"
@@ -36,7 +36,7 @@ CT_gas::CT_gas(CObj* resource_gas)
 CT_gas::~CT_gas(void)
 {
 	Release();
-	CComanderMgr::GetInstance()->T_BuildTech_Update(T_GAS , -1);
+	CIngame_UIMgr::GetInstance()->T_BuildTech_Update(T_GAS , -1);
 }
 
 void CT_gas::Initialize(void)
@@ -113,7 +113,7 @@ void CT_gas::Update(void)
 		{
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = IDLE;
-			CComanderMgr::GetInstance()->T_BuildTech_Update(T_GAS , 1);
+			CIngame_UIMgr::GetInstance()->T_BuildTech_Update(T_GAS , 1);
 		}
 	}
 
@@ -180,14 +180,14 @@ void CT_gas::Dead(void)
 }
 void CT_gas::Update_Wireframe(void)
 {
-	D3DXVECTOR2 interface_pos = CComanderMgr::GetInstance()->GetMainInterface_pos();
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
-	if(true == CComanderMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{		
 		CUI* pui = NULL;
 		pui = new CUI_Wireframe(L"WIRE_T_GAS" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
-		CComanderMgr::GetInstance()->add_wireframe_ui(pui);
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Gas" ,interface_pos.x + 320 , interface_pos.y + 390 );
 
@@ -214,6 +214,6 @@ void CT_gas::Update_Wireframe(void)
 
 	if(BUILD == m_unitinfo.state)
 	{		
-		CComanderMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
 }

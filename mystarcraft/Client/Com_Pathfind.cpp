@@ -180,18 +180,6 @@ void CCom_Pathfind::Update(void)
 		{
 			m_multithread = false;
 			m_realpathidx = m_realpath.size() - 1;
-			if(m_realpathidx <= 0)
-			{				
-				//if((int)CMyMath::pos_distance(m_realpathidx[0] , m_vPos) < 2*2)
-				//m_arrivalrange = 64;
-				if(!m_terrainpath.empty())
-				{
-					m_realpath.clear();
-					m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , 
-						m_mainstep , m_terrainpath ,m_curterrain_pathidx);
-					m_multithread = true;
-				}
-			}
 		}
 	}
 	UnitMoving_update();
@@ -238,8 +226,8 @@ void CCom_Pathfind::UnitMoving_update()
 			else //이동경로를 다 소진했으나 도착점에 도착하지 못했을때
 			{
 				m_arrivalrange += 32;
-				if(m_arrivalrange >= 340)
-					m_arrivalrange = 340;
+				if(m_arrivalrange >= 240)
+					m_arrivalrange = 240;
 
 				//스텝을 다이동했지만 지정웨이포인트에 도착하지 못했을때
 				m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
@@ -273,16 +261,15 @@ void CCom_Pathfind::UnitMoving_update()
 			}
 		}
 	}
-	else
+	else //지형경로 없다
 	{
-		if(0 == m_realpathidx) //지형경로 없다
+		if(0 == m_realpathidx) 
 		{
-			m_pobj->SetState(IDLE);
+			//m_pobj->SetState(IDLE); 생각해보니 굳이 할 필요가 없다.
 			m_realpath.clear();
 
 			if(NULL != m_pTarget)
 			{			
-				//m_terrainpath.clear(); //굳이 할필요 없지
 				m_arrivalrange = 64;
 				m_Astar->UnitPath_calculation_Start(m_vPos , m_pTarget->GetPos() , m_substep, m_terrainpath , m_curterrain_pathidx);
 				m_multithread = true;
@@ -353,7 +340,7 @@ void CCom_Pathfind::UnitMoving_update()
 	{
 		m_collisionmove_time += GETTIME;
 		m_pobj->SetState(IDLE);
-		m_timeoffset = 0.4f;
+		m_timeoffset = 0.2f;
 		//m_timeoffset = 1.4f;
 		m_is_stop = true;
 	}
@@ -378,7 +365,6 @@ void CCom_Pathfind::UnitMoving_update()
 			m_stoptime = 0.f;
 			
 			m_vPos = m_vprepos;
-			//m_rect = m_prerect;
 			m_pobj->SetState(MOVE);								
 			return;
 		}
@@ -561,58 +547,59 @@ void CCom_Pathfind::SetTargetObjID(const int& objid)
 
 void CCom_Pathfind::Render(void)
 {
-	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+/*
+	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
 
-	//D3DXMATRIX	tempmat;
-	//D3DXMatrixIdentity(&tempmat);
+	D3DXMATRIX	tempmat;
+	D3DXMatrixIdentity(&tempmat);
 
-	//if(!m_terrainpath.empty())
-	//{
-	//	for(size_t i = 0; i < m_terrainpath.size(); ++i)
-	//	{
-	//		tempmat._41 = m_terrainpath[i].x - CScrollMgr::m_fScrollX;
-	//		tempmat._42 = m_terrainpath[i].y - CScrollMgr::m_fScrollY;
+	if(!m_terrainpath.empty())
+	{
+		for(size_t i = 0; i < m_terrainpath.size(); ++i)
+		{
+			tempmat._41 = m_terrainpath[i].x - CScrollMgr::m_fScrollX;
+			tempmat._42 = m_terrainpath[i].y - CScrollMgr::m_fScrollY;
 
-	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+			CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
 
-	//		if(0 == i)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-	//		else if( i == m_terrainpath.size() - 1)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-	//		else
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	//	}
-	//}
-
-
-
-	//ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"tile8x8");
+			if(0 == i)
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
+			else if( i == m_terrainpath.size() - 1)
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
+			else
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
+		}
+	}
 
 
-	//if(!m_realpath.empty())
-	//{
-	//	for(size_t i = 0; i < m_realpath.size(); ++i)
-	//	{
-	//		tempmat._41 = m_realpath[i].x - CScrollMgr::m_fScrollX;
-	//		tempmat._42 = m_realpath[i].y - CScrollMgr::m_fScrollY;
 
-	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+	ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"tile8x8");
 
-	//		if(0 == i)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-	//		else if( i == m_realpath.size() - 1)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-	//		else
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	//	}
 
-	//	//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
-	//	//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
-	//	//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-	//	//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	//}
+	if(!m_realpath.empty())
+	{
+		for(size_t i = 0; i < m_realpath.size(); ++i)
+		{
+			tempmat._41 = m_realpath[i].x - CScrollMgr::m_fScrollX;
+			tempmat._42 = m_realpath[i].y - CScrollMgr::m_fScrollY;
 
-	//m_Astar->Path_Render();
+			CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+
+			if(0 == i)
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
+			else if( i == m_realpath.size() - 1)
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
+			else
+				CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
+		}
+
+		//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
+		//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
+		//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
+		//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
+	}
+
+	m_Astar->Path_Render();*/
 }
 
 void CCom_Pathfind::gap_initialize(bool bmagicbox)

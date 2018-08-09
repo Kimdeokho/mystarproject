@@ -192,6 +192,7 @@ void CMyProPage::OnBnClickedButton1()
 			, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS
 			, FILE_ATTRIBUTE_NORMAL, NULL);
 
+		CObjMgr::GetInstance()->Save_StartBaseCnt(hFile);
 		CTileMgr::GetInstance()->SaveTile(hFile);
 		CObjMgr::GetInstance()->SaveObj(hFile);
 
@@ -213,6 +214,8 @@ void CMyProPage::OnBnClickedLoadBtn()
 
 	if(load_dlg.DoModal() == IDOK)
 	{
+		CObjMgr::GetInstance()->Release();
+
 		pMainFrm->m_pToolView->SetScrollPos(0 , 0);
 		pMainFrm->m_pToolView->SetScrollPos(1 , 0);
 

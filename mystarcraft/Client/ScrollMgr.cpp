@@ -31,5 +31,5 @@ void CScrollMgr::update(void)
 	else if(4096 - BACKBUFFER_SIZEY - 0 <= m_fScrollY)
 		m_fScrollY = 4096 - BACKBUFFER_SIZEY - 0;
 }
-float CScrollMgr::m_fScrollX(1000);
-float CScrollMgr::m_fScrollY(1000);
+float CScrollMgr::m_fScrollX(0);
+float CScrollMgr::m_fScrollY(0);

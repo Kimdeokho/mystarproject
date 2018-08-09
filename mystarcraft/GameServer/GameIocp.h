@@ -182,7 +182,12 @@ private:
 	VOID onPT_CREATE_ROOM(CConnectedUser *connectedUser, BYTE *packet);
 	VOID onPT_ROOM_ENTER(CConnectedUser* connectedUser, BYTE *packet);
 	VOID onPT_ROOMLIST_RENEWAL(CConnectedUser* connectedUser, BYTE *packet);
+	VOID onPT_ROOM_GET_MASTER_INFO(CConnectedUser* connectedUser, BYTE *packet);
+	// Room
 	VOID onPT_ROOM_SENDCHAT(CConnectedUser* connectedUser, BYTE *packet);
+	VOID onPT_ROOM_USER_RENEWAL(CConnectedUser* connectedUser, BYTE *packet);
+	VOID onPT_ROOM_TRIBE_CHANGE(CConnectedUser* connectedUser, BYTE *packet);
+	VOID onPT_LOAD_COMPLETE(CConnectedUser* connectedUser, BYTE *packet);
 
 
 	VOID onPT_ROOM_QUICK_JOIN(CConnectedUser *connectedUser, BYTE *packet);

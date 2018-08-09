@@ -2,7 +2,8 @@
 
 #include "Include.h"
 
-const float FIXTIME = 0.03333f;
+//const float FIXTIME = 0.03333f;
+const float FIXTIME = 0.01666f;
 class CTimeMgr
 {
 public:

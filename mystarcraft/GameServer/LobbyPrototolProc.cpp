@@ -134,6 +134,24 @@ VOID CGameIocp::onPT_ROOM_ENTER(CConnectedUser* connectedUser, BYTE *packet)
 	CRoom* proom = proomvec[Data.ROOM_IDX];
 	USHORT	slotidx = 0;
 	proom->JoinUser(connectedUser , slotidx);
+	connectedUser->SetSelectedCharacterSlot(slotidx);
+
+	connectedUser->WritePacket(PT_ROOM_ENTER_SUCC_U , WriteBuffer ,
+		WRITE_PT_ROOM_ENTER_SUCC_U(WriteBuffer , 
+		proom->GetTitle() , DWORD_PTR(proom->GetRootUser()) ));
+
+	CLog::WriteLog(_T("# Write packet : PT_ROOM_ENTER_SUCC_U \n"));
+}
+VOID CGameIocp::onPT_ROOM_USER_RENEWAL(CConnectedUser* connectedUser, BYTE *packet)
+{
+	//콤보박스에서 종족을 받아온다.
+	BYTE	WriteBuffer[MAX_BUFFER_LENGTH]	= {0,};
+	READ_PACKET(PT_ROOM_USER_RENEWAL);
+	CLog::WriteLog(_T("# Read packet : PT_ROOM_USER_RENWAL %s\n") , Data.TRIBE);
+
+	connectedUser->SetTribe(Data.TRIBE);
+	CRoom* proom = connectedUser->GetEnteredRoom();
+	USHORT	slotidx = connectedUser->GetSelectedCharacterSlot();
 
 	//방에 들어와 있는 사람에게 들어온 유저 정보 뿌려주기
 	proom->WriteAll(PT_ROOM_USER_ENTRY_M , WriteBuffer,
@@ -144,17 +162,18 @@ VOID CGameIocp::onPT_ROOM_ENTER(CConnectedUser* connectedUser, BYTE *packet)
 		connectedUser->GetVirtualPort(),
 		connectedUser->GetRealAddress(),
 		connectedUser->GetRealPort(),
-		slotidx));
+		slotidx,
+		connectedUser->GetTribe()));
 
-	CLog::WriteLog(_T("# Write packet : PT_ROOM_USER_ENTRY %s , %d , %s , %d , %s , %d , %d\n"), 
+	CLog::WriteLog(_T("# Write packet : PT_ROOM_USER_ENTRY %s , %d , %s , %d , %s , %d , %d, %s\n"), 
 		connectedUser->GetUserID(),
 		(DWORD_PTR)connectedUser,
 		connectedUser->GetVirtualAddress(),
 		connectedUser->GetVirtualPort(),
 		connectedUser->GetRealAddress(),
 		connectedUser->GetRealPort(),
-		slotidx);
-
+		slotidx,
+		connectedUser->GetTribe());
 
 	//방에 들어와있는 사람들의 정보 받기
 	CConnectedUser** userlist = proom->GetRoomUser();
@@ -168,16 +187,28 @@ VOID CGameIocp::onPT_ROOM_ENTER(CConnectedUser* connectedUser, BYTE *packet)
 		wcscpy_s(temp[i].REAL_ADDRESS , userlist[i]->GetRealAddress());
 		wcscpy_s(temp[i].VIRTUAL_ADDRESS , userlist[i]->GetVirtualAddress());
 		wcscpy_s(temp[i].USER_ID , userlist[i]->GetUserID());
+		wcscpy_s(temp[i].TRIBE , userlist[i]->GetTribe());
 		temp[i].REAL_PORT = userlist[i]->GetRealPort();
 		temp[i].VIRTUAL_PORT = userlist[i]->GetVirtualPort();
 		temp[i].SESSION_ID = DWORD_PTR(userlist[i]);
-		
+		temp[i].TEAMNUM = i;
+
 	}
 
-	connectedUser->WritePacket(PT_ROOM_ENTER_SUCC_U , WriteBuffer ,
-		WRITE_PT_ROOM_ENTER_SUCC_U(WriteBuffer , 
-		proom->GetTitle() , temp));
+	connectedUser->WritePacket(PT_ROOM_USER_RENEWAL_SUCC_U , WriteBuffer ,
+		WRITE_PT_ROOM_USER_RENEWAL_SUCC_U(WriteBuffer , 
+		temp , DWORD_PTR(proom->GetRootUser()) ));
+}
+VOID CGameIocp::onPT_ROOM_GET_MASTER_INFO(CConnectedUser* connectedUser, BYTE *packet)
+{
+	BYTE	WriteBuffer[MAX_BUFFER_LENGTH]	= {0,};
+	READ_PACKET(PT_ROOM_GET_MASTER_INFO);
+	CLog::WriteLog(_T("# Read packet : PT_ROOM_GET_MASTER_INFO roomidx = %d\n") , Data.ROOM_IDX);
 
-	CLog::WriteLog(_T("# Write packet : PT_ROOM_ENTER_SUCC_U \n"));
-	//proom->GetRoomUser()
+	std::vector<CRoom*> proomvec = mRoomManager.GetRoomVector();
+	CRoom* proom = proomvec[Data.ROOM_IDX];
+
+	connectedUser->WritePacket(PT_ROOM_GET_MASTER_INFO_SUCC_U , WriteBuffer ,
+		WRITE_PT_ROOM_GET_MASTER_INFO_SUCC_U(WriteBuffer , 
+		DWORD_PTR(proom->GetRootUser()) ));
 }

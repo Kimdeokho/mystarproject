@@ -47,6 +47,8 @@ CRoom::CRoom(VOID)
 
 	ZeroMemory(mTitle, sizeof(mTitle));
 	ZeroMemory(mRoomUser, sizeof(mRoomUser));
+
+	mLoadCnt = 0;
 }
 
 CRoom::~CRoom(VOID)
@@ -78,6 +80,8 @@ BOOL CRoom::Begin(DWORD index)
 
 	ZeroMemory(mTitle, sizeof(mTitle));
 	ZeroMemory(mRoomUser, sizeof(mRoomUser));
+
+	mLoadCnt = 0;
 
 	return TRUE;
 }
@@ -206,6 +210,7 @@ BOOL CRoom::LeaveUser(BOOL isDisconnected, CGameIocp *iocp, CConnectedUser *conn
 		{
 			mRoomUser[i] = NULL;
 			connectedUser->SetEnteredRoom(NULL);
+			connectedUser->SetSelectedCharacterSlot(0);
 
 			mCurrentUserCount	= max(SHORT(mCurrentUserCount--), 0);
 
@@ -521,6 +526,13 @@ BOOL CRoom::IsAllLoadComplete(VOID)
 {
 	CThreadSync Sync;
 
+	if(mCurrentUserCount == mLoadCnt)
+	{
+		mLoadCnt = 0;
+		return TRUE;
+	}
+	else
+		return FALSE;
 
 	return TRUE;
 }

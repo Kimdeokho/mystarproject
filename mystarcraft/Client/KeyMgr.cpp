@@ -3,10 +3,11 @@
 
 #include "FontMgr.h"
 #include "TimeMgr.h"
-#include "Input_Stage.h"
+#include "Input_Test.h"
 #include "Input_Login.h"
 #include "Input_Loby.h"
 #include "Input_Room.h"
+#include "Input_Stage.h"
 
 IMPLEMENT_SINGLETON(CKeyMgr)
 CKeyMgr::CKeyMgr(void)
@@ -324,6 +325,11 @@ void CKeyMgr::SetInput_Device(SCENEID escene)
 	case SCENE_STAGE:
 		{
 			m_input = new CInput_Stage;
+			break;
+		}
+	case SCENE_TEST:
+		{
+			m_input = new CInput_Test;
 			break;
 		}
 	}

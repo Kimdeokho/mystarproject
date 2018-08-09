@@ -41,6 +41,8 @@ public:
 	void Update(void);
 	//bool GetLbdraging(void);
 public:
+	CInput_Interface*	GetInputDevice(void){return m_input;}
+public:
 	bool GetOnceKeyDown_Check(const int& nkey );
 	bool GetKeyUp_Check(const int& nkey );
 	bool GetTurboKeyDown_Check(const int& nkey );	

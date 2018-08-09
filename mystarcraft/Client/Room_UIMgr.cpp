@@ -11,9 +11,12 @@
 #include "UI_CreateRoom.h"
 #include "UI_RoomInfo.h"
 #include "UI_Chat.h"
+#include "UI_Combobox.h"
 #include "UI_IME.h"
+#include "UI_StartBtn.h"
 #include "SceneMgr.h"
 #include "Session_Mgr.h"
+#include "RoomSession_Mgr.h"
 
 IMPLEMENT_SINGLETON(CRoom_UIMgr);
 CRoom_UIMgr::CRoom_UIMgr(void)
@@ -31,7 +34,7 @@ void CRoom_UIMgr::Initialize(void)
 
 	m_userlist = new CUIRoot;
 	m_userlist->Set_texturekey(L"LIST");
-	m_userlist->SetStartEndPos(D3DXVECTOR2( -364 , 0.f) , 
+	m_userlist->SetStartEndPos(D3DXVECTOR2( -564 , 0.f) , 
 		D3DXVECTOR2( 0.f , 0.f));
 	m_userlist->SetColor(D3DCOLOR_ARGB(180,255,255,255));
 	m_userlist->Initialize();
@@ -40,7 +43,7 @@ void CRoom_UIMgr::Initialize(void)
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	m_chat = new CUIRoot;
 	m_chat->Set_texturekey(L"CHAT");
-	m_chat->SetStartEndPos(D3DXVECTOR2( -364 , 306.f) , 
+	m_chat->SetStartEndPos(D3DXVECTOR2( -564 , 306.f) , 
 		D3DXVECTOR2( 0.f , 306.f));
 	m_chat->SetColor(D3DCOLOR_ARGB(180,255,255,255));
 	m_chat->Initialize();
@@ -61,7 +64,7 @@ void CRoom_UIMgr::Initialize(void)
 
 	m_roominfo = new CUIRoot;
 	m_roominfo->Set_texturekey(L"INFO");
-	m_roominfo->SetStartEndPos(D3DXVECTOR2((float)BACKBUFFER_SIZEX  , 0.f) , 
+	m_roominfo->SetStartEndPos(D3DXVECTOR2((float)BACKBUFFER_SIZEX + 200 , 0.f) , 
 		D3DXVECTOR2( BACKBUFFER_SIZEX -240 , 0.f));
 	m_roominfo->SetColor(D3DCOLOR_ARGB(180,255,255,255));
 	m_roominfo->Initialize();
@@ -74,14 +77,27 @@ void CRoom_UIMgr::Initialize(void)
 	m_roominfo_text->Initialize();
 	m_list.push_back(m_roominfo_text);
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	m_start_btn = new CUIRoot;
-	m_start_btn->Set_texturekey(L"OK");
-	m_start_btn->SetStartEndPos(D3DXVECTOR2( (float)BACKBUFFER_SIZEX - 4 , (float)BACKBUFFER_SIZEY / 1.4f) , 
-		D3DXVECTOR2( (float)BACKBUFFER_SIZEX - 204, (float)BACKBUFFER_SIZEY / 1.4f));
-	m_start_btn->SetColor(D3DCOLOR_ARGB(180,255,255,255));
-	m_start_btn->Initialize();
-	m_list.push_back(m_start_btn);
-	m_rootlist.push_back(m_start_btn);
+
+	DWORD_PTR d1 = CRoomSession_Mgr::GetInstance()->GetMasterSession_ID();
+	DWORD_PTR d2 = CSession_Mgr::GetInstance()->GetSession_Info().SESSION_ID;
+	if(CRoomSession_Mgr::GetInstance()->GetMasterSession_ID() ==
+		CSession_Mgr::GetInstance()->GetSession_Info().SESSION_ID)
+	{
+		m_startbtn_root = new CUIRoot;
+		m_startbtn_root->Set_texturekey(L"OK");
+		m_startbtn_root->SetStartEndPos(D3DXVECTOR2( (float)BACKBUFFER_SIZEX - 4 , (float)BACKBUFFER_SIZEY / 1.4f) , 
+			D3DXVECTOR2( (float)BACKBUFFER_SIZEX - 204, (float)BACKBUFFER_SIZEY / 1.4f));
+		m_startbtn_root->SetColor(D3DCOLOR_ARGB(180,255,255,255));
+		m_startbtn_root->Initialize();
+		m_list.push_back(m_startbtn_root);
+		m_rootlist.push_back(m_startbtn_root);
+
+		m_startbtn = new CUI_StartBtn;
+		m_startbtn->SetParentMat(m_startbtn_root->GetMatrix_Adress());
+		m_startbtn->SetPos(D3DXVECTOR2(5,48));
+		m_startbtn->Initialize();
+		m_list.push_back(m_startbtn);
+	}
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	m_exitbtn_root = new CUIRoot;
 	m_exitbtn_root->Set_texturekey(L"CANCLE");
@@ -106,7 +122,33 @@ void CRoom_UIMgr::Initialize(void)
 		m_slotlist[i]->SetPos(D3DXVECTOR2(60.f , float(60 + i*19) ));
 		m_slotlist[i]->Initialize();
 		m_list.push_back(m_slotlist[i]);
+
+		m_combobox[i] = new CUI_Combobox(i);
+		m_combobox[i]->SetParentMat(m_userlist->GetMatrix_Adress());
+		m_combobox[i]->SetPos(D3DXVECTOR2(240.f , float(60 + i*19) ));
+		m_combobox[i]->AddData(L"Terran");
+		m_combobox[i]->AddData(L"Zerg");
+		m_combobox[i]->AddData(L"Random");
+		m_combobox[i]->SetRepresentData(L"Random");
+		m_combobox[i]->SetActive(false);
+		m_combobox[i]->Initialize();
+		
 	}
+	for(int i = 7; i >= 0; --i)
+		m_list.push_back(m_combobox[i]);
+
+	//SetUser(CSession_Mgr::GetInstance()->GetSession_Info().USER_ID , 0);
+	SetRoomTitle(CRoomSession_Mgr::GetInstance()->GetTitle());
+	
+
+	WRITE_TCP_PACKET(PT_ROOM_USER_RENEWAL , WriteBuffer 
+		, WRITE_PT_ROOM_USER_RENEWAL(WriteBuffer , L"Random"));
+
+	//방입장하기전에 내가 원하는 종족이 자동으로 선택되어있느냐,
+	//슬롯에 정해진 콤보박스의 데이터를 보내는가
+	//어떻게 디자인하느냐에 따라 다르다 
+	
+
 }
 
 void CRoom_UIMgr::Update(void)
@@ -138,6 +180,10 @@ void CRoom_UIMgr::Update(void)
 			{
 				CSceneMgr::GetInstance()->SetScene(SCENE_LOBY);
 			}			
+			else if(R_STAGE_PRE == m_flag)
+			{
+				CSceneMgr::GetInstance()->SetScene(SCENE_STAGEPRE);
+			}
 		}
 	}
 }
@@ -204,11 +250,21 @@ void CRoom_UIMgr::UI_Reaction(const D3DXVECTOR2& vpt)
 	}
 }
 
-void CRoom_UIMgr::SetUserID(const WCHAR* szid , int idx)
+void CRoom_UIMgr::SetUser(const WCHAR* szid , int idx)
 {
 	m_slotlist[idx]->SetUser(szid);
+
+	if(!lstrcmp(szid , L""))
+		m_combobox[idx]->SetActive(false);
+	else
+		m_combobox[idx]->SetActive(true);
 }
 
+void CRoom_UIMgr::RoomExitUser(int idx)
+{
+	//이거외에 콤보박스 셀렉 초기화도 해야할듯
+	m_combobox[idx]->SetActive(false);
+}
 void CRoom_UIMgr::SetRoomTitle(const TCHAR* sztitle)
 {
 	m_roominfo_text->SetTitle(sztitle);
@@ -231,4 +287,9 @@ void CRoom_UIMgr::SendChat(void)
 void CRoom_UIMgr::Receive_Chat(const S_PT_ROOM_RECEIVE_CHAT_M& pinfo)
 {
 	m_chatlist->PushMessage(pinfo);
+}
+
+void CRoom_UIMgr::SetCombobox_ChangeData(const WCHAR* _race, const int& slotidx)
+{
+	m_combobox[slotidx]->SetRepresentData(_race);
 }

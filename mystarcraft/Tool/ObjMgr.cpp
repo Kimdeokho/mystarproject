@@ -83,6 +83,19 @@ void CObjMgr::Release(void)
 	}
 
 }
+void CObjMgr::Save_StartBaseCnt(HANDLE h)
+{
+	list<CObj*>::iterator iter = m_ObjList[OBJ_STARTBASE].begin();
+	list<CObj*>::iterator iter_end = m_ObjList[OBJ_STARTBASE].end();
+
+	int basecnt = 0;
+	for( ; iter != iter_end; ++iter)
+		++basecnt;
+
+
+	DWORD dwbyte;
+	WriteFile(h , &basecnt , sizeof(int) , &dwbyte , NULL);
+}
 void CObjMgr::SaveObj(HANDLE h)
 {
 	for(int i = 0; i < OBJ_END; ++i)

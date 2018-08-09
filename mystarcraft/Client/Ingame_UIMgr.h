@@ -4,12 +4,12 @@
 
 class CUI;
 class CObj;
-class CComanderMgr
+class CIngame_UIMgr
 {
-	DECLARE_SINGLETON(CComanderMgr)
+	DECLARE_SINGLETON(CIngame_UIMgr)
 private:
-	CUI*		m_main_interface;
-	CUI*		m_minimap;
+	CUI*			m_main_interface;
+	CUI*			m_minimap;
 
 	vector<CUI*>	m_vec_preview;	
 	list<CUI*>		m_wireframe_ui_list;
@@ -20,13 +20,12 @@ private:
 	CUI*			m_boarding_info;
 	CUI*			m_cmd_info;
 private:
-	int			m_total_mineral;
-	int			m_total_gas;
+	int				m_total_mineral;
+	int				m_total_gas;
 private:
-	
-	RACE		m_erace;
-	int			m_terran_build[T_BUILD_END];
-	UPG_INFO	m_upginfo[UPG_END];
+	RACE			m_erace;
+	int				m_terran_build[T_BUILD_END];
+	UPG_INFO		m_upginfo[UPG_END];
 private:
 	
 private:
@@ -68,6 +67,6 @@ public:
 	
 	void	ClearPreview(void);
 public:
-	CComanderMgr(void);
-	~CComanderMgr(void);
+	CIngame_UIMgr(void);
+	~CIngame_UIMgr(void);
 };
