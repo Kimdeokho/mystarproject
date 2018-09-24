@@ -11,6 +11,7 @@
 #include "UnitMgr.h"
 #include "Obj.h"
 #include "Area_Mgr.h"
+#include "Session_Mgr.h"
 
 IMPLEMENT_SINGLETON(CTileManager)
 
@@ -114,31 +115,31 @@ void CTileManager::RenderTile(void)
 
 
 	/*타일 옵션 디버그 확인용*/
-/*
-	const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
-	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
-	int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
-	int idx;
-	for(int i = 0; i < CULLINGCNTY; ++i)
-	{
-		for(int j = 0; j < CULLINGCNTX; ++j)
-		{
-			idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
-			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
-				continue;
 
-			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
-			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+	//int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
+	//int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
+	//int idx;
+	//for(int i = 0; i < CULLINGCNTY; ++i)
+	//{
+	//	for(int j = 0; j < CULLINGCNTX; ++j)
+	//	{
+	//		idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
+	//		if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
+	//			continue;
 
-			if(MOVE_OK == m_sqTile[idx]->byOption)
-				continue;
+	//		m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
+	//		m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
 
-			m_pSprite->SetTransform(&m_matWorld);
-			m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
-				,D3DCOLOR_ARGB(255,0,0,0));
-		}
-	}
-*/
+	//		if(MOVE_OK == m_sqTile[idx]->byOption)
+	//			continue;
+
+	//		m_pSprite->SetTransform(&m_matWorld);
+	//		m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
+	//			,D3DCOLOR_ARGB(255,0,0,0));
+	//	}
+	//}
+
 
 	RenderCreep();
 	//Flowfield_Render();
@@ -177,6 +178,8 @@ void CTileManager::RenderFog(void)
 
 	int fCenterX = 0;
 	int fCenterY = 0;
+	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+
 	for(int i = 0; i < CULLINGCNTY; ++i)
 	{
 		for(int j = 0; j < CULLINGCNTX; ++j)
@@ -185,12 +188,11 @@ void CTileManager::RenderFog(void)
 			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
 				continue;
 
-			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
-			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;
+			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;
 
-
-			//CFontMgr::GetInstance()->Setnumber_combine_Font(L"%d" , m_fogTile[idx]->overlap_cnt , m_matWorld._41 , m_matWorld._42);
-			ifogsquence = m_fogTile[idx]->fog_sequence;
+			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_fogTile[idx]->bLight[eteam] , m_sqTile[idx]->vPos.x  , m_sqTile[idx]->vPos.y);
+			ifogsquence = m_fogTile[idx]->fog_sequence[eteam];
 
 			//if(0 == ifogsquence ||
 				//2 == ifogsquence)
@@ -198,7 +200,7 @@ void CTileManager::RenderFog(void)
 
 			m_pSprite->SetTransform(&m_matWorld);
 			m_pSprite->Draw( (*m_fogtexvec)[ifogsquence]->pTexture , NULL , &D3DXVECTOR3(48, 48, 0), NULL
-				,m_fogTile[idx]->fog_color);
+				,m_fogTile[idx]->fog_color[eteam]);
 
 			//TCHAR temp[32];
 			//RECT rc = {0};
@@ -207,8 +209,6 @@ void CTileManager::RenderFog(void)
 			//	,D3DCOLOR_ARGB(255,0,255,0));
 		}
 	}
-
-
 }
 
 void CTileManager::RenderCreep(void)
@@ -225,7 +225,7 @@ void CTileManager::RenderCreep(void)
 	int fCenterX = 0;
 	int fCenterY = 0;
 
-	CREEP_INFO*	pCreep_temp = NULL;
+	ULONG	pCreepbit = 0;
 
 	for(int i = 0; i < CULLINGCNTY; ++i)
 	{
@@ -238,284 +238,442 @@ void CTileManager::RenderCreep(void)
 			//if(FOG_BLACK == m_fogTile[idx]->eSight) //이게 뜬금없이 왜있지??
 			//	continue;
 
-			if(false == m_creepTile[idx]->bcreep_install)
-				continue;
+			//if(false == m_creepTile[idx]->bcreep_install)
+				//continue;
 
 			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
 			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
 
 
+			pCreepbit = m_creepTile[idx]->creep_bit;
+
+			if(0 == pCreepbit)
+				continue;
+
+			//if(0xFFFFFFFF == pCreepbit)
+			m_creepTile[idx]->creep_sequence = 12;
+
+			if(0x33333333 == pCreepbit /*||
+				0x31311313 == pCreepbit ||
+				(0x01011010 ^ pCreepbit) == 0x01011010*/)
+				m_creepTile[idx]->creep_sequence = 12;
+
+			else if( (0x00011010 & pCreepbit) == 0x00011010)
+				m_creepTile[idx]->creep_sequence = 8;
+
+			else if( (0x01001010 & pCreepbit) == 0x01001010)
+				m_creepTile[idx]->creep_sequence = 15;
+
+			else if( (0x01010010 & pCreepbit) == 0x01010010)
+				m_creepTile[idx]->creep_sequence = 16;
+
+			else if( (0x01011000 & pCreepbit) == 0x01011000)
+				m_creepTile[idx]->creep_sequence = 20;
+
+			else if( 0x00000212 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 0;
+
+			else if( 0x00000112 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 5;
+
+			else if( 0x00000211 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 6;
+
+			else if( 0x00201002 == pCreepbit ||
+				0x00201001 == pCreepbit ||
+				0x00101002 == pCreepbit ||
+				 0x00101001 == pCreepbit )
+				m_creepTile[idx]->creep_sequence = 13;
+
+			else if( 0x20010200 == pCreepbit ||
+				0x20010100 == pCreepbit ||
+				0x10010200 == pCreepbit ||
+				0x10010100 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 14;
+
+			else if(  0x00000212 == pCreepbit ||
+				0x00000112 == pCreepbit ||
+				0x00000211 == pCreepbit ||
+				0x00000111 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 25;
+
+			else if(  0x21200000 == pCreepbit ||
+				0x11200000 == pCreepbit ||
+				0x21100000 == pCreepbit ||
+				0x11100000 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 1;
+
+			else if( 0x21301002 == pCreepbit ||
+				0x21301001 == pCreepbit ||
+				0x21201002 == pCreepbit ||
+				0x21201001 == pCreepbit ||
+				0x11301002 == pCreepbit ||
+				0x11201002 == pCreepbit ||
+				0x11301001 == pCreepbit ||
+				0x11201001 == pCreepbit )
+				m_creepTile[idx]->creep_sequence = 22;
+
+				
+			else if( 0x31210200 == pCreepbit ||
+				0x31210100 == pCreepbit ||
+				0x31110200 == pCreepbit ||
+				0x31110100 == pCreepbit ||				
+				0x21210200 == pCreepbit ||
+				0x21210100 == pCreepbit ||
+				0x21110200 == pCreepbit ||
+				0x21110100 == pCreepbit )
+				m_creepTile[idx]->creep_sequence = 23;
 
 
-			pCreep_temp = m_creepTile[idx];
+			else if( 0x00201213 == pCreepbit ||
+				0x00201113 == pCreepbit ||
+				0x00201212 == pCreepbit ||
+				0x00201112 == pCreepbit ||
+				0x00101213 == pCreepbit ||
+				0x00101113 == pCreepbit ||
+				0x00101212 == pCreepbit ||
+				0x00101112 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 10;
+		
 
-			if( 0x3332 == pCreep_temp->creep_bit ||
-				0x3323 == pCreep_temp->creep_bit ||
-				0x3233 == pCreep_temp->creep_bit ||
-				0x2333 == pCreep_temp->creep_bit ||
-				0x3220 == pCreep_temp->creep_bit ||
-				0x2302 == pCreep_temp->creep_bit ||
-				0x2032 == pCreep_temp->creep_bit ||
-				0x0223 == pCreep_temp->creep_bit ||
-				0x3311 == pCreep_temp->creep_bit ||
-				0x1313 == pCreep_temp->creep_bit ||
-				0x1133 == pCreep_temp->creep_bit ||
-				0x3131 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = -1;
-			}
-			else if( 0x0000 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 0;
-			}
-			else if( 0x2200 ==  pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 1;
-			}
-			else if( 0x3210 ==  pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 2;
-			}
-			else if( 0x2301 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 3;
-			}
-			else if( 0x2100 == pCreep_temp->creep_bit )
-			{
-				pCreep_temp->creep_sequence = 4;
-			}
-			else if( 0x1200 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 6;
-			}
-			else if( 0x3110 == pCreep_temp->creep_bit ||
-				0x2010 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 7;
-			}
-			else if( 0x1301 == pCreep_temp->creep_bit ||
-				0x0201 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 8;
-			}
-			else if( 0x3120 == pCreep_temp->creep_bit || 
-				0x2020 == pCreep_temp->creep_bit ||
-				0x2031 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 9;
-			}
-			else if( 0x1302 == pCreep_temp->creep_bit || 
-				0x0202 == pCreep_temp->creep_bit ||
-				0x0213 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 10;
-			}
-			else if( 0x1032 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 11;
-			}
-			else if( 0x0123 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 12;
-			}
-			else if( 0x0021 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 13;
-			}
-			else if( 0x0012 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 15;
-			}
-			else if( 0x1020 == pCreep_temp->creep_bit ||
-				0x1031 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 16;
-			}
-			else if( 0x0102 == pCreep_temp->creep_bit ||
-				0x0113 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 17;
-			}
-			else if( 0x0022 == pCreep_temp->creep_bit)
-			{
-				pCreep_temp->creep_sequence = 18;
-			}
+			else if( 0x20010312 == pCreepbit ||
+				0x20010311 == pCreepbit ||
+				0x20010211 == pCreepbit ||
+				0x20010212 == pCreepbit ||
+				0x10010312 == pCreepbit ||
+				0x10010311 == pCreepbit ||
+				0x10010212 == pCreepbit ||
+				0x10010211 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 11;
+
+
+			else if( 0x10010311 == pCreepbit ||
+				0x10010211 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 9;
+
+			else if( 0x00101113 == pCreepbit ||
+				0x00101112 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 7;
+
+			else if( 0x21200000 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 24;
+
+			else if( 0x11200000 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 17;
+
+			else if( 0x21100000 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 18;
+
+			else if( 0x31311000 == pCreepbit ||
+				0x21311000 == pCreepbit ||
+				0x21211000 == pCreepbit ||
+				0x31211000 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 20;
+
+			else if( 0x31010311 == pCreepbit ||
+				0x31010211 == pCreepbit ||
+				0x21010311 == pCreepbit ||
+				0x21010211 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 29;
+
+			else if((0x01000010 & pCreepbit) == 0x01000010)
+				m_creepTile[idx]->creep_sequence = 27;
+
+			else if(  0x21200212 == pCreepbit ||
+				0x11200212 == pCreepbit ||
+				0x21100212 == pCreepbit ||
+				0x11100212 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 3;
+
+			else if(  0x21200112 == pCreepbit ||
+				0x11200112 == pCreepbit ||
+				0x21100112 == pCreepbit ||
+				0x11100112 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 2;
+
+			else if(  0x21200211 == pCreepbit ||
+				0x11200211 == pCreepbit ||
+				0x21100211 == pCreepbit ||
+				0x11100211 == pCreepbit)
+				m_creepTile[idx]->creep_sequence = 4;
+
 			else
-				pCreep_temp->creep_sequence = 0;
+			{
+				CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_creepTile[idx]->creep_cnt ,
+					m_sqTile[idx]->vPos.x , m_sqTile[idx]->vPos.y);
+				continue;
+			}
+
 
 			icreep_squence = m_creepTile[idx]->creep_sequence;
-
-			if(icreep_squence < 0)
-				continue;
 
 			m_pSprite->SetTransform(&m_matWorld);
 			m_pSprite->Draw( (*ptemp)[icreep_squence]->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
 				,D3DCOLOR_ARGB(255,255,255,255));
+
+			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_creepTile[idx]->creep_cnt ,
+			//	m_sqTile[idx]->vPos.x , m_sqTile[idx]->vPos.y);
 		}
 	}
 
 }
 void CTileManager::Creep_Autotile(const int& idx)
 {
-	int UP_idx = 0;
-	int LU_idx = 0;
-	int RU_idx = 0;
-	int R_idx = 0;
-	int L_idx = 0;
-	int DL_idx = 0;
-	int DR_idx = 0;
-	int DOWN_idx = 0;
+	int UP_idx	 = -1;
+	int DOWN_idx = -1;
+	int LU_idx	 = -1;
+	int RU_idx	 = -1;
+	int L_idx	 = -1;
+	int R_idx	 = -1;
+	int DL_idx	 = -1;
+	int DR_idx	 = -1;
 
 
-	UP_idx	 = idx - SQ_TILECNTX;
-	DOWN_idx = idx + SQ_TILECNTX;
-	LU_idx	 = idx - SQ_TILECNTX - 1;
-	RU_idx	 = idx - SQ_TILECNTX + 1;
-	L_idx	 = idx - 1;
-	R_idx	 = idx + 1;
-	DL_idx	 = idx + SQ_TILECNTX - 1;
-	DR_idx	 = idx + SQ_TILECNTX + 1;
 
-	if(false == m_creepTile[UP_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x1100;
-	}
-	if(false == m_creepTile[RU_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x0100;
-	}
-	if(false == m_creepTile[R_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x0101;
-	}
-	if(false == m_creepTile[DR_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x0001;
-	}
-	if(false == m_creepTile[DOWN_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x0011;
-	}
-	if(false == m_creepTile[DL_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x0010;
-	}
-	if(false == m_creepTile[L_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x1010;
-	}
-	if(false == m_creepTile[LU_idx]->bcreep_install)
-	{
-		m_creepTile[idx]->creep_bit += 0x1000;
-	}
+	if(0 != idx / SQ_TILECNTX)
+		UP_idx	 = idx - SQ_TILECNTX;
+
+	if(SQ_TILECNTX - 1 != idx / SQ_TILECNTX)
+		DOWN_idx = idx + SQ_TILECNTX;
+
+	if(0 != idx / SQ_TILECNTX)
+		LU_idx	 = idx - SQ_TILECNTX - 1;
+
+	if(0 != idx / SQ_TILECNTX)
+		RU_idx	 = idx - SQ_TILECNTX + 1;
+
+	if(0 != idx % SQ_TILECNTX) 
+		L_idx	 = idx - 1;
+
+	if(SQ_TILECNTX - 1 != idx % SQ_TILECNTX)
+		R_idx	 = idx + 1;
+
+	if(SQ_TILECNTX - 1 != idx / SQ_TILECNTX)
+		DL_idx	 = idx + SQ_TILECNTX - 1;
+
+	if(SQ_TILECNTX - 1 != idx / SQ_TILECNTX)
+		DR_idx	 = idx + SQ_TILECNTX + 1;
+
+	/*
+	0열 1열 
+	0행	 0,  0, 
+	1행	 0,  0, 
 
 
-	if(true == m_creepTile[UP_idx]->bcreep_install)
+	m_creepTile[idx]->creep_bit = false; 
+	false는 그 인덱스에 크립이 없다는 의미
+
+	/*
+	8개의 비트중 앞 세자리는 LU , UP , RU
+	그다음 두 자리는 L , R
+	그 다음 세자리는 LD , DOWN , RD 이다.
+	*/
+
+	//m_creepTile[UP_idx]->creep_bit		+= 0x00000111;
+	//m_creepTile[DOWN_idx]->creep_bit	+= 0x11100000;
+	//m_creepTile[LU_idx]->creep_bit		+= 0x00000001;
+	//m_creepTile[RU_idx]->creep_bit		+= 0x00000100;
+	//m_creepTile[L_idx]->creep_bit		+= 0x00101001;
+	//m_creepTile[R_idx]->creep_bit		+= 0x10010100;
+	//m_creepTile[DL_idx]->creep_bit		+= 0x00100000;
+	//m_creepTile[DR_idx]->creep_bit		+= 0x10000000;
+
+	
+	m_creepTile[idx]->creep_cnt += 1;
+
+	if(m_creepTile[idx]->creep_cnt >= 2)
+		return;
+
+	m_creepTile[idx]->creep_bit = 0X33333333;
+
+	if( UP_idx >= 0 && m_creepTile[UP_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[UP_idx]->creep_bit -= 0x0011;
+		m_creepTile[UP_idx]->creep_bit		+= 0x00000111;
 	}
-	if(true == m_creepTile[RU_idx]->bcreep_install)
+
+	if( DOWN_idx >= 0 && m_creepTile[DOWN_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[RU_idx]->creep_bit -= 0x0010;
+		m_creepTile[DOWN_idx]->creep_bit	+= 0x11100000;
 	}
-	if(true == m_creepTile[R_idx]->bcreep_install)
+
+	if( LU_idx >= 0 && m_creepTile[LU_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[R_idx]->creep_bit -= 0x1010;
+		m_creepTile[LU_idx]->creep_bit		+= 0x00000001;
 	}
-	if(true == m_creepTile[DR_idx]->bcreep_install)
+
+	if( RU_idx >= 0 && m_creepTile[RU_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[DR_idx]->creep_bit -= 0x1000;
+		m_creepTile[RU_idx]->creep_bit		+= 0x00000100;
 	}
-	if(true == m_creepTile[DOWN_idx]->bcreep_install)
+
+	if( L_idx >= 0 && m_creepTile[L_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[DOWN_idx]->creep_bit -= 0x1100;
+		m_creepTile[L_idx]->creep_bit		+= 0x00101001;
 	}
-	if(true == m_creepTile[DL_idx]->bcreep_install)
+
+	if( R_idx >= 0 && m_creepTile[R_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[DL_idx]->creep_bit -= 0x0100;
+		m_creepTile[R_idx]->creep_bit		+= 0x10010100;
 	}
-	if(true == m_creepTile[L_idx]->bcreep_install)
+
+	if( DL_idx >= 0 && m_creepTile[DL_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[L_idx]->creep_bit -= 0x0101;
+		m_creepTile[DL_idx]->creep_bit		+= 0x00100000;
 	}
-	if(true == m_creepTile[LU_idx]->bcreep_install)
+
+	if( DR_idx >= 0 && m_creepTile[DR_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[LU_idx]->creep_bit -= 0x0001;
+		m_creepTile[DR_idx]->creep_bit		+= 0x10000000;
 	}
 }
 void CTileManager::Creep_decrease_autotile(const int& idx)
-{
-	int UP_idx = 0;
-	int LU_idx = 0;
-	int RU_idx = 0;
-	int R_idx = 0;
-	int L_idx = 0;
-	int DL_idx = 0;
-	int DR_idx = 0;
-	int DOWN_idx = 0;
+{	
+
+	//크립 줄어드는건 시체에서 하자
+
+	int UP_idx	 = -1;
+	int DOWN_idx = -1;
+	int LU_idx	 = -1;
+	int RU_idx	 = -1;
+	int L_idx	 = -1;
+	int R_idx	 = -1;
+	int DL_idx	 = -1;
+	int DR_idx	 = -1;
 
 
-	UP_idx	 = idx - SQ_TILECNTX;
-	DOWN_idx = idx + SQ_TILECNTX;
-	LU_idx	 = idx - SQ_TILECNTX - 1;
-	RU_idx	 = idx - SQ_TILECNTX + 1;
-	L_idx	 = idx - 1;
-	R_idx	 = idx + 1;
-	DL_idx	 = idx + SQ_TILECNTX - 1;
-	DR_idx	 = idx + SQ_TILECNTX + 1;
+	if(0 != idx / SQ_TILECNTX)
+		UP_idx	 = idx - SQ_TILECNTX;
 
-	m_creepTile[idx]->creep_bit = 0x0000;
+	if(SQ_TILECNTX - 1 != idx / SQ_TILECNTX)
+		DOWN_idx = idx + SQ_TILECNTX;
 
-	if(true == m_creepTile[UP_idx]->bcreep_install)
+	if(0 != idx / SQ_TILECNTX)
+		LU_idx	 = idx - SQ_TILECNTX - 1;
+
+	if(0 != idx / SQ_TILECNTX)
+		RU_idx	 = idx - SQ_TILECNTX + 1;
+
+	if(0 != idx % SQ_TILECNTX) 
+		L_idx	 = idx - 1;
+
+	if(SQ_TILECNTX - 1 != idx % SQ_TILECNTX)
+		R_idx	 = idx + 1;
+
+	if(SQ_TILECNTX - 1 != idx / SQ_TILECNTX)
+		DL_idx	 = idx + SQ_TILECNTX - 1;
+
+	if(SQ_TILECNTX - 1 != idx / SQ_TILECNTX)
+		DR_idx	 = idx + SQ_TILECNTX + 1;
+
+		
+	m_creepTile[idx]->creep_cnt -= 1;
+
+	if(m_creepTile[idx]->creep_cnt >= 1)
+		return;
+
+	m_creepTile[idx]->creep_bit = 0x00000000;
+
+	///////////
+	if( UP_idx >= 0 && m_creepTile[UP_idx]->creep_bit != 0 && m_creepTile[UP_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[UP_idx]->creep_bit += 0x0011;
+		m_creepTile[UP_idx]->creep_bit		-= 0x00000111;
 	}
-	if(true == m_creepTile[RU_idx]->bcreep_install)
+
+	if( DOWN_idx >= 0 && m_creepTile[DOWN_idx]->creep_bit != 0 && m_creepTile[DOWN_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[RU_idx]->creep_bit += 0x0010;
+		m_creepTile[DOWN_idx]->creep_bit	-= 0x11100000;
 	}
-	if(true == m_creepTile[R_idx]->bcreep_install)
+
+	if( LU_idx >= 0 && m_creepTile[LU_idx]->creep_bit != 0 && m_creepTile[LU_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[R_idx]->creep_bit += 0x1010;
+		m_creepTile[LU_idx]->creep_bit		-= 0x00000001;
 	}
-	if(true == m_creepTile[DR_idx]->bcreep_install)
+
+	if( RU_idx >= 0 && m_creepTile[RU_idx]->creep_bit != 0 && m_creepTile[RU_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[DR_idx]->creep_bit += 0x1000;
+		m_creepTile[RU_idx]->creep_bit		-= 0x00000100;
 	}
-	if(true == m_creepTile[DOWN_idx]->bcreep_install)
+
+	if( L_idx >= 0 && m_creepTile[L_idx]->creep_bit != 0 && m_creepTile[L_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[DOWN_idx]->creep_bit += 0x1100;
+		m_creepTile[L_idx]->creep_bit		-= 0x00101001;
 	}
-	if(true == m_creepTile[DL_idx]->bcreep_install)
+
+	if( R_idx >= 0 && m_creepTile[R_idx]->creep_bit != 0 && m_creepTile[R_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[DL_idx]->creep_bit += 0x0100;
+		m_creepTile[R_idx]->creep_bit		-= 0x10010100;
 	}
-	if(true == m_creepTile[L_idx]->bcreep_install)
+
+	if( DL_idx >= 0 && m_creepTile[DL_idx]->creep_bit != 0 && m_creepTile[DL_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[L_idx]->creep_bit += 0x0101;
+		m_creepTile[DL_idx]->creep_bit		-= 0x00100000;
 	}
-	if(true == m_creepTile[LU_idx]->bcreep_install)
+
+	if( DR_idx >= 0 && m_creepTile[DR_idx]->creep_bit != 0 && m_creepTile[DR_idx]->creep_bit != 0x33333333)
 	{
-		m_creepTile[LU_idx]->creep_bit += 0x0001;
+		m_creepTile[DR_idx]->creep_bit		-= 0x10000000;
+	}
+
+	////////////////////////////////////
+
+	if( UP_idx >= 0 && m_creepTile[UP_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit		+= 0x11100000;
+	}
+
+	if( DOWN_idx >= 0 && m_creepTile[DOWN_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit	+= 0x00000111;
+	}
+
+	if( LU_idx >= 0 && m_creepTile[LU_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit		+= 0x10000000;
+	}
+
+	if( RU_idx >= 0 && m_creepTile[RU_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit		+= 0x00100000;
+	}
+
+	if( L_idx >= 0 && m_creepTile[L_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit		+= 0x10010100;
+	}
+
+	if( R_idx >= 0 && m_creepTile[R_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit		+= 0x00101001;
+	}
+
+	if( DL_idx >= 0 && m_creepTile[DL_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit		+= 0x00000100;
+	}
+
+	if( DR_idx >= 0 && m_creepTile[DR_idx]->creep_bit == 0x33333333)
+	{
+		m_creepTile[idx]->creep_bit		+= 0x00000001;
 	}
 }
-void CTileManager::SightOffRender(const int& idx)
+void CTileManager::SightOffRender(const int& idx ,const TEAM_NUMBER& eteam)
 {
-	m_fogTile[idx]->overlap_cnt -= 1;
+	m_fogTile[idx]->overlap_cnt[eteam] -= 1;
 
-	if(m_fogTile[idx]->overlap_cnt <= 0)
+	if(m_fogTile[idx]->overlap_cnt[eteam] <= 0)
 	{
-		m_fogTile[idx]->overlap_cnt = 0;
-		m_fogTile[idx]->bLight = false;
-		m_fogTile[idx]->eSight = FOG_GREY;
+		m_fogTile[idx]->overlap_cnt[eteam] = 0;
+		//m_fogTile[idx]->bLight[eteam] = false;
+		m_fogTile[idx]->eSight[eteam] = FOG_GREY;
 
-		m_fogTile[idx]->fog_color = D3DCOLOR_ARGB(40,0,0,0);
-		m_fogTile[idx]->fog_sequence = 1;
+		m_fogTile[idx]->fog_color[eteam] = D3DCOLOR_ARGB(50,0,0,0);
+		m_fogTile[idx]->fog_sequence[eteam] = 1;
 
-		m_minifog_offidx.push_back(idx);
+		if(CSession_Mgr::GetInstance()->GetTeamNumber() == eteam)
+			m_minifog_offidx.push_back(idx);
 	}
 }
-void CTileManager::SightOnRender(const int& idx ,const int& irange , vector<int>& sightoff_list , bool* fogsearch , MOVE_TYPE etype)
+void CTileManager::SightOnRender(const int& idx ,const int& irange , vector<int>& sightoff_list , bool* fogsearch ,CObj* pobj)
 {
 	//range는 가급적 홀수
 
@@ -527,13 +685,15 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , vector<int>
 	int startIdx = idx;
 	int destidx = 0;
 
+	TEAM_NUMBER eteam = pobj->GetTeamNumber();
 	if(false == fogsearch[idx])
 	{
 		fogsearch[idx] = true;
-		sightoff_list.push_back(startIdx);		
-		CTileManager::GetInstance()->SetFogoverlap_cnt(idx);
-		CTileManager::GetInstance()->SetFogSquence(startIdx , 0);
-		CTileManager::GetInstance()->SetFogLight(startIdx , 0 , 1);
+		sightoff_list.push_back(startIdx);
+
+		m_fogTile[idx]->overlap_cnt[eteam] += 1;
+		m_fogTile[idx]->fog_sequence[eteam] = 0;
+		SetFogLight(idx , eteam);
 	}
 
 
@@ -574,25 +734,25 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , vector<int>
 	for(int j = LUvtx_idx; j <= RUvtx_idx; ++j) //윗줄 
 	{
 		destidx = j;
-		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , pobj);
 	}
 
 	for(int j = LDvtx_idx; j <= RDvtx_idx; ++j) //아랫줄 
 	{
 		destidx = j;
-		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , pobj);
 	}
 
 	for(int i = LUvtx_idx + SQ_TILECNTX; i < LDvtx_idx; i += SQ_TILECNTX) //왼쪽 열
 	{
 		destidx = i;
-		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , pobj);
 	}
 
 	for(int i = RUvtx_idx + SQ_TILECNTX; i < RDvtx_idx; i += SQ_TILECNTX) //오른쪽 열
 	{
 		destidx = i;
-		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , etype);
+		Bresenham_fog(m_sqTile[startIdx]->vPos , m_sqTile[destidx]->vPos ,fradius , sightoff_list , fogsearch , pobj);
 	}
 }
 
@@ -656,35 +816,55 @@ void CTileManager::SetFogSquence(int idx , unsigned short sequence)
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
 		return;
 
-	m_fogTile[idx]->fog_sequence		 = sequence;
+	//m_fogTile[idx]->fog_sequence		 = sequence;
 }
-void CTileManager::SetFogLight(int idx , float fdistance , float fradius)
+void CTileManager::SetFogLight(int idx , const TEAM_NUMBER& eteam)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
 		return;
 
-	if(false == m_fogTile[idx]->bLight)
-		m_fogTile[idx]->bLight = true;
+	//if(false == m_fogTile[idx]->bLight[eteam])
+	//	m_fogTile[idx]->bLight[eteam] = true;
 
-	m_fogTile[idx]->eSight = FOG_ALPHA;
+	if(FOG_BLACK == m_fogTile[idx]->eSight[eteam] ||
+		FOG_GREY == m_fogTile[idx]->eSight[eteam])
+		m_fogTile[idx]->eSight[eteam] = FOG_ALPHA;
 
-	int ivalue = int(fdistance/fradius*100);
-
-	if( m_fogTile[idx]->fog_color < D3DCOLOR_ARGB(ivalue, 0, 0 , 0) ) //기존에 있던 불빛이 더 밝다면
+	if( m_fogTile[idx]->fog_color[eteam] <= D3DCOLOR_ARGB(10,0,0,0))
 		return;
 
-	m_fogTile[idx]->fog_color = D3DCOLOR_ARGB(ivalue , 0,0,0 );
+	m_fogTile[idx]->fog_color[eteam] = D3DCOLOR_ARGB(0 , 0,0,0 );
 
-	m_minifog_onidx.push_back(idx);
+	if(CSession_Mgr::GetInstance()->GetTeamNumber() == eteam)
+		m_minifog_onidx.push_back(idx);
 
 }
+//void CTileManager::SetFogLight(int idx , float fdistance , float fradius , const TEAM_NUMBER& eteam)
+//{
+//	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
+//		return;
+//
+//	if(false == m_fogTile[idx]->bLight[eteam])
+//		m_fogTile[idx]->bLight[eteam] = true;
+//
+//	//m_fogTile[idx]->eSight = FOG_ALPHA;
+//
+//	int ivalue = int(fdistance/fradius*100);
+//
+//	if( m_fogTile[idx]->fog_color[eteam] < D3DCOLOR_ARGB(ivalue, 0, 0 , 0) ) //기존에 있던 불빛이 더 밝다면
+//		return;
+//
+//	m_fogTile[idx]->fog_color[eteam] = D3DCOLOR_ARGB(0 , 0,0,0 );
+//	m_minifog_onidx.push_back(idx);
+//
+//}
 void CTileManager::SetCreepInstall(const int& idx , bool binstall)
 {
 	m_creepTile[idx]->bcreep_install = binstall;
 }
 void CTileManager::SetFogColor(const int& idx , D3DCOLOR color)
 {
-	m_fogTile[idx]->fog_color = color;
+	//m_fogTile[idx]->fog_color = color;
 }
 bool CTileManager::CheckFogFloor(int myidx , int destidx)
 {
@@ -721,7 +901,7 @@ bool CTileManager::CheckCreepFloor(int myidx , int destidx)
 	}
 	return true;
 }
-BYTE CTileManager::GetTileOption(const int& idx)
+int CTileManager::GetTileOption(const int& idx)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
 		return -1;
@@ -729,7 +909,7 @@ BYTE CTileManager::GetTileOption(const int& idx)
 	//enum TILE_OPTION값 참조
 	return m_sqTile[idx]->byOption;
 }
-BYTE CTileManager::GetTileFloor(const int& idx)
+int CTileManager::GetTileFloor(const int& idx)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
 		return -1;
@@ -1002,14 +1182,15 @@ void CTileManager::ReadyMiniMap(void)
 	//CDevice::GetInstance()->GetDevice()->Present(NULL, NULL , NULL , NULL);
 
 }
-bool CTileManager::GetFogLight(const int& idx)
+FOGSIGHT_OPTION CTileManager::GetFogLight(const int& idx , const TEAM_NUMBER& eteam)
 {
-	return m_fogTile[idx]->bLight;
+	//return m_fogTile[idx]->bLight[eteam];
+	return m_fogTile[idx]->eSight[eteam];
 }
-FOGSIGHT_OPTION CTileManager::GetFogSightOp(const int& idx)
-{
-	return m_fogTile[idx]->eSight;
-}
+//FOGSIGHT_OPTION CTileManager::GetFogSightOp(const int& idx)
+//{
+//	return m_fogTile[idx]->eSight;
+//}
 bool CTileManager::GetCreepInstall(const int& idx)
 {
 	return m_creepTile[idx]->bcreep_install;
@@ -1025,11 +1206,10 @@ CREEP_INFO** CTileManager::GetCreepTile(void)
 	return m_creepTile;
 }
 
-void CTileManager::SetFogoverlap_cnt(const int& idx)
+void CTileManager::SetFogoverlap_cnt(const int& idx , const TEAM_NUMBER& eteam)
 {
 	//유닛 시야끼리 겹친부분의 타일을 +1한다
-	m_fogTile[idx]->overlap_cnt += 1;
-
+	m_fogTile[idx]->overlap_cnt[eteam] += 1;
 }
 bool CTileManager::Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest )
 {
@@ -1044,6 +1224,8 @@ bool CTileManager::Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECT
 	int loopcnt = 0;
 	int isignX = 1;
 	int isignY = 1;
+
+	int opvalue = 0;
 
 	if(iHeight < 0)
 	{
@@ -1074,8 +1256,9 @@ bool CTileManager::Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECT
 
 			idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
 
-			if(MOVE_NONE == GetTileOption(idx))
-				return false;
+			opvalue = GetTileOption(idx);
+			if( opvalue < 0 || MOVE_NONE == opvalue)
+				return true;
 		}
 	}
 	else
@@ -1093,16 +1276,18 @@ bool CTileManager::Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECT
 				e -= iHeight*2;
 			}
 
-			idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
+			//idx = CMyMath::Pos_to_index(vStart.x + i * SQ_TILESIZEX * isignX, vStart.y + icnt * isignY);
+			idx = CMyMath::Pos_to_index(vStart.x + icnt * isignX , vStart.y + i*SQ_TILESIZEY*isignY);
 
-			if(MOVE_NONE == GetTileOption(idx))
-				return false;
+			opvalue = GetTileOption(idx);
+			if( opvalue < 0 || MOVE_NONE == opvalue)
+				return true;
 		}
 	}
 
-	return true;
+	return false;
 }
-void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,vector<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype)
+void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,vector<int>& light_IdxList , bool* fogsearch, CObj* pobj)
 {
 	int iWidth = int(vDest.x - vStart.x);
 	int iHeight = int(vDest.y - vStart.y);
@@ -1118,6 +1303,9 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 	int isignY = 1;
 
 	int myidx = CMyMath::Pos_to_index(vStart.x , vStart.y);
+
+	MOVE_TYPE etype = pobj->GetUnitinfo().eMoveType;
+	TEAM_NUMBER eteam = pobj->GetTeamNumber();
 
 	if(iHeight < 0)
 	{
@@ -1165,20 +1353,13 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 					if(false == fogsearch[idx])
 					{						
 						fogsearch[idx] = true;
-						SetFogoverlap_cnt(idx);
-						light_IdxList.push_back(idx);						
+						light_IdxList.push_back(idx);
+						m_fogTile[idx]->overlap_cnt[eteam] += 1;											
 					}
 
-					if(ishade_range >= 0.8f)
-					{
-						SetFogSquence(idx , 1);
-						SetFogLight(idx , X + Y , float(fRadius*fRadius));
-					}
-					else
-					{
-						SetFogSquence(idx , 0);
-						SetFogLight(idx , 0 , 1);
-					}
+					m_fogTile[idx]->fog_sequence[eteam] = 0;
+					SetFogLight(idx , eteam);
+					//}
 				}
 				else if(MOVE_GROUND == etype)
 				{
@@ -1187,20 +1368,12 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						if(false == fogsearch[idx])
 						{						
 							fogsearch[idx] = true;
-							SetFogoverlap_cnt(idx);
-							light_IdxList.push_back(idx);						
+							light_IdxList.push_back(idx);
+							m_fogTile[idx]->overlap_cnt[eteam] += 1;											
 						}
 
-						if(ishade_range >= 0.8f)
-						{
-							SetFogSquence(idx , 1);
-							SetFogLight(idx , X + Y , float(fRadius*fRadius));
-						}
-						else
-						{
-							SetFogSquence(idx , 0);
-							SetFogLight(idx , 0 , 1);
-						}
+						m_fogTile[idx]->fog_sequence[eteam] = 0;
+						SetFogLight(idx , eteam);
 					}
 					else
 						break;
@@ -1239,19 +1412,12 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 					if(false == fogsearch[idx])
 					{						
 						fogsearch[idx] = true;
-						SetFogoverlap_cnt(idx);
-						light_IdxList.push_back(idx);						
+						light_IdxList.push_back(idx);
+						m_fogTile[idx]->overlap_cnt[eteam] += 1;								
 					}
-					if(ishade_range >= 0.8f)
-					{
-						SetFogSquence(idx , 1);
-						SetFogLight(idx , X + Y , float(fRadius*fRadius));
-					}
-					else
-					{
-						SetFogSquence(idx , 0);
-						SetFogLight(idx , 0 , 1);
-					}
+
+					m_fogTile[idx]->fog_sequence[eteam] = 0;
+					SetFogLight(idx , eteam);
 				}
 				else if(MOVE_GROUND == etype)
 				{
@@ -1260,24 +1426,12 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						if(false == fogsearch[idx])
 						{						
 							fogsearch[idx] = true;
-							SetFogoverlap_cnt(idx);
-							light_IdxList.push_back(idx);						
+							light_IdxList.push_back(idx);
+							m_fogTile[idx]->overlap_cnt[eteam] += 1;			
 						}
-						//if(fRadius*fRadius - ishade_range <= X + Y)
-						if(ishade_range >= 0.8f)
-						{
-							//ishade_range 범위 0 ~ 1
 
-							//끝에 어두운 효과를 주는 곳
-							SetFogSquence(idx , 1);
-							SetFogLight(idx , X + Y , float(fRadius*fRadius));
-						}
-						else
-						{
-							/*일반적으로 밝히는곳*/
-							SetFogSquence(idx , 0);
-							SetFogLight(idx , 0 , 1);
-						}
+						m_fogTile[idx]->fog_sequence[eteam] = 0;
+						SetFogLight(idx , eteam);
 					}
 					else
 						break;

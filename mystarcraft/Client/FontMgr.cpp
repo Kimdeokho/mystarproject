@@ -147,6 +147,7 @@ void CFontMgr::FontRender(void)
 }
 void CFontMgr::Setnumber_combine_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/)
 {
+	//단 한개의 폰트만 받는다
 	m_render_fontlist.clear();
 
 	FONT_INFO ptemp;
@@ -250,8 +251,8 @@ void CFontMgr::SetNoticeFont(const TCHAR* szfont , float posX , float posY , D3D
 	/*한번 입력받고 몇초동안 지속적으로 렌더 후 삭제되는 폰트*/
 	FONT_INFO ptemp;
 
-	ptemp.fX = posX- CScrollMgr::m_fScrollX;
-	ptemp.fY = posY - CScrollMgr::m_fScrollY;
+	ptemp.fX = posX;//- CScrollMgr::m_fScrollX;
+	ptemp.fY = posY;// - CScrollMgr::m_fScrollY;
 	ptemp.font_color = _color;
 
 	lstrcpy(ptemp.font , szfont);

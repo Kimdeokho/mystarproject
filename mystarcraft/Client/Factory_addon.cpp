@@ -53,7 +53,6 @@ void CFactory_addon::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_FAC_ADDON;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -120,12 +119,12 @@ void CFactory_addon::Update(void)
 		}
 	}
 
-	D3DXVECTOR2 vpos;
-	vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
-	vpos.x -= CScrollMgr::m_fScrollX;
-	vpos.y -= CScrollMgr::m_fScrollY;
-	CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
-		m_vPos.y - CScrollMgr::m_fScrollY);
+	//D3DXVECTOR2 vpos;
+	//vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
+	//vpos.x -= CScrollMgr::m_fScrollX;
+	//vpos.y -= CScrollMgr::m_fScrollY;
+	//CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
+	//	m_vPos.y - CScrollMgr::m_fScrollY);
 
 	CTerran_building::fire_eff_update();
 	CTerran_building::upginfo_update(UPG_T_VFC0);

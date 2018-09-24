@@ -16,6 +16,9 @@ private:
 	bool					m_sub_on;
 	
 	const TCHAR*			m_link_texkey;
+
+	bool					m_bsighton;
+	bool					m_isescape;
 public:
 	void sub_update(void);
 	void play_direction(const int& dir/*1¶Ç´Â -1*/);

@@ -54,7 +54,6 @@ void CGhost::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_GHOST;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
@@ -141,11 +140,11 @@ void CGhost::Update(void)
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
 
-	if( false == m_upg_feedback[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
+	if( false == m_upg_state[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
 	{
 		m_unitinfo.attack_range += 1*32;
 		m_unitinfo.air_attack_range += 1*32;
-		m_upg_feedback[UPG_T_BA0] = true;
+		m_upg_state[UPG_T_BA0] = true;
 		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
 	}
 
@@ -252,8 +251,6 @@ void CGhost::Inputkey_reaction(const int& firstkey , const int& secondkey)
 				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , false);
 				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
-
-				((CCom_Pathfind*)m_com_pathfind)->GetGoalPos();
 
 				((CCom_UsingSkill*)m_com_usingskill)->SetUsingSkill(SO_NUCLEAR , NULL , goalpos);
 				m_bmagicbox = false;

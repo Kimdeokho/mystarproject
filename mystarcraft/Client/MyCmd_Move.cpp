@@ -57,11 +57,12 @@ void CMyCmd_Move::Progress(void)
 	list<CObj*>	unitlist;
 	D3DXVECTOR2	vdest = D3DXVECTOR2((float)m_x , (float)m_y);
 
-	//CUnitMgr::GetInstance()->SetGoal
 	for(USHORT i = 0; i < m_unitsize; ++i)
 	{
 		pobj = CObjMgr::GetInstance()->GetObj(m_unit_numlist[i]);
-		unitlist.push_back(pobj);		
+
+		if(NULL != pobj)
+			unitlist.push_back(pobj);		
 	}
 	pobj = CObjMgr::GetInstance()->GetObj(m_targetnum);
 	CArea_Mgr::GetInstance()->SetChoiceTarget(pobj);
@@ -72,7 +73,9 @@ void CMyCmd_Move::Progress(void)
 	list<CObj*>::iterator iter = unitlist.begin();
 	list<CObj*>::iterator iter_end = unitlist.end();
 	for(; iter != iter_end; ++iter)
+	{
 		(*iter)->Inputkey_reaction(VK_RBUTTON);
+	}
 }
 
 CMyCmd_Move* CMyCmd_Move::StaticCreate(const D3DXVECTOR2& vpt_arrive)
@@ -95,6 +98,7 @@ CMyCmd_Move* CMyCmd_Move::StaticCreate(const D3DXVECTOR2& vpt_arrive)
 
 	pcmd->m_ecmdtype = CMDTYPE_MOVE;
 	pcmd->m_eteamnum = CSession_Mgr::GetInstance()->GetTeamNumber();
+
 
 	if(!unitlist->empty())
 	{

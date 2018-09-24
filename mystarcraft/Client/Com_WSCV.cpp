@@ -28,7 +28,6 @@ void CCom_WSCV::Initialize(CObj* pobj /*= NULL*/)
 	m_attack_delay = 0.625f;
 
 	m_bfire = true;
-	m_bmineral_gather = true;
 
 	m_gathertime = 0.f;
 	m_gatherdelay = 3.f;
@@ -47,10 +46,6 @@ void CCom_WSCV::Update(void)
 			m_attack_time = 0.f;
 			m_bfire = false;
 		}
-	}
-
-	if(m_bmineral_gather)
-	{
 	}
 }
 void CCom_WSCV::fire(CObj*& ptarget)
@@ -84,8 +79,9 @@ void CCom_WSCV::fire(CObj*& ptarget)
 				¹Ì³×¶ö µ¢¾î¸®¸¦ ÀÏ²Û¼Õ¿¡ Áã¾îÁØ´Ù
 				*/
 
-				pfragment = new CMineral_frag;
+				pfragment = new CMineral_frag(m_pobj);
 				CObjMgr::GetInstance()->AddObject(pfragment , OBJ_FRAGMENT);
+				pfragment->SetTeamNumber(m_pobj->GetTeamNumber());
 				pfragment->Initialize();
 
 				((CWorkman*)m_pobj)->setmineral_fragment(pfragment);

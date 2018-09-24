@@ -45,7 +45,6 @@ void CWraith::Initialize(void)
 
 	m_sortID = SORT_AIR;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_WRAITH;
 
 	m_unitinfo.eMoveType = MOVE_AIR;
@@ -140,17 +139,6 @@ void CWraith::Inputkey_reaction(const int& nkey)
 
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
-	}
-	if('W' == nkey)
-	{
-		m_eteamnumber = TEAM_1;
-		//m_skill_sp->use();
-	}
-	if('A' == nkey)
-	{		
-	}
-	if('Z' == nkey)
-	{
 	}
 }
 

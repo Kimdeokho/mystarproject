@@ -37,13 +37,13 @@ CTerran_building::CTerran_building(void)
 	m_is_partinstall = false;
 	m_is_autoinstall = false;
 	m_is_fire_render = false;
-	m_is_rally = false;
+	//m_is_rally = false;
 
 	m_partbuilding = NULL;
 	m_upg_info = NULL;
 
-	m_main_preview = new CBuilding_Preview;
-	m_sub_preview = new CBuilding_Preview;
+	m_main_preview = new CBuilding_Preview(this);
+	m_sub_preview = new CBuilding_Preview(this);
 
 	m_fbuild_tick = 0.f;
 	m_build_hp = 0.f;
@@ -53,7 +53,7 @@ CTerran_building::CTerran_building(void)
 CTerran_building::~CTerran_building(void)
 {
 	Release();
-	CIngame_UIMgr::GetInstance()->T_BuildTech_Update(m_ebuild_tech , -1);
+	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , -1);
 }
 
 void CTerran_building::Initialize(void)
@@ -302,7 +302,7 @@ void CTerran_building::fire_eff_render(void)
 
 void CTerran_building::Build_Complete(void)
 {
-	CIngame_UIMgr::GetInstance()->T_BuildTech_Update(m_ebuild_tech , 1);
+	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , 1);
 }
 
 void CTerran_building::upginfo_update(const UPGRADE& eupg)
@@ -323,4 +323,10 @@ void CTerran_building::upginfo_update(const UPGRADE& eupg)
 			m_unitinfo.state = IDLE;
 		}
 	}
+}
+
+void CTerran_building::SetPreview_info(const PREVIEW_INFO& maininfo , const PREVIEW_INFO& subinfo)
+{
+	m_main_preview->SetPreviewInfo(maininfo);
+	m_sub_preview->SetPreviewInfo(subinfo);
 }

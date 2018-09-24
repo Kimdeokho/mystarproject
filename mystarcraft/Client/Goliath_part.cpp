@@ -24,9 +24,6 @@ void CGoliath_part::Initialize(void)
 
 	m_vcurdir = CMyMath::dgree_to_dir(2*22.5f);
 
-	m_eteamnumber = TEAM_0;
-
-
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
 	m_ecategory = CATEGORY_UNIT;
@@ -95,10 +92,10 @@ void CGoliath_part::Update(void)
 	}
 
 
-	if( false == m_upg_feedback[UPG_T_VFC3] && m_upg_info[UPG_T_VFC3].upg_cnt >= 1)
+	if( false == m_upg_state[UPG_T_VFC3] && m_upg_info[UPG_T_VFC3].upg_cnt >= 1)
 	{
 		m_unitinfo.air_attack_range += 3*32;
-		m_upg_feedback[UPG_T_VFC3] = true;
+		m_upg_state[UPG_T_VFC3] = true;
 		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
 	}
 }

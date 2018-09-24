@@ -12,6 +12,7 @@
 #include "Skill_irradi.h"
 #include "Skill_Defensive.h"
 #include "Yamaeff.h"
+#include "TimeMgr.h"
 CCom_UsingSkill::CCom_UsingSkill(void)
 {
 }
@@ -44,13 +45,15 @@ void CCom_UsingSkill::Update(void)
 
 	if(SO_INSTALL_MINE == m_skill_order)
 	{
-		if(CMyMath::pos_distance(m_using_pos , m_pobj->GetPos()) <= 2)
+		if(CMyMath::pos_distance(m_using_pos , m_pobj->GetPos()) <= 32*32)
 		{
 			CObj* pObj = NULL;
 			D3DXVECTOR2 vpos;
 			pObj = new CSpidermine;
 
-			pObj->SetPos(m_using_pos);
+			//pObj->SetPos(m_using_pos);
+			pObj->SetPos(m_pobj->GetPos());
+			pObj->SetTeamNumber(m_pobj->GetTeamNumber());
 			pObj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pObj , OBJ_MINE);
 

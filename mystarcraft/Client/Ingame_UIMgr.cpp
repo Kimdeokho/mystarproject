@@ -64,7 +64,7 @@ void CIngame_UIMgr::Initialize(RACE erace)
 	m_main_interface->Initialize();
 
 
-	memset(m_terran_build , 0 , sizeof(m_terran_build));
+	memset(m_build_state , 0 , sizeof(m_build_state));
 
 	D3DXVECTOR2 interface_pos = m_main_interface->GetPos();
 
@@ -182,13 +182,13 @@ void CIngame_UIMgr::Update_Wireframe(CObj* pobj)
 	pobj->Update_Wireframe();
 }
 
-void CIngame_UIMgr::T_BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt)
+void CIngame_UIMgr::BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt)
 {
-	m_terran_build[etech] += cnt;
+	m_build_state[etech] += cnt;
 }
-int CIngame_UIMgr::Get_T_BuildTech(TERRAN_BUILD_TECH etech )
+int CIngame_UIMgr::Get_BuildTech(TERRAN_BUILD_TECH etech )
 {
-	return m_terran_build[etech];
+	return m_build_state[etech];
 }
 void CIngame_UIMgr::Click_cmdbtn(const D3DXVECTOR2& vpt)
 {
@@ -216,7 +216,7 @@ bool CIngame_UIMgr::renewal_wireframe_ui(CObj* pobj , STATE state)
 
 		CFontMgr::GetInstance()->renewal_infomation_font();
 		((CProduction_bar*)m_production_bar)->SetActive(false);
-		((CUI_Building_info*)m_building_info)->SetActive(false);
+		(m_building_info)->SetActive(false);
 		((CUI_Boarding_info*)m_boarding_info)->SetActive(false);
 
 		return true;
@@ -236,8 +236,8 @@ void CIngame_UIMgr::SetProduction_info(const D3DXVECTOR2& vpos , const float& ra
 }
 void CIngame_UIMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
 {
-	((CUI_Building_info*)m_building_info)->SetActive(true);
-	((CUI_Building_info*)m_building_info)->InitNumber();
+	(m_building_info)->SetActive(true);
+	(m_building_info)->InitNumber();
 
 	int idx = 0;
 	list<PRODUCTION_INFO>::iterator iter = ui_list.begin();
@@ -245,7 +245,7 @@ void CIngame_UIMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
 
 	for( ; iter != iter_end; ++iter)
 	{
-		((CUI_Building_info*)m_building_info)->SetBuilding_info(idx , (*iter).texkey);
+		(m_building_info)->SetBuilding_info(idx , (*iter).texkey);
 		++idx;
 	}
 }
@@ -257,9 +257,9 @@ UPG_INFO* CIngame_UIMgr::GetUpginfo()
 {
 	return m_upginfo;
 }
-const CUI* CIngame_UIMgr::GetCmd_info(void)	
+CUI_Cmd_info* CIngame_UIMgr::GetCmd_info(void)	
 {
-	return m_cmd_info;
+	return ((CUI_Cmd_info*)m_cmd_info);
 }
 
 const D3DXVECTOR2& CIngame_UIMgr::GetMainInterface_pos(void)

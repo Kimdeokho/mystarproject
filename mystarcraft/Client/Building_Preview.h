@@ -23,7 +23,8 @@ private:
 public:
 	void SetPos(const D3DXVECTOR2& vpos);
 	void SetActive(bool bactive);
-	void SetPreviewInfo(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow , CObj* pobj, MYRECT<float> vtx);
+	void SetPreviewInfo(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow, MYRECT<float> vtx);
+	void SetPreviewInfo(const PREVIEW_INFO& _info);
 	bool GetActive(void);
 	bool Install_check(void);
 	bool Install_check(const PREVIEW_INFO& cur_info);
@@ -35,6 +36,6 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CBuilding_Preview(void);
+	CBuilding_Preview(CObj* pobj);
 	~CBuilding_Preview(void);
 };

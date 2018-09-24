@@ -59,9 +59,9 @@ void CCom_Wmarine::fire(CObj*&	ptarget )
 			}
 
 			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType)
-				peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1.5f, 1.5f), SORT_GROUND_EFF , 1.5);
+				peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1.2f, 1.2f), SORT_GROUND_EFF , 1.4f);
 			else
-				peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1.5f , 1.5f), SORT_AIR_EFF , 1.5);
+				peff = new CGeneraEff(L"GaussGun" ,m_targetpos , D3DXVECTOR2(1.2f , 1.2f), SORT_AIR_EFF , 1.4f);
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 

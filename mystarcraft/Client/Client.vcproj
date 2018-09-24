@@ -630,11 +630,99 @@
 						Name="Zerg"
 						>
 						<File
+							RelativePath=".\Chamber.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Chamber.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Defiler_mound.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Defiler_mound.h"
+							>
+						</File>
+						<File
+							RelativePath=".\FColony.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FColony.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Hatchery.cpp"
 							>
 						</File>
 						<File
 							RelativePath=".\Hatchery.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Hydraden.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Hydraden.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Queennest.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Queennest.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Spire.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Spire.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Spore.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Spore.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Spwaning.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Spwaning.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Sunken.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Sunken.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Ultra_cave.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Ultra_cave.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Z_gas.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Z_gas.h"
 							>
 						</File>
 						<File
@@ -845,6 +933,30 @@
 							RelativePath=".\Drone.h"
 							>
 						</File>
+						<File
+							RelativePath=".\Larva.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Larva.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Larva_egg.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Larva_egg.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Zergling.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Zergling.h"
+							>
+						</File>
 					</Filter>
 					<Filter
 						Name="Terran"
@@ -992,6 +1104,14 @@
 					</File>
 					<File
 						RelativePath=".\Corpse.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Creep_collapse.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Creep_collapse.h"
 						>
 					</File>
 				</Filter>
@@ -1176,11 +1296,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Com_Creep.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Creep.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Com_fog.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Com_fog.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Larvahatch.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Larvahatch.h"
 					>
 				</File>
 				<File
@@ -1311,6 +1447,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_LarvaAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_LarvaAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_LarvaEggAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_LarvaEggAnim.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_MarineAnim.cpp"
 						>
 					</File>
@@ -1375,14 +1527,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Com_T_gasAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_T_gasAnim.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Com_TankbarrelAnim.cpp"
 						>
 					</File>
@@ -1396,22 +1540,6 @@
 					</File>
 					<File
 						RelativePath=".\Com_TankbodyAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TBuildingAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TBuildingAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TurretheadAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TurretheadAnim.h"
 						>
 					</File>
 					<File
@@ -1436,6 +1564,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_WraithAnim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_ZerglingAnim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_ZerglingAnim.h"
 						>
 					</File>
 					<Filter
@@ -1466,6 +1602,42 @@
 							>
 						</File>
 					</Filter>
+					<Filter
+						Name="Building"
+						>
+						<File
+							RelativePath=".\Com_T_gasAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_T_gasAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TBuildingAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TBuildingAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TurretheadAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TurretheadAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ZBuildingAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ZBuildingAnim.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="Weapon"
@@ -1476,6 +1648,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_WBattle.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WDrone.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WDrone.h"
 						>
 					</File>
 					<File
@@ -1580,6 +1760,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_WWraith.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WZergling.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WZergling.h"
 						>
 					</File>
 				</Filter>
@@ -1984,11 +2172,27 @@
 				Name="Command"
 				>
 				<File
-					RelativePath=".\MyCmd_Attack.cpp"
+					RelativePath=".\MyCmd_Building.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\MyCmd_Attack.h"
+					RelativePath=".\MyCmd_Building.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_InputClick.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_InputClick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_InputKey.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_InputKey.h"
 					>
 				</File>
 				<File
@@ -1997,6 +2201,14 @@
 				</File>
 				<File
 					RelativePath=".\MyCmd_Move.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_PartBuilding.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_PartBuilding.h"
 					>
 				</File>
 				<File

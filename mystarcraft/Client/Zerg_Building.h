@@ -1,37 +1,42 @@
 #pragma once
 #include "obj.h"
 
-enum LINE_DIR{LINE_LDIR , LINE_RDIR , LINE_END};
-enum UPDOWN_DIR{LINE_UP , LINE_DOWN , UPDOWN_END};
+class CCom_ZBuildingAnim;
+class CCom_Creep;
 class CZerg_building :
 	public CObj
 {
 protected:
-	int m_top_line[LINE_END];
-	int m_bot_line[LINE_END];
-	int m_left_line[UPDOWN_END];
-	int m_right_line[UPDOWN_END];
+	CCom_ZBuildingAnim*			m_com_anim;
+	CCom_Creep*					m_com_creep;
+protected:
+	UPG_INFO*		m_upg_info;
+protected:
+	float			m_fbuild_tick;
+	float			m_build_hp;
+	int				m_build_maxhp;
+protected:
+	int				m_icol;
+	int				m_irow;
 
-	float	m_creeptimer;
-	float   m_creepoff_timer;
+protected:
+	bool			m_is_rally;
+	D3DXVECTOR2		m_rallypoint;
+	vector<D3DXVECTOR2>	m_rallypath;
 
-
-	int		m_loopcnt1;
-	int		m_loopcnt2;
-	int		m_irange;
-	int		m_offset;
-	bool	m_bswitch;
-	bool	m_bcreep_complete;
-	bool	m_bdestroy;
-
-	TILE**			m_sqTile;
-	list<int>		m_creep_list;
-	list<int>		m_creepoff_list;
-
+protected:
+	vector<int>		m_areaidx_vec;
+	vector<int>		m_old_areaidx_vec;
+	D3DXVECTOR2		m_weight;//마우스에서 얼만큼 떨어져있는지 가중치
+	//건물프리뷰를 볼때 마우스위치는 0행,0열 즉 좌상단에있다 
+	//pos를 중심으로 옮기기위한 보정값이다
 public:
-	void Creep_Initialize(bool bcomplete);
-	void Creep_expansion(void);
-	void Creep_decrase(void);
+	bool					Get_Is_rally(void){return m_is_rally;}
+	D3DXVECTOR2				GetRallyPoint(void){ return m_rallypoint;}
+	vector<D3DXVECTOR2>&	GetRally_Path(void) {return m_rallypath;}
+public:
+	void building_area_Initialize(const int& col , const int& row);
+	void building_pos_Initialize(const int& col , const int& row);
 public:
 	void SetDestroy(void);
 public:

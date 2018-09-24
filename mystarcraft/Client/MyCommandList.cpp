@@ -9,7 +9,13 @@ CMyCommandList::CMyCommandList(void)
 
 CMyCommandList::~CMyCommandList(void)
 {
-	ClearCommand();
+	list<CMyCommand*>::iterator iter = m_cmds.begin();
+	list<CMyCommand*>::iterator iter_end = m_cmds.end();
+
+	for( ; iter != iter_end; ++iter)
+		Safe_Delete((*iter));
+
+	m_cmds.clear();
 }
 
 void CMyCommandList::PushCommand(CMyCommand* pcommand)

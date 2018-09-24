@@ -167,8 +167,8 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 	{
 		vpos = (*iter)->GetPos();
 
-		if(magicbox.right - magicbox.left <= 200 &&
-			magicbox.bottom - magicbox.top <= 200)
+		if(magicbox.right - magicbox.left <= 350 &&
+			magicbox.bottom - magicbox.top <= 350)
 		{
 			//++m_magicbox_unitcnt;
 			//m_vUnitcenterpt += vpos;
@@ -232,8 +232,8 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptar
 	{
 		vpos = (*iter)->GetPos();
 
-		if(magicbox.right - magicbox.left <= 200 &&
-			magicbox.bottom - magicbox.top <= 200)
+		if(magicbox.right - magicbox.left <= 350 &&
+			magicbox.bottom - magicbox.top <= 350)
 		{
 			//++m_magicbox_unitcnt;
 			//m_vUnitcenterpt += vpos;
@@ -255,7 +255,7 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptar
 
 bool CUnitMgr::Unit_Unification(void)
 {
-	if(m_curunitList.empty())
+	if(!m_curunitList.empty())
 	{
 		list<CObj*>::iterator iter = m_curunitList.begin();
 		list<CObj*>::iterator iter_end = m_curunitList.end();

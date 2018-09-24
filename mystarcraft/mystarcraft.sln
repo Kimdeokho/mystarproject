@@ -23,7 +23,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameServer", "GameServer\Ga
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImgPath", "ImgPath", "{4BF8AC12-3EAE-4EA5-97E5-A922A41AAB73}"
 	ProjectSection(SolutionItems) = preProject
-		Data\imgpath\directional32ImgPath.txt = Data\imgpath\directional32ImgPath.txt
 		Data\imgpath\directionalImgPath.txt = Data\imgpath\directionalImgPath.txt
 		Data\imgpath\GeneralImgPath.txt = Data\imgpath\GeneralImgPath.txt
 		Data\imgpath\LodingImgPath.txt = Data\imgpath\LodingImgPath.txt

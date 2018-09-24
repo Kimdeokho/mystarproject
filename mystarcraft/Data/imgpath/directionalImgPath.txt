@@ -1,5 +1,3 @@
-ZERG|UNIT|DRONE|MOVE|54|..\Texture\Multi\Zerg\Unit\drone\move\drone_move%d.png
-ZERG|UNIT|DRONE|IDLE|9|..\Texture\Multi\Zerg\Unit\drone\idle\drone_idle%d.png
 TERRAN|UNIT|MARINE|IDLE|17|..\Texture\Multi\Terran\Unit\marine\idle\marine_idle%d.png
 TERRAN|UNIT|MARINE|ATTACK|34|..\Texture\Multi\Terran\Unit\marine\attack\marine_attack%d.png
 TERRAN|UNIT|MARINE|ATTACK_READY|17|..\Texture\Multi\Terran\Unit\marine\attack_ready\marine_attack_ready%d.png
@@ -39,3 +37,15 @@ TERRAN|UNIT|GHOST|IDLE|17|..\Texture\Multi\Terran\Unit\ghost\idle\idle%d.png
 TERRAN|UNIT|GHOST|MOVE|153|..\Texture\Multi\Terran\Unit\ghost\move\move%d.png
 TERRAN|UNIT|GHOST|ATTACK|17|..\Texture\Multi\Terran\Unit\ghost\attack\attack%d.png
 TERRAN|UNIT|GHOST|AIM|17|..\Texture\Multi\Terran\Unit\ghost\aim\aim%d.png
+ZERG|UNIT|DRONE|IDLE|17|..\Texture\Multi\Zerg\Unit\drone\idle\drone_idle%d.png
+ZERG|UNIT|DRONE|MOVE|102|..\Texture\Multi\Zerg\Unit\drone\move\drone_move%d.png
+ZERG|UNIT|DRONE|ATTACK|17|..\Texture\Multi\Zerg\Unit\drone\attack\drone_attack%d.png
+ZERG|UNIT|DRONE|GATHER|68|..\Texture\Multi\Zerg\Unit\drone\gather\drone_gather%d.png
+ZERG|UNIT|LARVA|IDLE|17|..\Texture\Multi\Zerg\Unit\larva\idle\larva_idle%d.png
+ZERG|UNIT|LARVA|MOVE|85|..\Texture\Multi\Zerg\Unit\larva\move\larva_move%d.png
+ZERG|UNIT|ZERGLING|IDLE|17|..\Texture\Multi\Zerg\Unit\zergling\idle\zergling_idle%d.png
+ZERG|UNIT|ZERGLING|MOVE|136|..\Texture\Multi\Zerg\Unit\zergling\move\zergling_move%d.png
+ZERG|UNIT|ZERGLING|ATTACK|68|..\Texture\Multi\Zerg\Unit\zergling\attack\zergling_attack%d.png
+ZERG|UNIT|HYDRA|IDLE|17|..\Texture\Multi\Zerg\Unit\hydra\idle\hydra_idle%d.png
+ZERG|UNIT|HYDRA|ATTACK|85|..\Texture\Multi\Zerg\Unit\hydra\attack\hydra_attack%d.png
+ZERG|UNIT|HYDRA|MOVE|119|..\Texture\Multi\Zerg\Unit\hydra\move\hydra_move%d.png

@@ -51,9 +51,6 @@ void CSession_Mgr::Update(void)
 }
 void CSession_Mgr::SendTurnPacket(void)
 {
-	//if(!m_startstage)
-	//	return;
-
 	if(NS_PLAYING != m_estate)
 		return;
 
@@ -355,6 +352,9 @@ void CSession_Mgr::Release(void)
 	DWORD vecsize = m_vecTurnData.size();
 	for(DWORD i = 0; i < vecsize; ++i)
 	{
+		if(m_vecTurnData[i].empty())
+			break;
+
 		iter = m_vecTurnData[i].begin();
 		iter_end = m_vecTurnData[i].end();
 

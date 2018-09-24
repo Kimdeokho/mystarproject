@@ -54,7 +54,6 @@ void CMarine::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_MARINE;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
@@ -135,11 +134,11 @@ void CMarine::Update(void)
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
 
-	if( false == m_upg_feedback[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
+	if( false == m_upg_state[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
 	{
 		m_unitinfo.attack_range += 1*32;
 		m_unitinfo.air_attack_range += 1*32;
-		m_upg_feedback[UPG_T_BA0] = true;
+		m_upg_state[UPG_T_BA0] = true;
 		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
 	}
 
@@ -183,10 +182,11 @@ void CMarine::Inputkey_reaction(const int& nkey)
 
 		if(NULL != m_com_pathfind)
 		{
-			if(NULL != ptarget)
-				m_bmagicbox = false;
-
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+			if(NULL != ptarget)
+			{
+				m_bmagicbox = false;
+			}			
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();

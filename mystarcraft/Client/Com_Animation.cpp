@@ -95,8 +95,6 @@ void CCom_Animation::DirIdxCalculation(void)
 
 	D3DXVECTOR2	curdir = m_pobj->GetcurDir(); 
 	fdot = D3DXVec2Dot(&curdir , &OFFSET_DIRVEC);
-
-	//CFontMgr::GetInstance()->test_Font(L"%f , %f" , fdot , fdot ,m_pobj->GetPos().x , m_pobj->GetPos().y);
 	
 	m_newdgree = CMyMath::scala_to_dgree(fdot);
 
@@ -104,8 +102,6 @@ void CCom_Animation::DirIdxCalculation(void)
 		m_newdgree = 360 - m_newdgree;
 
 	m_newdiridx = (int)( (m_newdgree/11.25f) + 0.5f) % 32;
-	
-	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_newdiridx ,m_pobj->GetPos().x , m_pobj->GetPos().y);
 
 	if(m_newdiridx != (int)m_curdiridx)
 	{
@@ -131,20 +127,12 @@ void CCom_Animation::DirIdxCalculation(void)
 			m_rotation_dir = -1;
 			//printf("반시계방향\n");
 		}
-
-		//m_bsw = true;
 	}
 
-	//if( m_newdiridx != (int)m_curdiridx)
 	m_rotation_tick = GETTIME*m_rotation_dir*m_rotation_speed;
 
 	if( abs(m_newdiridx - (int)m_curdiridx) > abs( (int)m_rotation_tick) )
 	{		
-		//float rotation_speed = GETTIME*m_rotation_dir*m_rotation_speed;
-		//if( (int)rotation_speed >= 1)
-		//	rotation_speed = 1.f;
-		//if( (int)rotation_speed <= -1)
-		//	rotation_speed = -1.f;
 
 		m_curdiridx += m_rotation_tick;
 
@@ -153,7 +141,6 @@ void CCom_Animation::DirIdxCalculation(void)
 		else if(m_curdiridx >= 32)
 			m_curdiridx = 0;
 
-		//m_brotationcomplete = false;
 	}
 	else
 	{
@@ -216,5 +203,10 @@ bool CCom_Animation::GetAttackSync(void)
 bool CCom_Animation::GetAttack_end(void)
 {
 	return m_battack_end;
+}
+
+void CCom_Animation::SetTextureName(const TCHAR* name)
+{
+	m_objname = name;
 }
 

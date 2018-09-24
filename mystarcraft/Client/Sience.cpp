@@ -32,6 +32,9 @@
 #include "UI_form.h"
 
 #include "UI_Energy_bar.h"
+#include "MyCmd_PartBuilding.h"
+#include "KeyMgr.h"
+#include "Input_Interface.h"
 CSience::CSience(void)
 {
 }
@@ -58,7 +61,6 @@ void CSience::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_SIENCE;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -282,71 +284,20 @@ void CSience::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CSience::Release(void)
-{
-	CTerran_building::area_release();
 
-	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
-	Safe_Delete(m_com_pathfind);
-	if(iter != m_componentlist.end())
-	{
-		m_componentlist.erase(iter);
-	}
-}
-
-void CSience::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-	if(NULL != m_partbuilding)
-	{
-		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
-		m_partbuilding = NULL;
-	}
-}
 
 void CSience::Inputkey_reaction(const int& nkey)
 {
-	m_is_preview = false;
-
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state)
 		return;
 
-	MYRECT<float> tempvtx;
-	if('C' == nkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_GHOST_ADDON", T_GHOST_ADDON , 2 , 2 , this , tempvtx);
-		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this , m_vertex);
-	}
-	if('P' == nkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BATTLE_ADDON", T_BATTLE_ADDON , 2 , 2 , this , tempvtx);
-		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this , m_vertex);
-	}
 	if('L' == nkey)
 	{
 		if(false == m_is_take_off)
 		{
 			//이륙
 			CTerran_building::TakeOff();
-		}
-		else
-		{
-			//착륙 프리뷰를 킨다
-			m_is_preview = true;
-			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 , this , m_vertex);			
 		}		
 	}
 	if('Q' == nkey)
@@ -379,114 +330,59 @@ void CSience::Inputkey_reaction(const int& nkey)
 			m_unitinfo.state = DEVELOPING;
 		}
 	}
-	if(VK_LBUTTON == nkey)
+
+	if(9998 == nkey)
 	{
-
-		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
-		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
-
-		if(BTN_NONE != eclicked_btn)
+		m_unitinfo.order = ORDER_LANDING_MOVE;
+		//D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		D3DXVECTOR2 vclickpos = m_main_preview->GetPreviewInfo().vpos;
+		int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
+		vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
+		CTerran_building::Landing_move(vclickpos);
+	}
+	if(9999 == nkey)
+	{
+		if(true == m_is_take_off)
 		{
-			if(BTN_TAKE_OFF == eclicked_btn)
-				Inputkey_reaction('L');
-
-			if(BTN_LANDING == eclicked_btn)
-				Inputkey_reaction('L');
-
-			if(BTN_T_VI0 == eclicked_btn)
-				Inputkey_reaction('Q');
-			else if(BTN_T_VI1 == eclicked_btn)
-				Inputkey_reaction('W');
-			else if(BTN_T_VI2 == eclicked_btn)
-				Inputkey_reaction('E');
-			else if(BTN_BATTLE_ADDON == eclicked_btn)
-				Inputkey_reaction('P');
-			else if(BTN_GHOST_ADDON == eclicked_btn)
-				Inputkey_reaction('C');
-
-			return;
+			//공중에서 부속품 설치
+			m_is_partinstall = true;
+			CTerran_building::Landing_move( (m_sub_preview)->GetPreviewInfo().vpos);
 		}
-
-		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive() &&
-			true == ((CBuilding_Preview*)m_sub_preview)->GetActive())
+		else
 		{
-			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check() &&
-				true == ((CBuilding_Preview*)m_sub_preview)->Install_check())
+			D3DXVECTOR2 vpt = m_sub_preview->GetPreviewInfo().vcenter_pos;
+			int idx = CMyMath::Pos_to_index(vpt , 32);
+
+			if(idx != m_curidx32)
 			{
+				m_is_autoinstall = true;
+				m_is_partinstall = true;
 
-				((CBuilding_Preview*)m_main_preview)->SetActive(false);
-				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
-
-				if(true == m_is_take_off)
-				{
-					//공중에서 부속품 설치
-					m_is_partinstall = true;
-					CTerran_building::Landing_move( ((CBuilding_Preview*)m_sub_preview)->GetPreviewInfo().vpos );
-
-				}
-				else
-				{
-					//원래 위치와 다를때... 공중에 뜨고, 이동후, 착지한다음 설치
-					D3DXVECTOR2 vpt = CMouseMgr::GetInstance()->GetAddScrollvMousePt();//부속건물 클릭위치
-					vpt.x = vpt.x - (m_irow/2)*SQ_TILESIZEX;//부속건물 클릭위치 조정
-					int idx = CMyMath::Pos_to_index(vpt , 32);
-
-					if(idx != m_curidx32)
-					{
-						m_is_autoinstall = true;
-						m_is_partinstall = true;
-
-						CTerran_building::TakeOff();
-
-					}
-					else
-					{
-						CObj* pobj = NULL;
-						if(T_GHOST_ADDON == ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild)
-						{
-							pobj = new CGhost_addon(this);
-							pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
-							pobj->Initialize();				
-							CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST_ADDON);
-						}
-						else if(T_BATTLE_ADDON == ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild)
-						{
-							pobj = new CBattle_addon(this);
-							pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
-							pobj->Initialize();				
-							CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE_ADDON);
-						}
-						m_partbuilding = pobj;
-						((CTerran_building*)m_partbuilding)->Setlink(true , this);
-					}
-				}
+				CTerran_building::TakeOff();
 			}
 			else
 			{
-				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
-			}
-		}
-		else if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
-		{
-			//착륙 분기
-			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
-			{
-				((CBuilding_Preview*)m_main_preview)->SetActive(false);
-				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
-
-				m_unitinfo.order = ORDER_LANDING_MOVE;
-				D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-				int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
-				vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
-				CTerran_building::Landing_move(vclickpos);	
-
-			}
-			else
-			{
-				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
+				CObj* pobj = NULL;
+				if(T_GHOST_ADDON == ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild)
+				{
+					pobj = new CGhost_addon(this);
+					pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
+					pobj->Initialize();				
+					CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST_ADDON);
+				}
+				else if(T_BATTLE_ADDON == ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild)
+				{
+					pobj = new CBattle_addon(this);
+					pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
+					pobj->Initialize();				
+					CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE_ADDON);
+				}
+				m_partbuilding = pobj;
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
 			}
 		}
 	}
+
 	if(VK_RBUTTON == nkey)
 	{
 
@@ -503,6 +399,99 @@ void CSience::Inputkey_reaction(const int& nkey)
 }
 
 void CSience::Inputkey_reaction(const int& firstkey , const int& secondkey)
+{
+
+}
+void CSience::Input_cmd(const int& nkey, bool* waitkey)
+{
+	if(TAKE_OFF == m_unitinfo.state ||
+		LANDING == m_unitinfo.state)
+		return;
+
+	if(VK_LBUTTON == nkey)
+	{
+		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
+
+		if(BTN_TAKE_OFF == eclicked_btn)
+		{
+			Inputkey_reaction('L');
+			return;
+		}
+		if(BTN_LANDING == eclicked_btn)
+		{
+			Inputkey_reaction('L');
+			return;
+		}
+
+		if(true == (m_main_preview)->GetActive() &&
+			true == (m_sub_preview)->GetActive())
+		{
+			if(true == (m_main_preview)->Install_check() &&
+				true == (m_sub_preview)->Install_check())
+			{
+				m_is_preview = false;
+				(m_main_preview)->SetActive(false);
+				(m_sub_preview)->SetActive(false);
+
+				PREVIEW_INFO maininfo , subinfo;
+				maininfo = m_main_preview->GetPreviewInfo();
+				subinfo = m_sub_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_PartBuilding::StaticCreate(maininfo , subinfo , 9999));
+			}
+			else
+			{
+				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
+			}
+		}
+		else if(true == (m_main_preview)->GetActive())
+		{
+			//착륙 분기
+			if(true == (m_main_preview)->Install_check())
+			{
+				m_is_preview = false;
+				(m_main_preview)->SetActive(false);
+				(m_sub_preview)->SetActive(false);
+
+				PREVIEW_INFO maininfo , subinfo;
+				maininfo = m_main_preview->GetPreviewInfo();
+				subinfo = m_sub_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_PartBuilding::StaticCreate(maininfo , subinfo , 9998));
+			}
+			else
+			{
+				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
+			}
+		}
+	}
+
+	MYRECT<float> tempvtx;
+	if('C' == nkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_GHOST_ADDON", T_GHOST_ADDON , 2 , 2 ,  tempvtx);
+		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 ,  m_vertex);
+		waitkey[nkey] = false;
+	}
+	if('P' == nkey)
+	{
+		m_is_preview = true;
+		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BATTLE_ADDON", T_BATTLE_ADDON , 2 , 2 ,  tempvtx);
+		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 ,  m_vertex);
+		waitkey[nkey] = false;
+	}
+
+	if('L' == nkey)
+	{
+		if(true == m_is_take_off)
+		{
+			//이륙
+			m_is_preview = true;
+			(m_main_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 ,  m_vertex);			
+		}
+	}
+}
+void CSience::Input_cmd(const int& firstkey , const int& secondkey)
 {
 
 }
@@ -648,4 +637,35 @@ void CSience::Update_Wireframe(void)
 		}
 	}
 	//-------------------------------------------
+}
+void CSience::Release(void)
+{
+	CTerran_building::area_release();
+
+	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
+	Safe_Delete(m_com_pathfind);
+	if(iter != m_componentlist.end())
+	{
+		m_componentlist.erase(iter);
+	}
+}
+
+void CSience::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+	if(NULL != m_partbuilding)
+	{
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
+		m_partbuilding = NULL;
+	}
 }

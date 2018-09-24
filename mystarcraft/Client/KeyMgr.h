@@ -42,14 +42,14 @@ public:
 	//bool GetLbdraging(void);
 public:
 	CInput_Interface*	GetInputDevice(void){return m_input;}
+	void	SetInput_Device(SCENEID escene);
 public:
 	bool GetOnceKeyDown_Check(const int& nkey );
 	bool GetKeyUp_Check(const int& nkey );
 	bool GetTurboKeyDown_Check(const int& nkey );	
 	bool GetDbClick_Check(const int& nkey );	
 	bool GetCombineKey_Check(const int& firstkey , const int& secondkey);
-public:
-	void	SetInput_Device(SCENEID escene);
+public:	
 public:
 	CKeyMgr(void);
 	~CKeyMgr(void);

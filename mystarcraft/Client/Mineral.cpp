@@ -67,7 +67,7 @@ void CMineral::Update(void)
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_mineral_amount , m_vPos.x - CScrollMgr::m_fScrollX
 	//	,m_vPos.y - CScrollMgr::m_fScrollY);
 
-	CObj::area_update();
+	//CObj::area_update();
 
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();

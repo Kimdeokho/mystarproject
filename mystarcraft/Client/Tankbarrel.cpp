@@ -30,8 +30,6 @@ void CTankbarrel::Initialize(void)
 {
 	m_vcurdir = CMyMath::dgree_to_dir(2*22.5f);
 
-	m_eteamnumber = TEAM_0;
-
 	m_bsiegemode = false;
 	m_btransform_ready = false;
 

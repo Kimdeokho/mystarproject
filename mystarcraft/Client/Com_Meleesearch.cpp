@@ -198,7 +198,7 @@ void CCom_Meleesearch::Update(void)
 			m_search_time += GETTIME;
 
 			if(true == m_btarget_search &&
-				m_search_time > 0.2f)
+				m_search_time > 2.0f)
 			{
 				m_search_time = 0.f;
 				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
@@ -231,8 +231,8 @@ void CCom_Meleesearch::Update(void)
 			}
 			else
 			{
-				m_meleerangeX = 10.f;
-				m_meleerangeY = 10.f;
+				m_meleerangeX = 8.f;
+				m_meleerangeY = 8.f;
 			}
 
 			m_myrc = m_pobj->GetMyRect();
@@ -282,6 +282,10 @@ void CCom_Meleesearch::Update(void)
 				//m_bmelee_search = true;
 				m_btarget_search = true;
 			}
+		}
+		else
+		{
+			m_search_time = 2.0f;
 		}
 	}
 }

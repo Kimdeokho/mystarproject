@@ -44,7 +44,6 @@ void CDropship::Initialize(void)
 
 	m_sortID = SORT_AIR;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_DROPSHIP;
 
 	m_unitinfo.eMoveType = MOVE_AIR;
@@ -143,12 +142,6 @@ void CDropship::Inputkey_reaction(const int& nkey)
 		m_eteamnumber = TEAM_1;
 		//m_skill_sp->use();
 	}
-	if('A' == nkey)
-	{		
-	}
-	if('Z' == nkey)
-	{
-	}
 }
 
 void CDropship::Inputkey_reaction(const int& firstkey , const int& secondkey)
@@ -158,6 +151,13 @@ void CDropship::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 		m_unitinfo.order = ORDER_GET_OFF;
+	}
+}
+void CDropship::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('U' == nkey)
+	{
+		waitkey[nkey] = true;
 	}
 }
 void CDropship::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)

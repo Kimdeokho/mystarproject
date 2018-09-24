@@ -51,7 +51,6 @@ void CTurret::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_TURRET;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -124,6 +123,7 @@ void CTurret::Update(void)
 
 			m_turrethead = new CTurret_head;
 			m_turrethead->SetPos(m_vPos - m_weight);
+			m_turrethead->SetTeamNumber(m_eteamnumber);
 			m_turrethead->Initialize();
 			m_turrethead->SetState(IDLE);
 		}
@@ -184,7 +184,7 @@ void CTurret::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 void CTurret::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	const CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 }
 
 void CTurret::Update_Wireframe(void)

@@ -26,7 +26,7 @@ public:
 	void SetColor(D3DCOLOR ecolor);
 	void SetParentMat(D3DXMATRIX* parmat);
 public:
-	const D3DXVECTOR2& GetPos(void);
+	
 public:
 	bool GetDestroy(void);
 	const MYRECT<float>& GetMyRect(void);
@@ -38,6 +38,7 @@ public:
 	virtual bool UI_ptinrect(const D3DXVECTOR2 vpos);
 	virtual void UI_Reaction(void);
 	virtual void Init_State(void){};
+	virtual const D3DXVECTOR2& GetPos(void);
 	virtual void Release(void);
 public:
 	CUI(void);

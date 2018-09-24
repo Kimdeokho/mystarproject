@@ -9,6 +9,10 @@ public:
 		CMDTYPE_NONE,
 		CMDTYPE_ATTACK_MOVE,
 		CMDTYPE_MOVE,
+		CMDTYPE_INPUTKEY,
+		CMDTYPE_INPUTCLICK,
+		CMDTYPE_BUILDING,
+		CMDTYPE_PART_BUILDING,
 	};
 
 protected:
@@ -22,5 +26,5 @@ public:
 	static CMyCommand*	StaticReadAndCreate(CStreamSP& readstream);
 public:
 	CMyCommand(void);
-	~CMyCommand(void);
+	virtual ~CMyCommand(void);
 };

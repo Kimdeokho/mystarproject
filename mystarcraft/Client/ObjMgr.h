@@ -46,7 +46,7 @@ public:
 	void  UpdateSelect_UI(void);
 
 	void  Place_Terran(D3DXVECTOR2 vpos , TEAM_NUMBER eteam);
-	void  Place_Zerg(D3DXVECTOR2 vpos);
+	void  Place_Zerg(D3DXVECTOR2 vpos , TEAM_NUMBER eteam);
 	void  Nuclear_launch(void);
 
 	CObj*	GetObj(const USHORT objnum);

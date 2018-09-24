@@ -42,7 +42,6 @@ void CTurret_head::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_TURRET;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eAttackType = ATTACK_ONLY_AIR; //°øÁßÀ¸·Î ¹Ù²Ü²¨
 	m_unitinfo.eMoveType = MOVE_GROUND;

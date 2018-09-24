@@ -46,35 +46,45 @@ typedef struct tagTile
 }TILE;
 typedef struct foginfo
 {
-	unsigned short		   fog_sequence;
-	D3DCOLOR			   fog_color;
-	bool				   bLight;
-	bool				   bsearch; // 지워도 될듯
-	int					   overlap_cnt;
-	int					   obj_id;  // 지워도 될듯	 
-	FOGSIGHT_OPTION		   eSight;
+	unsigned short		   fog_sequence[TEAM_END];
+	D3DCOLOR			   fog_color[TEAM_END];
+	//bool				   bLight[TEAM_END];
+	FOGSIGHT_OPTION		   eSight[TEAM_END];
+	int					   overlap_cnt[TEAM_END]; 
+	//FOGSIGHT_OPTION		   eSight;
 	foginfo()
 	{
-		obj_id				 = -1;
-		overlap_cnt			 = 0;
-		fog_sequence		 = 1;
-		fog_color = D3DCOLOR_ARGB(255,255,255,255);
-		bLight = false;
-		bsearch = false;
-		eSight = FOG_BLACK;
+		//fog_sequence		 = 1;
+		for(int i = 0; i < TEAM_END; ++i)
+		{
+			fog_sequence [i] = 1;
+			fog_color[i] = D3DCOLOR_ARGB(255,255,255,255);
+			eSight[i] = FOG_BLACK;
+		}
+		
+		//bLight = false;
+		//memset(bLight , 0 , sizeof(bLight));
+		memset(overlap_cnt , 0 , sizeof(overlap_cnt));
+		//eSight = FOG_BLACK;
 	}
 }FOG_INFO;
 typedef struct creepinfo
 {
-	unsigned short		   creep_bit;
-	short				   creep_sequence;
+	//unsigned short		   creep_bit;
+	//BYTE				   creep_bit[4];	
+	ULONG				   creep_bit;
+	USHORT				   creep_cnt;
+	BYTE				   creep_sequence;
 	bool				   bcreep_install;
 
 	creepinfo()
 	{		
+		creep_cnt = 0;
 		creep_sequence = 0;
-		creep_bit		 = 0x0000;
+		creep_bit		 = 0x00000000;
 		bcreep_install	 = false;
+
+		//memset(creep_bit , 0, sizeof(BYTE)*4);
 	}
 }CREEP_INFO;
 
@@ -248,7 +258,6 @@ typedef struct tagunitinfo
 	int					fog_range;
 
 	bool				is_active;
-	bool				is_wait; //보류
 	tagunitinfo()
 	{
 		esize = SIZE_NONE;
@@ -270,7 +279,6 @@ typedef struct tagunitinfo
 		air_attack_range = 0;
 		fog_range = 64;
 		is_active = true;
-		is_wait = false;
 	}
 }UNITINFO;
 
@@ -281,14 +289,18 @@ typedef struct tag_preivew
 	D3DXVECTOR2	 vcenter_pos;
 	TERRAN_BUILD_TECH	 ebuild;
 	MYRECT<float>	vtx;
-	int			 icol;
-	int			 irow;
+	USHORT			 icol;
+	USHORT			 irow;
 	tag_preivew()
 	{
 		icol = 0;
 		irow = 0;
 		ebuild = BUILD_NONE;
 		objname = NULL;
+		vtx.left = 0;
+		vtx.right = 0;
+		vtx.top = 0;
+		vtx.bottom = 0;
 	}
 }PREVIEW_INFO;
 
@@ -314,7 +326,7 @@ typedef struct tag_production
 {
 	float curtime;
 	float maxtime;
-	PRODUCTION_ID eid;
+	OBJID eid;
 	const TCHAR* texkey;
 
 	tag_production()
@@ -322,7 +334,7 @@ typedef struct tag_production
 		texkey = L"";
 		curtime = 0.f;
 		maxtime = 0.f;
-		eid = PRODUCTION_NONE;
+		eid = OBJ_NONE;
 	}
 }PRODUCTION_INFO;
 

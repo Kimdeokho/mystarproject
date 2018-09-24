@@ -3,8 +3,9 @@
 
 #include "TextureMgr.h"
 #include "ScrollMgr.h"
-CMineral_frag::CMineral_frag(void)
+CMineral_frag::CMineral_frag(CObj* pobj)
 {
+	m_pobj = pobj;
 }
 
 CMineral_frag::~CMineral_frag(void)
@@ -18,15 +19,17 @@ void CMineral_frag::Initialize(void)
 
 	m_matWorld._11 = 1.2f;
 	m_matWorld._22 = 1.2f;
+
 }
 
 void CMineral_frag::Update(void)
 {
-
+	m_vPos = m_pobj->GetPos() + m_pobj->GetcurDir()*20;
 }
 
 void CMineral_frag::Render(void)
 {
+	
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 

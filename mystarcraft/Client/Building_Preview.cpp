@@ -9,17 +9,23 @@
 #include "TileManager.h"
 #include "ScrollMgr.h"
 #include "FontMgr.h"
-CBuilding_Preview::CBuilding_Preview(void)
+#include "Session_Mgr.h"
+#include "Obj.h"
+CBuilding_Preview::CBuilding_Preview(CObj* pobj)
 {
 	m_preview_info.objname = L"";
-	m_pobj = NULL;
+	m_pobj = pobj;
 	m_active = false;
 }
 
 CBuilding_Preview::~CBuilding_Preview(void)
 {
 }
-void CBuilding_Preview::SetPreviewInfo(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow , CObj* pobj , MYRECT<float> vtx)
+void CBuilding_Preview::SetPreviewInfo(const PREVIEW_INFO& _info)
+{
+	m_preview_info = _info;
+}
+void CBuilding_Preview::SetPreviewInfo(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow , MYRECT<float> vtx)
 {
 	D3DXMatrixIdentity(&m_tempmat);
 	m_preview_info.objname = objkey;
@@ -27,7 +33,6 @@ void CBuilding_Preview::SetPreviewInfo(const TCHAR* objkey , TERRAN_BUILD_TECH e
 	m_preview_info.icol = icol;
 	m_preview_info.irow = irow;
 	m_preview_info.vtx = vtx;
-	m_pobj = pobj;
 
 
 	m_Debugtexinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
@@ -89,56 +94,7 @@ void CBuilding_Preview::Render(void)
 	D3DXVECTOR2 vtemp = m_preview_info.vpos;// 0행0열셀이 가리키는 좌표이다
 	MYRECT<float>	temprc;
 	D3DCOLOR	tile_color;
-
-	//for(int i = 0; i < m_preview_info.icol; ++i)
-	//{
-	//	vtemp.y = m_preview_info.vpos.y + i*32;
-	//	for(int j = 0; j < m_preview_info.irow; ++j)
-	//	{
-	//		vtemp.x = m_preview_info.vpos.x + j*32;
-	//		idx32 = CMyMath::Pos_to_index(vtemp  , 32);
-	//		idx64 = CMyMath::Pos_to_index(vtemp , 64);
-
-	//		temprc.left = vtemp.x - 16;
-	//		temprc.right = vtemp.x + 16;
-	//		temprc.top = vtemp.y - 16;
-	//		temprc.bottom = vtemp.y + 16;
-
-	//		m_tempmat._41 = vtemp.x - CScrollMgr::m_fScrollX;
-	//		m_tempmat._42 = vtemp.y - CScrollMgr::m_fScrollY;
-	//		m_pSprite->SetTransform(&m_tempmat);
-	//		BYTE op = CTileManager::GetInstance()->GetTileOption(idx32);
-	//		FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogSightOp(idx32);
-
-	//		if(T_GAS == m_preview_info.ebuild )
-	//		{
-	//			if(op == RESOURCE_GAS && FOG_BLACK != fog_sight)
-	//			{
-	//				tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
-	//			}
-	//			else
-	//			{
-	//				tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
-	//			}
-	//		}
-	//		else
-	//		{
-	//			if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
-	//				op == MOVE_OK &&
-	//				FOG_BLACK != fog_sight)
-	//			{
-	//				tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
-	//			}
-	//			else
-	//			{
-	//				tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
-	//			}
-	//		}
-
-	//		m_pSprite->Draw( m_Debugtexinfo->pTexture , NULL , &D3DXVECTOR3(16,16,0)
-	//			, NULL , tile_color);
-	//	}
-	//}
+	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
 
 	for(int i = 0; i < m_preview_info.icol; ++i)
 	{
@@ -190,9 +146,10 @@ void CBuilding_Preview::Render(void)
 			m_tempmat._42 = vtemp.y - CScrollMgr::m_fScrollY;
 			m_pSprite->SetTransform(&m_tempmat);
 			BYTE op = CTileManager::GetInstance()->GetTileOption(idx32);
-			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogSightOp(idx32);
+			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogLight(idx32 , eteam);
 
-			if(T_GAS == m_preview_info.ebuild )
+			if(T_GAS == m_preview_info.ebuild ||
+				Z_GAS == m_preview_info.ebuild)
 			{
 				if(op == RESOURCE_GAS && FOG_BLACK != fog_sight)
 				{
@@ -206,7 +163,7 @@ void CBuilding_Preview::Render(void)
 			else
 			{
 				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
-					op == MOVE_OK || OP_STARTBASE == op &&
+					op == MOVE_OK &&
 					FOG_BLACK != fog_sight)
 				{
 					tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
@@ -215,6 +172,9 @@ void CBuilding_Preview::Render(void)
 				{
 					tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
 				}
+
+				//if(FOG_BLACK == fog_sight)
+				//	tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
 			}
 
 			m_pSprite->Draw( m_Debugtexinfo->pTexture , NULL , &D3DXVECTOR3(16,16,0)
@@ -242,6 +202,9 @@ bool CBuilding_Preview::Install_check(void)
 	int idx64 = 0;
 	D3DXVECTOR2 vtemp = m_preview_info.vpos; // 0행0열셀이 가리키는 좌표이다
 	MYRECT<float>	temprc;
+	//TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+	TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
+
 	for(int i = 0; i < m_preview_info.icol; ++i)
 	{
 		vtemp.y = m_preview_info.vpos.y + i*32;
@@ -251,10 +214,6 @@ bool CBuilding_Preview::Install_check(void)
 			idx32 = CMyMath::Pos_to_index(vtemp  , 32);
 			idx64 = CMyMath::Pos_to_index(vtemp , 64);
 
-			//temprc.left = vtemp.x - 16;
-			//temprc.right = vtemp.x + 16;
-			//temprc.top = vtemp.y - 16;
-			//temprc.bottom = vtemp.y + 16;
 
 			if( 0 == i)
 			{
@@ -292,10 +251,13 @@ bool CBuilding_Preview::Install_check(void)
 				temprc.right = vtemp.x + 16;
 			}
 
-			BYTE op = CTileManager::GetInstance()->GetTileOption(idx32);
-			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogSightOp(idx32);
+			//TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+			
+			BYTE			op = CTileManager::GetInstance()->GetTileOption(idx32);
+			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogLight(idx32 , eteam);
 
-			if(T_GAS == m_preview_info.ebuild )
+			if(T_GAS == m_preview_info.ebuild ||
+				Z_GAS == m_preview_info.ebuild)
 			{
 				if(RESOURCE_GAS != op || FOG_BLACK == fog_sight)
 				{
@@ -329,6 +291,13 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 	int idx64 = 0;
 	D3DXVECTOR2 vtemp = cur_info.vpos;
 	MYRECT<float>	temprc;
+	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+
+	temprc.left		= cur_info.vcenter_pos.x - cur_info.vtx.left;
+	temprc.right	= cur_info.vcenter_pos.x + cur_info.vtx.right;
+	temprc.top		= cur_info.vcenter_pos.y - cur_info.vtx.top;
+	temprc.bottom	= cur_info.vcenter_pos.y + cur_info.vtx.bottom;
+
 	for(int i = 0; i < cur_info.icol; ++i)
 	{
 		vtemp.y = cur_info.vpos.y + i*32;
@@ -338,15 +307,17 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 			idx32 = CMyMath::Pos_to_index(vtemp  , 32);
 			idx64 = CMyMath::Pos_to_index(vtemp , 64);
 
+/*
 			temprc.left = vtemp.x - 16;
 			temprc.right = vtemp.x + 16;
 			temprc.top = vtemp.y - 16;
-			temprc.bottom = vtemp.y + 16;
+			temprc.bottom = vtemp.y + 16;*/
 
-			BYTE op = CTileManager::GetInstance()->GetTileOption(idx32);
-			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogSightOp(idx32);
+			BYTE			op = CTileManager::GetInstance()->GetTileOption(idx32);
+			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogLight(idx32 , eteam);
 
-			if(T_GAS == cur_info.ebuild )
+			if(T_GAS == cur_info.ebuild ||
+				Z_GAS == cur_info.ebuild)
 			{
 				if(RESOURCE_GAS != op || FOG_BLACK == fog_sight)
 				{
@@ -358,8 +329,8 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 			else
 			{
 				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
-					MOVE_OK == op &&
-					FOG_BLACK != fog_sight)
+					MOVE_OK == op /*&&
+					FOG_BLACK != fog_sight*/)
 				{
 				}
 				else

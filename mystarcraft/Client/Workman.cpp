@@ -6,6 +6,9 @@
 #include "Mineral.h"
 
 #include "Building_Preview.h"
+
+#include "Fog_object.h"
+#include "ObjMgr.h"
 CWorkman::CWorkman(void)
 {
 	m_select_ui = NULL;
@@ -21,7 +24,7 @@ CWorkman::CWorkman(void)
 
 	m_is_preview = false;
 
-	m_main_preview = new CBuilding_Preview;
+	m_main_preview = new CBuilding_Preview(this);
 
 	m_ecmd_state = CMD_BASIC;
 
@@ -37,7 +40,7 @@ CWorkman::~CWorkman(void)
 
 void CWorkman::Initialize(void)
 {
-	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos);
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , m_eteamnumber);
 	m_miniunit_display->Initialize();
 	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }
@@ -77,6 +80,10 @@ void CWorkman::Release(void)
 
 	if(NULL != m_energybar_ui)
 		Safe_Delete(m_energybar_ui);
+
+	CObj* pfog = new CFog_object(32*4*2 , 4.f , m_vPos , m_unitinfo.eMoveType , m_eteamnumber);
+	CObjMgr::GetInstance()->AddObject(pfog , OBJ_FOG);
+	pfog->Initialize();
 }
 
 void CWorkman::Inputkey_reaction(const int& nkey)
@@ -173,4 +180,22 @@ bool CWorkman::ismineral_fragment(void)
 		return true;
 	else
 		return false;
+}
+void CWorkman::SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow ,MYRECT<float> vtx)
+{
+	//CIngame_UIMgr::GetInstance()->Release_Cmdbtn(); 여기 수정해야함
+	//자원이 모자르면 못보여줌
+	//버튼 비활성화면 못보여줌
+
+	m_ecmd_state = CMD_BUILDING;
+	(m_main_preview)->SetPreviewInfo(objkey ,ebuild, icol , irow ,  vtx);
+
+}
+void CWorkman::SetPreview_info(PREVIEW_INFO _info)
+{
+	m_preview_info = _info;
+
+/*
+	((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(_info.objname ,_info.ebuild, 
+		_info.icol , _info.irow , this , _info.vtx);*/
 }

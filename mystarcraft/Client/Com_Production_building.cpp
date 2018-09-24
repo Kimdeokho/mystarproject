@@ -45,6 +45,25 @@ void CCom_Production_building::Update(void)
 {
 	update_production();
 }
+void CCom_Production_building::update_production(void)
+{
+	if(!m_production_list.empty())
+	{
+		m_pobj->SetState(PRODUCTION);
+		float maxtime = m_production_list.front().maxtime;
+		m_production_list.front().curtime += GETTIME;
+
+		if(m_production_list.front().curtime >= maxtime)
+		{
+			//생산 
+			create_unit(m_production_list.front().eid);
+			m_production_list.pop_front();
+			if(m_production_list.empty())
+				m_pobj->SetState(IDLE);
+		}
+
+	}
+}
 void CCom_Production_building::unit_collocate(CObj* const pobj)
 {
 	MYRECT<float>	collocate_rc;
@@ -256,7 +275,7 @@ void CCom_Production_building::rallypoint_pathfinding(void)
 		tempidx = flowfieldpath[tempidx]; //다음 경로로 가는 인덱스를 준다
 	}
 }
-void CCom_Production_building::add_production_info(const float& maxtime , PRODUCTION_ID eid , const TCHAR* texkey)
+void CCom_Production_building::add_production_info(const float& maxtime , OBJID eid , const TCHAR* texkey)
 {
 	PRODUCTION_INFO temp;
 
@@ -269,25 +288,7 @@ void CCom_Production_building::add_production_info(const float& maxtime , PRODUC
 		m_production_list.push_back(temp);
 	}
 }
-void CCom_Production_building::update_production(void)
-{
-	if(!m_production_list.empty())
-	{
-		m_pobj->SetState(PRODUCTION);
-		float maxtime = m_production_list.front().maxtime;
-		m_production_list.front().curtime += GETTIME;
 
-		if(m_production_list.front().curtime >= maxtime)
-		{
-			//생산 
-			create_unit(m_production_list.front().eid);
-			m_production_list.pop_front();
-			if(m_production_list.empty())
-				m_pobj->SetState(IDLE);
-		}
-
-	}
-}
 
 void CCom_Production_building::Render(void)
 {
@@ -299,78 +300,79 @@ void CCom_Production_building::Release(void)
 
 }
 
-void CCom_Production_building::create_unit(PRODUCTION_ID eid)
+void CCom_Production_building::create_unit(OBJID eid)
 {
 	CComponent* pcom = NULL;
 	CObj* pobj = NULL;
 
-	if(PRODUCTION_SCV == eid)
+	if(OBJ_SCV == eid)
 	{
 		pobj = new CSCV(m_vPos);
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
 	}
-	else if(PRODUCTION_TANK == eid)
+	else if(OBJ_TANK == eid)
 	{
 		pobj = new CTank;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);
 	}
-	else if(PRODUCTION_MARINE == eid)
+	else if(OBJ_MARINE == eid)
 	{
 		pobj = new CMarine;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MARINE);
 	}
-	else if(PRODUCTION_MEDIC == eid)
+	else if(OBJ_MEDIC == eid)
 	{
 		pobj = new CMedic;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);
 	}
-	else if(PRODUCTION_FIREBAT == eid)
+	else if(OBJ_FIREBAT == eid)
 	{
 		pobj = new CFirebat;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);
 	}
-	else if(PRODUCTION_GHOST == eid)
+	else if(OBJ_GHOST == eid)
 	{
 		pobj = new CGhost;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST);
 	}
-	else if(PRODUCTION_TANK == eid)
+	else if(OBJ_TANK == eid)
 	{
 		pobj = new CTank;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);
 	}
-	else if(PRODUCTION_GOLIATH == eid)
+	else if(OBJ_GOLIATH == eid)
 	{
 		pobj = new CGoliath;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);
 	}
-	else if(PRODUCTION_VULTURE == eid)
+	else if(OBJ_VULTURE == eid)
 	{
 		pobj = new CVulture;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VULTURE);
 	}
-	else if(PRODUCTION_WRAITH == eid)
+	else if(OBJ_WRAITH == eid)
 	{
 		pobj = new CWraith;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_WRAITH);
 	}
-	else if(PRODUCTION_DROPSHIP == eid)
+	else if(OBJ_DROPSHIP == eid)
 	{
 		pobj = new CDropship;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_DROPSHIP);
 	}
-	else if(PRODUCTION_VESSEL == eid)
+	else if(OBJ_VESSEL == eid)
 	{
 		pobj = new CVulture;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);
 	}
-	else if(PRODUCTION_BATTLE == eid)
+	else if(OBJ_BATTLE == eid)
 	{
 		pobj = new CBattleCruiser;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);
 	}
 
 	pobj->SetPos(m_vPos);
+	pobj->SetTeamNumber(m_pobj->GetTeamNumber());
 	pobj->Initialize();
 	unit_collocate(pobj);
 

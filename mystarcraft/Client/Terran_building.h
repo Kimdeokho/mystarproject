@@ -2,6 +2,7 @@
 #include "obj.h"
 
 class CUI;
+class CBuilding_Preview;
 class CTerran_building :
 	public CObj
 {
@@ -13,14 +14,15 @@ protected:
 	CComponent*		m_com_targetsearch;
 	CComponent*		m_com_pathfind;
 	CComponent*		m_com_collision;
-public:
+
+protected:
 	UPG_INFO*		m_upg_info;
 public:
 	CObj*			m_mainbuilding;
 	CObj*			m_partbuilding;
 
-	CUI*			m_main_preview;
-	CUI*			m_sub_preview;
+	CBuilding_Preview*			m_main_preview;
+	CBuilding_Preview*			m_sub_preview;
 
 	CObj*			m_pfire_eff1;
 	CObj*			m_pfire_eff2;
@@ -29,10 +31,10 @@ protected:
 	vector<int>		m_areaidx_vec;
 	vector<int>		m_old_areaidx_vec;
 protected:
-	list<PRODUCTION_INFO>	m_production_list;
-	bool			m_is_rally;
-	D3DXVECTOR2		m_rallypoint;
-	vector<D3DXVECTOR2>	m_rallypath;
+	//list<PRODUCTION_INFO>	m_production_list;
+	//bool			m_is_rally;
+	//D3DXVECTOR2		m_rallypoint;
+	//vector<D3DXVECTOR2>	m_rallypath;
 protected:
 	D3DXMATRIX		m_matshadow;
 	D3DXVECTOR2		m_vgroundpos;
@@ -51,9 +53,6 @@ protected:
 	bool			m_is_partinstall; //착지시 부속건물 설치할꺼임?
 	bool			m_is_autoinstall;
 	bool			m_is_fire_render;
-
-
-
 
 protected:
 	float			m_fbuild_tick;
@@ -81,6 +80,7 @@ public:
 	void Build_Complete(void);
 
 	void	upginfo_update(const UPGRADE& eupg);
+	void	SetPreview_info(const PREVIEW_INFO& maininfo , const PREVIEW_INFO& subinfo);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

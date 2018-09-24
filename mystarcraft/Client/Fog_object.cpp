@@ -4,12 +4,13 @@
 #include "TimeMgr.h"
 #include "Com_fog.h"
 #include "MyMath.h"
-CFog_object::CFog_object(const int& irange , const float& fogtime , const D3DXVECTOR2& vpos , MOVE_TYPE emovetype)
+CFog_object::CFog_object(const int& irange , const float& fogtime , const D3DXVECTOR2& vpos ,const MOVE_TYPE emovetype ,const TEAM_NUMBER eteamnum)
 {
 	m_irange = irange;
 	m_fogtime = fogtime;
 	m_vPos = vpos;
 	m_unitinfo.eMoveType = emovetype;
+	m_eteamnumber = eteamnum;
 }
 
 CFog_object::~CFog_object(void)
@@ -21,7 +22,6 @@ void CFog_object::Initialize(void)
 {
 	m_sortID = SORT_GROUND;
 	m_eOBJ_NAME = OBJ_FOG;
-	m_eteamnumber = TEAM_NONE;
 
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_irange) ));

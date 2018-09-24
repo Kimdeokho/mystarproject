@@ -49,7 +49,6 @@ void CBattleCruiser::Initialize(void)
 
 	m_sortID = SORT_AIR;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_BATTLE;
 
 	m_unitinfo.eMoveType = MOVE_AIR;
@@ -203,6 +202,14 @@ void CBattleCruiser::Inputkey_reaction(const int& firstkey , const int& secondke
 		}
 	}
 }
+void CBattleCruiser::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('Y' == nkey)
+	{
+		waitkey[nkey] = true;
+	}
+}
+
 void CBattleCruiser::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
 	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();

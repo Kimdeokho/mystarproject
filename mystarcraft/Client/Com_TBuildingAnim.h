@@ -10,6 +10,9 @@ private:
 
 	D3DXVECTOR2				m_vairpos;
 	D3DXVECTOR2				m_vgroundpos;
+
+	bool					m_bsighton;
+	bool					m_isescape;
 public:
 	void SetAirpos(const D3DXVECTOR2& vpos);
 	void SetGroundpos(const D3DXVECTOR2& vpos);

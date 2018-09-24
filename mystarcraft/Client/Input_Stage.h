@@ -4,6 +4,7 @@
 #include "value.h"
 
 class CMyCommandList;
+class CMyCommand;
 class CInput_Stage :
 	public CInput_Interface
 {
@@ -22,7 +23,7 @@ private:
 	int			objcnt;
 public:
 	CMyCommandList*		GetCmdList(void){ return m_cmdlist; }
-	void				ClearCmdList(void); 
+	void				ClearCmdList(void);	
 public:
 	void Intput_oncekey_reaction(void);
 	void Intput_turbokey_reaction(void);	
@@ -33,6 +34,7 @@ public:
 	void Initialize(void);
 	void Update(void);
 	void Reelase(void);
+	virtual void		PushCommand(CMyCommand*	pcmd);
 public:
 	CInput_Stage(void);
 	~CInput_Stage(void);

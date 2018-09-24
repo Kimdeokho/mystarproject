@@ -66,7 +66,8 @@ void CObj::unit_area_Initialize(void)
 }
 void CObj::area_update(void)
 {
-	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
+
 	if(false == m_unitinfo.is_active ||
 		ORDER_BUNKER_BOARDING == m_unitinfo.order)
 		return;
@@ -412,11 +413,6 @@ void CObj::Update_Cmdbtn(void)
 void CObj::Update_Wireframe(void)
 {
 
-}
-
-void CObj::SetWait(bool is_wait)
-{
-	m_unitinfo.is_wait = is_wait;
 }
 
 void CObj::SetHP(const int& ihp)

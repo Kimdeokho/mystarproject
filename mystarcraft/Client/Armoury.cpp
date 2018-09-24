@@ -52,7 +52,6 @@ void CArmoury::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_ARMOURY;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -204,7 +203,7 @@ void CArmoury::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -223,7 +222,7 @@ void CArmoury::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -243,7 +242,7 @@ void CArmoury::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_AIR_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_AIR_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -262,7 +261,7 @@ void CArmoury::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_AIR_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_AIR_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -289,7 +288,7 @@ void CArmoury::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_MECHANIC_WEAPON].proceeding && m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VAW" , BTN_T_VAW , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VAW" , BTN_T_VAW , true);
@@ -297,7 +296,7 @@ void CArmoury::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_MECHANIC_ARMOR].proceeding && m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_VAP" , BTN_T_VAP , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_VAP" , BTN_T_VAP , true);
@@ -306,7 +305,7 @@ void CArmoury::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_AIR_WEAPON].proceeding && m_upg_info[UPG_T_AIR_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_AIR_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VAS" , BTN_T_VAS , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VAS" , BTN_T_VAS , true);
@@ -314,7 +313,7 @@ void CArmoury::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_AIR_ARMOR].proceeding && m_upg_info[UPG_T_AIR_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_AIR_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_T_VAH" , BTN_T_VAH , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_T_VAH" , BTN_T_VAH , true);
@@ -405,4 +404,14 @@ void CArmoury::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_AIR_WEAPON].curtime / m_upg_info[UPG_T_AIR_WEAPON].maxtime );
 	else if(true == m_upg_info[UPG_T_AIR_ARMOR].proceeding && m_upg_info[UPG_T_AIR_ARMOR].obj_num == m_obj_id)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_AIR_ARMOR].curtime / m_upg_info[UPG_T_AIR_ARMOR].maxtime );
+}
+
+void CArmoury::Input_cmd(const int& nkey, bool* waitkey)
+{
+
+}
+
+void CArmoury::Input_cmd(const int& firstkey , const int& secondkey)
+{
+
 }

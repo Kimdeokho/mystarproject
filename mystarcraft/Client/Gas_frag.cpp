@@ -3,8 +3,9 @@
 
 #include "TextureMgr.h"
 #include "ScrollMgr.h"
-CGas_frag::CGas_frag(void)
+CGas_frag::CGas_frag(CObj* pobj)
 {
+	m_pobj = pobj;
 }
 
 CGas_frag::~CGas_frag(void)
@@ -14,7 +15,11 @@ CGas_frag::~CGas_frag(void)
 void CGas_frag::Initialize(void)
 {
 	m_sortID = SORT_GROUND;
-	m_vecTex = CTextureMgr::GetInstance()->GetGeneralTexture(L"T_GAS_FRAG");
+
+	if(OBJ_SCV == m_pobj->GetOBJNAME())
+		m_vecTex = CTextureMgr::GetInstance()->GetGeneralTexture(L"T_GAS_FRAG");
+	if(OBJ_DRONE == m_pobj->GetOBJNAME())
+		m_vecTex = CTextureMgr::GetInstance()->GetGeneralTexture(L"Z_GAS_FRAG");
 
 	m_matWorld._11 = 1.2f;
 	m_matWorld._22 = 1.2f;
@@ -22,7 +27,7 @@ void CGas_frag::Initialize(void)
 
 void CGas_frag::Update(void)
 {
-
+	m_vPos = m_pobj->GetPos() + m_pobj->GetcurDir()*20;
 }
 
 void CGas_frag::Render(void)

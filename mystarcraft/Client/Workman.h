@@ -2,22 +2,26 @@
 #include "obj.h"
 
 class CUI;
+class CBuilding_Preview;
+class CCom_Animation;
 class CWorkman :
 	public CObj
 {
 protected:
 	//CComponent*					m_panimation;
-	CComponent*		m_com_anim;
-	CComponent*		m_com_targetsearch;
-	CComponent*		m_com_pathfind;
-	CComponent*		m_com_cc;
-	CComponent*		m_com_collision;
+	CCom_Animation*		m_com_anim;
+	CComponent*			m_com_pathfind;
+	CComponent*			m_com_cc;
+	CComponent*			m_com_collision;
+	CComponent*			m_com_worksearch;
+	CComponent*			m_com_targetsearch;
+	CComponent*			m_com_weapon;
 protected:
 	CMD_STATE		m_ecmd_state;
 protected:
 
-	CUI*			m_miniunit_display;
-	CUI*			m_main_preview;
+	CUI*						m_miniunit_display;
+	CBuilding_Preview*			m_main_preview;
 
 	CObj*			m_pgas;
 	CObj*			m_pgas_fragment;
@@ -33,6 +37,8 @@ protected:
 	UPG_INFO*		m_upg_info;
 
 	MYRECT<float>	m_preview_vtx;
+
+	PREVIEW_INFO	m_preview_info;
 protected:
 public:
 	virtual void Initialize(void);
@@ -53,8 +59,9 @@ public:
 	void setgas_fragment(CObj* pmienral_frag);
 	void destroy_frag(void);
 
-	void SetGas_mark(CObj* pgas);	
-	
+	void SetGas_mark(CObj* pgas);
+	void SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow ,MYRECT<float> vtx);	
+	void SetPreview_info(PREVIEW_INFO _info);
 public:
 		bool GetMineral_mark(void);
 public:

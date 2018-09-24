@@ -94,8 +94,8 @@ void CCom_Collision::Update(void)
 		m_collision_target = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
 		MYRECT<float> temp;
 		if(NULL != m_collision_target &&
-			MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect()) 
-			/*m_nuckback_time <= 0.4f*/)
+			/*MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect())*/ 
+			m_nuckback_time <= 0.4f)
 		{			
 			//юсюг
 			int idx32 = 0;

@@ -1,28 +1,29 @@
 #pragma once
 #include "obj.h"
 
+
+
 class CAstar;
-
-
 class CSkill;
-typedef boost::unordered_map<SKILL_NAME , CSkill*> SKILL_PAIR;
-
 class CUI;
+class CCom_Animation;
+
+typedef boost::unordered_map<SKILL_NAME , CSkill*> SKILL_PAIR;
 class CUnit :
 	public CObj
 {
 protected:
-	CComponent*		m_com_anim;
-	CComponent*		m_com_targetsearch;
-	CComponent*		m_com_pathfind;
-	CComponent*		m_com_collision;
-	CComponent*		m_com_usingskill;
-	CComponent*		m_com_cc;
+	CCom_Animation*		m_com_anim;
+	CComponent*			m_com_targetsearch;
+	CComponent*			m_com_pathfind;
+	CComponent*			m_com_collision;
+	CComponent*			m_com_usingskill;
+	CComponent*			m_com_cc;
 protected:
 	UPG_INFO*		m_upg_info;
-	bool			m_upg_feedback[UPG_END];
+	bool			m_upg_state[UPG_END];
 protected:
-	D3DXMATRIX		m_matshadow;
+	//D3DXMATRIX		m_matshadow;
 protected:
 	CUI*			m_miniunit_display;
 

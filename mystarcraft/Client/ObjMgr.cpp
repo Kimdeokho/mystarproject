@@ -7,6 +7,7 @@
 
 #include "Zerg_Building.h"
 #include "ObjPoolMgr.h"
+#include "TileManager.h"
 #include "Area_Mgr.h"
 #include "UI.h"
 #include "UnitMgr.h"
@@ -15,8 +16,13 @@
 #include "MyMath.h"
 #include "Nuclear_part.h"
 
+#include "Larva.h"
+#include "Drone.h"
 #include "SCv.h"
+#include "Hatchery.h"
 #include "Comandcenter.h"
+#include "Session_Mgr.h"
+
 IMPLEMENT_SINGLETON(CObjMgr)
 CObjMgr::CObjMgr(void)
 {
@@ -75,21 +81,24 @@ void CObjMgr::Update(void)
 }
 void CObjMgr::Destroy_Update(void)
 {
-
-
 	float fy = 0.f;
 	SORT_ID sortid = SORT_END;
 
 	list<CObj*>::iterator iter;
 	list<CObj*>::iterator iter_end;
+	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
 
 	for(int i = 0; i < OBJ_END; ++i)
 	{
 		iter = m_ObjList[i].begin();
 		iter_end = m_ObjList[i].end();
 
+
+
 		for( ; iter != iter_end; )
 		{
+			if(OBJ_FRAGMENT == i)
+				int a = 9;
 			if(true == (*iter)->GetDestroy() )
 			{
 				obj_leave( (*iter)->GetObjNumber() );
@@ -101,16 +110,28 @@ void CObjMgr::Destroy_Update(void)
 			{
 				fy = (*iter)->GetY();
 				sortid = (*iter)->GetsortID();
-				if(true == (*iter)->Be_in_camera()  )
-				{
-					if(SORT_AIR == sortid)
-						m_air_rendersort.push_back( (*iter) );
-					else if(SORT_AIR_EFF == sortid)
-						m_aireff_renderlist.push_back( (*iter) );
-					else if(SORT_GROUND_EFF == sortid)
-						m_groundeff_renderlist.push_back( (*iter) );
+				
+				if(true == (*iter)->Be_in_camera())
+				{ 
+					if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight((*iter)->Getcuridx(32), eteam))
+					{
+						if(SORT_AIR == sortid)
+							m_air_rendersort.push_back( (*iter) );
+						else if(SORT_AIR_EFF == sortid)
+							m_aireff_renderlist.push_back( (*iter) );
+						else if(SORT_GROUND_EFF == sortid)
+							m_groundeff_renderlist.push_back( (*iter) );
+						else
+							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					}
 					else
-						m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					{
+						if(CATEGORY_BUILDING == (*iter)->GetCategory() ||
+							CATEGORY_RESOURCE == (*iter)->GetCategory())
+						{
+							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+						}
+					}
 				}
 
 				++iter;
@@ -134,7 +155,10 @@ void CObjMgr::Destroy_Update(void)
 			{
 				fy = (*iter)->GetY();
 				sortid = (*iter)->GetsortID();
-				if(true == (*iter)->Be_in_camera()  )
+
+				int idx32 = CMyMath::Pos_to_index((*iter)->GetPos(), 32);
+				if(true == (*iter)->Be_in_camera()  &&
+					FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(idx32, eteam))
 					m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
 
 				++iter;
@@ -159,7 +183,10 @@ void CObjMgr::Destroy_Update(void)
 			{
 				fy = (*iter)->GetY();
 				sortid = (*iter)->GetsortID();
-				if(true == (*iter)->Be_in_camera()  )
+				int idx32 = CMyMath::Pos_to_index((*iter)->GetPos(), 32);
+
+				if(true == (*iter)->Be_in_camera() &&
+					FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(idx32, eteam))
 				{
 					if(SORT_GROUND_EFF == sortid)
 						m_groundeff_renderlist.push_back( (*iter) );
@@ -344,54 +371,6 @@ void CObjMgr::AddEffect(CObj* peff)
 {
 	m_Effect_List.push_back(peff);
 }
-
-void CObjMgr::Release()
-{	
-	list<CObj*>::iterator iter;
-	list<CObj*>::iterator iter_end;
-	for(int i = 0; i < OBJ_END; ++i)
-	{
-		if(m_ObjList[i].empty())
-			continue;
-
-		iter = m_ObjList[i].begin();
-		iter_end = m_ObjList[i].end();
-
-		for( ; iter != iter_end; ++iter)
-			Safe_Delete(*iter);
-
-		m_ObjList[i].clear();
-	}
-
-
-	iter = m_CorpseList.begin();
-	iter_end = m_CorpseList.end();
-
-	for( ; iter != iter_end; ++iter)
-		Safe_Delete(*iter);
-	m_CorpseList.clear();
-
-
-	for(int i = 0; i < SORT_END; ++i)
-	{
-		if(true == m_rendersort[i].empty())
-			continue;
-
-		m_rendersort[i].clear();
-	}
-
-	list<CObj*>::iterator iter_eff = m_Effect_List.begin();
-	list<CObj*>::iterator iter_eff_end = m_Effect_List.end();
-
-	for( ; iter_eff != iter_eff_end; ++iter_eff)
-		Safe_Delete(*iter_eff);
-
-	m_Effect_List.clear();
-
-
-
-}
-
 void CObjMgr::AddCorpse(CObj* pObj)
 {
 	m_CorpseList.push_back(pObj);
@@ -402,10 +381,34 @@ CObj* CObjMgr::GetCoreBuilding(CObj* pself)
 	float fminval = FLT_MAX;
 	CObj* pbuilding = NULL;
 
+
 	if(!m_ObjList[OBJ_COMMAND].empty())
 	{
 		list<CObj*>::iterator iter = m_ObjList[OBJ_COMMAND].begin();
 		list<CObj*>::iterator iter_end = m_ObjList[OBJ_COMMAND].end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			if(pself->GetTeamNumber() == (*iter)->GetTeamNumber())
+			{
+				if( BUILD == (*iter)->GetUnitinfo().state)
+					continue;
+
+				float idistance = CMyMath::pos_distance(pself->GetPos() , (*iter)->GetPos() );
+
+				if( fminval > idistance )
+				{
+					fminval= idistance;
+					pbuilding = (*iter);
+				}
+			}
+		}
+	}
+
+	if(!m_ObjList[OBJ_HATCERY].empty())
+	{
+		list<CObj*>::iterator iter = m_ObjList[OBJ_HATCERY].begin();
+		list<CObj*>::iterator iter_end = m_ObjList[OBJ_HATCERY].end();
 
 		for( ; iter != iter_end; ++iter)
 		{
@@ -459,13 +462,13 @@ void CObjMgr::Place_Terran(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
 	MYRECT<float> build_vtx = pobj->GetVertex();
 	MYRECT<float> unit_vtx;
 	D3DXVECTOR2 collocate_pos;
-	CObj*	pscv;
+	CObj*	pscv = NULL;
 
 	vpos = pobj->GetPos();
 	for(int i = 0; i < 4; ++i)
 	{		
 		pscv = new CSCV;
-		collocate_pos.x = vpos.x - build_vtx.left +	23.f*i;
+		collocate_pos.x = vpos.x - (46 - 11.5f) +	23.f*i;
 		collocate_pos.y = vpos.y + build_vtx.bottom + 11.5f;
 
 		pscv->SetPos(collocate_pos);		
@@ -475,14 +478,99 @@ void CObjMgr::Place_Terran(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
 		//pscv->Initialize();
 	}
 }
-
-void CObjMgr::Place_Zerg(D3DXVECTOR2 vpos)
+void CObjMgr::Place_Zerg(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
 {
+	CObj* pobj = new CHatchery(0.f);
+	AddObject(pobj , OBJ_HATCERY);
 
+	vpos.x -= 48;
+	vpos.y -= 32;
+	pobj->SetPos(vpos);
+	pobj->SetTeamNumber(eteam);
+	pobj->Initialize();
+	
+
+
+	MYRECT<float> build_vtx = pobj->GetVertex();
+	MYRECT<float> unit_vtx;
+	D3DXVECTOR2 collocate_pos;
+	vpos = pobj->GetPos();
+
+	CObj*	pdrone = NULL;
+
+	for(int i = 0; i < 4; ++i)
+	{		
+		pdrone = new CDrone;
+		AddObject(pdrone , OBJ_DRONE);
+
+		collocate_pos.x = vpos.x - (46 - 11.5f) + 23.f*i;
+		collocate_pos.y = vpos.y + build_vtx.bottom + 11.5f;
+
+		pdrone->SetPos(collocate_pos);		
+		pdrone->SetTeamNumber(eteam);
+		pdrone->Initialize();		
+	}
+
+
+	//pobj = new CHatchery(0.f);
+	//pobj->SetPos(D3DXVECTOR2(vpos.x - 150 , vpos.y));
+	//pobj->SetTeamNumber(eteam);
+	//pobj->Initialize();
+	//AddObject(pobj , OBJ_HACERY);
+
+	//pobj = new CHatchery(0.f);
+	//pobj->SetPos(D3DXVECTOR2(vpos.x - 150 , vpos.y - 100));
+	//pobj->SetTeamNumber(eteam);
+	//pobj->Initialize();
+	//AddObject(pobj , OBJ_HACERY);
 }
-
 CObj* CObjMgr::GetObj(const USHORT objnum)
 {
 	return m_obj_alive[objnum];
 }
+void CObjMgr::Release()
+{	
+	list<CObj*>::iterator iter;
+	list<CObj*>::iterator iter_end;
+	for(int i = 0; i < OBJ_END; ++i)
+	{
+		if(m_ObjList[i].empty())
+			continue;
 
+		iter = m_ObjList[i].begin();
+		iter_end = m_ObjList[i].end();
+
+		for( ; iter != iter_end; ++iter)
+			Safe_Delete(*iter);
+
+		m_ObjList[i].clear();
+	}
+
+
+	iter = m_CorpseList.begin();
+	iter_end = m_CorpseList.end();
+
+	for( ; iter != iter_end; ++iter)
+		Safe_Delete(*iter);
+	m_CorpseList.clear();
+
+
+	for(int i = 0; i < SORT_END; ++i)
+	{
+		if(true == m_rendersort[i].empty())
+			continue;
+
+		m_rendersort[i].clear();
+	}
+
+	list<CObj*>::iterator iter_eff = m_Effect_List.begin();
+	list<CObj*>::iterator iter_eff_end = m_Effect_List.end();
+
+	for( ; iter_eff != iter_eff_end; ++iter_eff)
+		Safe_Delete(*iter_eff);
+
+	m_Effect_List.clear();
+
+
+
+}

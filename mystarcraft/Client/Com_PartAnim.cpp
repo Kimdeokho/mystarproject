@@ -6,6 +6,9 @@
 #include "Obj.h"
 
 #include "Terran_building.h"
+
+#include "TileManager.h"
+#include "Session_Mgr.h"
 CCom_PartAnim::CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3DXMATRIX& objmat )
 :CCom_Animation(objmat)
 {
@@ -36,10 +39,32 @@ void CCom_PartAnim::Initialize(CObj* pobj)
 
 	m_curtex = (*m_generaltex)[0];
 	//m_linktex = (*m_subgeneral_tex)[0];
+	m_bsighton = false;
+	m_isescape = false;
 }
 
 void CCom_PartAnim::Update(void)
 {
+	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+	if(CTileManager::GetInstance()->GetFogLight(m_pobj->Getcuridx(32) , eteam))
+	{
+		m_bsighton = true;
+		m_isescape = false;
+	}
+	else
+	{		
+		if(m_bsighton)
+		{
+			//켜졌다가 꺼진상태
+			m_bsighton = false;
+			//마지막 상태 저장
+			m_isescape = true;
+		}
+	}
+
+	if(m_isescape)
+		return;
+
 	if(L"BUILD" == m_statkey)
 	{
 		const UNITINFO& unit_info = m_pobj->GetUnitinfo();

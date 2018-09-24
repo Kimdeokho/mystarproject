@@ -2,8 +2,9 @@
 #include "UI_MiniUnitDisplay.h"
 
 #include "TextureMgr.h"
-CUI_MiniUnitDisplay::CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos)
-:m_vminipos(vobjpos)
+#include "Session_Mgr.h"
+CUI_MiniUnitDisplay::CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER eteam)
+:m_vminipos(vobjpos) , m_eteam(eteam)
 {
 	m_statekey = L"DebugTile";
 }
@@ -26,6 +27,11 @@ void CUI_MiniUnitDisplay::Initialize(void)
 
 	m_vweight.x = (BACKBUFFER_SIZEX - 640)/2 + 5;
 	m_vweight.y = BACKBUFFER_SIZEY - 130;
+
+	if(m_eteam != CSession_Mgr::GetInstance()->GetTeamNumber())
+		m_color = D3DCOLOR_ARGB(255,255,0,0);
+	else
+		m_color = D3DCOLOR_ARGB(255,0, 255,0);
 }
 
 void CUI_MiniUnitDisplay::Update(void)

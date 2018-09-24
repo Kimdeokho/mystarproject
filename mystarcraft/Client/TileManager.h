@@ -8,6 +8,7 @@ const int MAP_TEXTURECNTY = 4096/BACKBUFFER_SIZEY + 1;
 const int CULLINGCNTX = BACKBUFFER_SIZEX/SQ_TILESIZEX + 1;
 const int CULLINGCNTY = BACKBUFFER_SIZEY/SQ_TILESIZEY + 2;
 
+class CObj;
 template<typename T>class CMyHeapSort;
 class CTileManager
 {
@@ -74,13 +75,14 @@ public:
 public:
 	void MinifogUpdate(void);
 public:
-	FOGSIGHT_OPTION		GetFogSightOp(const int& idx);
-	bool				GetFogLight(const int& idx);
-	BYTE				GetTileOption(const int& idx);
-	BYTE				GetTileFloor(const int& idx);
+	//FOGSIGHT_OPTION		GetFogSightOp(const int& idx);
+	FOGSIGHT_OPTION		GetFogLight(const int& idx, const TEAM_NUMBER& eteam);
+	int					GetTileOption(const int& idx);
+	int					GetTileFloor(const int& idx);
 	bool				GetCreepInstall(const int& idx);
 	TILE**				GetSqTile(void);
 	CREEP_INFO**		GetCreepTile(void);
+	FOG_INFO**			GetFogTile(void){ return m_fogTile; }
 	void				GetFlowfield_Path(const int& idx , vector<int>& path);
 	short*				Get_flowfield_node(void);
 	LPDIRECT3DTEXTURE9	GetMiniampTexture(void);
@@ -89,26 +91,27 @@ public:
 	//D3DXVECTOR2		GetFlowFiled_GoalPos(void);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
-	void SetFogLight(int idx, float fdistance , float fradius);
+	//void SetFogLight(int idx, float fdistance , float fradius, const TEAM_NUMBER& eteam);
+	void SetFogLight(int idx , const TEAM_NUMBER& eteam);
 	void SetFogColor(const int& idx , D3DCOLOR color);
 	void SetCreepInstall(const int& idx , bool binstall);
 
-	void SetFogoverlap_cnt(const int& idx);
+	void SetFogoverlap_cnt(const int& idx, const TEAM_NUMBER& eteam);
 public:
 	bool CheckFogFloor(int myidx , int destidx);
 	bool CheckCreepFloor(int myidx , int destidx);
 public:
 	//void CreepAlgorithm(void);
 public:	
-	void SightOffRender(const int& idx);
-	void SightOnRender(const int& idx ,const int& irange , vector<int>& sightoff_list , bool* fogsearch , MOVE_TYPE etype);
+	void SightOffRender(const int& idx,const TEAM_NUMBER& eteam);
+	void SightOnRender(const int& idx ,const int& irange , vector<int>& sightoff_list , bool* fogsearch , CObj* pobj);
 
 	//void Creep_increase(const D3DXVECTOR2& vPos/*À¯´ÖÀÇ À§Ä¡*/ , int irange);
 	void Creep_decrease_autotile(const int& idx);
 	void Creep_Autotile(const int& idx);
 public:
 	bool Bresenham_Tilecheck(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest );
-	void Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,vector<int>& light_IdxList , bool* fogsearch , MOVE_TYPE etype);
+	void Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int fRadius ,vector<int>& light_IdxList , bool* fogsearch , CObj* pobj);
 	void Bresenham_Creep(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& vDest, const int& fRadius ,const int& loopcnt,list<int>& creep_IdxList);
 public:
 	void ReadyTileTexture(void);

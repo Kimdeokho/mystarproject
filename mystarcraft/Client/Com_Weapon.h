@@ -1,7 +1,7 @@
 #pragma once
 #include "component.h"
 
-
+class CCom_Animation;
 class CCom_Weapon :
 	public CComponent
 {

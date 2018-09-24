@@ -16,6 +16,7 @@ private:
 	const int&			m_rcuridx32;
 	int					m_oldidx32;
 
+	TEAM_NUMBER			m_eteamnumber;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

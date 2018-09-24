@@ -4,6 +4,8 @@
 
 class CUI;
 class CObj;
+class CUI_Cmd_info;
+class CUI_Building_info;
 class CIngame_UIMgr
 {
 	DECLARE_SINGLETON(CIngame_UIMgr)
@@ -14,17 +16,17 @@ private:
 	vector<CUI*>	m_vec_preview;	
 	list<CUI*>		m_wireframe_ui_list;
 
-	CUI*			m_production_bar;
-	CUI*			m_building_info;
-	CUI*			m_armyunitlist_info;
-	CUI*			m_boarding_info;
-	CUI*			m_cmd_info;
+	CUI*						m_production_bar;
+	CUI_Building_info*			m_building_info;
+	CUI*						m_armyunitlist_info;
+	CUI*						m_boarding_info;
+	CUI*						m_cmd_info;
 private:
 	int				m_total_mineral;
 	int				m_total_gas;
 private:
 	RACE			m_erace;
-	int				m_terran_build[T_BUILD_END];
+	int				m_build_state[BUILD_TECH_END];
 	UPG_INFO		m_upginfo[UPG_END];
 private:
 	
@@ -50,11 +52,11 @@ public:
 	void	SetProduction_info(const D3DXVECTOR2& vpos , const float& ratioX);
 	void	set_boarding_infolist(multimap<int , BOARDING_INFO , greater<int> >& infolist , OBJID eid);
 public:
-	const CUI*			GetCmd_info(void);
+	CUI_Cmd_info*		GetCmd_info(void);
 	UPG_INFO*			GetUpginfo();
-	int					Get_T_BuildTech(TERRAN_BUILD_TECH etech );
+	int					Get_BuildTech(TERRAN_BUILD_TECH etech );
 public:
-	void	T_BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt);
+	void	BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt);
 public:
 	void	SetMiniUnit_display(CUI* pui);
 	void	SetMinimapCamPos(const D3DXVECTOR2& vmousepos);

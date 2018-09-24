@@ -1,6 +1,7 @@
 #pragma once
 #include "obj.h"
 
+class CCom_Animation;
 class CGasBuilding :
 	public CObj
 {
@@ -10,12 +11,12 @@ protected:
 	CObj*			m_pworkman;
 	CObj*			m_pgas_resource;
 protected:
-	bool			m_bcomeon;
+	bool			m_bcome;
 protected:
-	CComponent*		m_com_anim;
-	CComponent*		m_com_targetsearch;
-	CComponent*		m_com_pathfind;
-	CComponent*		m_com_collision;
+	CCom_Animation*		m_com_anim;
+	CComponent*			m_com_targetsearch;
+	CComponent*			m_com_pathfind;
+	CComponent*			m_com_collision;
 protected:
 	D3DXMATRIX		m_matshadow;
 

@@ -11,8 +11,8 @@ private:
 
 	CObj*				m_tankbarrel;
 
-	CComponent*			m_com_tankanim;
-	CComponent*			m_com_siegeanim;
+	CCom_Animation*			m_com_tankanim;
+	CCom_Animation*			m_com_siegeanim;
 
 	bool				m_bcheck;
 public:

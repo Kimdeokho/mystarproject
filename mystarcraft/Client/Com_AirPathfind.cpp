@@ -87,13 +87,17 @@ void CCom_AirPathfind::Air_MovingUpdate(void)
 	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 	m_pobj->Setdir(m_vcurdir);
 
-	m_vpos += m_vcurdir*GETTIME*(*m_fspeed);
-	if(CMyMath::pos_distance(m_vpos , m_vgoalpos) < 4*4)
+	float onestep = GETTIME*(*m_fspeed);
+	
+	m_vpos += m_vcurdir* onestep ;
+	if(CMyMath::pos_distance(m_vpos , m_vgoalpos) <= onestep*onestep)
 	{
 		//m_vpos = m_vgoalpos;
 		
 		m_is_arrive = true;
 		m_is_moveupdate = false;
+
+		m_vpos = m_vgoalpos;
 
 		if(ORDER_MOVE == m_pobj->GetUnitinfo().order || 
 			ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
@@ -111,7 +115,7 @@ void CCom_AirPathfind::Air_MovingUpdate(void)
 	}
 	else
 	{
-		m_is_arrive = false;
+		m_is_arrive = false;		
 	}
 }
 void CCom_AirPathfind::Render(void)

@@ -3,7 +3,8 @@
 
 #include "MyCommandList.h"
 #include "MyCmd_Move.h"
-#include "MyCmd_Attack.h"
+#include "MyCmd_InputKey.h"
+#include "MyCmd_InputClick.h"
 #include "KeyMgr.h"
 #include "FontMgr.h"
 #include "ScrollMgr.h"
@@ -52,7 +53,6 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 		//CMyCommand* pcommand = new CMyCmd_Move;
 		//pcommand 에 여러 정보를 넣은다음
 		//m_cmdlist->PushCommand(무브명령 관련 정보담기)
-
 		if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
 		{
 			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
@@ -67,7 +67,8 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 				//우클릭된 유닛을 구한다.
 				vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
-			}			
+			}
+			CUnitMgr::GetInstance()->Input_cmd(VK_RBUTTON , m_clickwating);
 
 			CMyCommand* pcommand = CMyCmd_Move::StaticCreate(vmousept);
 			m_cmdlist->PushCommand(pcommand);
@@ -89,31 +90,31 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 
 		if(!CUnitMgr::GetInstance()->GetUnitlistempty())
 		{
-			if(true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(vmousept))
-			{
-				CIngame_UIMgr::GetInstance()->Minimappos_to_screen(vmousept);
-				//어택땅을 미니맵에 클릭시 미니맵 위치를 화면위치로 바꿔준다
-			}
-			else
-			{
-				//클릭된 유닛을 구한다.
-				vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
-			}
 			for(char i = 'A'; i <= 'Z'; ++i)
 			{
 				if(m_clickwating[i])
 				{
-					//부대유닛들의 중점을 구하고 선택된 타겟이 있으면 전달한다.
-					CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
-					CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);
 
-					if('A' == i )
+					if(true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(vmousept))
 					{
-						//어택땅 명령 생성...
+						CIngame_UIMgr::GetInstance()->Minimappos_to_screen(vmousept);
+						//어택땅을 미니맵에 클릭시 미니맵 위치를 화면위치로 바꿔준다
 					}
 					else
-						CUnitMgr::GetInstance()->Input_cmd(i , VK_LBUTTON);					
+					{
+						//클릭된 유닛을 구한다.
+						vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+						CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+					}
+
+					//부대유닛들의 중점을 구하고 선택된 타겟이 있으면 전달한다.
+					//CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
+					//CTileManager::GetInstance()->Flowfield_Pathfinding(vmousept);
+
+					CUnitMgr::GetInstance()->Input_cmd(i , VK_LBUTTON);
+					//여기는 단축키 + 클릭 명령 생성
+					CMyCmd_InputClick* pcommand = CMyCmd_InputClick::StaticCreate(vmousept, i);
+					m_cmdlist->PushCommand(pcommand);
 
 					escape = true;
 					m_bwork = true;
@@ -126,8 +127,10 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 		{
 			CUnitMgr::GetInstance()->Input_cmd(VK_LBUTTON , m_clickwating);
 			CIngame_UIMgr::GetInstance()->Click_cmdbtn(vmousept);
+
 			m_bwork = false;
 			m_select = true;
+
 		}
 
 		memset(m_clickwating , 0 , sizeof(m_clickwating));
@@ -149,32 +152,29 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 						m_clickwating[a] = false;
 						m_clickwating[b] = false;
 						escape = true;
+
+/*
+						CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(b, a);
+						m_cmdlist->PushCommand(pcommand);*/
 						break;
 					}
 				}
 				if(!escape)
 				{
-					if(true == CUnitMgr::GetInstance()->Unit_Unification())
+					if('A' == a) //야매...
+					{
+						m_clickwating[a] = true;						
+					}
+					else if(true == CUnitMgr::GetInstance()->Unit_Unification())
 					{
 						CUnitMgr::GetInstance()->Input_cmd(a , m_clickwating);
 
 						if(false == m_clickwating[a])
 						{
-							/*
-							WRITE
-
-							선택된 유닛 수
-							유닛 번호들,
-							neky
-							*/
+							CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(a);
+							m_cmdlist->PushCommand(pcommand);
 						}
 					}
-					else
-					{
-						if('A' == a) //야매...
-							m_clickwating[a] = true;
-					}
-
 					break;
 				}
 			}
@@ -259,4 +259,8 @@ void CInput_Stage::Reelase(void)
 void CInput_Stage::ClearCmdList(void)
 {
 	m_cmdlist->ClearCommand();
+}
+void CInput_Stage::PushCommand(CMyCommand* pcmd)
+{
+	m_cmdlist->PushCommand(pcmd);
 }

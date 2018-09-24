@@ -5,6 +5,7 @@
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
 #include "Device.h"
+#include "MyMath.h"
 CCorpse::CCorpse(const TCHAR* texname , const TCHAR* wreckagename)
 {
 	m_texname = texname;

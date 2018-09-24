@@ -31,6 +31,9 @@
 #include "UI_form.h"
 
 #include "UI_Energy_bar.h"
+#include "KeyMgr.h"
+#include "Input_Interface.h"
+#include "MyCmd_PartBuilding.h"
 CFactory::CFactory(void)
 {
 }
@@ -57,7 +60,6 @@ void CFactory::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_FACTORY;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -297,108 +299,30 @@ void CFactory::Dead(void)
 
 void CFactory::Inputkey_reaction(const int& nkey)
 {
-	m_is_preview = false;
-
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state)
 		return;
 
-	MYRECT<float> tempvtx;
-	if('C' == nkey)
-	{
-		m_is_preview = true;
-		((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_FACADDON", T_FAC_ADDON , 2 , 2 , this , tempvtx);
-		((CBuilding_Preview*)m_sub_preview)->SetPreviewInfo(L"T_FACTORY", T_FACTORY , 3 , 4 , this , m_vertex);
-	}
+
 	if('L' == nkey)
 	{
 		if(false == m_is_take_off)
 		{
 			//이륙
 			CTerran_building::TakeOff();
-		}
-		else
-		{
-			//착륙 프리뷰를 킨다
-			m_is_preview = true;
-			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_FACTORY", T_FACTORY , 3 , 4 , this , m_vertex);			
 		}		
 	}
-	if(VK_LBUTTON == nkey)
+
+	if(false == m_is_take_off)
 	{
-		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive() &&
-			true == ((CBuilding_Preview*)m_sub_preview)->GetActive())
-		{
-			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check() &&
-				true == ((CBuilding_Preview*)m_sub_preview)->Install_check())
-			{
-
-				((CBuilding_Preview*)m_main_preview)->SetActive(false);
-				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
-
-				if(true == m_is_take_off)
-				{
-					//공중에서 부속품 설치
-					m_is_partinstall = true;
-					CTerran_building::Landing_move( ((CBuilding_Preview*)m_sub_preview)->GetPreviewInfo().vpos );
-
-				}
-				else
-				{
-					//원래 위치와 다를때... 공중에 뜨고, 이동후, 착지한다음 설치
-					D3DXVECTOR2 vpt = CMouseMgr::GetInstance()->GetAddScrollvMousePt();//부속건물 클릭위치
-					vpt.x = vpt.x - (m_irow/2)*SQ_TILESIZEX;//부속건물 클릭위치 조정
-					int idx = CMyMath::Pos_to_index(vpt , 32);
-
-					if(idx != m_curidx32)
-					{
-						m_is_autoinstall = true;
-						m_is_partinstall = true;
-
-						CTerran_building::TakeOff();
-
-					}
-					else
-					{
-						CObj* pobj = NULL;
-						if(T_FAC_ADDON == ((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().ebuild)
-						{
-							pobj = new CFactory_addon(this);
-							pobj->SetPos(((CBuilding_Preview*)m_main_preview)->GetPreviewInfo().vpos);
-							pobj->Initialize();				
-							CObjMgr::GetInstance()->AddObject(pobj , OBJ_FAC_ADDON);
-						}
-						m_partbuilding = pobj;
-						((CTerran_building*)m_partbuilding)->Setlink(true , this);
-					}
-				}
-			}
-			else
-			{
-				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
-			}
-		}
-		else if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
-		{
-			//착륙 분기
-			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
-			{
-				((CBuilding_Preview*)m_main_preview)->SetActive(false);
-				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
-
-				m_unitinfo.order = ORDER_LANDING_MOVE;
-				D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-				int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
-				vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
-				CTerran_building::Landing_move(vclickpos);	
-
-			}
-			else
-			{
-				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
-			}
-		}
+		if('T' == nkey)
+			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_TANK , L"BTN_TANK");
+		if('V' == nkey)
+			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_VULTURE , L"BTN_VULTURE");
+		if('G' == nkey)
+			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_GOLIATH , L"BTN_GOLIATH");
 	}
+
 	if(VK_RBUTTON == nkey)
 	{
 
@@ -415,7 +339,8 @@ void CFactory::Inputkey_reaction(const int& nkey)
 		{
 			CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 
-			((CCom_Production_building*)m_com_production)->set_rallypoint(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+			((CCom_Production_building*)m_com_production)->set_rallypoint(goalpos);
 
 			if(this == ptarget)
 			{
@@ -431,18 +356,147 @@ void CFactory::Inputkey_reaction(const int& nkey)
 		}
 	}
 
-	if(false == m_is_take_off)
+	if(9998 == nkey)
 	{
-		if('T' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_TANK , L"BTN_TANK");
-		if('V' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_VULTURE , L"BTN_VULTURE");
-		if('G' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_GOLIATH , L"BTN_GOLIATH");
+		m_unitinfo.order = ORDER_LANDING_MOVE;
+		D3DXVECTOR2 vclickpos = m_main_preview->GetPreviewInfo().vpos;
+		int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
+		vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
+		CTerran_building::Landing_move(vclickpos);
 	}
+	if(9999 == nkey)
+	{
+		if(true == m_is_take_off)
+		{
+			//공중에서 부속품 설치
+			m_is_partinstall = true;
+			CTerran_building::Landing_move( (m_sub_preview)->GetPreviewInfo().vpos);
+
+			//m_preview_info = preview_info;
+		}
+		else
+		{
+
+			D3DXVECTOR2 vpt = m_sub_preview->GetPreviewInfo().vcenter_pos;
+			int idx = CMyMath::Pos_to_index(vpt , 32);
+
+			if(idx != m_curidx32)
+			{
+				m_is_autoinstall = true;
+				m_is_partinstall = true;
+
+				CTerran_building::TakeOff();
+
+			}
+			else
+			{
+				//옆에 바로 설치
+				CObj* pobj = NULL;
+				TERRAN_BUILD_TECH ebuild = (m_main_preview)->GetPreviewInfo().ebuild;
+				if(T_FAC_ADDON == ebuild)
+				{
+					pobj = new CFactory_addon(this/*아니면 오브젝트 아이디*/);
+					pobj->SetPos((m_main_preview)->GetPreviewInfo().vpos);
+					pobj->Initialize();				
+					CObjMgr::GetInstance()->AddObject(pobj , OBJ_FAC_ADDON);
+
+				}
+				m_partbuilding = pobj;
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
+			}
+		}
+	}
+
+
 }
 
 void CFactory::Inputkey_reaction(const int& firstkey , const int& secondkey)
+{
+
+}
+void CFactory::Input_cmd(const int& nkey, bool* waitkey)
+{
+	if(TAKE_OFF == m_unitinfo.state ||
+		LANDING == m_unitinfo.state)
+		return;
+
+	MYRECT<float> tempvtx;
+	if('C' == nkey)
+	{
+		m_is_preview = true;
+		(m_main_preview)->SetPreviewInfo(L"T_FACADDON", T_FAC_ADDON , 2 , 2 , tempvtx);
+		(m_sub_preview)->SetPreviewInfo(L"T_FACTORY", T_FACTORY , 3 , 4 , m_vertex);
+		waitkey[nkey] = false;
+	}
+
+	if('L' == nkey)
+	{
+		if(true == m_is_take_off)
+		{
+			//이륙
+			m_is_preview = true;
+			(m_main_preview)->SetPreviewInfo(L"T_FACTORY", T_FACTORY , 3 , 4 ,  m_vertex);			
+		}
+	}
+
+	if(VK_LBUTTON == nkey)
+	{
+		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
+
+		if(BTN_TAKE_OFF == eclicked_btn)
+		{
+			Inputkey_reaction('L');
+			return;
+		}
+		if(BTN_LANDING == eclicked_btn)
+		{
+			Inputkey_reaction('L');
+			return;
+		}
+
+		if(true == (m_main_preview)->GetActive() &&
+			true == (m_sub_preview)->GetActive())
+		{
+			if(true == (m_main_preview)->Install_check() &&
+				true == (m_sub_preview)->Install_check())
+			{
+				m_is_preview = false;
+				(m_main_preview)->SetActive(false);
+				(m_sub_preview)->SetActive(false);
+
+				PREVIEW_INFO maininfo , subinfo;
+				maininfo = m_main_preview->GetPreviewInfo();
+				subinfo = m_sub_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_PartBuilding::StaticCreate(maininfo , subinfo , 9999));
+			}
+			else
+			{
+				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
+			}
+		}
+		else if(true == (m_main_preview)->GetActive())
+		{
+			//착륙 분기
+			if(true == (m_main_preview)->Install_check())
+			{
+				m_is_preview = false;
+				(m_main_preview)->SetActive(false);
+				(m_sub_preview)->SetActive(false);
+
+				PREVIEW_INFO maininfo , subinfo;
+				maininfo = m_main_preview->GetPreviewInfo();
+				subinfo = m_sub_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_PartBuilding::StaticCreate(maininfo , subinfo , 9998));
+			}
+			else
+			{
+				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
+			}
+		}
+	}
+}
+void CFactory::Input_cmd(const int& firstkey , const int& secondkey)
 {
 
 }
@@ -454,12 +508,12 @@ void CFactory::Update_Cmdbtn(void)
 	{
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_VULTURE" , BTN_VULTURE , true);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_FAC_ADDON))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_FAC_ADDON))
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_SIEGETANK" , BTN_SIEGETANK , true);
 		else
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_SIEGETANK" , BTN_SIEGETANK , false);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_ARMOURY))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ARMOURY))
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GOLIATH" , BTN_GOLIATH , true);
 		else
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GOLIATH" , BTN_GOLIATH, false);

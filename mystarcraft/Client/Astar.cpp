@@ -230,13 +230,13 @@ void CAstar::Make_UnitNode( PATH_NODE* parent_node ,const D3DXVECTOR2& vpos , co
 	pnewnode->vPos = vpos;	
 
 	
-	D3DXVECTOR2 vtemp;
-	D3DXVec2Normalize(&vtemp , &(pnewnode->vPos - parent_node->vPos));
-	float fdot = D3DXVec2Dot(&m_destdir , &vtemp);
-	if( fdot >= 0.1f) //0보다 크다면 90도보다 작다
-		pnewnode->X = parent_node->X + g_distance*fdot;
-	else
-		pnewnode->X = parent_node->X + g_distance*fdot/2;
+	//D3DXVECTOR2 vtemp;
+	//D3DXVec2Normalize(&vtemp , &(pnewnode->vPos - parent_node->vPos));
+	//float fdot = D3DXVec2Dot(&m_destdir , &vtemp);
+	//if( fdot >= 0.1f) //0보다 크다면 90도보다 작다
+	//	pnewnode->X = parent_node->X + g_distance*fdot;
+	//else
+	//	pnewnode->X = parent_node->X + g_distance*fdot/2;
 
 	//pnewnode->G = parent_node->G + g_distance*g_distance;
 	pnewnode->G = parent_node->G + CMyMath::pos_distance(pnewnode->vPos , parent_node->vPos);
@@ -272,17 +272,16 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 			m_terrain_end = true;
 		else
 			m_terrain_end = false;
+	}
+	
 
-		m_maxnodecnt += 100;
-		if(m_maxnodecnt > MAXPATH_IDX)
-			m_maxnodecnt = MAXPATH_IDX;
-	}
+	if( NULL != m_ptarget)
+		m_maxnodecnt = 50;
 	else
-	{
-		m_maxnodecnt += 100;
-		if(m_maxnodecnt > MAXPATH_IDX/2)
-			m_maxnodecnt = MAXPATH_IDX/2;
-	}
+		m_maxnodecnt += 50;
+
+	if(m_maxnodecnt > MAXPATH_IDX)
+		m_maxnodecnt = MAXPATH_IDX;
 
 	m_is_escape = false;
 
@@ -291,12 +290,12 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 	//m_unit_stepsize = stepsize;
 	m_tilecnt = int(SQ_TILECNTX*(float)SQ_TILESIZEX/(float)m_unit_stepsize);
 
-	if(8 == m_unit_stepsize)
-		m_unit_diagonalstep = 11.3f;
-	else if(16 == m_unit_stepsize)
-		m_unit_diagonalstep = 22.f;
-	else if(32 == m_unit_stepsize)
-		m_unit_diagonalstep = 45.f;
+	//if(8 == m_unit_stepsize)
+	//	m_unit_diagonalstep = 11.3f;
+	//else if(16 == m_unit_stepsize)
+	//	m_unit_diagonalstep = 22.f;
+	//else if(32 == m_unit_stepsize)
+	//	m_unit_diagonalstep = 45.f;
 
 	m_vStart_pos = startpos;
 	m_vGoal_pos = goalpos;
@@ -337,7 +336,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 	int accrue= 0; 
 	D3DXVECTOR2 tempv_center;
 	MYRECT<float> temprc_center;
-	while(accrue <= 20) //보류 조건
+	while(accrue <= 10) //보류 조건
 	{
 		++accrue;
 
@@ -346,7 +345,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 		if(NULL != pnode)
 		{
 			//비트연산으로 스텝사이즈 트루 펄스여부,,,
-			if(m_dummynodeX->X <= pnode->X) //도착점에서 먼곳으로
+			if(m_dummynodeX->G <= pnode->G) //도착점에서 먼곳으로
 				m_dummynodeX = pnode;
 
 			if(m_dummynodeH->H >= pnode->H)// 도착점과 가까운곳으로
@@ -355,8 +354,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if(NULL == pnode)
 		{
-			//dummyH
-			m_maxnodecnt = -50;
+			m_maxnodecnt = 0;
 
 			while(NULL != m_dummynodeH)
 			{
@@ -366,10 +364,12 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			break;
 		}	
 
-		if(pnode->index == m_goalidx)
+		if( pnode->index == m_goalidx)
 		{
-			m_maxnodecnt = MAXPATH_IDX;
-			//pnode->vPos = m_vGoal_pos;
+			//m_maxnodecnt = MAXPATH_IDX;
+			if(NULL == m_ptarget)
+				pnode->vPos = m_vGoal_pos;
+
 			while(NULL != pnode)
 			{
 				vecpath.push_back(pnode->vPos);
@@ -388,6 +388,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 				tempnode = m_dummynodeH;
 			else
 				tempnode = m_dummynodeX;
+
 			while(NULL != tempnode)
 			{
 				vecpath.push_back(tempnode->vPos);
@@ -409,7 +410,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			}
 			else
 			{
-				m_maxnodecnt = 50;
+				m_maxnodecnt = 0;
 				PATH_NODE* tempnode = NULL;
 				if(NULL == m_ptarget)
 					tempnode = m_dummynodeH;
@@ -441,9 +442,10 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 		temprc_center = m_eight_rect[CENTER];
 		for(int i = 0; i < ASTAR_DIR_END; ++i)
 		{
-			if( i >= 5)
-				gdistance = m_unit_diagonalstep;
-			else
+			//if( i == RIGHT_DOWN ||	i == LEFT_DOWN ||
+			//	i == RIGHT_UP || i == LEFT_UP)
+			//	gdistance = m_unit_diagonalstep;
+			//else
 				gdistance = (float)m_unit_stepsize;
 
 			if( Check_TileOption(m_eight_vpos[i]) &&
@@ -453,19 +455,19 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			{
 				if( m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , temprc_center , tempv_center , m_pObj , m_ptarget , m_unit_stepsize) )
 				{
-					//조정된 위치가 장애물일경우 노드를 만들지않는다
 					Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
 				}
 				else
 				{
-					if( CMyMath::Pos_to_index( m_eight_vpos[i] , m_unit_stepsize) == m_goalidx)
-					{
-						m_is_escape = true;
-						break;
-					}
+					//if( CMyMath::Pos_to_index( m_eight_vpos[i] , m_unit_stepsize) == m_goalidx)
+					//{
+					//	m_is_escape = true;
+					//	break;
+					//}
 				} 
 			}
 		}
+
 
 		m_irow = int(pnode->vPos.x / (4096 / m_widthcnt));
 		m_icol = int(pnode->vPos.y / m_unit_stepsize);

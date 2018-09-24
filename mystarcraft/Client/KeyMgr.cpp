@@ -24,8 +24,6 @@ CKeyMgr::CKeyMgr(void)
 	//m_bwork = false;
 	//m_select = false;
 
-
-
 	memset(m_bTurboKeyDown_complete , 0 , sizeof(m_bTurboKeyDown_complete));
 	memset(m_bOnceKeyDown_complete , 0 , sizeof(m_bOnceKeyDown_complete));
 	memset(m_bKeyUp_complete , 0 , sizeof(m_bKeyUp_complete));

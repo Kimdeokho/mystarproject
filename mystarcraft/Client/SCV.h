@@ -5,10 +5,6 @@ class CSCV :
 	public CWorkman
 {
 private:
-	CComponent*		m_com_worksearch;
-	CComponent*		m_com_weapon;
-
-	PREVIEW_INFO	m_preview_info;
 
 	D3DXVECTOR2		m_vnormal;
 	float			m_fterm_time;
@@ -18,8 +14,6 @@ private:
 	D3DXVECTOR2		m_vbuild_pos[4];
 	int				m_build_idx;
 
-public:
-	void	SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , const int& icol , const int& irow ,MYRECT<float> vtx);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

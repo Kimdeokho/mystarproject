@@ -52,7 +52,7 @@ void CCom_WGoliath::fire(CObj*& ptarget)
 			{
 				CObj* peff = NULL;
 
-				peff = new CGeneraEff(L"GaussGun" ,ptarget->GetPos() , D3DXVECTOR2(1.5f,1.5f), SORT_GROUND_EFF , 1.5f);
+				peff = new CGeneraEff(L"GaussGun" ,ptarget->GetPos() , D3DXVECTOR2(1.2f,1.2f), SORT_GROUND_EFF , 1.4f);
 				peff->Initialize();
 				CObjMgr::GetInstance()->AddEffect(peff);
 				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt

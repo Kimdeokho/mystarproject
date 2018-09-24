@@ -50,8 +50,7 @@ void CBunker::Initialize(void)
 
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
-	m_eOBJ_NAME = OBJ_ARMOURY;
-	m_eteamnumber = TEAM_0;
+	m_eOBJ_NAME = OBJ_BUNKER;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;

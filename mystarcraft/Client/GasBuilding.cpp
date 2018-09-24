@@ -101,7 +101,7 @@ void CGasBuilding::building_area_Initialize(const int& col , const int& row)
 void CGasBuilding::Update(void)
 {
 
-	if(m_bcomeon)
+	if(m_bcome)
 	{
 		m_fgather_time += GETTIME;
 
@@ -253,7 +253,7 @@ void CGasBuilding::Update(void)
 				m_pworkman->SetPos(result_pos);
 				//워크맨쉑을 배출한다..
 				CObj* pfragment = NULL;
-				pfragment = new CGas_frag;
+				pfragment = new CGas_frag(m_pworkman);
 				CObjMgr::GetInstance()->AddObject(pfragment , OBJ_FRAGMENT);
 				pfragment->Initialize();
 				((CWorkman*)m_pworkman)->setgas_fragment(pfragment);
@@ -265,7 +265,7 @@ void CGasBuilding::Update(void)
 				m_pworkman->SetOrder(ORDER_RETURN_CARGO);
 				m_pworkman->unit_area_Initialize();
 				m_pworkman = NULL;
-				m_bcomeon = false;
+				m_bcome = false;
 			}
 		}
 	}
@@ -299,7 +299,7 @@ CObj* CGasBuilding::Getworkman(void)
 }
 void CGasBuilding::Setworkman(CObj* pobj)
 {
-	m_bcomeon = true;
+	m_bcome = true;
 	m_fgather_time = 0.f;
 	m_pworkman = pobj;
 }

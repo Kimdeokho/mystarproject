@@ -106,7 +106,11 @@ void CScene_StagePre::LoadData(void)
 		}
 		
 		
-		//if(!lstrcmp(placeinfo[i].TRIBE , L"Terran"))
+		if(!lstrcmp(placeinfo[i].TRIBE , L"Terran"))
+			CObjMgr::GetInstance()->Place_Terran(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ
+		else if(!lstrcmp(placeinfo[i].TRIBE , L"Zerg"))
+			CObjMgr::GetInstance()->Place_Zerg(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ
+		else
 			CObjMgr::GetInstance()->Place_Terran(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ
 	}
 
@@ -115,7 +119,6 @@ void CScene_StagePre::LoadData(void)
 
 	WRITE_TCP_PACKET(PT_LOAD_COMPLETE , WriteBuffer,WRITE_PT_LOAD_COMPLETE(WriteBuffer));
 
-	SetFocus(NULL);
 }
 
 void CScene_StagePre::Release(void)

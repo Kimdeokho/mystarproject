@@ -5,6 +5,10 @@
 #include "TimeMgr.h"
 #include "ScrollMgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
+#include "MyMath.h"
+#include "Obj.h"
+#include "UI_MiniUnitDisplay.h"
 CMinimap::CMinimap(void)
 {
 }
@@ -91,9 +95,16 @@ void CMinimap::Render(void)
 	list<CUI*>::iterator iter		= m_miniunit_display.begin();
 	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
 
+	int fogidx = 0;
+	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+	D3DXVECTOR2 vpos;
 	for( ; iter != iter_end; ++iter)
 	{
-		(*iter)->Render();
+		 vpos = (*iter)->GetPos();
+		 fogidx = CMyMath::Pos_to_index(vpos , 32);
+
+		if(CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+			(*iter)->Render();
 	}
 
 	MYRECT<float> cam_rect;

@@ -54,7 +54,6 @@ void CTank::Initialize(void)
 
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_TANK;
 
 
@@ -83,6 +82,7 @@ void CTank::Initialize(void)
 
 	m_tankbarrel = new CTankbarrel(this);
 	m_tankbarrel->SetPos(m_vPos);
+	m_tankbarrel->SetTeamNumber(m_eteamnumber);
 	m_tankbarrel->SetObjID(m_obj_id);
 
 

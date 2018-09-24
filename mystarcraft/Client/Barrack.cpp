@@ -28,6 +28,11 @@
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_Energy_bar.h"
+#include "Session_Mgr.h"
+
+#include "MyCmd_PartBuilding.h"
+#include "KeyMgr.h"
+#include "Input_Interface.h"
 CBarrack::CBarrack(void)
 {
 }
@@ -54,7 +59,6 @@ void CBarrack::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_BARRACK;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -73,6 +77,7 @@ void CBarrack::Initialize(void)
 	m_com_production = new CCom_Production_building(m_vPos , m_weight , m_irow , m_icol);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
+
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PRODUCTION_BUILDING , m_com_production));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex , false) ) ) ;	
@@ -97,7 +102,7 @@ void CBarrack::Initialize(void)
 
 void CBarrack::Update(void)
 {
-	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , 0 , m_vPos.x , m_vPos.y);
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , 0 , m_vPos.x , m_vPos.y);
 	CTerran_building::building_area_update();	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -209,8 +214,6 @@ void CBarrack::Render(void)
 
 void CBarrack::Inputkey_reaction(const int& nkey)
 {
-	m_is_preview = false;
-
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state)
 		return;
@@ -221,45 +224,18 @@ void CBarrack::Inputkey_reaction(const int& nkey)
 		{
 			//ÀÌ·ú
 			CTerran_building::TakeOff();
-		}
-		else
-		{
-			//Âø·ú ÇÁ¸®ºä¸¦ Å²´Ù
-			m_is_preview = true;
-			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_BARRACK", T_BARRACK , 3 , 4 , this , m_vertex);			
-		}		
+		}	
 	}
-	if(VK_LBUTTON == nkey)
+
+	if(nkey == 9998)
 	{
-		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
-		{
-			//Âø·ú ºÐ±â
-			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
-			{
-				((CBuilding_Preview*)m_main_preview)->SetActive(false);
-				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
-
-				m_unitinfo.order = ORDER_LANDING_MOVE;
-				D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-				int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
-				vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
-				CTerran_building::Landing_move(vclickpos);		
-
-			}
-			else
-			{
-				m_is_preview = true; //¼³Ä¡¿¡ ½ÇÆÐÇÏ¸é ÇÁ¸®ºä¸¦ °è¼Ó º»´Ù.
-			}
-		}
-		else
-		{
-			const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
-			CMD_BTN ebtn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
-			if(BTN_TAKE_OFF == ebtn ||	BTN_LANDING == ebtn)
-				Inputkey_reaction('L');
-
-		}
+		m_unitinfo.order = ORDER_LANDING_MOVE;
+		D3DXVECTOR2 vclickpos = m_main_preview->GetPreviewInfo().vpos;
+		int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
+		vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
+		CTerran_building::Landing_move(vclickpos);
 	}
+
 	if(VK_RBUTTON == nkey)
 	{
 		((CBuilding_Preview*)m_main_preview)->SetActive(false);
@@ -276,17 +252,18 @@ void CBarrack::Inputkey_reaction(const int& nkey)
 		{
 			CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 
-			((CCom_Production_building*)m_com_production)->set_rallypoint(CMouseMgr::GetInstance()->GetAddScrollvMousePt());
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+			m_com_production->set_rallypoint(goalpos);
 
 			if(this == ptarget)
 			{
-				((CCom_Production_building*)m_com_production)->set_is_rally(false);
-				((CCom_Production_building*)m_com_production)->set_rallypoint(m_vPos);								
+				m_com_production->set_is_rally(false);
+				m_com_production->set_rallypoint(m_vPos);								
 			}
 			else
 			{
-				((CCom_Production_building*)m_com_production)->set_is_rally(true);
-				((CCom_Production_building*)m_com_production)->rallypoint_pathfinding();
+				m_com_production->set_is_rally(true);
+				m_com_production->rallypoint_pathfinding();
 
 			}
 		}
@@ -295,13 +272,13 @@ void CBarrack::Inputkey_reaction(const int& nkey)
 	if(false == m_is_take_off)
 	{
 		if('M' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_MARINE , L"BTN_MARINE");
+			m_com_production->add_production_info(1.f , OBJ_MARINE , L"BTN_MARINE");
 		if('F' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_FIREBAT , L"BTN_FIREBAT");
+			m_com_production->add_production_info(1.f , OBJ_FIREBAT , L"BTN_FIREBAT");
 		if('G' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_GHOST , L"BTN_GHOST");
+			m_com_production->add_production_info(1.f , OBJ_GHOST , L"BTN_GHOST");
 		if('C' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_MEDIC , L"BTN_MEDIC");
+			m_com_production->add_production_info(1.f , OBJ_MEDIC , L"BTN_MEDIC");
 	}
 }
 
@@ -309,6 +286,52 @@ void CBarrack::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
+void CBarrack::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if(VK_LBUTTON == nkey)
+	{
+		if(true == (m_main_preview)->GetActive())
+		{
+			//Âø·ú ºÐ±â
+			if(true == (m_main_preview)->Install_check())
+			{
+				(m_main_preview)->SetActive(false);
+				(m_sub_preview)->SetActive(false);
+
+				PREVIEW_INFO maininfo , subinfo;
+				maininfo = m_main_preview->GetPreviewInfo();
+				subinfo = m_sub_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_PartBuilding::StaticCreate(maininfo , subinfo , 9998));	
+				m_is_preview = false;
+			}
+			else
+			{
+				m_is_preview = true; //¼³Ä¡¿¡ ½ÇÆÐÇÏ¸é ÇÁ¸®ºä¸¦ °è¼Ó º»´Ù.
+			}
+		}
+		else
+		{
+			const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+			CMD_BTN ebtn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
+			if(BTN_TAKE_OFF == ebtn ||	BTN_LANDING == ebtn)
+				Input_cmd('L' , waitkey);
+		}
+	}
+	if('L' == nkey)
+	{
+		//Âø·ú ÇÁ¸®ºä¸¦ Å²´Ù
+		if(true == m_is_take_off)
+		{
+			m_is_preview = true;
+			(m_main_preview)->SetPreviewInfo(L"T_BARRACK", T_BARRACK , 3 , 4 , m_vertex);			
+		}
+	}
+}
+void CBarrack::Input_cmd(const int& firstkey , const int& secondkey)
+{
+
+}
+
 void CBarrack::Update_Cmdbtn(void)
 {
 	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
@@ -316,7 +339,7 @@ void CBarrack::Update_Cmdbtn(void)
 	{
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MARINE" , BTN_MARINE , true);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_ACADEMY))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ACADEMY))
 		{
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , true);
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , true);
@@ -327,7 +350,7 @@ void CBarrack::Update_Cmdbtn(void)
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , false);
 		}
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_GHOST_ADDON))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_GHOST_ADDON))
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST , true);
 		else
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST, false);
@@ -384,7 +407,7 @@ void CBarrack::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
 
-	((CCom_Production_building*)m_com_production)->show_production_state();
+	m_com_production->show_production_state();
 }
 
 void CBarrack::Dead(void)

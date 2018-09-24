@@ -2,9 +2,10 @@ OBJECT|Resource|Gas|1|..\Texture\General\Resource\Gas\vespingas%d.png
 OBJECT|Resource|Mineral|1|..\Texture\General\Resource\Mineral\mineral%d.png
 OBJECT|NONE|MINERAL_FRAG|1|..\Texture\General\Resource\Mineral_frag\mineral_frag%d.png
 OBJECT|NONE|T_GAS_FRAG|1|..\Texture\General\Resource\terran_gasfrag\t_gas_frag%d.png
+OBJECT|NONE|Z_GAS_FRAG|1|..\Texture\General\Resource\zerg_gasfrag\zerg_gasfrag%d.png
 OBJECT|Fog|Fog|3|..\Texture\General\Fog\fog%d.png
-OBJECT|Creep|Creep|20|..\Texture\General\Creep\creep%d.png
-EFFECT|GaussGun|GaussGun|15|..\Texture\General\Effect\gaussgun\gaussgun_eff%d.bmp
+OBJECT|Creep|Creep|36|..\Texture\General\Creep\%d.png
+EFFECT|GaussGun|GaussGun|15|..\Texture\General\Effect\gaussgun\gaussgun_eff%d.png
 EFFECT|ToongToong|ToongToong|10|..\Texture\General\Effect\toongtoong\toongtoong_eff%d.png
 EFFECT|SMALLBANG|SMALLBANG|9|..\Texture\General\Effect\smallbang\smallbang%d.png
 EFFECT|LARGEBANG|LARGEBANG|10|..\Texture\General\Effect\largebang\largebang%d.png
@@ -20,6 +21,12 @@ CORPSE|MEDICDEAD|MEDICDEAD|9|..\Texture\General\Corpse\medic_dead\medic_dead%d.p
 CORPSE|MEDICWRECKAGE|MEDICWRECKAGE|3|..\Texture\General\Corpse\medic_wreckage\medic_wreckage%d.png
 CORPSE|TBDWRECKAGE|TBDWRECKAGE|4|..\Texture\General\Corpse\TBD_wreckage\TBD_wreckage%d.png
 CORPSE|TBDSMALL_WRECKAGE|TBDSMALL_WRECKAGE|4|..\Texture\General\Corpse\TBDsmall_wreckage\TBDsmall_wreckage%d.png
+CORPSE|DRONEDEAD|DRONEDEAD|8|..\Texture\General\Corpse\drone_dead\drone_dead%d.png
+CORPSE|DRONEWRECKAGE|DRONEWRECKAGE|5|..\Texture\General\Corpse\drone_wreckage\drone_wreckage%d.png
+CORPSE|ZERGLINGDEAD|ZERGLINGDEAD|7|..\Texture\General\Corpse\zergling_dead\zergling_dead%d.png
+CORPSE|ZERGLINGWRECKAGE|ZERGLINGWRECKAGE|5|..\Texture\General\Corpse\zergling_wreckage\zergling_wreckage%d.png
+CORPSE|HYDRADEAD|HYDRADEAD|8|..\Texture\General\Corpse\hydra_dead\hydra_dead%d.png
+CORPSE|HYDRAWRECKAGE|HYDRAWRECKAGE|4|..\Texture\General\Corpse\hydra_wreckage\hydra_wreckage%d.png
 UNIT|SIEGEBODY_TRANS|SIEGEBODY_TRANS|5|..\Texture\General\siegebody\siegebody_transform%d.png
 UNIT|SIEGEBARREL_TRANS|SIEGEBARREL_TRANS|5|..\Texture\General\siegebarrel\siegebarrel_transform%d.png
 BUILDING|SMALL_BUILD|SMALL_BUILD|3|..\Texture\General\terran_build\smallbuild\terran_smallbuild%d.png
@@ -56,4 +63,6 @@ EFFECT|DEFEN_L|DEFEN_L|5|..\Texture\General\Effect\defensive\defenL%d.png
 EFFECT|DEFEN_BL|DEFEN_BL|5|..\Texture\General\Effect\defensive\defenBL%d.png
 EFFECT|DEFEN_BM|DEFEN_BM|5|..\Texture\General\Effect\defensive\defenBM%d.png
 EFFECT|DEFEN_BS|DEFEN_BS|5|..\Texture\General\Effect\defensive\defenBS%d.png
-BULLET|VULTURE_BULLET|VULTURE_BULLET|4|..\Texture\General\bullet\vulture_bullet%d.png
+EFFECT|ACID_BOOM|ACID_BOOM|8|..\Texture\General\Effect\acid_boom\acid_boom%d.png
+BULLET|VULTURE_BULLET|VULTURE_BULLET|4|..\Texture\General\bullet\vulture\vulture_bullet%d.png
+BULLET|LURK_BULLET|LURK_BULLET|11|..\Texture\General\bullet\lurk\lurk_bullet%d.png

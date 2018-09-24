@@ -28,6 +28,10 @@ CMaingame::~CMaingame(void)
 
 HRESULT CMaingame::Initialize(void)
 {
+/*
+	_CrtSetBreakAlloc(250552);
+	_CrtMemDumpAllObjectsSince(0); */
+
 //	AllocConsole();
 //	freopen( "CONOUT$",  "wt", stdout);
 
@@ -97,5 +101,6 @@ void CMaingame::Release(void)
 	CLineMgr::DestroyInstance();
 	CRoomSession_Mgr::DestroyInstance();
 
+	CStream::Extingtion_pointer();
 	//FreeConsole();
 }

@@ -2,6 +2,10 @@
 #include "MyCommand.h"
 
 #include "MyCmd_Move.h"
+#include "MyCmd_InputKey.h"
+#include "MyCmd_InputClick.h"
+#include "MyCmd_Building.h"
+#include "MyCmd_PartBuilding.h"
 CMyCommand::CMyCommand(void)
 {
 }
@@ -47,6 +51,42 @@ CMyCommand* CMyCommand::StaticReadAndCreate(CStreamSP& readstream)
 		{
 			pcmd = new CMyCmd_Move;
 			
+			pcmd->m_eteamnum = eteamnum;
+			pcmd->m_ecmdtype = ecmd;
+			pcmd->Read(readstream);
+			break;
+		}
+	case CMDTYPE_INPUTKEY:
+		{
+			pcmd = new CMyCmd_InputKey;
+
+			pcmd->m_eteamnum = eteamnum;
+			pcmd->m_ecmdtype = ecmd;
+			pcmd->Read(readstream);
+			break;
+		}
+	case CMDTYPE_INPUTCLICK:
+		{
+			pcmd = new CMyCmd_InputClick;
+
+			pcmd->m_eteamnum = eteamnum;
+			pcmd->m_ecmdtype = ecmd;
+			pcmd->Read(readstream);
+			break;
+		}
+	case CMDTYPE_BUILDING:
+		{
+			pcmd = new CMyCmd_Building;
+
+			pcmd->m_eteamnum = eteamnum;
+			pcmd->m_ecmdtype = ecmd;
+			pcmd->Read(readstream);
+			break;
+		}
+	case CMDTYPE_PART_BUILDING:
+		{
+			pcmd = new CMyCmd_PartBuilding;
+
 			pcmd->m_eteamnum = eteamnum;
 			pcmd->m_ecmdtype = ecmd;
 			pcmd->Read(readstream);

@@ -46,7 +46,6 @@ void CVessle::Initialize(void)
 
 	m_sortID = SORT_AIR;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_VESSEL;
 
 	m_unitinfo.eMoveType = MOVE_AIR;
@@ -201,7 +200,18 @@ void CVessle::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 	}
 }
+void CVessle::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('D' == nkey)
+	{
+		waitkey[nkey] = true;
+	}
 
+	if('I' == nkey)
+	{
+		waitkey[nkey] = true;
+	}
+}
 void CVessle::Release(void)
 {
 	CObj::area_release();

@@ -92,11 +92,11 @@ void CCom_Distancesearch::Update(void)
 				if(OBJ_BUNKER == m_ptarget->GetOBJNAME())
 				{
 					m_myrc= m_pobj->GetMyRect();
-					m_myrc.left -= 2;
-					m_myrc.right += 2;
-					m_myrc.top -= 2;
-					m_myrc.bottom += 2;
-					if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+					m_myrc.left -= 4;
+					m_myrc.right += 4;
+					m_myrc.top -= 4;
+					m_myrc.bottom += 4;
+					if(MyIntersectrect(&m_myrc , &(m_ptarget->GetMyRect()) ) )
 					{
 						m_bforced_target = false;
 

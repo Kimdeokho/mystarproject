@@ -90,7 +90,6 @@ public:
 	void SetObjName(OBJID eobjname);
 	void SetTeamNumber(TEAM_NUMBER eteamnum);
 	void SetMagicBox(bool bmagicbox);
-	void SetWait(bool is_wait);
 	void SetDestroy(bool bdestroy);
 
 	void SetHP(const int& ihp);

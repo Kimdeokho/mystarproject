@@ -58,7 +58,6 @@ void CVulture::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_VULTURE;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
@@ -254,7 +253,8 @@ void CVulture::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 	if('I' == firstkey && VK_LBUTTON == secondkey)
 	{
-		if( m_landmine_cnt >= 0 && m_upg_info[UPG_T_VFC1].upg_cnt >= 1)
+		//if( m_landmine_cnt >= 0 && m_upg_info[UPG_T_VFC1].upg_cnt >= 1)
+		//if( m_landmine_cnt >= 0)
 		{
 			m_unitinfo.order = ORDER_USINGSKILL;
 			m_unitinfo.state = MOVE;		
@@ -264,7 +264,7 @@ void CVulture::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			{
 				D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , true);
+				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 
@@ -277,7 +277,13 @@ void CVulture::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 	}
 }
-
+void CVulture::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('I' == nkey)
+	{
+		waitkey[nkey] = true;
+	}
+}
 void CVulture::Release(void)
 {
 	CObj::area_release();

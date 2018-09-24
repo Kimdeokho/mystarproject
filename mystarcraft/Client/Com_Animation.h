@@ -40,6 +40,8 @@ protected:
 	D3DXVECTOR3					m_olddirvec;
 	D3DXVECTOR3					m_vout;
 
+	D3DXVECTOR3					m_vcenter;
+
 	int							m_olddiridx;
 	
 
@@ -64,7 +66,7 @@ public:
 	int				GetCurDirIdx(void);
 	bool			GetAttackSync(void);
 	bool			GetAttack_end(void);
-
+	void			SetTextureName(const TCHAR* name);
 public:
 	//virtual void SetState(void);
 public:

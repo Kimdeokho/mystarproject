@@ -51,7 +51,6 @@ void CAcademy::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_ACADEMY;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -144,10 +143,7 @@ void CAcademy::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CAcademy::Release(void)
-{
-	CTerran_building::area_release();
-}
+
 
 void CAcademy::Dead(void)
 {
@@ -410,4 +406,18 @@ void CAcademy::Update_Wireframe(void)
 	else if(true == m_upg_info[UPG_T_BA5].proceeding && m_upg_info[UPG_T_BA5].obj_num == m_obj_id)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BA5].curtime / m_upg_info[UPG_T_BA5].maxtime );
 	//-------------------------------------------
+}
+
+void CAcademy::Input_cmd(const int& nkey, bool* waitkey)
+{
+
+}
+
+void CAcademy::Input_cmd(const int& firstkey , const int& secondkey)
+{
+
+}
+void CAcademy::Release(void)
+{
+	CTerran_building::area_release();
 }

@@ -86,6 +86,7 @@ void CGasResource::Initialize(void)
 }
 void CGasResource::Update(void)
 {
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_gasa_mount , m_vPos.x - CScrollMgr::m_fScrollX
 	//	,m_vPos.y - CScrollMgr::m_fScrollY);
 

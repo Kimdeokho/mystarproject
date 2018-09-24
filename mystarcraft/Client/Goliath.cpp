@@ -50,7 +50,6 @@ void CGoliath::Initialize(void)
 
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eteamnumber = TEAM_0;
 	m_eOBJ_NAME = OBJ_GOLIATH;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
@@ -72,6 +71,7 @@ void CGoliath::Initialize(void)
 
 	m_pgoliath_arm = new CGoliath_part(this);
 	m_pgoliath_arm->SetPos(m_vPos);
+	m_pgoliath_arm->SetTeamNumber(m_eteamnumber);
 	m_pgoliath_arm->SetObjID(m_obj_id);
 
 	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 , 16);

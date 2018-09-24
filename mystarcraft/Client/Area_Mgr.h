@@ -62,7 +62,7 @@ public:
 	bool LineCross(CObj* ptarget);
 	bool diamond_check( const int& idx , CObj* pself ,const CObj* ptarget);
 
-	int overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself);
+	int overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself , CObj* ptarget);
 	bool Search_Mineral( const int& idx , const int& isearch_range ,CObj* pself , CObj*& pmineral);
 	CObj* Search_Partbuilding(const int& areaidx , const int& searchidx , OBJID eid);
 	bool Mineral_extractor(const D3DXVECTOR2& vpos ,CObj* pself, CObj*& pmineral);

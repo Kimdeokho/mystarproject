@@ -4,13 +4,12 @@
 class CMyCmd_Move :
 	public CMyCommand
 {
-protected:
+private:
 	USHORT		m_unitsize;
 	USHORT		m_targetnum;
 	int			m_x;
 	int			m_y;
 	vector<USHORT>	m_unit_numlist;
-
 public:
 	virtual void Progress(void);
 	virtual void Write(CStreamSP& writestream);

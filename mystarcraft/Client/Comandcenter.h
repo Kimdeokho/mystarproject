@@ -21,6 +21,8 @@ public:
 	virtual void Dead(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+	virtual void Input_cmd(const int& nkey, bool* waitkey);
+	virtual void Input_cmd(const int& firstkey , const int& secondkey);
 
 	//virtual void create_unit(PRODUCTION_ID eid);
 

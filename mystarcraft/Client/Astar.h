@@ -2,7 +2,7 @@
 
 #include "Include.h"
 
-const int MAXPATH_IDX = 300;
+const int MAXPATH_IDX = 150;
 template<typename T> class CMyHeapSort;
 class CObj;
 class CArea_Mgr;

@@ -91,7 +91,7 @@ void CScene_Stage::Render(void)
 	CTileManager::GetInstance()->RenderTile();
 	CObjMgr::GetInstance()->Render();
 
-	//CTileManager::GetInstance()->RenderFog();
+	CTileManager::GetInstance()->RenderFog();
 	//CTileManager::GetInstance()->Render_Flowfield();	
 	
 	//CLineMgr::GetInstance()->RenderGrid(32/*Å©±â*/, 128/*°¹¼ö*/);

@@ -29,6 +29,9 @@
 #include "UI_form.h"
 
 #include "UI_Energy_bar.h"
+#include "MyCmd_PartBuilding.h"
+#include "KeyMgr.h"
+#include "Input_Interface.h"
 CEngineering::CEngineering(void)
 {
 }
@@ -55,7 +58,6 @@ void CEngineering::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_BARRACK;
-	m_eteamnumber = TEAM_0;
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
@@ -264,8 +266,6 @@ void CEngineering::Dead(void)
 
 void CEngineering::Inputkey_reaction(const int& nkey)
 {
-	m_is_preview = false;
-
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state ||
 		BUILD == m_unitinfo.state)
@@ -277,41 +277,22 @@ void CEngineering::Inputkey_reaction(const int& nkey)
 		{
 			//이륙
 			CTerran_building::TakeOff();
-		}
-		else
-		{
-			//착륙 프리뷰를 킨다
-			m_is_preview = true;
-			((CBuilding_Preview*)m_main_preview)->SetPreviewInfo(L"T_EB", T_EB , 3 , 4 , this , m_vertex);			
 		}		
 	}
-	if(VK_LBUTTON == nkey)
+
+	if(nkey == 9998)
 	{
-		if(true == ((CBuilding_Preview*)m_main_preview)->GetActive())
-		{
-			//착륙 분기
-			if(true == ((CBuilding_Preview*)m_main_preview)->Install_check())
-			{
-				((CBuilding_Preview*)m_main_preview)->SetActive(false);
-				((CBuilding_Preview*)m_sub_preview)->SetActive(false);
-
-				m_unitinfo.order = ORDER_LANDING_MOVE;
-				D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-				int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
-				vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
-				CTerran_building::Landing_move(vclickpos);		
-
-			}
-			else
-			{
-				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
-			}
-		}
+		m_unitinfo.order = ORDER_LANDING_MOVE;
+		D3DXVECTOR2 vclickpos = m_main_preview->GetPreviewInfo().vpos;
+		int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
+		vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
+		CTerran_building::Landing_move(vclickpos);
 	}
+
 	if(VK_RBUTTON == nkey)
 	{
-		((CBuilding_Preview*)m_main_preview)->SetActive(false);
-		((CBuilding_Preview*)m_sub_preview)->SetActive(false);
+		m_main_preview->SetActive(false);
+		m_sub_preview->SetActive(false);
 
 		if(AIR_IDLE == m_unitinfo.state)
 		{
@@ -327,7 +308,7 @@ void CEngineering::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_BIO_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -346,7 +327,7 @@ void CEngineering::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_BIO_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
 					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
@@ -364,6 +345,40 @@ void CEngineering::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
+void CEngineering::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if(VK_LBUTTON == nkey)
+	{
+		if(true == (m_main_preview)->GetActive())
+		{
+			//착륙 분기
+			if(true == m_main_preview->Install_check())
+			{
+				(m_main_preview)->SetActive(false);
+				(m_sub_preview)->SetActive(false);
+
+				PREVIEW_INFO maininfo , subinfo;
+				maininfo = m_main_preview->GetPreviewInfo();
+				subinfo = m_sub_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_PartBuilding::StaticCreate(maininfo , subinfo , 9998));	
+				m_is_preview = false;
+			}
+			else
+			{
+				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
+			}
+		}
+	}
+	if('L' == nkey)
+	{
+		//착륙 프리뷰를 킨다
+		if(true == m_is_take_off)
+		{
+			m_is_preview = true;
+			(m_main_preview)->SetPreviewInfo(L"T_EB", T_EB , 3 , 4 , m_vertex);			
+		}
+	}
+}
 void CEngineering::Update_Cmdbtn(void)
 {
 	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
@@ -373,7 +388,7 @@ void CEngineering::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_BIO_WEAPON].proceeding && m_upg_info[UPG_T_BIO_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BEW" , BTN_T_BEW , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BEW" , BTN_T_BEW , true);
@@ -381,7 +396,7 @@ void CEngineering::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_BIO_ARMOR].proceeding && m_upg_info[UPG_T_BIO_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_T_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_BEA" , BTN_T_BEA , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_BEA" , BTN_T_BEA , true);

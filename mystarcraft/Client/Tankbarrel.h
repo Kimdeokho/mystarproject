@@ -12,8 +12,8 @@ private:
 	bool	m_btransform_ready;
 	D3DXVECTOR2	m_vbarrelpos;
 
-	CComponent*	m_com_siegeanim;
-	CComponent*	m_com_tankanim;
+	CCom_Animation*		m_com_siegeanim;
+	CCom_Animation*		m_com_tankanim;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

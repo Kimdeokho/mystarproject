@@ -4,6 +4,7 @@
 #include "TimeMgr.h"
 #include "TextureMgr.h"
 #include "Obj.h"
+
 CCom_SCVAnim::CCom_SCVAnim(D3DXMATRIX& objmat )
 :CCom_Animation(objmat )
 {
@@ -91,10 +92,6 @@ void CCom_SCVAnim::Render(void)
 	}
 }
 
-void CCom_SCVAnim::Release(void)
-{
-
-}
 
 void CCom_SCVAnim::SetAnimation(const TCHAR* statekey)
 {
@@ -121,4 +118,8 @@ void CCom_SCVAnim::SetAnimation(const TCHAR* statekey)
 			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
 		}
 	}
+}
+void CCom_SCVAnim::Release(void)
+{
+
 }

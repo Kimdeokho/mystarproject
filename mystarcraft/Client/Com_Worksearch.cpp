@@ -40,7 +40,7 @@ void CCom_Worksearch::Initialize(CObj* pobj /*= NULL*/)
 	m_com_weapon = (m_pobj->GetComponent(COM_WEAPON));
 
 	//m_com_weapon->
-	m_target_objid = -1;
+	m_target_objid = 0;
 	m_mineral_number = 0;
 	m_core_number = 0;
 
@@ -125,7 +125,8 @@ void CCom_Worksearch::Update(void)
 				}
 
 			}
-			else if( OBJ_GASBUILDING == m_ptarget->GetOBJNAME() )
+			else if( OBJ_T_GAS == m_ptarget->GetOBJNAME()  ||
+				OBJ_Z_GAS == m_ptarget->GetOBJNAME())
 			{
 
 				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
