@@ -406,12 +406,12 @@ void CArmoury::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_AIR_ARMOR].curtime / m_upg_info[UPG_T_AIR_ARMOR].maxtime );
 }
 
-void CArmoury::Input_cmd(const int& nkey, bool* waitkey)
+bool CArmoury::Input_cmd(const int& nkey, bool* waitkey)
 {
-
+	return false;
 }
 
-void CArmoury::Input_cmd(const int& firstkey , const int& secondkey)
+bool CArmoury::Input_cmd(const int& firstkey , const int& secondkey)
 {
-
+	return false;
 }

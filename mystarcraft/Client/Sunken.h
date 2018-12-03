@@ -1,10 +1,14 @@
 #pragma once
 #include "zerg_building.h"
 
+class CCom_SunkenAnim;
 class CSunken :
 	public CZerg_building
 {
 private:
+	CCom_SunkenAnim*	m_sunken_anim;
+public:
+	void Build_Complete(void);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

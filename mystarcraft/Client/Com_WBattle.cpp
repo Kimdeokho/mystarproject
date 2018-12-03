@@ -11,6 +11,7 @@
 #include "Goliath_Bullet.h"
 #include "Goliath_part.h"
 #include "Battle_bim.h"
+
 CCom_WBattle::CCom_WBattle(void)
 {
 }
@@ -33,7 +34,7 @@ void CCom_WBattle::Initialize(CObj* pobj /*= NULL*/)
 
 	m_bfire = false;
 }
-void CCom_WBattle::fire(CObj*& ptarget)
+void CCom_WBattle::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{

@@ -46,7 +46,7 @@ void CCom_WMine::Release(void)
 
 }
 
-void CCom_WMine::fire(CObj*& ptarget)
+void CCom_WMine::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{

@@ -926,11 +926,35 @@
 						Name="Zerg"
 						>
 						<File
+							RelativePath=".\Brude.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Brude.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Defiler.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Defiler.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Drone.cpp"
 							>
 						</File>
 						<File
 							RelativePath=".\Drone.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Hydra.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Hydra.h"
 							>
 						</File>
 						<File
@@ -947,6 +971,62 @@
 						</File>
 						<File
 							RelativePath=".\Larva_egg.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Lurker.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Lurker.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Lurker_egg.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Lurker_egg.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Mutal.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Mutal.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Overload.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Overload.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Queen.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Queen.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Scourge.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Scourge.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Ultra.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Ultra.h"
 							>
 						</File>
 						<File
@@ -1183,11 +1263,27 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Brood_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Brood_Bullet.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Bullet.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Ensnare_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Ensnare_Bullet.h"
 						>
 					</File>
 					<File
@@ -1199,11 +1295,59 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Lurker_Thornfire.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Lurker_Thornfire.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Mutal_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Mutal_Bullet.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Nuclear_Bullet.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Nuclear_Bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Parasite_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Parasite_Bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Plague_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Plague_Bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Spore_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Spore_Bullet.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Thorn_Bullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Thorn_Bullet.h"
 						>
 					</File>
 					<File
@@ -1304,6 +1448,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Com_Detect.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Com_Detect.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Com_fog.cpp"
 					>
 				</File>
@@ -1382,198 +1534,6 @@
 				<Filter
 					Name="Animation"
 					>
-					<File
-						RelativePath=".\Com_Animation.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_Animation.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_BattleAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_BattleAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_DroneAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_DroneAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_DropAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_DropAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_FirebatAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_FirebatAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_GhostAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_GhostAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_GolarmAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_GolarmAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_GollegAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_GollegAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_LarvaAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_LarvaAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_LarvaEggAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_LarvaEggAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_MarineAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_MarineAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_MedicAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_MedicAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_MineAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_MineAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_PartAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_PartAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SCVAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SCVAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SiegebarrelAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SiegebarrelAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SiegebodyAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SiegebodyAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SupplyAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_SupplyAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TankbarrelAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TankbarrelAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TankbodyAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_TankbodyAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_VessleAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_VessleAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_VultureAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_VultureAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_WraithAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_WraithAnim.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_ZerglingAnim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Com_ZerglingAnim.h"
-						>
-					</File>
 					<Filter
 						Name="Bullet"
 						>
@@ -1599,6 +1559,14 @@
 						</File>
 						<File
 							RelativePath=".\Com_LaserAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ThornAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ThornAnim.h"
 							>
 						</File>
 					</Filter>
@@ -1635,6 +1603,294 @@
 						</File>
 						<File
 							RelativePath=".\Com_ZBuildingAnim.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Terran"
+						>
+						<File
+							RelativePath=".\Com_Animation.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_Animation.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_BattleAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_BattleAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_DropAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_DropAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_FirebatAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_FirebatAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_GhostAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_GhostAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_GolarmAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_GolarmAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_GollegAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_GollegAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MarineAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MarineAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MedicAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MedicAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MineAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MineAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_PartAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_PartAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SCVAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SCVAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SiegebarrelAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SiegebarrelAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SiegebodyAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SiegebodyAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SupplyAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SupplyAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TankbarrelAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TankbarrelAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TankbodyAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_TankbodyAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_VessleAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_VessleAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_VultureAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_VultureAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_WraithAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_WraithAnim.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Zerg"
+						>
+						<File
+							RelativePath=".\Com_BrudeAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_BrudeAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_DefilerAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_DefilerAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_DroneAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_DroneAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_HydraAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_HydraAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LarvaAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LarvaAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LarvaEggAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LarvaEggAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LurkerAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LurkerAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LurkerEggAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_LurkerEggAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MutalAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_MutalAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_OverAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_OverAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_QueenAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_QueenAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ScourgeAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ScourgeAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SunkenAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SunkenAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_UltraAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_UltraAnim.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ZerglingAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_ZerglingAnim.h"
 							>
 						</File>
 					</Filter>
@@ -1691,6 +1947,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_WHydra.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WHydra.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WLurker.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WLurker.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_Wmarine.cpp"
 						>
 					</File>
@@ -1715,6 +1987,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_WMutal.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WMutal.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WScourge.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WScourge.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_WSCV.cpp"
 						>
 					</File>
@@ -1731,6 +2019,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Com_WSpore.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WSpore.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WSunken.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WSunken.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Com_WTank.cpp"
 						>
 					</File>
@@ -1744,6 +2048,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_WTurret.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WUltra.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_WUltra.h"
 						>
 					</File>
 					<File
@@ -1788,6 +2100,14 @@
 					</File>
 					<File
 						RelativePath=".\Com_Distancesearch.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Guardsearch.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Com_Guardsearch.h"
 						>
 					</File>
 					<File
@@ -2136,6 +2456,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Skill_DarkSwarm.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_DarkSwarm.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Skill_Defensive.cpp"
 					>
 				</File>
@@ -2144,11 +2472,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Skill_Ensnare.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_Ensnare.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Skill_irradi.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Skill_irradi.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_Plague.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Skill_Plague.h"
 					>
 				</File>
 				<File

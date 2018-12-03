@@ -187,7 +187,7 @@ void CFontMgr::Set_KeyInput_Font(const TCHAR* szfont , D3DCOLOR _color /*= D3DCO
 
 
 }
-void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int& font_number , float posX , float posY ,D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/ , bool left_align /*= false*/)
+void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int font_number , float posX , float posY ,D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/ , bool left_align /*= false*/)
 {
 		/*업데이트단계에서 지속적으로 입력받는 폰트
 	입력받고 렌더 후 지우는 방식이다*/
@@ -215,7 +215,7 @@ void CFontMgr::Setbatch_Font(const TCHAR* szfont , float posX , float posY ,  D3
 	lstrcpy(ptemp.font , szfont);
 	m_vecbatchfont.push_back(ptemp);
 }
-void CFontMgr::Setbatch_Font(const TCHAR* szfont ,const int& num1, const int& num2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/ , bool left_align /*= false*/)
+void CFontMgr::Setbatch_Font(const TCHAR* szfont ,const int num1, const int num2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/ , bool left_align /*= false*/)
 {
 	/*업데이트단계에서 지속적으로 입력받는 폰트
 	입력받고 렌더 후 지우는 방식이다*/

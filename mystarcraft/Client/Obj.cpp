@@ -36,7 +36,8 @@ CObj::CObj(void)
 	m_bdestroy = false;
 	m_bSelect = false;
 
-	m_globalobj_id += 1;
+	m_globalobj_cnt += 1;
+	m_objcnt = m_globalobj_cnt;
 
 	m_vcurdir = OFFSET_DIRVEC;
 
@@ -144,10 +145,10 @@ void CObj::SetPos(const D3DXVECTOR2& vpos)
 
 bool CObj::Be_in_camera(void)
 {
-	if( m_vPos.x >= CScrollMgr::m_fScrollX && 
-		m_vPos.x <= CScrollMgr::m_fScrollX + CLINETSIZE_X &&
-		m_vPos.y >= CScrollMgr::m_fScrollY &&
-		m_vPos.y <= CScrollMgr::m_fScrollY + CLINETSIZE_Y)
+	if( m_vPos.x >= CScrollMgr::m_fScrollX - 100 && 
+		m_vPos.x <= CScrollMgr::m_fScrollX + CLINETSIZE_X + 100 &&
+		m_vPos.y >= CScrollMgr::m_fScrollY - 100 &&
+		m_vPos.y <= CScrollMgr::m_fScrollY + CLINETSIZE_Y + 100)
 	{
 		return true;
 	}
@@ -198,11 +199,6 @@ void CObj::Inputkey_reaction(const int& nkey)
 void CObj::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 }
-//MOVE_TYPE CObj::GetType(void)
-//{
-//	return m_eType;
-//}
-
 int CObj::GetObjNumber(void)
 {
 	return m_obj_id;
@@ -250,7 +246,10 @@ CATEGORY CObj::GetCategory(void)
 {
 	return m_ecategory;
 }
-
+int CObj::GetObjCountNumber(void)
+{
+	return m_objcnt;
+}
 CComponent* CObj::GetComponent(COMPONENT_LIST ecom_name)
 {
 	COMPONENT_PAIR::iterator iter;
@@ -355,12 +354,7 @@ void CObj::SetMP(const int& imp)
 	if(m_unitinfo.mp <= 0)
 		m_unitinfo.mp = 0;
 }
-// int CObj::GetHP(void)
-// {
-// 	return m_hp;
-// }
-
-void CObj::SetObjID(const int& id)
+void CObj::SetObjID(const int id)
 {
 	m_obj_id = id;
 }
@@ -432,4 +426,4 @@ void CObj::SetVertex(MYRECT<float> tempvtx)
 
 
 
-int CObj::m_globalobj_id;
+int CObj::m_globalobj_cnt;

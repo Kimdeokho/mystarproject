@@ -7,6 +7,7 @@
 #include "KeyMgr.h"
 #include "FontMgr.h"
 #include "TimeMgr.h"
+#include "MouseMgr.h"
 
 CScene_Login::CScene_Login(void)
 {
@@ -30,6 +31,8 @@ HRESULT CScene_Login::Initialize(void)
 	CLogin_UIMgr::GetInstance()->Initialize();
 
 	CTimeMgr::GetInstance()->InitTime();
+
+	CMouseMgr::GetInstance()->Initialize();
 	return S_OK;
 }
 
@@ -38,6 +41,7 @@ void CScene_Login::Update(void)
 	CTimeMgr::GetInstance()->SetTime();
 	CKeyMgr::GetInstance()->Update();
 	CLogin_UIMgr::GetInstance()->Update();
+	CMouseMgr::GetInstance()->Lobby_Update();
 }
 
 void CScene_Login::Render(void)
@@ -50,6 +54,8 @@ void CScene_Login::Render(void)
 	CLogin_UIMgr::GetInstance()->Render();
 
 	CFontMgr::GetInstance()->FontRender();
+
+	CMouseMgr::GetInstance()->Render();
 
 	CTimeMgr::GetInstance()->FPS_fix();
 }

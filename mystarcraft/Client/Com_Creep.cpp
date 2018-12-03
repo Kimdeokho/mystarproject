@@ -201,9 +201,9 @@ void CCom_Creep::Initialize(CObj* pobj /*= NULL*/)
 	}
 	else
 	{
-		for(int k = 0; k < 6; ++k)
+		for(int k = 0; k < range/2; ++k)
 		{
-			for(int i = 0; i < 4; ++i)
+			for(int i = 0; i < CREEP_LINEEND; ++i)
 			{
 				if(!m_creep_list[i].empty())
 				{

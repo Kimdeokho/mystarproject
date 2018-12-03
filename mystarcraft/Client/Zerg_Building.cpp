@@ -103,10 +103,15 @@ void CZerg_building::building_pos_Initialize(const int& col , const int& row)
 	m_oldidx64 = m_curidx64;
 }
 
-void CZerg_building::SetDestroy(void)
+//void CZerg_building::SetDestroy(void)
+//{
+//	m_bdestroy = true;
+//}
+void CZerg_building::Build_Complete(void)
 {
-	m_bdestroy = true;
+
 }
+
 void CZerg_building::Release(void)
 {
 	size_t maxloop = m_areaidx_vec.size();

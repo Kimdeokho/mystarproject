@@ -11,6 +11,7 @@
 #include "FontMgr.h"
 #include "UnitMgr.h"
 #include "Area_Mgr.h"
+#include "ObjMgr.h"
 
 #include "Com_fog.h"
 #include "Com_Creep.h"
@@ -22,6 +23,9 @@
 #include "UI_Select.h"
 #include "UI_Energy_bar.h"
 #include "UI_Cmd_info.h"
+
+#include "Corpse.h"
+#include "GeneraEff.h"
 
 CHatchery::CHatchery(void)
 {
@@ -58,7 +62,7 @@ void CHatchery::Initialize(void)
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
-	m_unitinfo.fog_range = 512;
+	m_unitinfo.fog_range = 32*19;
 
 	m_com_anim = new CCom_ZBuildingAnim(L"Z_HATCHERY" , m_matWorld);
 
@@ -248,20 +252,20 @@ void CHatchery::Inputkey_reaction(const int& nkey)
 }
 void CHatchery::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
-
 }
-void CHatchery::Input_cmd(const int& nkey , bool* waitkey)
+bool CHatchery::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('S' == nkey)
 	{
-		waitkey[nkey] = false;
 		CUnitMgr::GetInstance()->discharge_unit();
 		m_com_larvahatch->Select_Larva();
 	}
+	return false;
 }
 
-void CHatchery::Input_cmd(const int& firstkey , const int& secondkey)
+bool CHatchery::Input_cmd(const int& firstkey , const int& secondkey)
 {
+	return false;
 }
 void CHatchery::rallypoint_pathfinding(void)
 {
@@ -404,7 +408,16 @@ void CHatchery::Update_Wireframe(void)
 
 void CHatchery::Dead(void)
 {
+	CObj* pobj = new CGeneraEff(L"BLOOD_BOOM" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
 
+	pobj = new CCorpse(L"" , L"ZBD_L_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 void CHatchery::Release(void)
 {

@@ -8,6 +8,9 @@
 #include "GeneraEff.h"
 #include "MultiEff.h"
 #include "Tankbarrel.h"
+
+#include "Skill_DarkSwarm.h"
+
 CCom_WTank::CCom_WTank()
 {
 }
@@ -43,7 +46,7 @@ void CCom_WTank::Update(void)
 	}
 }
 
-void CCom_WTank::fire(CObj*& ptarget)
+void CCom_WTank::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
@@ -68,7 +71,10 @@ void CCom_WTank::fire(CObj*& ptarget)
 			CObjMgr::GetInstance()->AddEffect(peff);
 			
 
-			(ptarget)->SetDamage( m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*3,
+			int idx = ptarget->Getcuridx(32);
+			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
+				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+				ptarget->SetDamage( m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*3,
 				m_weapon_info.eDamageType );
 		}
 	}

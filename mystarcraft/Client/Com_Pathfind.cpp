@@ -100,15 +100,15 @@ void CCom_Pathfind::Target_chase(void)
 
 					if(ATTACK != m_pobj->GetUnitinfo().state)
 					{
-						int target_curidx = CMyMath::Pos_to_index(m_pTarget->GetPos() , 32);
+						int target_curidx = CMyMath::Pos_to_index(m_pTarget->GetPos() , 16);
 						if(target_curidx != m_target_oldidx)
 						{
 							m_target_oldidx = target_curidx;
 							ClearPath();
 							//공격 대상도 탐색에 제외
 							D3DXVECTOR2 target_pos = m_pTarget->GetPos();
-							if(CMyMath::Pos_to_index(target_pos , 32) == CMyMath::Pos_to_index(m_vPos , 32))
-								target_pos.x += 32;
+							//if(CMyMath::Pos_to_index(target_pos , 32) == CMyMath::Pos_to_index(m_vPos , 32))
+							//	target_pos.x += 32;
 
 							m_Astar->UnitPath_calculation_Start(m_vPos , target_pos , m_mainstep, m_terrainpath , m_curterrain_pathidx);//스텝사이즈 주의
 							m_multithread = true;
@@ -137,7 +137,7 @@ void CCom_Pathfind::Target_chase(void)
 			if(m_refind_time >= 0.2f)
 			{
 				m_refind_time = 0.f;
-				//if(true == ((CCom_Animation*)m_com_animation)->GetAttack_end())
+				if(true == ((CCom_Animation*)m_com_animation)->GetAttack_end())
 				{
 					m_vgap = D3DXVECTOR2(0,0);
 					StartPathfinding();
@@ -204,7 +204,8 @@ void CCom_Pathfind::UnitMoving_update()
 			m_pobj->SetState(IDLE);
 			m_realpath.clear();
 
-			if( CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx]) < m_arrivalrange*m_arrivalrange)
+			if( CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx]) < m_arrivalrange*m_arrivalrange &&
+				!CTileManager::GetInstance()->Bresenham_Tilecheck(m_vPos , m_terrainpath[m_curterrain_pathidx]))
 			{		
 				m_arrivalrange = 64;
 				++m_curterrain_pathidx;
@@ -246,10 +247,10 @@ void CCom_Pathfind::UnitMoving_update()
 			if(	*m_curobj_idx != m_oldobj_idx )
 			{
 				m_oldobj_idx = *m_curobj_idx;
-				float frange = (float)m_terrain_step/1.5f*(float)SQ_TILESIZEX;
+				float frange = (float)m_terrain_step/1.3f*(float)SQ_TILESIZEX;
 
 				if( m_curterrain_pathidx < (int)m_terrainpath.size() - 1 &&
-					int(CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx])) < int(frange*frange))
+					(CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx])) < (frange*frange))
 				{
 					if(!CTileManager::GetInstance()->Bresenham_Tilecheck(m_vPos , m_terrainpath[m_curterrain_pathidx]))
 					{
@@ -278,8 +279,6 @@ void CCom_Pathfind::UnitMoving_update()
 				m_arrivalrange = 64;
 
 				D3DXVECTOR2 target_pos = m_pTarget->GetPos();
-				if(CMyMath::Pos_to_index(target_pos , 32) == CMyMath::Pos_to_index(m_vPos , 32))
-					target_pos.x += 32;
 
 				m_Astar->UnitPath_calculation_Start(m_vPos , target_pos , m_substep, m_terrainpath , m_curterrain_pathidx);
 				m_multithread = true;
@@ -290,8 +289,6 @@ void CCom_Pathfind::UnitMoving_update()
 
 	float onestep = GETTIME*(*m_fspeed);
 	
-	//if( (CMyMath::pos_distance( m_vprepos ,m_realpath[m_realpathidx - 1]) < onestep*onestep) ||
-	//	fabsf(CMyMath::pos_distance( m_vprepos ,m_realpath[m_realpathidx - 1]) - onestep*onestep) < FLT_EPSILON)	
 	if( (CMyMath::pos_distance( m_vprepos ,m_realpath[m_realpathidx - 1]) <= onestep*onestep) )
 	{
 		--m_realpathidx;
@@ -333,9 +330,9 @@ void CCom_Pathfind::UnitMoving_update()
 		m_is_stop = true;
 
 		if(NULL != m_pTarget)
-			m_timeoffset = 0.1f;
+			m_timeoffset = 0.0f;
 		else
-			m_timeoffset = 0.65f;
+			m_timeoffset = 0.60f;
 	}
 	else if( 2 == icase)
 	{
@@ -347,13 +344,15 @@ void CCom_Pathfind::UnitMoving_update()
 	else if( 0 == icase)
 	{
 		//m_collisionmove_time = 0.f;
-		m_collisionmove_time -= GETTIME;
+		//m_collisionmove_time -= GETTIME;
+		//if(m_collisionmove_time < 0)
+		m_collisionmove_time = 0.f;
 
 		if(true == m_is_stop)
 		{			
 			m_stoptime += GETTIME;
 
-			if(m_stoptime >=  0.1f)
+			if(m_stoptime >=  0.05f)
 			{
 				m_stoptime = 0.f;
 				m_is_stop = false;
@@ -386,6 +385,11 @@ void CCom_Pathfind::UnitMoving_update()
 					m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
 					m_multithread = true;
 				}
+				else
+				{
+					//m_pobj->SetOrder(ORDER_NONE);
+					m_pobj->SetState(IDLE);
+				}
 			}
 		}
 		else
@@ -393,8 +397,8 @@ void CCom_Pathfind::UnitMoving_update()
 			m_terrainpath.clear();
 
 			D3DXVECTOR2 target_pos = m_pTarget->GetPos();
-			if(CMyMath::Pos_to_index(target_pos , 32) == CMyMath::Pos_to_index(m_vPos , 32))
-				target_pos.x += 32;
+			//if(CMyMath::Pos_to_index(target_pos , 32) == CMyMath::Pos_to_index(m_vPos , 32))
+			//	target_pos.x += 32;
 
 			m_Astar->UnitPath_calculation_Start(m_vPos , target_pos , m_substep, m_terrainpath , m_curterrain_pathidx);
 			m_multithread = true;

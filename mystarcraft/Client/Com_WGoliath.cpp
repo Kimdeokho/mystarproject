@@ -10,6 +10,9 @@
 
 #include "Goliath_Bullet.h"
 #include "Goliath_part.h"
+
+#include "Skill_DarkSwarm.h"
+
 CCom_WGoliath::CCom_WGoliath(void)
 {
 }
@@ -33,7 +36,7 @@ void CCom_WGoliath::Initialize(CObj* pobj /*= NULL*/)
 	m_bfire = false;
 
 }
-void CCom_WGoliath::fire(CObj*& ptarget)
+void CCom_WGoliath::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
@@ -55,6 +58,9 @@ void CCom_WGoliath::fire(CObj*& ptarget)
 				peff = new CGeneraEff(L"GaussGun" ,ptarget->GetPos() , D3DXVECTOR2(1.2f,1.2f), SORT_GROUND_EFF , 1.4f);
 				peff->Initialize();
 				CObjMgr::GetInstance()->AddEffect(peff);
+
+				int idx = ptarget->Getcuridx(32);
+				if(CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
 				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt
 					, m_weapon_info.eDamageType);
 

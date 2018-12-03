@@ -61,6 +61,7 @@ HRESULT CScene_Stage::Initialize(void)
 	//	pobj->Initialize();
 	//}
 
+	CArea_Mgr::GetInstance();
 	CTimeMgr::GetInstance()->InitTime();
 
 	//SetFocus(NULL);
@@ -94,7 +95,7 @@ void CScene_Stage::Render(void)
 	CTileManager::GetInstance()->RenderFog();
 	//CTileManager::GetInstance()->Render_Flowfield();	
 	
-	//CLineMgr::GetInstance()->RenderGrid(32/*Å©±â*/, 128/*°¹¼ö*/);
+	//CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
 	CLineMgr::GetInstance()->RectLineRender();
 
 	CIngame_UIMgr::GetInstance()->Render();
@@ -102,6 +103,7 @@ void CScene_Stage::Render(void)
 	CFontMgr::GetInstance()->FontRender();
 
 
+	CMouseMgr::GetInstance()->Render();
 	CTimeMgr::GetInstance()->FPS_fix();
 	RenderFPS();
 }

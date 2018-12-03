@@ -8,6 +8,8 @@
 
 #include "Com_Weapon.h"
 #include "Com_Pathfind.h"
+#include "Com_Transport.h"
+
 #include "TimeMgr.h"
 #include "Bunker.h"
 #include "Dropship.h"
@@ -60,16 +62,19 @@ void CCom_Meleesearch::Update(void)
 		//	m_target_objid = 0;
 		//}
 
-		if(false == m_ptarget->GetUnitinfo().is_active)
+		TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
+
+		if(false == m_ptarget->GetUnitinfo().is_active || 
+			m_ptarget->GetUnitinfo().detect[eteam] < 1)
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
+			m_bforced_target = false;
 		}
 	}
 	else
 	{
 		m_bforced_target = false;
-		//m_bmelee_search = true;
 		m_target_objid = 0;
 	}
 
@@ -112,22 +117,23 @@ void CCom_Meleesearch::Update(void)
 							m_pobj->SetOrder(ORDER_NONE);
 						}
 					}
-					else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
+					else if(NULL != m_com_transport)
 					{
-							//범위에 들어오면
-							m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+						//범위에 들어오면
+						m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
 
-							if(true == ((CDropship*)m_ptarget)->setunit(m_pobj))
-							{
-								m_pobj->SetSelect(NONE_SELECT);
-								m_pobj->area_release();
-								m_pobj->SetActive(false); 
-							}
-							else
-							{
-								m_pobj->SetState(IDLE);						
-							}
-							m_pobj->SetOrder(ORDER_NONE);
+						if(true == m_com_transport->setunit(m_pobj))
+						{
+							m_pobj->SetSelect(NONE_SELECT);
+							m_pobj->area_release();
+							m_pobj->SetActive(false); 
+							m_com_transport = NULL;
+						}
+						else
+						{
+							m_pobj->SetState(IDLE);						
+						}
+						m_pobj->SetOrder(ORDER_NONE);
 					}
 					else
 					{
@@ -182,10 +188,13 @@ void CCom_Meleesearch::Update(void)
 				else
 				{
 					//공격범위 밖, 추적범위 안이면
-					if(ATTACK == m_pobj->GetUnitinfo().state)
-						m_pobj->SetState(MOVE);
 					if(NULL != m_com_pathfind)
+					{
+						if(ATTACK == m_pobj->GetUnitinfo().state)
+							m_pobj->SetState(MOVE);
+
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+					}
 				}
 			}
 
@@ -198,7 +207,7 @@ void CCom_Meleesearch::Update(void)
 			m_search_time += GETTIME;
 
 			if(true == m_btarget_search &&
-				m_search_time > 2.0f)
+				m_search_time > 0.3f)
 			{
 				m_search_time = 0.f;
 				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
@@ -254,7 +263,6 @@ void CCom_Meleesearch::Update(void)
 					((CCom_Pathfind*)m_com_pathfind)->ClearPath();
 					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 				}
-				//m_bmelee_search = false;
 			}
 			else
 			{				
@@ -284,9 +292,7 @@ void CCom_Meleesearch::Update(void)
 			}
 		}
 		else
-		{
-			m_search_time = 2.0f;
-		}
+			m_search_time = 0.3f;
 	}
 }
 

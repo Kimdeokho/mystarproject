@@ -38,7 +38,8 @@ public:
 	void building_area_Initialize(const int& col , const int& row);
 	void building_pos_Initialize(const int& col , const int& row);
 public:
-	void SetDestroy(void);
+	//void SetDestroy(void);
+	virtual void Build_Complete(void);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

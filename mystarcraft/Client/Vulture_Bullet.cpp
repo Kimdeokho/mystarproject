@@ -9,7 +9,9 @@
 #include "MyMath.h"
 
 #include "ScrollMgr.h"
-CVulture_Bullet::CVulture_Bullet(const int& target_id ,const D3DXVECTOR2& vdesetpos)
+#include "Skill_DarkSwarm.h"
+
+CVulture_Bullet::CVulture_Bullet(const int target_id ,const D3DXVECTOR2& vdesetpos)
 {
 	m_ptarget = NULL;
 	m_target_id = target_id;
@@ -66,7 +68,12 @@ void CVulture_Bullet::Update(void)
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
-			m_ptarget->SetDamage(20, DAMAGE_VIBRATE);
+		{
+			int idx = m_ptarget->Getcuridx(32);
+			if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType && 
+				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+				m_ptarget->SetDamage(20, DAMAGE_VIBRATE);
+		}
 
 		m_bdestroy = true;
 		Dead();

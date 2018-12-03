@@ -276,13 +276,16 @@ void CVulture::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			((CCom_UsingSkill*)m_com_usingskill)->SetUsingSkill(SO_INSTALL_MINE, ptarget , m_install_pos);
 		}
 	}
+
 }
-void CVulture::Input_cmd(const int& nkey , bool* waitkey)
+bool CVulture::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('I' == nkey)
 	{
 		waitkey[nkey] = true;
 	}
+
+	return false;
 }
 void CVulture::Release(void)
 {

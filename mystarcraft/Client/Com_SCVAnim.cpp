@@ -29,8 +29,7 @@ void CCom_SCVAnim::Initialize(CObj* pobj)
 
 void CCom_SCVAnim::Update(void)
 {
-	CCom_Animation::DirIdxCalculation();
-	
+	CCom_Animation::DirIdxCalculation();	
 
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 	if(m_frame.fcurframe >= m_frame.umax)

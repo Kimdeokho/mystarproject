@@ -9,8 +9,10 @@
 #include "MyMath.h"
 
 #include "ScrollMgr.h"
-
 #include "FontMgr.h"
+
+#include "Skill_DarkSwarm.h"
+
 CWraith_Bim::CWraith_Bim(const int& ptarget_id , const D3DXVECTOR2& vdesetpos)
 {
 	m_ptarget = NULL;
@@ -68,7 +70,12 @@ void CWraith_Bim::Update(void)
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
-			m_ptarget->SetDamage(6 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt, DAMAGE_NOMAL);
+		{
+			int idx = m_ptarget->Getcuridx(32);
+			if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType && 
+				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+				m_ptarget->SetDamage(6 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt, DAMAGE_NOMAL);
+		}
 
 		m_bdestroy = true;
 		Dead();

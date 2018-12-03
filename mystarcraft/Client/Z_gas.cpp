@@ -8,6 +8,8 @@
 #include "ScrollMgr.h"
 #include "Ingame_UIMgr.h"
 #include "LineMgr.h"
+#include "UnitMgr.h"
+#include "ObjMgr.h"
 
 #include "UI_Wireframe.h"
 #include "FontMgr.h"
@@ -20,6 +22,8 @@
 #include "UI_Energy_bar.h"
 #include "UI_Cmd_info.h"
 #include "Ingame_UIMgr.h"
+
+#include "GeneraEff.h"
 
 CZ_gas::CZ_gas(CObj* resource_gas)
 {
@@ -142,7 +146,11 @@ void CZ_gas::Update_Wireframe(void)
 }
 void CZ_gas::Dead(void)
 {
+	CObj* pobj = new CGeneraEff(L"BLOOD_BOOM" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
 
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 void CZ_gas::Release(void)
 {

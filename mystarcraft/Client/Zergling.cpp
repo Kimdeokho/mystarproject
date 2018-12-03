@@ -83,7 +83,7 @@ void CZergling::Initialize(void)
 	m_rect.bottom = m_vPos.y + m_vertex.bottom;
 
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
 	m_com_anim = new CCom_ZerglingAnim(m_matWorld);
 	m_com_cc = new CCom_CC();
 	m_com_targetsearch = new CCom_Meleesearch(SEARCH_ONLY_ENEMY);
@@ -208,20 +208,22 @@ void CZergling::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	}
 }
 
-void CZergling::Input_cmd(const int& nkey , bool* waitkey)
+bool CZergling::Input_cmd(const int& nkey , bool* waitkey)
 {
-	if('W' == nkey)
-	{
-		m_eteamnumber = TEAM_1;
-	}
+	return false;
 }
 
-void CZergling::Input_cmd(const int& firstkey , const int& secondkey)
+bool CZergling::Input_cmd(const int& firstkey , const int& secondkey)
 {
-
+	return false;
 }
 
 void CZergling::Update_Cmdbtn(void)
+{
+
+}
+
+void CZergling::Update_Wireframe(void)
 {
 
 }
@@ -243,7 +245,7 @@ void CZergling::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt);
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -286,5 +288,5 @@ void CZergling::Dead(void)
 
 void CZergling::Release(void)
 {
-		CObj::area_release();
+	CObj::area_release();
 }

@@ -968,7 +968,6 @@ void CTileManager::LoadTileData(HANDLE hFile)
 
 		if(MOVE_NONE == m_sqTile[i]->byOption)
 		{
-/*
 			idx64 = CMyMath::Pos_to_index(m_sqTile[i]->vPos , 64);
 			temprc.left = m_sqTile[i]->vPos.x - 16;
 			temprc.right = m_sqTile[i]->vPos.x + 16;
@@ -980,7 +979,7 @@ void CTileManager::LoadTileData(HANDLE hFile)
 			tempobj->SetMyrect(temprc);
 			tempobj->SetVertex(tempvtx);
 			CArea_Mgr::GetInstance()->SetObj_Area64(idx64 , idx64 , tempobj);
-			CArea_Mgr::GetInstance()->setobstacle(tempobj);*/
+			CArea_Mgr::GetInstance()->setobstacle(tempobj);
 		}
 	}
 
@@ -1187,10 +1186,6 @@ FOGSIGHT_OPTION CTileManager::GetFogLight(const int& idx , const TEAM_NUMBER& et
 	//return m_fogTile[idx]->bLight[eteam];
 	return m_fogTile[idx]->eSight[eteam];
 }
-//FOGSIGHT_OPTION CTileManager::GetFogSightOp(const int& idx)
-//{
-//	return m_fogTile[idx]->eSight;
-//}
 bool CTileManager::GetCreepInstall(const int& idx)
 {
 	return m_creepTile[idx]->bcreep_install;

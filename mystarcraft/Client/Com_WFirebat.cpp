@@ -59,7 +59,7 @@ void CCom_WFirebat::Release(void)
 
 }
 
-void CCom_WFirebat::fire(CObj*& ptarget)
+void CCom_WFirebat::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{

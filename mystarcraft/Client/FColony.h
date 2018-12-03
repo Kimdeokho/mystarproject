@@ -14,6 +14,8 @@ public:
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
 	virtual void Update_Cmdbtn(void);
 	virtual void Update_Wireframe(void);
+	virtual bool Input_cmd(const int& nkey , bool* waitkey);
+	virtual bool Input_cmd(const int& firstkey , const int& secondkey);
 
 	virtual void Dead(void);
 	virtual void Release(void);

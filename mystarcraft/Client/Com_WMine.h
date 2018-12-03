@@ -13,7 +13,7 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	virtual void fire(CObj*&	ptarget );
+	virtual void fire(CObj*	ptarget );
 public:
 	CCom_WMine(void);
 	~CCom_WMine(void);

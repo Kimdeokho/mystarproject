@@ -29,6 +29,9 @@ void CMyCmd_InputKey::Progress(void)
 	for(USHORT i = 0; i < m_unitsize; ++i)
 	{
 		pobj = CObjMgr::GetInstance()->GetObj(m_unit_numlist[i]);
+		if(NULL == pobj)
+			continue;
+
 		if(0 == m_nkey2)
 			pobj->Inputkey_reaction(m_nkey1);
 		else

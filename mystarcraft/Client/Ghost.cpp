@@ -229,9 +229,9 @@ void CGhost::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		if(NULL != m_com_pathfind)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
-			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+			(m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+			(m_com_pathfind)->SetFlowField();
+			(m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
 	}
@@ -248,9 +248,9 @@ void CGhost::Inputkey_reaction(const int& firstkey , const int& secondkey)
 			if(NULL != m_com_pathfind)
 			{
 				D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-				((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , false);
-				((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-				((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+				(m_com_pathfind)->SetGoalPos(goalpos , false);
+				(m_com_pathfind)->SetFlowField();
+				(m_com_pathfind)->StartPathfinding();
 
 				((CCom_UsingSkill*)m_com_usingskill)->SetUsingSkill(SO_NUCLEAR , NULL , goalpos);
 				m_bmagicbox = false;
@@ -259,20 +259,6 @@ void CGhost::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	}
 }
 
-void CGhost::Release(void)
-{
-	CObj::area_release();
-	m_com_pathfind = NULL;
-	m_com_weapon = NULL;
-}
-
-void CGhost::Dead(void)
-{
-	CObj* pobj = new CCorpse(L"GHOSTDEAD" , L"GHOSTWRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-}
 
 void CGhost::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
@@ -388,4 +374,18 @@ void CGhost::Update_Wireframe(void)
 
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_BIO_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
+}
+
+void CGhost::Dead(void)
+{
+	CObj* pobj = new CCorpse(L"GHOSTDEAD" , L"GHOSTWRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+}
+void CGhost::Release(void)
+{
+	CObj::area_release();
+	m_com_pathfind = NULL;
+	m_com_weapon = NULL;
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "component.h"
 
-
+class CCom_Transport;
 class CCom_Targetsearch :
 	public CComponent
 {
@@ -10,6 +10,7 @@ protected:
 	CComponent*		m_com_pathfind;
 	CComponent*		m_com_anim;
 	CComponent*		m_com_weapon;
+	CCom_Transport* m_com_transport;
 
 	TARGET_SEARCH_TYPE	m_search_type;
 

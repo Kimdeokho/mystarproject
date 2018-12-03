@@ -5,8 +5,9 @@
 #include "TextureMgr.h"
 
 #include "Obj.h"
+
 CCom_LarvaEggAnim::CCom_LarvaEggAnim(D3DXMATRIX& objmat , const TCHAR* birthkey)
-: CCom_Animation(objmat ) 
+: CCom_Animation(objmat) 
 {
 	m_objname = L"Z_LARVA_EGG";
 	m_statkey = L"";
@@ -29,6 +30,9 @@ void CCom_LarvaEggAnim::Initialize(CObj* pobj)
 
 void CCom_LarvaEggAnim::Update(void)
 {
+	if(NULL == m_curtex)
+		return;
+
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 
 	if(m_frame.fcurframe >= m_frame.umax)
@@ -55,6 +59,9 @@ void CCom_LarvaEggAnim::Update(void)
 
 void CCom_LarvaEggAnim::Render(void)
 {
+	if(NULL == m_curtex)
+		return;
+
 	m_pSprite->SetTransform(&m_objmat);
 	m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter
 		, NULL , D3DCOLOR_ARGB(255, 255, 255, 255));
@@ -85,6 +92,8 @@ void CCom_LarvaEggAnim::SetAnimation(const TCHAR* statekey)
 			m_curtex = (*m_generaltex)[0];
 			m_vcenter = D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2), 0.f);
 		}
+		else
+			m_curtex = NULL;
 	}
 }
 void CCom_LarvaEggAnim::Release(void)

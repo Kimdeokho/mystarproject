@@ -30,32 +30,6 @@ void CCom_MarineAnim::Initialize(CObj* pobj)
 
 }
 
-void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
-{
-	if(m_statkey != statekey)
-	{
-		if(false == m_battack_end)
-			return;
-
-		m_statkey = statekey;
-		m_frame.fcurframe = 0;	
-
-		/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-		m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey );
-
-		if(NULL != m_animtexture)
-		{
-			m_frame.umax = m_animtexture[0].size();
-			m_frame.fframespeed = (float)m_frame.umax;
-			if(L"ATTACK" == m_statkey)
-				m_frame.fframespeed *= 8;
-			if(L"MOVE" == m_statkey)
-				m_frame.fframespeed *= 2;
-
-			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
-		}
-	}
-}
 
 void CCom_MarineAnim::Update(void)
 {
@@ -105,6 +79,32 @@ void CCom_MarineAnim::Render(void)
 	{
 		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
 			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
+}
+void CCom_MarineAnim::SetAnimation(const TCHAR* statekey)
+{
+	if(m_statkey != statekey)
+	{
+		if(false == m_battack_end)
+			return;
+
+		m_statkey = statekey;
+		m_frame.fcurframe = 0;	
+
+		/* [i]는 방향 , DRONE, MOVE의 사진집합 */
+		m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey );
+
+		if(NULL != m_animtexture)
+		{
+			m_frame.umax = m_animtexture[0].size();
+			m_frame.fframespeed = (float)m_frame.umax;
+			if(L"ATTACK" == m_statkey)
+				m_frame.fframespeed *= 8;
+			if(L"MOVE" == m_statkey)
+				m_frame.fframespeed *= 2;
+
+			m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
+		}
 	}
 }
 

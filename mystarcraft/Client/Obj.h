@@ -41,7 +41,8 @@ protected:
 	int				m_obj_id;
 
 private:
-	static int		m_globalobj_id;
+	static int		m_globalobj_cnt;
+	int				m_objcnt;
 protected:
 	/*ENUM*/
 
@@ -55,7 +56,6 @@ protected:
 	UNITINFO			m_unitinfo;
 
 protected:
-protected:
 	bool			m_bdestroy;
 	bool			m_bSelect;
 public:
@@ -65,13 +65,15 @@ public:
 	virtual void Render(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
-	virtual void Input_cmd(const int& nkey , bool* waitkey){};
-	virtual void Input_cmd(const int& firstkey , const int& secondkey){};
-	virtual void Release(void);
-	virtual void Dead(void);
+	virtual bool Input_cmd(const int& nkey , bool* waitkey){ return false; };
+	virtual bool Input_cmd(const int& firstkey , const int& secondkey){ return false; };
+	
 	virtual void Update_Cmdbtn(void);
 	virtual void Update_Wireframe(void);
 	virtual void SetDamage(const int& idamage , DAMAGE_TYPE edamagetype);
+
+	virtual void Dead(void);
+	virtual void Release(void);
 public:
 	void SetPos(const float x , const float y, OBJ_POS_KIND ekind = STATIC_OBJ);
 	void SetPos(const D3DXVECTOR2& vpos);
@@ -86,7 +88,7 @@ public:
 
 	void SetState(STATE state);
 	void SetOrder(ORDER order);
-	void SetObjID(const int& id);
+	void SetObjID(const int id);
 	void SetObjName(OBJID eobjname);
 	void SetTeamNumber(TEAM_NUMBER eteamnum);
 	void SetMagicBox(bool bmagicbox);
@@ -98,6 +100,7 @@ public:
 public:
 	const D3DXMATRIX&		GetMat(void);
 	int						GetObjNumber(void);
+	int						GetObjCountNumber(void);
 	CATEGORY				GetCategory(void);
 	float					GetX(void);
 	float					GetY(void);
@@ -117,6 +120,7 @@ public:
 
 	virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
 	const	UNITINFO&		GetUnitinfo();
+	UNITINFO&				Get_ref_Unitinfo(){return m_unitinfo;}
 public:
 	void unit_area_Initialize(void);
 	void area_update(void);

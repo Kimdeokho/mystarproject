@@ -58,7 +58,7 @@ void CCom_AirCollision::Update(void)
 
 		if(m_search_time >= 0.2f )
 		{
-			m_collision_target = CArea_Mgr::GetInstance()->Collision_check(m_pobj , m_pobj->Getcuridx(64));
+			m_collision_target = CArea_Mgr::GetInstance()->Collision_check(m_pobj);
 			if(NULL != m_collision_target)
 			{
 				//printf("충돌! %d \n" , m_obj_id);
@@ -89,7 +89,7 @@ void CCom_AirCollision::Update(void)
 		{
 			/*타겟과 충돌이 일어나는 중이라면*/
 
-			m_vPos -= GETTIME* m_collision_vnormal * 10;
+			m_vPos -= GETTIME* m_collision_vnormal * 5;
 
 		}
 		else

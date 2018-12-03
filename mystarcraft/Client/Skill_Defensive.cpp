@@ -54,6 +54,8 @@ void CSkill_Defensive::Initialize(void)
 	m_matWorld._22 = 1.f;
 
 	m_shild_hp = 255;
+
+	m_defensive_time = 0.f;
 }
 
 void CSkill_Defensive::Update(void)
@@ -79,9 +81,7 @@ void CSkill_Defensive::Update(void)
 	}
 
 	if(m_frame.fcurframe > m_frame.umax )
-	{
 		m_frame.fcurframe = 0.f;
-	}
 
 	m_curtex = ((*m_generatex)[ (int)m_frame.fcurframe ]);
 	m_backtex = ((*m_generaback_tex)[ (int)m_frame.fcurframe ]);
@@ -98,11 +98,6 @@ void CSkill_Defensive::Render(void)
 		NULL , D3DCOLOR_ARGB(255,255,255,255));
 }
 
-void CSkill_Defensive::Release(void)
-{
-
-}
-
 void CSkill_Defensive::SetDamage(const int& shild)
 {
 	m_shild_hp -= shild;
@@ -110,4 +105,9 @@ void CSkill_Defensive::SetDamage(const int& shild)
 int CSkill_Defensive::GetShild(void)
 {
 	return m_shild_hp;
+}
+
+void CSkill_Defensive::Release(void)
+{
+
 }

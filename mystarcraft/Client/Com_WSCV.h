@@ -14,7 +14,7 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	virtual void fire(CObj*& ptarget);
+	virtual void fire(CObj* ptarget);
 public:
 	CCom_WSCV();
 	~CCom_WSCV(void);

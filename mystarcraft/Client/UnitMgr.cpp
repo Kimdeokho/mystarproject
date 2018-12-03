@@ -82,19 +82,21 @@ void CUnitMgr::Intputkey_reaction(const int& firstkey , const int& secondkey)
 	}
 }
 
-void CUnitMgr::Input_cmd(const int& nkey , bool* waitkey)
+bool CUnitMgr::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if(!m_curunitList.empty())
 	{
-		m_curunitList.front()->Input_cmd(nkey , waitkey);
+		return m_curunitList.front()->Input_cmd(nkey , waitkey);
 	}
+	return false;
 }
-void CUnitMgr::Input_cmd(const int& firstkey , const int& secondkey)
+bool CUnitMgr::Input_cmd(const int& firstkey , const int& secondkey)
 {
 	if(!m_curunitList.empty())
 	{
-		m_curunitList.front()->Input_cmd(firstkey , secondkey);
+		return m_curunitList.front()->Input_cmd(firstkey , secondkey);
 	}
+	return false;
 }
 
 
@@ -123,6 +125,9 @@ void CUnitMgr::clear_destroy_unitlist(CObj* pobj)
 }
 void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& vgoalpos)
 {
+	if(unitlist.empty())
+		return;
+
 	list<CObj*>::iterator iter = unitlist.begin();
 	list<CObj*>::iterator iter_end = unitlist.end();
 
@@ -156,6 +161,7 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 
 		if( MOVE_NOT != (*iter)->GetUnitinfo().eMoveType &&	
 			TRANSFORMING != (*iter)->GetUnitinfo().state &&
+			BURROW != (*iter)->GetUnitinfo().state &&
 			CATEGORY_UNIT == (*iter)->GetCategory())
 			(*iter)->SetState(MOVE);
 	}
@@ -167,8 +173,8 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 	{
 		vpos = (*iter)->GetPos();
 
-		if(magicbox.right - magicbox.left <= 350 &&
-			magicbox.bottom - magicbox.top <= 350)
+		if(magicbox.right - magicbox.left <= 240 &&
+			magicbox.bottom - magicbox.top <= 240)
 		{
 			//++m_magicbox_unitcnt;
 			//m_vUnitcenterpt += vpos;
@@ -221,6 +227,7 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptar
 
 		if( MOVE_NOT != (*iter)->GetUnitinfo().eMoveType &&	
 			TRANSFORMING != (*iter)->GetUnitinfo().state &&
+			BURROW != (*iter)->GetUnitinfo().state &&
 			CATEGORY_UNIT == (*iter)->GetCategory())
 			(*iter)->SetState(MOVE);
 	}

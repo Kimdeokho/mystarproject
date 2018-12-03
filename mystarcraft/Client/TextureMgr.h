@@ -20,7 +20,6 @@ private:
 	map<wstring, CTexture*>		m_TerranTex;
 	map<wstring, CTexture*>		m_MultiTex;
 
-	map<wstring, CTexture*>		m_MultiTex32; //32πÊ«‚
 public:
 public:
 	HRESULT	Read_directional_ImgPath(const wstring& wstrFilePath ,TCHAR*	szPath);
@@ -81,7 +80,6 @@ public:
 	const vector<TEXINFO*>* GetZUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey);
 	const vector<TEXINFO*>* GetTUnitTexture(const wstring& wstrobjkey , const wstring& wstrstatekey );
 	const vector<TEXINFO*>* GetMultiTexture(const wstring& wstrobjkey , const wstring& wstrstatekey );
-	const vector<TEXINFO*>* GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey);
 	const TEXINFO*			GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey);
 	const vector<TEXINFO*>*	GetGeneralTexture(const wstring& wstrObjKey);
 	const vector<TEXINFO*>* GetMultiEffTexture(const wstring& wstrObjKey , const int& dirdix);

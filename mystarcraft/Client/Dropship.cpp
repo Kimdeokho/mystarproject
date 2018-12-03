@@ -27,6 +27,7 @@
 #include "UI_Wireframe.h"
 #include "UI_Cmd_info.h"
 #include "UI_Energy_bar.h"
+
 #include "Skill_Defensive.h"
 CDropship::CDropship(void)
 {
@@ -68,7 +69,7 @@ void CDropship::Initialize(void)
 	m_vertex.bottom = 18.5f;
 
 	m_com_anim = new CCom_DropAnim(m_matWorld);
-	m_com_pathfind = new CCom_AirPathfind(m_vPos);
+	m_com_air_pathfind = new CCom_AirPathfind(m_vPos);
 	m_com_transport = new CCom_Transport(8 , 0.75f);
 	m_com_cc = new CCom_CC();
 
@@ -76,7 +77,7 @@ void CDropship::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_pathfind));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_air_pathfind));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TRANSPORT , m_com_transport));	
 	
 
@@ -134,7 +135,7 @@ void CDropship::Inputkey_reaction(const int& nkey)
 		m_unitinfo.order = ORDER_MOVE;
 
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+		m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
 		m_bmagicbox = true;
 	}
 	if('W' == nkey)
@@ -149,16 +150,32 @@ void CDropship::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	if( 'U' == firstkey &&	VK_LBUTTON == secondkey)
 	{
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+		m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
 		m_unitinfo.order = ORDER_GET_OFF;
 	}
+
+	if('A' == firstkey && VK_LBUTTON == secondkey)
+	{
+		m_unitinfo.order = ORDER_MOVE;
+		m_unitinfo.state = MOVE;
+
+		if(NULL != m_com_air_pathfind)
+		{
+			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+			m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
+
+			m_bmagicbox = false;
+		}
+	}
 }
-void CDropship::Input_cmd(const int& nkey , bool* waitkey)
+bool CDropship::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('U' == nkey)
 	{
 		waitkey[nkey] = true;
 	}
+
+	return false;
 }
 void CDropship::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
@@ -209,19 +226,8 @@ void CDropship::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 	if(m_unitinfo.hp >= m_unitinfo.maxhp)
 		m_unitinfo.hp = m_unitinfo.maxhp;
 }
-void CDropship::Release(void)
-{
-	CObj::area_release();
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-}
 
-void CDropship::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.2f ,1.2f) , SORT_AIR );
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-}
 
 bool CDropship::setunit(CObj* pobj)
 {
@@ -274,4 +280,16 @@ void CDropship::Update_Wireframe(void)
 		CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_AIR_ARMOR].upg_cnt 
 			,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 	}
+}
+void CDropship::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.2f ,1.2f) , SORT_AIR );
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+void CDropship::Release(void)
+{
+	CObj::area_release();
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }

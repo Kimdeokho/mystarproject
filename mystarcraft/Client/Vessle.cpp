@@ -13,6 +13,7 @@
 #include "Com_Airsearch.h"
 #include "Com_UsingSkill.h"
 #include "Com_CC.h"
+#include "Com_Detect.h"
 
 #include "ObjMgr.h"
 #include "LineMgr.h"
@@ -71,7 +72,7 @@ void CVessle::Initialize(void)
 
 	//m_com_targetsearch = new CCom_Airsearch();
 	m_com_anim = new CCom_VessleAnim(m_matWorld);
-	m_com_pathfind = new CCom_AirPathfind(m_vPos);
+	m_com_air_pathfind = new CCom_AirPathfind(m_vPos);
 	m_com_usingskill = new CCom_UsingSkill();
 	m_com_cc = new CCom_CC();
 
@@ -79,9 +80,10 @@ void CVessle::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
 	//m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_pathfind));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_air_pathfind));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_USINGSKILL , m_com_usingskill));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_DETECTOR , new CCom_Detect()));
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -141,7 +143,7 @@ void CVessle::Inputkey_reaction(const int& nkey)
 		//((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+		m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
 	}
 	if('W' == nkey)
 	{
@@ -163,10 +165,10 @@ void CVessle::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		m_unitinfo.order = ORDER_MOVE_ATTACK;
 		m_unitinfo.state = MOVE;
 
-		if(NULL != m_com_pathfind)
+		if(NULL != m_com_air_pathfind)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+			m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
 
 			m_bmagicbox = false;
 		}
@@ -178,10 +180,11 @@ void CVessle::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		m_unitinfo.state = MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
-		if(ptarget != NULL)
+
+		if( ptarget != NULL && CATEGORY_UNIT == ptarget->GetCategory())
 		{
-			((CCom_AirPathfind*)m_com_pathfind)->SetTargetObjID(ptarget->GetObjNumber());
-			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(ptarget->GetPos() , false);
+			m_com_air_pathfind->SetTargetObjID(ptarget->GetObjNumber());
+			m_com_air_pathfind->SetGoalPos(ptarget->GetPos() , false);
 			((CCom_UsingSkill*)m_com_usingskill)->SetUsingSkill(SO_DEFENSIVE , ptarget , ptarget->GetPos());
 		}
 	}
@@ -192,15 +195,16 @@ void CVessle::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		m_unitinfo.state = MOVE;
 
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
-		if(ptarget != NULL)
+
+		if( ptarget != NULL && CATEGORY_UNIT == ptarget->GetCategory())
 		{
-			((CCom_AirPathfind*)m_com_pathfind)->SetTargetObjID(ptarget->GetObjNumber());
-			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(ptarget->GetPos() , false);
+			m_com_air_pathfind->SetTargetObjID(ptarget->GetObjNumber());
+			m_com_air_pathfind->SetGoalPos(ptarget->GetPos() , false);
 			((CCom_UsingSkill*)m_com_usingskill)->SetUsingSkill(SO_IRRADIATE , ptarget , ptarget->GetPos());
 		}
 	}
 }
-void CVessle::Input_cmd(const int& nkey , bool* waitkey)
+bool CVessle::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('D' == nkey)
 	{
@@ -211,6 +215,8 @@ void CVessle::Input_cmd(const int& nkey , bool* waitkey)
 	{
 		waitkey[nkey] = true;
 	}
+
+	return false;
 }
 void CVessle::Release(void)
 {

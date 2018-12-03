@@ -75,6 +75,16 @@ HRESULT CUnitMultiTexture::InsertTexture(const wstring& wstrFilePath , const wst
 	return S_OK;
 }
 
+const vector<TEXINFO*>* CUnitMultiTexture::GetUnitMultiTex(const wstring& wstrstatekey)
+{
+	map<wstring , vector<TEXINFO*>*>::iterator iter = m_multiTex.find(wstrstatekey);
+
+	if(iter == m_multiTex.end())
+		return NULL;
+	else
+		return (iter->second);
+}
+
 void CUnitMultiTexture::Release(void)
 {
 	map<wstring,vector<TEXINFO*>*>::iterator iter = m_multiTex.begin();
@@ -98,14 +108,4 @@ void CUnitMultiTexture::Release(void)
 		iter->second = NULL;
 	}
 	m_multiTex.clear();
-}
-
-const vector<TEXINFO*>* CUnitMultiTexture::GetUnitMultiTex(const wstring& wstrstatekey)
-{
-	map<wstring , vector<TEXINFO*>*>::iterator iter = m_multiTex.find(wstrstatekey);
-
-	if(iter == m_multiTex.end())
-		return NULL;
-	else
-		return (iter->second);
 }

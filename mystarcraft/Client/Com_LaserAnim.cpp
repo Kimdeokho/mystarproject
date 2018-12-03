@@ -71,7 +71,7 @@ void CCom_LaserAnim::SetAnimation(const TCHAR* statekey)
 		m_frame.fcurframe = 0;			
 
 		/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-		m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey );
+		m_animtexture = CTextureMgr::GetInstance()->GetMultiTexture(m_objname , m_statkey );
 
 		m_frame.umax = m_animtexture[0].size();
 		m_frame.fframespeed = (float)m_frame.umax;

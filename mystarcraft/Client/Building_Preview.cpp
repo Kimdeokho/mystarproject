@@ -103,7 +103,7 @@ void CBuilding_Preview::Render(void)
 		{
 			vtemp.x = m_preview_info.vpos.x + j*32;
 			idx32 = CMyMath::Pos_to_index(vtemp  , 32);
-			idx64 = CMyMath::Pos_to_index(vtemp , 64);
+			//idx64 = CMyMath::Pos_to_index(vtemp , 64);
 
 			if( 0 == i)
 			{
@@ -162,7 +162,7 @@ void CBuilding_Preview::Render(void)
 			}
 			else
 			{
-				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
+				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , vtemp , temprc) &&
 					op == MOVE_OK &&
 					FOG_BLACK != fog_sight)
 				{
@@ -268,7 +268,7 @@ bool CBuilding_Preview::Install_check(void)
 			}
 			else
 			{
-				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
+				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , vtemp , temprc) &&
 					MOVE_OK == op &&
 					FOG_BLACK != fog_sight)
 				{
@@ -305,7 +305,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 		{
 			vtemp.x = cur_info.vpos.x + j*32;
 			idx32 = CMyMath::Pos_to_index(vtemp  , 32);
-			idx64 = CMyMath::Pos_to_index(vtemp , 64);
+			//idx64 = CMyMath::Pos_to_index(vtemp , 64);
 
 /*
 			temprc.left = vtemp.x - 16;
@@ -328,7 +328,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 			}
 			else
 			{
-				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , idx64 , temprc) &&
+				if(true == CArea_Mgr::GetInstance()->Building_Collocate_check( m_pobj  , vtemp , temprc) &&
 					MOVE_OK == op /*&&
 					FOG_BLACK != fog_sight*/)
 				{

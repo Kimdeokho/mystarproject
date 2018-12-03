@@ -144,53 +144,7 @@ void CCom_CC::Render(void)
 		}
 	}
 }
-void CCom_CC::Release(void)
-{
-	SKILL_ITER iter;
-	SKILL_ITER iter_end;
 
-	if(!m_buffs.empty())
-	{
-		iter = m_buffs.begin();
-		iter_end = m_buffs.end();
-
-		for( ; iter != iter_end; ++iter)
-			Safe_Delete(iter->second);
-
-		m_buffs.clear();
-	}
-	if(!m_debuffs.empty())
-	{
-		iter = m_debuffs.begin();
-		iter_end = m_debuffs.end();
-
-		for( ; iter != iter_end; ++iter)
-			Safe_Delete(iter->second);
-
-		m_debuffs.clear();
-	}
-
-	if(!m_overlap_buffs.empty())
-	{
-		list<CSkill*>::iterator iter = m_overlap_buffs.begin();
-		list<CSkill*>::iterator iter_end = m_overlap_buffs.end();
-
-		for( ; iter != iter_end; ++iter)
-			Safe_Delete( (*iter) );
-
-		m_overlap_buffs.clear();
-	}
-	if(!m_overlap_debuffs.empty())
-	{
-		list<CSkill*>::iterator iter = m_overlap_debuffs.begin();
-		list<CSkill*>::iterator iter_end = m_overlap_debuffs.end();
-
-		for( ; iter != iter_end; ++iter)
-			Safe_Delete( (*iter) );
-
-		m_overlap_debuffs.clear();
-	}
-}
 
 void CCom_CC::AddBuff(CSkill* pskill)
 {
@@ -238,3 +192,50 @@ CSkill* CCom_CC::GetDefensive(void)
 	return m_defensive;
 }
 
+void CCom_CC::Release(void)
+{
+	SKILL_ITER iter;
+	SKILL_ITER iter_end;
+
+	if(!m_buffs.empty())
+	{
+		iter = m_buffs.begin();
+		iter_end = m_buffs.end();
+
+		for( ; iter != iter_end; ++iter)
+			Safe_Delete(iter->second);
+
+		m_buffs.clear();
+	}
+	if(!m_debuffs.empty())
+	{
+		iter = m_debuffs.begin();
+		iter_end = m_debuffs.end();
+
+		for( ; iter != iter_end; ++iter)
+			Safe_Delete(iter->second);
+
+		m_debuffs.clear();
+	}
+
+	if(!m_overlap_buffs.empty())
+	{
+		list<CSkill*>::iterator iter = m_overlap_buffs.begin();
+		list<CSkill*>::iterator iter_end = m_overlap_buffs.end();
+
+		for( ; iter != iter_end; ++iter)
+			Safe_Delete( (*iter) );
+
+		m_overlap_buffs.clear();
+	}
+	if(!m_overlap_debuffs.empty())
+	{
+		list<CSkill*>::iterator iter = m_overlap_debuffs.begin();
+		list<CSkill*>::iterator iter_end = m_overlap_debuffs.end();
+
+		for( ; iter != iter_end; ++iter)
+			Safe_Delete( (*iter) );
+
+		m_overlap_debuffs.clear();
+	}
+}

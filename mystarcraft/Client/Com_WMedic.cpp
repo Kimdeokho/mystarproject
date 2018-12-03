@@ -26,7 +26,7 @@ void CCom_WMedic::Initialize(CObj* pobj /*= NULL*/)
 
 	m_bfire = false;
 }
-void CCom_WMedic::fire(CObj*& ptarget)
+void CCom_WMedic::fire(CObj* ptarget)
 {
 
 	if(ptarget->GetUnitinfo().maxhp == ptarget->GetUnitinfo().hp)

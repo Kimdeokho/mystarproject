@@ -408,14 +408,14 @@ void CAcademy::Update_Wireframe(void)
 	//-------------------------------------------
 }
 
-void CAcademy::Input_cmd(const int& nkey, bool* waitkey)
+bool CAcademy::Input_cmd(const int& nkey, bool* waitkey)
 {
-
+	return false;
 }
 
-void CAcademy::Input_cmd(const int& firstkey , const int& secondkey)
+bool CAcademy::Input_cmd(const int& firstkey , const int& secondkey)
 {
-
+	return false;
 }
 void CAcademy::Release(void)
 {

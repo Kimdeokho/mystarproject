@@ -9,6 +9,7 @@
 #include "MyMath.h"
 
 #include "ScrollMgr.h"
+#include "Skill_DarkSwarm.h"
 CBattle_bim::CBattle_bim(const int& ptarget_id , const D3DXVECTOR2& vdesetpos)
 {
 	m_ptarget = NULL;
@@ -65,7 +66,12 @@ void CBattle_bim::Update(void)
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
-			m_ptarget->SetDamage(25 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 3, DAMAGE_NOMAL);
+		{
+			int idx = m_ptarget->Getcuridx(32);
+			if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType && 
+				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+				m_ptarget->SetDamage(25 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 3, DAMAGE_NOMAL);
+		}
 
 		m_bdestroy = true;
 		Dead();

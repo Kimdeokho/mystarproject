@@ -9,6 +9,7 @@
 #include "Ingame_UIMgr.h"
 #include "FontMgr.h"
 #include "ObjMgr.h"
+#include "UnitMgr.h"
 
 #include "Com_fog.h"
 #include "Com_Creep.h"
@@ -20,6 +21,9 @@
 #include "UI_Select.h"
 #include "UI_Energy_bar.h"
 #include "UI_Cmd_info.h"
+
+#include "Corpse.h"
+#include "GeneraEff.h"
 
 CSpwaning::CSpwaning(void)
 {
@@ -167,7 +171,16 @@ void CSpwaning::Update_Wireframe(void)
 
 void CSpwaning::Dead(void)
 {
+	CObj* pobj = new CGeneraEff(L"BLOOD_BOOM" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
 
+	pobj = new CCorpse(L"" , L"ZBD_S_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 
 void CSpwaning::Release(void)

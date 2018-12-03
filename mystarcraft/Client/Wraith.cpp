@@ -70,14 +70,14 @@ void CWraith::Initialize(void)
 
 	m_com_targetsearch = new CCom_Airsearch();
 	m_com_anim = new CCom_WraithAnim(m_matWorld);
-	m_com_pathfind = new CCom_AirPathfind(m_vPos);
+	m_com_air_pathfind = new CCom_AirPathfind(m_vPos);
 	m_com_cc = new CCom_CC();
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_pathfind));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_air_pathfind));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , new CCom_WWraith()));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
 
@@ -138,7 +138,7 @@ void CWraith::Inputkey_reaction(const int& nkey)
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+		m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
 	}
 }
 
@@ -150,10 +150,10 @@ void CWraith::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		m_unitinfo.state = MOVE;
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
 
-		if(NULL != m_com_pathfind)
+		if(NULL != m_com_air_pathfind)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+			m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
 
 			m_bmagicbox = false;
 		}

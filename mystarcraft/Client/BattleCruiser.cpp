@@ -73,7 +73,7 @@ void CBattleCruiser::Initialize(void)
 
 	m_com_targetsearch = new CCom_Airsearch();
 	m_com_anim = new CCom_BattleAnim(m_matWorld);
-	m_com_pathfind = new CCom_AirPathfind(m_vPos);
+	m_com_air_pathfind = new CCom_AirPathfind(m_vPos);
 	m_com_usingskill = new CCom_UsingSkill();
 	m_com_cc = new CCom_CC();
 
@@ -81,7 +81,7 @@ void CBattleCruiser::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));		
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH ,  m_com_targetsearch ) );
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_pathfind));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_air_pathfind));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , new CCom_WBattle()));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_USINGSKILL , m_com_usingskill));
@@ -152,7 +152,7 @@ void CBattleCruiser::Inputkey_reaction(const int& nkey)
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-		((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+		(m_com_air_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 		m_bmagicbox = true;
 	}
 	if('W' == nkey)
@@ -179,10 +179,10 @@ void CBattleCruiser::Inputkey_reaction(const int& firstkey , const int& secondke
 		m_unitinfo.state = MOVE;
 		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
 
-		if(NULL != m_com_pathfind)
+		if(NULL != m_com_air_pathfind)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
-			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+			((CCom_AirPathfind*)m_com_air_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
 
 			m_bmagicbox = false;
 		}
@@ -196,18 +196,20 @@ void CBattleCruiser::Inputkey_reaction(const int& firstkey , const int& secondke
 
 		if(ptarget != NULL)
 		{
-			((CCom_AirPathfind*)m_com_pathfind)->SetTargetObjID(ptarget->GetObjNumber());
-			((CCom_AirPathfind*)m_com_pathfind)->SetGoalPos(ptarget->GetPos() , false);
+			(m_com_air_pathfind)->SetTargetObjID(ptarget->GetObjNumber());
+			(m_com_air_pathfind)->SetGoalPos(ptarget->GetPos() , false);
 			((CCom_UsingSkill*)m_com_usingskill)->SetUsingSkill(SO_YAMATO , ptarget , ptarget->GetPos());
 		}
 	}
 }
-void CBattleCruiser::Input_cmd(const int& nkey , bool* waitkey)
+bool CBattleCruiser::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('Y' == nkey)
 	{
 		waitkey[nkey] = true;
 	}
+
+	return false;
 }
 
 void CBattleCruiser::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)

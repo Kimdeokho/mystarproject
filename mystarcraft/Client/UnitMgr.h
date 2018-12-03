@@ -39,8 +39,8 @@ public:
 	void discharge_unit(void);
 	void Intputkey_reaction(const int& nkey);
 	void Intputkey_reaction(const int& firstkey , const int& secondkey);
-	void Input_cmd(const int& nkey, bool* waitkey);
-	void Input_cmd(const int& firstkey , const int& secondkey);
+	bool Input_cmd(const int& nkey, bool* waitkey);
+	bool Input_cmd(const int& firstkey , const int& secondkey);
 	void order_reaction(ORDER order);
 	void clear_destroy_unitlist(CObj* pobj);
 	

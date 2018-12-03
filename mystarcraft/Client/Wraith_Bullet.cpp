@@ -63,6 +63,7 @@ void CWraith_Bullet::Update(void)
 		CObjMgr::GetInstance()->AddEffect(peff);
 	}
 
+
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
 
 	//타겟을 쫓지말고 OBJID로 검사해야할듯...
@@ -88,6 +89,7 @@ void CWraith_Bullet::Update(void)
 	D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 	m_ftick_distance = GETTIME*m_accel*m_accel2;
 
+	
 	if( int(CMyMath::pos_distance(m_vPos , m_vdest_pos)) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
@@ -95,7 +97,7 @@ void CWraith_Bullet::Update(void)
 
 		m_bdestroy = true;
 		Dead();
-	}
+	}	
 
 	m_vPos += m_vcurdir*m_ftick_distance;
 
@@ -114,11 +116,6 @@ void CWraith_Bullet::Render(void)
 		iter->second->Render();
 }
 
-void CWraith_Bullet::Release(void)
-{
-
-}
-
 void CWraith_Bullet::Dead(void)
 {
 	CObj* peff = NULL;
@@ -129,4 +126,9 @@ void CWraith_Bullet::Dead(void)
 
 	peff->Initialize();
 	CObjMgr::GetInstance()->AddEffect(peff);
+}
+
+void CWraith_Bullet::Release(void)
+{
+
 }

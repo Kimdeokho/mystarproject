@@ -28,7 +28,7 @@ CCom_Animation::CCom_Animation(D3DXMATRIX& objmat)
 	m_olddirvec = D3DXVECTOR3(OFFSET_DIRVEC.x , OFFSET_DIRVEC.y , 0);
 	m_newdirvec = D3DXVECTOR3(0,0,0);
 
-	m_rotation_speed = 10.f;
+	m_rotation_speed = 80.f;
 //	m_brotationcomplete = false;
 	m_banim_end = false;
 

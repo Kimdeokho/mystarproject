@@ -24,6 +24,7 @@
 #include "BattleCruiser.h"
 #include "Dropship.h"
 #include "Ghost.h"
+#include "Vessle.h"
 
 CCom_Production_building::CCom_Production_building(const D3DXVECTOR2& vpos , const D3DXVECTOR2& vweight , const int& icol , const int& irow)
 :m_vPos(vpos) , m_weight(vweight) , m_irow(irow) , m_icol(icol)
@@ -126,7 +127,7 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 			collocate_rc.bottom = temp_pos[0].y + vtx.bottom;
 			idx64 = CMyMath::Pos_to_index(temp_pos[0] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[0] , collocate_rc ))
 			{				
 				idx32 = CMyMath::Pos_to_index(temp_pos[0] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -150,7 +151,7 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 			collocate_rc.bottom = temp_pos[1].y + vtx.bottom;
 			idx64 = CMyMath::Pos_to_index(temp_pos[1] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[1] , collocate_rc ))
 			{
 				idx32 = CMyMath::Pos_to_index(temp_pos[1] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -174,7 +175,7 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 			collocate_rc.bottom = temp_pos[2].y + vtx.bottom;
 			idx64 = CMyMath::Pos_to_index(temp_pos[2] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[2] , collocate_rc ))
 			{
 				idx32 = CMyMath::Pos_to_index(temp_pos[2] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -199,7 +200,7 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 			collocate_rc.bottom = temp_pos[3].y + vtx.bottom;
 			idx64 = CMyMath::Pos_to_index(temp_pos[3] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[3] , collocate_rc ))
 			{
 				idx32 = CMyMath::Pos_to_index(temp_pos[3] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -362,7 +363,7 @@ void CCom_Production_building::create_unit(OBJID eid)
 	}
 	else if(OBJ_VESSEL == eid)
 	{
-		pobj = new CVulture;
+		pobj = new CVessle;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);
 	}
 	else if(OBJ_BATTLE == eid)
@@ -379,15 +380,18 @@ void CCom_Production_building::create_unit(OBJID eid)
 	if(true == m_is_rally)
 	{
 		pobj->SetOrder(ORDER_MOVE);
-		pcom = pobj->GetComponent(COM_PATHFINDE);
-
+		
 		if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
 		{
+			pcom = pobj->GetComponent(COM_PATHFINDE);
 			((CCom_Pathfind*)pcom)->SetGoalPos(m_rallypoint , false);
 			((CCom_Pathfind*)pcom)->Setrally_path(m_rallypath);
 		}
 		else
+		{
+			pcom = pobj->GetComponent(COM_AIR_PATHFIND);
 			((CCom_AirPathfind*)pcom)->SetGoalPos(m_rallypoint , false);
+		}
 	}
 }
 

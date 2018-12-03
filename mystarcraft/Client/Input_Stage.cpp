@@ -56,18 +56,32 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 		if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
 		{
 			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+			bool		bmouse_mark = false;
 
 			if(true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(vmousept))
 			{
 				CIngame_UIMgr::GetInstance()->Minimappos_to_screen(vmousept);
 				CArea_Mgr::GetInstance()->SetChoiceTarget(NULL);
+
+				bmouse_mark = true;
 			}
 			else
 			{
 				//우클릭된 유닛을 구한다.
 				vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+
+				if(NULL == CArea_Mgr::GetInstance()->GetChoiceTarget())
+					bmouse_mark = true;
+				else
+					bmouse_mark = false;
 			}
+
+			if(bmouse_mark)
+				CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_CLICK_MARK);
+			else
+				CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_IDLE);
+
 			CUnitMgr::GetInstance()->Input_cmd(VK_RBUTTON , m_clickwating);
 
 			CMyCommand* pcommand = CMyCmd_Move::StaticCreate(vmousept);
@@ -84,7 +98,7 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 		m_downpt = CMouseMgr::GetInstance()->GetScreenMousePt();
 
 		D3DXVECTOR2 vmousept;
-		vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+		vmousept = m_downpt;
 
 		bool escape = false;
 
@@ -94,18 +108,34 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 			{
 				if(m_clickwating[i])
 				{
-
+					bool bmouse_mark = true;
 					if(true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(vmousept))
 					{
 						CIngame_UIMgr::GetInstance()->Minimappos_to_screen(vmousept);
-						//어택땅을 미니맵에 클릭시 미니맵 위치를 화면위치로 바꿔준다
+
+						if('A' == i)
+							CArea_Mgr::GetInstance()->SetChoiceTarget(NULL);
+						//어택땅을 미니맵에 클릭시 미니맵 좌표를 좌표위치로 바꿔준다
+
+						bmouse_mark = false;
 					}
 					else
 					{
 						//클릭된 유닛을 구한다.
 						vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 						CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+
+						if(NULL == CArea_Mgr::GetInstance()->GetChoiceTarget())
+							bmouse_mark = true;
+						else
+							bmouse_mark = false;
+						
 					}
+
+					if(bmouse_mark)
+						CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_CLICK_MARK);
+					else
+						CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_IDLE);
 
 					//부대유닛들의 중점을 구하고 선택된 타겟이 있으면 전달한다.
 					//CUnitMgr::GetInstance()->Calculate_UnitCenterPt(vmousept);
@@ -148,14 +178,15 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 				{
 					if(m_clickwating[b])
 					{
-						CUnitMgr::GetInstance()->Input_cmd(b , a); //보류
+						if(CUnitMgr::GetInstance()->Input_cmd(b , a))
+						{
+							CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(b, a);
+							m_cmdlist->PushCommand(pcommand);
+						}
 						m_clickwating[a] = false;
 						m_clickwating[b] = false;
 						escape = true;
 
-/*
-						CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(b, a);
-						m_cmdlist->PushCommand(pcommand);*/
 						break;
 					}
 				}
@@ -163,16 +194,25 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 				{
 					if('A' == a) //야매...
 					{
-						m_clickwating[a] = true;						
+						m_clickwating[a] = true;
+						CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
 					}
 					else if(true == CUnitMgr::GetInstance()->Unit_Unification())
 					{
-						CUnitMgr::GetInstance()->Input_cmd(a , m_clickwating);
-
-						if(false == m_clickwating[a])
+						if(CUnitMgr::GetInstance()->Input_cmd(a , m_clickwating))
 						{
-							CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(a);
-							m_cmdlist->PushCommand(pcommand);
+							if(false == m_clickwating[a])
+							{
+								CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(a);
+								m_cmdlist->PushCommand(pcommand);
+							}
+						}
+						else
+						{
+							if(true == m_clickwating[a])
+							{
+								CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
+							}
 						}
 					}
 					break;

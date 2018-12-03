@@ -93,12 +93,8 @@ void CObjMgr::Destroy_Update(void)
 		iter = m_ObjList[i].begin();
 		iter_end = m_ObjList[i].end();
 
-
-
 		for( ; iter != iter_end; )
 		{
-			if(OBJ_FRAGMENT == i)
-				int a = 9;
 			if(true == (*iter)->GetDestroy() )
 			{
 				obj_leave( (*iter)->GetObjNumber() );
@@ -115,14 +111,17 @@ void CObjMgr::Destroy_Update(void)
 				{ 
 					if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight((*iter)->Getcuridx(32), eteam))
 					{
-						if(SORT_AIR == sortid)
-							m_air_rendersort.push_back( (*iter) );
-						else if(SORT_AIR_EFF == sortid)
-							m_aireff_renderlist.push_back( (*iter) );
-						else if(SORT_GROUND_EFF == sortid)
-							m_groundeff_renderlist.push_back( (*iter) );
-						else
-							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+						if( (*iter)->GetUnitinfo().detect[eteam] > 0)
+						{
+							if(SORT_AIR == sortid)
+								m_air_rendersort.push_back( (*iter) );
+							else if(SORT_AIR_EFF == sortid)
+								m_aireff_renderlist.push_back( (*iter) );
+							else if(SORT_GROUND_EFF == sortid)
+								m_groundeff_renderlist.push_back( (*iter) );
+							else
+								m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+						}
 					}
 					else
 					{

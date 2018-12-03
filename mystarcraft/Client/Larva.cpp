@@ -202,11 +202,67 @@ void CLarva::Inputkey_reaction(const int& nkey)
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);	
 	}
 
+	if('H' == nkey)
+	{
+		SetDestroy(true);
+
+		pobj = new CLarva_egg(1.f , OBJ_HYDRA , m_hatch_num , 10 , L"HYDRA_BIRTH");
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+	}
+
 	if('Z' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_ZERGLING , m_hatch_num , 2 , L"ZERGLING_BIRTH");
+		pobj = new CLarva_egg(1.f , OBJ_ZERGLING , m_hatch_num , 10 , L"ZERGLING_BIRTH");
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+	}
+
+	if('U' == nkey)
+	{
+		SetDestroy(true);
+
+		pobj = new CLarva_egg(1.f , OBJ_ULTRA , m_hatch_num , 1 , L"ULTRA_BIRTH");
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+	}
+
+	if('O' == nkey)
+	{
+		SetDestroy(true);
+
+		pobj = new CLarva_egg(1.f , OBJ_OVERLOAD , m_hatch_num , 1 , L"OVER_BIRTH");
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+	}
+
+	if('M' == nkey)
+	{
+		SetDestroy(true);
+
+		pobj = new CLarva_egg(1.f , OBJ_MUTAL , m_hatch_num , 1 , L"MUTAL_BIRTH");
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+	}
+
+	if('S' == nkey)
+	{
+		SetDestroy(true);
+
+		pobj = new CLarva_egg(1.f , OBJ_SCOURGE , m_hatch_num , 2 , L"SCOURGE_BIRTH");
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+	}
+
+	if('Q' == nkey)
+	{
+		SetDestroy(true);
+
+		pobj = new CLarva_egg(1.f , OBJ_QUEEN , m_hatch_num , 1 , L"QUEEN_BIRTH");
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+	}
+
+	if('F' == nkey)
+	{
+		SetDestroy(true);
+
+		pobj = new CLarva_egg(1.f , OBJ_DEFILER , m_hatch_num , 1 , L"DEFILER_BIRTH");
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 	}
 
@@ -220,17 +276,46 @@ void CLarva::Inputkey_reaction(const int& nkey)
 
 void CLarva::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
-
 }
 
-void CLarva::Input_cmd(const int& nkey , bool* waitkey)
+bool CLarva::Input_cmd(const int& nkey , bool* waitkey)
 {
+	if('D' == nkey)
+		return true;
 
+	else if('H' == nkey)
+		return true;
+
+	else if('Z' == nkey)
+		return true;
+
+	else if('U' == nkey)
+		return true;
+
+	else if('O' == nkey)
+		return true;
+
+	else if('M' == nkey)
+		return true;
+
+	else if('S' == nkey)
+		return true;
+
+	else if('Q' == nkey)
+		return true;
+
+	else if('B' == nkey)
+		return true;
+
+	else if('F' == nkey)
+		return true;
+
+	return false;
 }
 
-void CLarva::Input_cmd(const int& firstkey , const int& secondkey)
+bool CLarva::Input_cmd(const int& firstkey , const int& secondkey)
 {
-
+	return false;
 }
 
 void CLarva::Update_Cmdbtn(void)
@@ -238,9 +323,17 @@ void CLarva::Update_Cmdbtn(void)
 
 }
 
-void CLarva::Dead(void)
+void CLarva::Update_Wireframe(void)
 {
 
+}
+
+void CLarva::Dead(void)
+{
+	CObj* pobj = new CCorpse(L"LARVA_DEAD" , L"LARVA_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
 }
 
 void CLarva::Release(void)

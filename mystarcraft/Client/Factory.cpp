@@ -265,38 +265,6 @@ void CFactory::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CFactory::Release(void)
-{
-	CTerran_building::area_release();
-
-	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
-	Safe_Delete(m_com_pathfind);
-	if(iter != m_componentlist.end())
-	{
-		m_componentlist.erase(iter);
-	}
-}
-
-void CFactory::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-	if(NULL != m_partbuilding)
-	{
-		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
-		m_partbuilding = NULL;
-	}
-}
-
 void CFactory::Inputkey_reaction(const int& nkey)
 {
 	if(TAKE_OFF == m_unitinfo.state ||
@@ -414,11 +382,11 @@ void CFactory::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
-void CFactory::Input_cmd(const int& nkey, bool* waitkey)
+bool CFactory::Input_cmd(const int& nkey, bool* waitkey)
 {
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state)
-		return;
+		return false;
 
 	MYRECT<float> tempvtx;
 	if('C' == nkey)
@@ -437,6 +405,18 @@ void CFactory::Input_cmd(const int& nkey, bool* waitkey)
 			m_is_preview = true;
 			(m_main_preview)->SetPreviewInfo(L"T_FACTORY", T_FACTORY , 3 , 4 ,  m_vertex);			
 		}
+		else
+			return true;
+	}
+
+	if(false == m_is_take_off)
+	{
+		if('T' == nkey)
+			return true;
+		if('V' == nkey)
+			return true;
+		if('G' == nkey)
+			return true;
 	}
 
 	if(VK_LBUTTON == nkey)
@@ -447,12 +427,12 @@ void CFactory::Input_cmd(const int& nkey, bool* waitkey)
 		if(BTN_TAKE_OFF == eclicked_btn)
 		{
 			Inputkey_reaction('L');
-			return;
+			return false;
 		}
 		if(BTN_LANDING == eclicked_btn)
 		{
 			Inputkey_reaction('L');
-			return;
+			return false;
 		}
 
 		if(true == (m_main_preview)->GetActive() &&
@@ -495,10 +475,12 @@ void CFactory::Input_cmd(const int& nkey, bool* waitkey)
 			}
 		}
 	}
-}
-void CFactory::Input_cmd(const int& firstkey , const int& secondkey)
-{
 
+	return false;
+}
+bool CFactory::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
 }
 
 void CFactory::Update_Cmdbtn(void)
@@ -606,3 +588,36 @@ void CFactory::Update_Wireframe(void)
 		}
 	}
 }
+void CFactory::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+	if(NULL != m_partbuilding)
+	{
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
+		m_partbuilding = NULL;
+	}
+}
+void CFactory::Release(void)
+{
+	CTerran_building::area_release();
+
+	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
+	Safe_Delete(m_com_pathfind);
+	if(iter != m_componentlist.end())
+	{
+		m_componentlist.erase(iter);
+	}
+}
+
+
+

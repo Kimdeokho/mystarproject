@@ -258,6 +258,8 @@ typedef struct tagunitinfo
 	int					fog_range;
 
 	bool				is_active;
+	bool				is_hide;
+	int					detect[TEAM_END];
 	tagunitinfo()
 	{
 		esize = SIZE_NONE;
@@ -278,7 +280,11 @@ typedef struct tagunitinfo
 		attack_range = 0;
 		air_attack_range = 0;
 		fog_range = 64;
-		is_active = true;
+		is_active = true;		
+		is_hide = false;
+		
+		for(int i = 0; i < TEAM_END; ++i)
+			detect[i] = 1;
 	}
 }UNITINFO;
 

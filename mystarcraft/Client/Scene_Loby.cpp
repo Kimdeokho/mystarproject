@@ -11,6 +11,7 @@
 #include "Loby_UIMgr.h"
 #include "Session_Mgr.h"
 #include "RoomSession_Mgr.h"
+#include "MouseMgr.h"
 
 CScene_Loby::CScene_Loby(void)
 {
@@ -48,6 +49,8 @@ void CScene_Loby::Update(void)
 
 	CKeyMgr::GetInstance()->Update();
 	CLoby_UIMgr::GetInstance()->Update();
+
+	CMouseMgr::GetInstance()->Lobby_Update();
 }
 
 void CScene_Loby::Render(void)
@@ -60,6 +63,7 @@ void CScene_Loby::Render(void)
 	CLoby_UIMgr::GetInstance()->Render();
 	CFontMgr::GetInstance()->FontRender();
 
+	CMouseMgr::GetInstance()->Render();
 	CTimeMgr::GetInstance()->FPS_fix();
 }
 

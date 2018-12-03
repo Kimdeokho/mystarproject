@@ -5,7 +5,6 @@ class CCom_BulletAnim :
 	public CCom_Animation
 {
 private:
-	D3DXVECTOR3 m_vcenter;
 public:
 	virtual void Initialize(CObj* pobj);
 	virtual void Update(void);

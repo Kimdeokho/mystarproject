@@ -34,9 +34,10 @@ private:
 private:
 	UNITINFO	m_target_unitinfo;
 public:
+	list<CObj*>*	GetArea64(void);
 public:
 	void setobstacle(CObj* pobj);
-	bool OBB_Collision( CObj* pself ,const CObj* ptarget);
+	bool OBB_Collision( CObj* pself ,const CObj* ptarget ,const MYRECT<float>& rc);
 	bool OBB_Collision(CObj* ptarget);
 	void SetObj_Area64(const int& curidx , const int& oldidx , CObj* pobj );
 	bool Check_Area(const MYRECT<float>& prerc , D3DXVECTOR2& vprepos ,const MYRECT<float>& center_rc, const D3DXVECTOR2& vcenterpos, CObj* pself , CObj* ptarget , const int& stepsize);
@@ -44,8 +45,8 @@ public:
 	bool PathFind_Area(D3DXVECTOR2& vpos , CObj* pself , CObj* ptarget);
 	bool CollisionCheck_Area( const int& idx , CObj* pself , const CObj* ptarget);
 	
-	void Calculator_eightidx(const int& idx , const int& tilecnt);
-	void SelectCheck(const int& idx , const D3DXVECTOR2& vpos);
+	//void Calculator_eightidx(const int& idx , const int& tilecnt);
+	void SelectCheck( const D3DXVECTOR2& vpos);
 	void DragCheck( const MYRECT<float>& rc);
 	bool Choice_unit(const int& idx , const D3DXVECTOR2& vpos);
 	bool Choice_unit(const int& idx, const MYRECT<float>& rc);
@@ -56,11 +57,10 @@ public:
 
 	bool MeleeAttack_Search( CObj* pself , CObj*& ptarget, const MYRECT<float>& myrc ,TARGET_SEARCH_TYPE esearchtype);
 
-	//bool empty_area64(void);
 	void Make_rectline(const D3DXVECTOR2& oripos , const D3DXVECTOR2& vpos , const MYRECT<float>& orirect , const MYRECT<float>& prerc);
-	bool LineCross(const int& idx , const int& lineidx , CObj* pself ,const CObj* ptarget);
-	bool LineCross(CObj* ptarget);
-	bool diamond_check( const int& idx , CObj* pself ,const CObj* ptarget);
+	//bool LineCross(const int& idx , const int& lineidx , CObj* pself ,const CObj* ptarget);
+	//bool LineCross(CObj* ptarget);
+	//bool diamond_check( const int& idx , CObj* pself ,const CObj* ptarget);
 
 	int overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself , CObj* ptarget);
 	bool Search_Mineral( const int& idx , const int& isearch_range ,CObj* pself , CObj*& pmineral);
@@ -77,9 +77,9 @@ public:
 	void  Setirradi_damage(CObj* pmyobj ,const int& damage , DAMAGE_TYPE edamagetype, const D3DXVECTOR2& vsplash_pos, const float* splash_range  , bool random_splash , list<CObj*>& injurelist);
 	void  Setsplash_damage(CObj* pmyobj ,const int& damage , DAMAGE_TYPE edamagetype, const D3DXVECTOR2& vsplash_pos, const float* splash_range  , bool random_splash , list<CObj*>& injurelist);
 public:
-	CObj* Collision_check(CObj* pself , const int& idx);
-	bool Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );
-	bool Building_Collocate_check(CObj* pself , const int& idx ,MYRECT<float>& myrc );
+	CObj* Collision_check(CObj* pself);
+	bool Collocate_check(CObj* pself  ,const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
+	bool Building_Collocate_check(CObj* pself , const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
 public:
 	CObj*	Auto_explore_target(CObj* pobj , const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
 	CObj*	Explore_medic_target(CObj* pobj , const int& isearch_range );

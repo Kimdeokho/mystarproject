@@ -53,6 +53,7 @@ void CFactory_addon::Initialize(void)
 	m_sortID = SORT_GROUND;	
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_FAC_ADDON;
+	m_eteamnumber = m_mainbuilding->GetTeamNumber();
 
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;

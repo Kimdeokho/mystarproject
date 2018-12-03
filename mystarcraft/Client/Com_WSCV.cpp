@@ -48,7 +48,7 @@ void CCom_WSCV::Update(void)
 		}
 	}
 }
-void CCom_WSCV::fire(CObj*& ptarget)
+void CCom_WSCV::fire(CObj* ptarget)
 {
 	if( OBJ_MINERAL == ptarget->GetOBJNAME() )
 	{

@@ -31,7 +31,6 @@ void CCom_ZerglingAnim::Update(void)
 {
 	CCom_Animation::DirIdxCalculation();
 
-
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 	if(m_frame.fcurframe >= m_frame.umax)
 	{
@@ -102,7 +101,7 @@ void CCom_ZerglingAnim::SetAnimation(const TCHAR* statekey)
 			m_frame.fframespeed = (float)m_frame.umax;
 
 			if(L"ATTACK" == m_statkey)
-				m_frame.fframespeed = (float)m_frame.umax*3.f;
+				m_frame.fframespeed = (float)m_frame.umax*3.5f;
 			else if(L"MOVE" == m_statkey)
 				m_frame.fframespeed = (float)m_frame.umax*3.5f;
 

@@ -276,9 +276,9 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 	
 
 	if( NULL != m_ptarget)
-		m_maxnodecnt = 50;
+		m_maxnodecnt = 75;
 	else
-		m_maxnodecnt += 50;
+		m_maxnodecnt = MAXPATH_IDX;
 
 	if(m_maxnodecnt > MAXPATH_IDX)
 		m_maxnodecnt = MAXPATH_IDX;
@@ -286,8 +286,8 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 	m_is_escape = false;
 
 
-	m_unit_stepsize = 32;
-	//m_unit_stepsize = stepsize;
+	//m_unit_stepsize = 16;
+	m_unit_stepsize = stepsize;
 	m_tilecnt = int(SQ_TILECNTX*(float)SQ_TILESIZEX/(float)m_unit_stepsize);
 
 	//if(8 == m_unit_stepsize)
@@ -336,7 +336,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 	int accrue= 0; 
 	D3DXVECTOR2 tempv_center;
 	MYRECT<float> temprc_center;
-	while(accrue <= 10) //보류 조건
+	while(accrue <= 5) //보류 조건
 	{
 		++accrue;
 
@@ -354,8 +354,6 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if(NULL == pnode)
 		{
-			m_maxnodecnt = 0;
-
 			while(NULL != m_dummynodeH)
 			{
 				vecpath.push_back(m_dummynodeH->vPos);
@@ -410,7 +408,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			}
 			else
 			{
-				m_maxnodecnt = 0;
+				//m_maxnodecnt = 100;
 				PATH_NODE* tempnode = NULL;
 				if(NULL == m_ptarget)
 					tempnode = m_dummynodeH;
@@ -459,11 +457,11 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 				}
 				else
 				{
-					//if( CMyMath::Pos_to_index( m_eight_vpos[i] , m_unit_stepsize) == m_goalidx)
-					//{
-					//	m_is_escape = true;
-					//	break;
-					//}
+					if( CMyMath::Pos_to_index( m_eight_vpos[i] , m_unit_stepsize) == m_goalidx)
+					{
+						m_is_escape = true;
+						break;
+					}
 				} 
 			}
 		}

@@ -3,16 +3,26 @@
 #include "Com_CC.h"
 
 #include "ObjMgr.h"
+#include "TimeMgr.h"
+
+#include "Com_AirPathfind.h"
+#include "Com_Pathfind.h"
+
 #include "MyMath.h"
 #include "Spidermine.h"
 #include "BattleCruiser.h"
-#include "Com_AirPathfind.h"
-
 #include "Nuclear_aim.h"
 #include "Skill_irradi.h"
 #include "Skill_Defensive.h"
+#include "Skill_DarkSwarm.h"
 #include "Yamaeff.h"
-#include "TimeMgr.h"
+
+#include "Brood_Bullet.h"
+#include "Parasite_Bullet.h"
+#include "Ensnare_Bullet.h"
+#include "Plague_Bullet.h"
+
+
 CCom_UsingSkill::CCom_UsingSkill(void)
 {
 }
@@ -89,6 +99,118 @@ void CCom_UsingSkill::Update(void)
 				}
 				m_skill_order = SO_NONE;
 			}
+		}
+	}
+	else if( SO_BROODLING == m_skill_order) 
+	{
+		if(NULL != m_ptarget)
+		{
+			if(CMyMath::pos_distance( m_using_pos, (*m_objpos)) <= 320*320)
+			{
+				D3DXVECTOR2 vdir = m_using_pos - (*m_objpos);
+				D3DXVec2Normalize(&vdir , &vdir);
+				m_pobj->Setdir(vdir);
+
+				CObj*	pobj = new CBrood_Bullet(m_pobj->GetTeamNumber(), m_ptarget->GetObjNumber() , m_using_pos);			
+				CObjMgr::GetInstance()->AddObject(pobj , OBJ_ETC);
+				pobj->SetPos((*m_objpos));
+				pobj->Initialize();
+								
+
+				m_pobj->SetOrder(ORDER_NONE);
+
+				CComponent* pcom = m_pobj->GetComponent(COM_AIR_PATHFIND);
+				if(NULL != pcom)
+				{
+					((CCom_AirPathfind*)pcom)->SetAir_moveupdate(false);
+					((CCom_AirPathfind*)pcom)->SetTargetObjID(0);
+				}
+				m_skill_order = SO_NONE;
+			}
+		}
+	}
+	else if( SO_ENSNARE == m_skill_order) 
+	{
+		if(CMyMath::pos_distance(m_using_pos , (*m_objpos)) <= 288*288)
+		{
+			D3DXVECTOR2 vdir = m_using_pos - (*m_objpos);
+			D3DXVec2Normalize(&vdir , &vdir);
+			m_pobj->Setdir(vdir);
+
+			CObj*	pobj = new CEnsnare_Bullet(m_using_pos);			
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_ETC);
+			pobj->SetPos((*m_objpos));
+			pobj->Initialize();
+				
+
+			CComponent*	pcom = m_pobj->GetComponent(COM_AIR_PATHFIND);
+			if(NULL != pcom)
+			{
+				((CCom_AirPathfind*)pcom)->SetAir_moveupdate(false);
+				((CCom_AirPathfind*)pcom)->SetTargetObjID(0);
+			}
+
+			m_pobj->SetOrder(ORDER_NONE);
+			m_pobj->SetState(IDLE);
+
+			m_skill_order = SO_NONE;
+		}
+	}
+	else if( SO_PLAGUE == m_skill_order) 
+	{
+		if(CMyMath::pos_distance(m_using_pos , (*m_objpos)) <= 288*288)
+		{
+			D3DXVECTOR2 vdir = m_using_pos - (*m_objpos);
+			D3DXVec2Normalize(&vdir , &vdir);
+			m_pobj->Setdir(vdir);
+
+			CObj*	pobj = new CPlague_Bullet(m_using_pos);			
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_ETC);
+			pobj->SetPos((*m_objpos));
+			pobj->Initialize();
+
+			CComponent*	pcom = m_pobj->GetComponent(COM_PATHFINDE);
+			if(NULL != pcom)
+			{
+				m_ptarget = NULL;
+				((CCom_Pathfind*)pcom)->SetTargetObjID(0);
+				((CCom_Pathfind*)pcom)->ClearPath();
+				((CCom_Pathfind*)pcom)->SetPathfindPause(true);				
+			}
+
+
+			m_pobj->SetOrder(ORDER_NONE);
+			m_pobj->SetState(IDLE);
+
+			m_skill_order = SO_NONE;
+		}
+	}
+	else if( SO_DRAKSWARM == m_skill_order) 
+	{
+		if(CMyMath::pos_distance(m_using_pos , (*m_objpos)) <= 288*288)
+		{
+			D3DXVECTOR2 vdir = m_using_pos - (*m_objpos);
+			D3DXVec2Normalize(&vdir , &vdir);
+			m_pobj->Setdir(vdir);
+
+			CObj*	pobj = new CSkill_DarkSwarm(m_using_pos);			
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_ETC);
+			pobj->Initialize();
+
+			CComponent*	pcom = m_pobj->GetComponent(COM_PATHFINDE);
+			if(NULL != pcom)
+			{
+				m_ptarget = NULL;
+				((CCom_Pathfind*)pcom)->SetTargetObjID(0);
+				((CCom_Pathfind*)pcom)->ClearPath();
+				((CCom_Pathfind*)pcom)->SetPathfindPause(true);				
+			}
+
+
+			m_pobj->SetOrder(ORDER_NONE);
+			m_pobj->SetState(IDLE);
+
+			m_skill_order = SO_NONE;
 		}
 	}
 	else if( SO_NUCLEAR == m_skill_order)

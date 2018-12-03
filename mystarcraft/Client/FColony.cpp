@@ -10,6 +10,7 @@
 #include "Ingame_UIMgr.h"
 #include "FontMgr.h"
 #include "ObjMgr.h"
+#include "UnitMgr.h"
 
 #include "Com_fog.h"
 #include "Com_Creep.h"
@@ -24,6 +25,9 @@
 
 #include "Sunken.h"
 #include "Spore.h"
+
+#include "Corpse.h"
+#include "GeneraEff.h"
 
 CFColony::CFColony(void)
 {
@@ -58,17 +62,17 @@ void CFColony::Initialize(void)
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 32*10*2;
-	m_unitinfo.fbuildtime = 10.f;
+	m_unitinfo.fbuildtime = 1.f;
 
 	m_com_anim = new CCom_ZBuildingAnim(L"Z_FCOLONY" , m_matWorld);
-
+		
 	m_com_anim->SetTextureName(L"Z_COCOON");
 	m_com_anim->SetAnimation(L"BUILD_S");
 
 	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex , false) ) );	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex , false) ) );		
 	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -119,7 +123,6 @@ void CFColony::Update(void)
 			m_com_anim->SetAnimation(L"BIRTH_S");
 
 			m_unitinfo.hp = m_unitinfo.maxhp;
-			m_unitinfo.maxhp = m_unitinfo.maxhp;
 			m_unitinfo.state = STATE_NONE;
 
 			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_FCOLONY , 1);
@@ -153,7 +156,7 @@ void CFColony::Inputkey_reaction(const int& nkey)
 		pobj->Initialize();
 
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SUNKEN);
-		SetDestroy();
+		SetDestroy(true);
 
 	}
 
@@ -165,16 +168,29 @@ void CFColony::Inputkey_reaction(const int& nkey)
 		pobj->Initialize();
 
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SUNKEN);
-		SetDestroy();
+		SetDestroy(true);
 
 	}
 }
-
 void CFColony::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
 
+bool CFColony::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('U' == nkey)
+		return true;
+	else if('S' == nkey)
+		return true;
+
+	return false;
+}
+
+bool CFColony::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
+}
 void CFColony::Update_Cmdbtn(void)
 {
 
@@ -187,10 +203,21 @@ void CFColony::Update_Wireframe(void)
 
 void CFColony::Dead(void)
 {
+	CObj* pobj = new CGeneraEff(L"BLOOD_BOOM" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
 
+	pobj = new CCorpse(L"" , L"ZBD_S_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 
 void CFColony::Release(void)
 {
 	CZerg_building::area_release();
 }
+
+

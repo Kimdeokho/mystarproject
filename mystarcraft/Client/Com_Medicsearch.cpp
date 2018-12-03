@@ -8,6 +8,7 @@
 
 #include "Com_Weapon.h"
 #include "Com_Pathfind.h"
+#include "Com_Transport.h"
 #include "Bunker.h"
 
 #include "TimeMgr.h"
@@ -121,18 +122,19 @@ void CCom_Medicsearch::Update(void)
 							((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 					}
 				}
-				else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
+				else if(NULL != m_com_transport)
 				{
 					if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 32*32)
 					{			
 						//범위에 들어오면
 						m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
 
-						if(true == ((CDropship*)m_ptarget)->setunit(m_pobj))
+						if(true == m_com_transport->setunit(m_pobj))
 						{
 							m_pobj->SetSelect(NONE_SELECT);
 							m_pobj->area_release();
 							m_pobj->SetActive(false); 
+							m_com_transport = NULL;
 						}
 						else
 						{

@@ -11,6 +11,8 @@
 #include "Tankbarrel.h"
 #include "Area_Mgr.h"
 
+#include "Skill_DarkSwarm.h"
+
 CCom_WSiege::CCom_WSiege()
 {
 }
@@ -36,7 +38,7 @@ void CCom_WSiege::Initialize(CObj* pobj /*= NULL*/)
 	m_splash_range[2] = 40;
 }
 
-void CCom_WSiege::fire(CObj*& ptarget)
+void CCom_WSiege::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
@@ -66,9 +68,19 @@ void CCom_WSiege::fire(CObj*& ptarget)
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
+			int idx = ptarget->Getcuridx(32);
+			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
+				CSkill_DarkSwarm::m_darkswarm_cnt[idx] > 0)
+			{
+				D3DXVECTOR2 vdir;
+				vdir = ptarget->GetPos() - m_pobj->GetPos();
+				D3DXVec2Normalize(&vdir , &vdir);
+				m_targetpos -= vdir*20;
+			}
+
 			CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, 
 				m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*5,
-				m_weapon_info.eDamageType, ptarget->GetPos(),  
+				m_weapon_info.eDamageType, m_targetpos,  
 				m_splash_range , true , m_injure_list);
 
 			m_injure_list.clear();

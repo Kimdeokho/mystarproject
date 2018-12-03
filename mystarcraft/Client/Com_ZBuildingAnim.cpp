@@ -9,6 +9,9 @@
 
 #include "TileManager.h"
 #include "Session_Mgr.h"
+
+#include "Zerg_building.h"
+
 CCom_ZBuildingAnim::CCom_ZBuildingAnim(const TCHAR* objname , D3DXMATRIX& objmat)
 :CCom_Animation(objmat)
 {
@@ -62,6 +65,7 @@ void CCom_ZBuildingAnim::Update(void)
 			SetTextureName(m_origin_name);
 			SetAnimation(L"IDLE");
 			m_pobj->SetState(IDLE);
+			((CZerg_building*)m_pobj)->Build_Complete();
 		}
 	}
 
@@ -101,12 +105,13 @@ void CCom_ZBuildingAnim::SetAnimation(const TCHAR* statekey)
 		}
 	}
 }
-void CCom_ZBuildingAnim::Release(void)
-{
 
-}
 
 void CCom_ZBuildingAnim::SetOriginal_texname(const TCHAR* statekey)
 {
 	m_origin_name = statekey;
+}
+void CCom_ZBuildingAnim::Release(void)
+{
+
 }

@@ -11,7 +11,7 @@ protected:
 	CObj*			m_pworkman;
 	CObj*			m_pgas_resource;
 protected:
-	bool			m_bcome;
+	bool			m_come;
 protected:
 	CCom_Animation*		m_com_anim;
 	CComponent*			m_com_targetsearch;

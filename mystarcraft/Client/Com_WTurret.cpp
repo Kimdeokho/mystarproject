@@ -45,7 +45,7 @@ void CCom_WTurret::Update(void)
 		}
 	}
 }
-void CCom_WTurret::fire(CObj*& ptarget)
+void CCom_WTurret::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{

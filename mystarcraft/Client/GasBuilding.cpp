@@ -101,7 +101,7 @@ void CGasBuilding::building_area_Initialize(const int& col , const int& row)
 void CGasBuilding::Update(void)
 {
 
-	if(m_bcome)
+	if(m_come)
 	{
 		m_fgather_time += GETTIME;
 
@@ -118,7 +118,7 @@ void CGasBuilding::Update(void)
 				int loopcnt = 0;
 				int widthcnt = (32/stepsize)*m_irow + 1;
 				int heightcnt = (32/stepsize)*m_icol + 2;
-				int idx64;
+				//int idx64;
 
 				D3DXVECTOR2 collocate_pos[4];
 				D3DXVECTOR2	temp_pos[4];
@@ -152,9 +152,8 @@ void CGasBuilding::Update(void)
 						collocate_rc.right = temp_pos[0].x + workman_vtx.right;
 						collocate_rc.top = temp_pos[0].y - workman_vtx.top;
 						collocate_rc.bottom = temp_pos[0].y + workman_vtx.bottom;
-						idx64 = CMyMath::Pos_to_index(temp_pos[0] , 64);
-
-						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+						
+						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , temp_pos[0] , collocate_rc ))
 						{				
 							idx32 = CMyMath::Pos_to_index(temp_pos[0] , 32);
 							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -176,9 +175,8 @@ void CGasBuilding::Update(void)
 						collocate_rc.right = temp_pos[1].x + workman_vtx.right;
 						collocate_rc.top = temp_pos[1].y - workman_vtx.top;
 						collocate_rc.bottom = temp_pos[1].y + workman_vtx.bottom;
-						idx64 = CMyMath::Pos_to_index(temp_pos[1] , 64);
 
-						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , temp_pos[1] , collocate_rc ))
 						{
 							idx32 = CMyMath::Pos_to_index(temp_pos[1] , 32);
 							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -200,9 +198,8 @@ void CGasBuilding::Update(void)
 						collocate_rc.right = temp_pos[2].x + workman_vtx.right;
 						collocate_rc.top = temp_pos[2].y - workman_vtx.top;
 						collocate_rc.bottom = temp_pos[2].y + workman_vtx.bottom;
-						idx64 = CMyMath::Pos_to_index(temp_pos[2] , 64);
 
-						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , temp_pos[2] , collocate_rc ))
 						{
 							idx32 = CMyMath::Pos_to_index(temp_pos[2] , 32);
 							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -225,9 +222,8 @@ void CGasBuilding::Update(void)
 						collocate_rc.right = temp_pos[3].x + workman_vtx.right;
 						collocate_rc.top = temp_pos[3].y - workman_vtx.top;
 						collocate_rc.bottom = temp_pos[3].y + workman_vtx.bottom;
-						idx64 = CMyMath::Pos_to_index(temp_pos[3] , 64);
 
-						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , idx64 , collocate_rc ))
+						if(true == CArea_Mgr::GetInstance()->Collocate_check(m_pworkman , temp_pos[3] , collocate_rc ))
 						{
 							idx32 = CMyMath::Pos_to_index(temp_pos[3] , 32);
 							if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -265,7 +261,7 @@ void CGasBuilding::Update(void)
 				m_pworkman->SetOrder(ORDER_RETURN_CARGO);
 				m_pworkman->unit_area_Initialize();
 				m_pworkman = NULL;
-				m_bcome = false;
+				m_come = false;
 			}
 		}
 	}
@@ -299,7 +295,7 @@ CObj* CGasBuilding::Getworkman(void)
 }
 void CGasBuilding::Setworkman(CObj* pobj)
 {
-	m_bcome = true;
+	m_come = true;
 	m_fgather_time = 0.f;
 	m_pworkman = pobj;
 }

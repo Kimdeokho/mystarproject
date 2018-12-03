@@ -10,6 +10,7 @@ CBullet::CBullet(void)
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 
 	m_ftick_distance = 0.f;
+	m_objcnt_num = 0;
 }
 
 CBullet::~CBullet(void)

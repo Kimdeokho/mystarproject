@@ -7,6 +7,9 @@
 #include "ObjMgr.h"
 #include "GeneraEff.h"
 #include "MultiEff.h"
+
+#include "Skill_DarkSwarm.h"
+
 CCom_WGhost::CCom_WGhost(void)
 {
 }
@@ -29,7 +32,7 @@ void CCom_WGhost::Initialize(CObj* pobj /*= NULL*/)
 
 	m_bfire = false;
 }
-void CCom_WGhost::fire(CObj*& ptarget)
+void CCom_WGhost::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
@@ -63,7 +66,10 @@ void CCom_WGhost::fire(CObj*& ptarget)
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
-			(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_BIO_WEAPON].upg_cnt , m_weapon_info.eDamageType);
+			int idx = ptarget->Getcuridx(32);
+			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
+				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_BIO_WEAPON].upg_cnt , m_weapon_info.eDamageType);
 		}
 	}
 	else

@@ -13,7 +13,7 @@
 CCom_Transport::CCom_Transport(const int& icapacity , const float& timeoffset)
 {
 	m_curcapacity = icapacity;
-	m_timeoffset = timeoffset;
+	m_timeoffset = timeoffset; //내리는 간격
 }
 
 CCom_Transport::~CCom_Transport(void)
@@ -150,7 +150,6 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 	int loopcnt = 0;
 	int widthcnt = 1;
 	int heightcnt = 1;
-	int idx64;
 
 	D3DXVECTOR2 vdrop_pos;
 	vdrop_pos = m_pobj->GetPos();
@@ -186,9 +185,8 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 			collocate_rc.right = temp_pos[0].x + vtx.right;
 			collocate_rc.top = temp_pos[0].y - vtx.top;
 			collocate_rc.bottom = temp_pos[0].y + vtx.bottom;
-			idx64 = CMyMath::Pos_to_index(temp_pos[0] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[0] , collocate_rc ))
 			{				
 				idx32 = CMyMath::Pos_to_index(temp_pos[0] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -210,9 +208,8 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 			collocate_rc.right = temp_pos[1].x + vtx.right;
 			collocate_rc.top = temp_pos[1].y - vtx.top;
 			collocate_rc.bottom = temp_pos[1].y + vtx.bottom;
-			idx64 = CMyMath::Pos_to_index(temp_pos[1] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[1] , collocate_rc ))
 			{
 				idx32 = CMyMath::Pos_to_index(temp_pos[1] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -234,9 +231,8 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 			collocate_rc.right = temp_pos[2].x + vtx.right;
 			collocate_rc.top = temp_pos[2].y - vtx.top;
 			collocate_rc.bottom = temp_pos[2].y + vtx.bottom;
-			idx64 = CMyMath::Pos_to_index(temp_pos[2] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[2] , collocate_rc ))
 			{
 				idx32 = CMyMath::Pos_to_index(temp_pos[2] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))
@@ -259,9 +255,8 @@ void CCom_Transport::collocate_unit(CObj* pobj)
 			collocate_rc.right = temp_pos[3].x + vtx.right;
 			collocate_rc.top = temp_pos[3].y - vtx.top;
 			collocate_rc.bottom = temp_pos[3].y + vtx.bottom;
-			idx64 = CMyMath::Pos_to_index(temp_pos[3] , 64);
 
-			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , idx64 , collocate_rc ))
+			if(true == CArea_Mgr::GetInstance()->Collocate_check(pobj , temp_pos[3] , collocate_rc ))
 			{
 				idx32 = CMyMath::Pos_to_index(temp_pos[3] , 32);
 				if(MOVE_OK == CTileManager::GetInstance()->GetTileOption(idx32))

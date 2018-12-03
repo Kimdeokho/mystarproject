@@ -35,6 +35,14 @@
 #include "Zerg_building.h"
 #include "Drone.h"
 #include "Zergling.h"
+#include "Hydra.h"
+#include "Ultra.h"
+#include "Overload.h"
+#include "Mutal.h"
+#include "Scourge.h"
+#include "Queen.h"
+#include "Brude.h"
+#include "Defiler.h"
 
 CLarva_egg::CLarva_egg(const float maxtime ,const OBJID id, const int hatch_num, const int createcnt , const TCHAR* birthkey)
 {
@@ -57,7 +65,7 @@ void CLarva_egg::Initialize(void)
 {
 	CObj::unit_area_Initialize();
 
-	m_eOBJ_NAME = OBJ_LARVA;
+	m_eOBJ_NAME = OBJ_LARVA_EGG;
 	m_sortID = SORT_GROUND;
 	m_ecategory = CATEGORY_UNIT;
 
@@ -90,8 +98,6 @@ void CLarva_egg::Initialize(void)
 	m_rect.bottom = m_vPos.y + m_vertex.bottom;
 
 
-	//m_panimation = new CCom_DroneAnim(m_matWorld , m_curtex);
-
 	m_com_anim = new CCom_LarvaEggAnim(m_matWorld , m_birthkey);
 	m_com_cc = new CCom_CC();
 
@@ -99,8 +105,6 @@ void CLarva_egg::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim));	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_Collision(m_vPos , m_rect , m_vertex, false)) ) ;	
-
-	//m_fspeed = float(rand()%170 + 30);
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
@@ -177,17 +181,22 @@ void CLarva_egg::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 }
 
-void CLarva_egg::Input_cmd(const int& nkey , bool* waitkey)
+bool CLarva_egg::Input_cmd(const int& nkey , bool* waitkey)
 {
-
+	return false;
 }
 
-void CLarva_egg::Input_cmd(const int& firstkey , const int& secondkey)
+bool CLarva_egg::Input_cmd(const int& firstkey , const int& secondkey)
 {
-
+	return false;
 }
 
 void CLarva_egg::Update_Cmdbtn(void)
+{
+
+}
+
+void CLarva_egg::Update_Wireframe(void)
 {
 
 }
@@ -209,32 +218,60 @@ void CLarva_egg::Release(void)
 			pobj = new CZergling;
 		else if(OBJ_DRONE == m_production_info.eid)
 			pobj = new CDrone;
+		else if(OBJ_HYDRA == m_production_info.eid)
+			pobj = new CHydra;
+		else if(OBJ_ULTRA == m_production_info.eid)
+			pobj = new CUltra;
+		else if(OBJ_OVERLOAD == m_production_info.eid)
+			pobj = new COverload;
+		else if(OBJ_MUTAL == m_production_info.eid)
+			pobj = new CMutal;
+		else if(OBJ_SCOURGE == m_production_info.eid)
+			pobj = new CScourge;
+		else if(OBJ_QUEEN == m_production_info.eid)
+			pobj = new CQueen;
+		else if(OBJ_BRUDE == m_production_info.eid)
+			pobj = new CBrude;
+		else if(OBJ_DEFILER == m_production_info.eid)
+			pobj = new CDefiler;
 
 		CObjMgr::GetInstance()->AddObject(pobj , m_production_info.eid);
 
-		pobj->SetPos(m_vPos);
+		pobj->Setdir(D3DXVECTOR2(1,1));
 		pobj->SetTeamNumber(m_eteamnumber);
+		pobj->SetPos(m_vPos);
 		pobj->Initialize();
+
+		if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
+			pobj->SetPos(m_vPos);
+		else
+			pobj->SetPos( D3DXVECTOR2(m_vPos.x , m_vPos.y - 40.f));		
+
 
 		if(NULL != phatch)
 		{
-			bool				isrally = ((CZerg_building*)phatch)->Get_Is_rally();
-			D3DXVECTOR2			rallypoint = ((CZerg_building*)phatch)->GetRallyPoint();
-			vector<D3DXVECTOR2> rallypath = ((CZerg_building*)phatch)->GetRally_Path();
-
-			CComponent* pcom = NULL;
-			if(true == isrally)
+			if(OBJ_HATCERY == phatch->GetOBJNAME())
 			{
-				pobj->SetOrder(ORDER_MOVE);
-				pcom = pobj->GetComponent(COM_PATHFINDE);
+				bool				isrally = ((CZerg_building*)phatch)->Get_Is_rally();
+				D3DXVECTOR2			rallypoint = ((CZerg_building*)phatch)->GetRallyPoint();
+				vector<D3DXVECTOR2> rallypath = ((CZerg_building*)phatch)->GetRally_Path();
 
-				if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
+				CComponent* pcom = NULL;
+				if(true == isrally)
 				{
-					((CCom_Pathfind*)pcom)->SetGoalPos(rallypoint , false);
-					((CCom_Pathfind*)pcom)->Setrally_path(rallypath);
+					pobj->SetOrder(ORDER_MOVE);
+					pcom = pobj->GetComponent(COM_PATHFINDE);
+
+					if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
+					{
+						((CCom_Pathfind*)pcom)->SetGoalPos(rallypoint , false);
+						((CCom_Pathfind*)pcom)->Setrally_path(rallypath);
+					}
+					else
+					{					
+						((CCom_AirPathfind*)pcom)->SetGoalPos(rallypoint , false);
+					}
 				}
-				else
-					((CCom_AirPathfind*)pcom)->SetGoalPos(rallypoint , false);
 			}
 		}
 

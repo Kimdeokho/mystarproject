@@ -5,7 +5,14 @@
 #include "MyMath.h"
 #include "TimeMgr.h"
 #include "KeyMgr.h"
+#include "TextureMgr.h"
+#include "Area_Mgr.h"
+#include "ScrollMgr.h"
+#include "FontMgr.h"
+#include "Device.h"
+#include "Session_Mgr.h"
 
+#include "Obj.h"
 IMPLEMENT_SINGLETON(CMouseMgr)
 
 CMouseMgr::CMouseMgr(void)
@@ -21,6 +28,186 @@ CMouseMgr::CMouseMgr(void)
 CMouseMgr::~CMouseMgr(void)
 {
 }
+
+void CMouseMgr::Initialize(void)
+{
+	m_mouse_texkey = L"";
+	m_pSprite = CDevice::GetInstance()->GetSprite();
+
+	m_tex_set = CTextureMgr::GetInstance()->GetStateTexture_vecset(L"MOUSE" , L"CLICK");
+	m_clicktex = (*m_tex_set)[0];
+	m_vclick_center = D3DXVECTOR3(m_clicktex->ImgInfo.Width/2.f , m_clicktex->ImgInfo.Height/2.f , 0.f);
+
+	SetMouseTexture(L"IDLE");
+
+	D3DXMatrixIdentity(&m_mouse_mat);
+	D3DXMatrixIdentity(&m_click_mat);
+
+	m_fsize_sign = 1.f;
+	m_fclick_size = 0.7f;
+	m_cur_ms = MS_NONE;
+	m_is_click_mark = false;
+
+	m_mouse_color = D3DCOLOR_ARGB(255,255,255,255);
+
+	ShowCursor( FALSE );
+}
+
+void CMouseMgr::Lobby_Update(void)
+{
+	m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+
+	if(m_frame.fcurframe >= m_frame.umax)
+		m_frame.fcurframe = 0.f;
+
+	m_curtex = (*m_tex_set)[(int)m_frame.fcurframe];
+
+	D3DXVECTOR2 vmouse_pos = GetScreenMousePt();
+	m_mouse_mat._41 = vmouse_pos.x;
+	m_mouse_mat._42 = vmouse_pos.y;
+
+}
+
+void CMouseMgr::Update(void)
+{
+	if(GetFocus() == g_hWnd)
+	{		
+		if(false == CKeyMgr::GetInstance()->GetTurboKeyDown_Check(VK_LBUTTON))
+		{
+			RECT Clip;
+			GetClientRect(g_hWnd , &Clip);
+			ClientToScreen(g_hWnd ,(LPPOINT)&Clip); //left , top을 screen(윈도우)좌표로 바꾸기
+			ClientToScreen(g_hWnd ,(LPPOINT)(&Clip.right)); //right , bottom을 screen(윈도우)좌표로 바꾸기
+			ClipCursor(&Clip);
+
+			GetCursorPos(&m_mousept);
+			ScreenToClient(g_hWnd , &m_mousept);
+
+			float fspeed = 1500.f;
+			if(m_mousept.x <= 5)
+			{
+				CScrollMgr::m_fScrollX -= GETTIME * fspeed;
+				m_mousept.x = 5;
+			}
+			else if(m_mousept.x >= BACKBUFFER_SIZEX - 5)
+			{
+				CScrollMgr::m_fScrollX += GETTIME * fspeed;
+				m_mousept.x = BACKBUFFER_SIZEX - 5;
+			}
+
+			if( m_mousept.y <= 5)
+			{
+				CScrollMgr::m_fScrollY -= GETTIME * fspeed;
+				m_mousept.y = 5;
+			}
+			else if(m_mousept.y >= BACKBUFFER_SIZEY - 5)
+			{
+				CScrollMgr::m_fScrollY += GETTIME * fspeed;
+				m_mousept.y = BACKBUFFER_SIZEY - 5;
+			}
+		}
+
+		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
+
+		if(m_frame.fcurframe >= m_frame.umax)
+			m_frame.fcurframe = 0.f;
+
+		m_curtex = (*m_tex_set)[(int)m_frame.fcurframe];
+
+		D3DXVECTOR2 vmouse_pos = GetScreenMousePt();
+		m_mouse_mat._41 = vmouse_pos.x;
+		m_mouse_mat._42 = vmouse_pos.y;
+
+		if(m_is_click_mark)
+		{
+			m_fclick_size += GETTIME * m_fsize_sign * 1.5f;
+			if(m_fclick_size > 1.f)
+			{
+				m_fsize_sign *= -1;
+				m_fclick_size = 1.f;
+			}
+			else if(m_fclick_size < 0.7f)
+			{
+				m_fclick_size = 0.7f;
+				m_is_click_mark = false;
+			}
+			m_click_mat._11 = m_fclick_size;
+			m_click_mat._22 = m_fclick_size;
+			m_click_mat._41 = m_click_pos.x - CScrollMgr::m_fScrollX;
+			m_click_mat._42 = m_click_pos.y - CScrollMgr::m_fScrollY;
+		}
+
+
+	}
+
+	if(Unitdetect())
+	{
+		SetMouseState(MS_DETECT);
+	}
+	else
+	{
+		SetMouseState(MS_IDLE);
+	}
+}
+void CMouseMgr::Render(void)
+{
+	if(m_is_click_mark)
+	{
+		m_pSprite->SetTransform(&m_click_mat);
+		m_pSprite->Draw(m_clicktex->pTexture , NULL , &m_vclick_center
+			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+	}
+
+
+	m_pSprite->SetTransform(&m_mouse_mat);
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter
+		, NULL , m_mouse_color);
+}
+
+void CMouseMgr::SetMouseState(const MOUSE_STATE estate)
+{
+	if(MS_CLICK_MARK == estate)
+	{
+		m_click_pos = GetAddScrollvMousePt();
+
+		m_is_click_mark = true;
+		m_fclick_size = 0.7f;
+		m_fsize_sign = 1.f;
+
+		SetMouseTexture(L"IDLE");
+		//mark on
+	}
+	else if(MS_AIM == estate)
+	{
+		SetMouseTexture(L"AIM");
+	}
+	else if(MS_IDLE == estate)
+	{
+		SetMouseTexture(L"IDLE");
+	}
+	else if(MS_DETECT == estate)
+	{
+		SetMouseTexture(L"ALLY_POINT");
+	}
+	m_cur_ms = estate;
+}
+void CMouseMgr::SetMouseTexture(const TCHAR* texkey)
+{
+	if(m_mouse_texkey != texkey)
+		m_mouse_texkey = texkey;
+	else
+		return;
+
+	m_tex_set = CTextureMgr::GetInstance()->GetStateTexture_vecset(L"MOUSE" , m_mouse_texkey);
+	m_curtex = (*m_tex_set)[0];
+	m_vcenter = D3DXVECTOR3(m_curtex->ImgInfo.Width/2.f , m_curtex->ImgInfo.Height/2.f , 0.f);
+
+	m_frame.fcurframe = 0.f;
+	m_frame.umax = m_tex_set->size();
+	m_frame.fframespeed = (float)m_frame.umax;
+}
+
+
 const int CMouseMgr::GetMousePt_to_idx(const int& tilesize)
 {
 	return CMyMath::Pos_to_index(m_vmousept , tilesize);
@@ -68,59 +255,6 @@ const D3DXVECTOR2& CMouseMgr::GetScreenMousePt(void)
 	return m_vmousept;
 }
 
-void CMouseMgr::Update(void)
-{
-
-	//if(NULL != GetFocus() )
-	if(GetFocus() == g_hWnd)
-	{		
-		if(false == CKeyMgr::GetInstance()->GetTurboKeyDown_Check(VK_LBUTTON))
-		{
-			RECT Clip;
-			GetClientRect(g_hWnd , &Clip);
-			ClientToScreen(g_hWnd ,(LPPOINT)&Clip);
-			ClientToScreen(g_hWnd ,(LPPOINT)(&Clip.right));
-			ClipCursor(&Clip);
-
-			GetCursorPos(&m_mousept);
-			ScreenToClient(g_hWnd , &m_mousept);
-
-			float fspeed = 1500.f;
-			if(m_mousept.x <= 5)
-			{
-				CScrollMgr::m_fScrollX -= GETTIME * fspeed;
-				m_mousept.x = 5;
-			}
-			else if(m_mousept.x >= BACKBUFFER_SIZEX - 5)
-			{
-				CScrollMgr::m_fScrollX += GETTIME * fspeed;
-				m_mousept.x = BACKBUFFER_SIZEX - 5;
-			}
-
-			if( m_mousept.y <= 5)
-			{
-				CScrollMgr::m_fScrollY -= GETTIME * fspeed;
-				m_mousept.y = 5;
-			}
-			else if(m_mousept.y >= BACKBUFFER_SIZEY - 5)
-			{
-				CScrollMgr::m_fScrollY += GETTIME * fspeed;
-				m_mousept.y = BACKBUFFER_SIZEY - 5;
-			}
-		}
-
-	}
-	else
-	{
-		/*
-		RECT Clip;
-		GetClientRect(NULL , &Clip);
-		ClientToScreen(NULL ,(LPPOINT)&Clip);
-		ClientToScreen(NULL ,(LPPOINT)(&Clip.right));
-		ClipCursor(&Clip);*/
-	}
-}
-
 void CMouseMgr::Init_clickpos(void)
 {
 	//클릭 한 순간의 위치를 저장한다
@@ -141,12 +275,49 @@ const D3DXVECTOR2& CMouseMgr::GetClick_Pos(void)
 {
 	return m_click_pos;
 }
-//POINT CMouseMgr::m_mousept;
-//D3DXVECTOR2 CMouseMgr::m_vmousept;
-//POINT CMouseMgr::GetMousePt(void)
-//{
-//	GetCursorPos(&m_mousept);
-//	ScreenToClient(g_hWnd , &m_mousept);
-//
-//	return m_mousept;
-//}
+
+bool CMouseMgr::Unitdetect(void)
+{
+	list<CObj*>* arealist = CArea_Mgr::GetInstance()->GetArea64();
+
+	D3DXVECTOR2 vmouse_pos = GetAddScrollvMousePt();
+
+	int idxarr[ASTAR_DIR_END] = {0};
+	int idx = 0;
+	
+	CMyMath::Calculator_eight_idx(idxarr , vmouse_pos , 64);
+
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d, %d" , int(vmouse_pos.x) , int(vmouse_pos.y),
+	//	vmouse_pos.x - CScrollMgr::m_fScrollX, vmouse_pos.y - CScrollMgr::m_fScrollY
+	//	,D3DCOLOR_ARGB(255,0,255,0));
+
+
+	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+	for(int i = 0; i < ASTAR_DIR_END; ++i)
+	{
+		idx = idxarr[i];
+		if(idx < 0 || arealist[idx].empty())
+			continue;
+
+		list<CObj*>::iterator iter		= arealist[idx].begin();
+		list<CObj*>::iterator iter_end	= arealist[idx].end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			if(MyPtInrect( vmouse_pos ,  &((*iter)->GetMyRect()) ))
+			{
+				//색변경
+				//if( (*iter)->GetTeamNumber() == eteam)
+				//	m_mouse_color = D3DCOLOR_ARGB(255,255,255,255);
+				//else
+				//	m_mouse_color = D3DCOLOR_ARGB(255,255,0,0);
+
+				return true;
+			}
+		}
+	}
+
+	//m_mouse_color = D3DCOLOR_ARGB(255,255,255,255);
+
+	return false;
+}

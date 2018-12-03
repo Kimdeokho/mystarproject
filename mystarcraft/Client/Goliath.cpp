@@ -184,9 +184,9 @@ void CGoliath::Inputkey_reaction(const int& nkey)
 					if(NULL != ptarget)
 						m_bmagicbox = false;
 
-					((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
-					((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-					((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+					m_com_pathfind->SetGoalPos(goalpos , m_bmagicbox);
+					m_com_pathfind->SetFlowField();
+					m_com_pathfind->StartPathfinding();
 					m_bmagicbox = false;
 				}
 			}
@@ -209,9 +209,9 @@ void CGoliath::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
-			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+			m_com_pathfind->SetGoalPos(goalpos , m_bmagicbox);
+			m_com_pathfind->SetFlowField();
+			m_com_pathfind->StartPathfinding();
 			m_bmagicbox = false;
 		}
 	}

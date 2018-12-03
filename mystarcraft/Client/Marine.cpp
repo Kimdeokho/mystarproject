@@ -186,6 +186,7 @@ void CMarine::Inputkey_reaction(const int& nkey)
 			if(NULL != ptarget)
 			{
 				m_bmagicbox = false;
+				((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(ptarget->GetObjNumber());
 			}			
 
 			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
@@ -221,39 +222,28 @@ void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	{
 		m_unitinfo.order = ORDER_MOVE_ATTACK;
 		m_unitinfo.state = MOVE;
-		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
+
+		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
+		((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(ptarget);
 
 		if(NULL != m_com_pathfind)
 		{
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
+			if(NULL != ptarget)
+			{
+				m_bmagicbox = false;
+				(m_com_pathfind)->SetTargetObjID(ptarget->GetObjNumber());
+			}	
 
-
-			((CCom_Pathfind*)m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
-			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
-			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
+			(m_com_pathfind)->SetGoalPos(goalpos , m_bmagicbox);
+			(m_com_pathfind)->SetFlowField();
+			(m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
 	}
 }
 
-void CMarine::Release(void)
-{
-	CObj::area_release();
 
-	m_com_pathfind = NULL;
-	m_com_weapon = NULL;
-	Safe_Delete(m_skill_sp);
-	
-}
-
-void CMarine::Dead(void)
-{
-	CObj* pobj = new CCorpse(L"MARINEDEAD" , L"MARINEWRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-}
 void CMarine::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
 	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();
@@ -354,4 +344,21 @@ void CMarine::Update_Wireframe(void)
 		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_BIO_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
+}
+void CMarine::Dead(void)
+{
+	CObj* pobj = new CCorpse(L"MARINEDEAD" , L"MARINEWRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+}
+void CMarine::Release(void)
+{
+	CObj::area_release();
+
+	m_com_pathfind = NULL;
+	m_com_weapon = NULL;
+	Safe_Delete(m_skill_sp);
+
 }

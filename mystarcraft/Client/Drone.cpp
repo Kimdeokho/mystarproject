@@ -206,6 +206,7 @@ void CDrone::Create_Building(void)
 		{
 			m_unitinfo.order = ORDER_NONE;
 			m_unitinfo.state = IDLE;
+			m_ecmd_state = CMD_BASIC;
 			return;
 		}
 
@@ -270,6 +271,15 @@ void CDrone::Create_Building(void)
 		((CCom_Pathfind*)m_com_pathfind)->ClearPath();
 		((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 		((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(0);
+	}
+	else
+	{
+		if(false == (m_main_preview)->Install_check(m_preview_info))
+		{
+			m_unitinfo.order = ORDER_NONE;
+			m_unitinfo.state = IDLE;
+			m_ecmd_state = CMD_BASIC;
+		}
 	}
 }
 
@@ -338,6 +348,12 @@ void CDrone::Inputkey_reaction(const int& nkey)
 			m_is_preview = false;
 
 			//위치에 도착하면 건물생성
+		}
+		else
+		{
+			m_unitinfo.order = ORDER_NONE;
+			m_main_preview->SetActive(false);
+			m_is_preview = false;
 		}
 	}
 
@@ -431,10 +447,10 @@ void CDrone::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 	}
 }
-void CDrone::Input_cmd(const int& nkey , bool* waitkey)
+bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if(false == m_unitinfo.is_active)
-		return;
+		return false;
 
 	if(VK_RBUTTON == nkey)
 	{
@@ -489,9 +505,11 @@ void CDrone::Input_cmd(const int& nkey , bool* waitkey)
 	{
 		m_ecmd_state = CMD_BASIC;
 	}
+
+	return false;
 }
 
-void CDrone::Input_cmd(const int& firstkey , const int& secondkey)
+bool CDrone::Input_cmd(const int& firstkey , const int& secondkey)
 {
 	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
 	{
@@ -550,6 +568,8 @@ void CDrone::Input_cmd(const int& firstkey , const int& secondkey)
 		else
 			m_is_preview = false;
 	}
+
+	return false;
 }
 void CDrone::Update_Cmdbtn(void)
 {	
@@ -581,6 +601,11 @@ void CDrone::Update_Cmdbtn(void)
 		pui->Create_Cmdbtn(6 , L"BTN_BBUILD" , BTN_B_BUILD);
 		pui->Create_Cmdbtn(7 , L"BTN_VBUILD" , BTN_V_BUILD);
 	}
+}
+
+void CDrone::Update_Wireframe(void)
+{
+
 }
 
 void CDrone::Dead(void)

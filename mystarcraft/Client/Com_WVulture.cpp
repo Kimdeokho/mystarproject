@@ -26,12 +26,12 @@ void CCom_WVulture::Initialize(CObj* pobj /*= NULL*/)
 	m_weapon_info.damage = 20;
 	m_weapon_info.airdamage = 0;
 	m_weapon_info.eDamageType = DAMAGE_VIBRATE;
-	m_weapon_info.eAirDamageType = DAMAGE_NOMAL;
+	m_weapon_info.eAirDamageType = DAMAGE_NONE;
 
 	m_bfire = false;
 }
 
-void CCom_WVulture::fire(CObj*& ptarget)
+void CCom_WVulture::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
@@ -55,9 +55,10 @@ void CCom_WVulture::fire(CObj*& ptarget)
 
 			CObj* pbullet;
 			pbullet = new CVulture_Bullet(ptarget->GetObjNumber() , ptarget->GetPos());
+			CObjMgr::GetInstance()->AddObject(pbullet , OBJ_BULLET);
 			pbullet->SetPos(vpos);
 			pbullet->Initialize();
-			CObjMgr::GetInstance()->AddObject(pbullet , OBJ_BULLET);
+			
 			
 		}
 	}

@@ -6,6 +6,8 @@ class CSpore :
 {
 private:
 public:
+	virtual void Build_Complete(void);
+public:
 	virtual void Initialize(void);
 	virtual void Update(void);
 	virtual void Render(void);

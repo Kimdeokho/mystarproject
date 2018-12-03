@@ -32,7 +32,7 @@ void CCom_WWraith::Initialize(CObj* pobj /*= NULL*/)
 
 	m_bfire = false;
 }
-void CCom_WWraith::fire(CObj*& ptarget)
+void CCom_WWraith::fire(CObj* ptarget)
 {
 	if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType)
 	{

@@ -122,7 +122,7 @@ void CLineMgr::Select_unit(void)
 		(int)m_RectLine[0].y == (int)m_RectLine[2].y) 
 	{
 		//제자리에 찍었을때
-		CArea_Mgr::GetInstance()->SelectCheck(idx , vMousept);
+		CArea_Mgr::GetInstance()->SelectCheck(vMousept);
 	}
 	else
 	{

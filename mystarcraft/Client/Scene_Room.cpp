@@ -12,6 +12,8 @@
 #include "TimeMgr.h"
 #include "Session_Mgr.h"
 #include "RoomSession_Mgr.h"
+#include "MouseMgr.h"
+
 CScene_Room::CScene_Room(void)
 {
 }
@@ -47,6 +49,8 @@ void CScene_Room::Update(void)
 	CTimeMgr::GetInstance()->SetTime();
 	CKeyMgr::GetInstance()->Update();
 	CRoom_UIMgr::GetInstance()->Update();
+
+	CMouseMgr::GetInstance()->Lobby_Update();
 }
 
 void CScene_Room::Render(void)
@@ -58,6 +62,8 @@ void CScene_Room::Render(void)
 
 	CRoom_UIMgr::GetInstance()->Render();
 	CFontMgr::GetInstance()->FontRender();
+
+	CMouseMgr::GetInstance()->Render();
 
 	CTimeMgr::GetInstance()->FPS_fix();
 }

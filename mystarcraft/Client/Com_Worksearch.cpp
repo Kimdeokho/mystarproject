@@ -10,6 +10,8 @@
 
 #include "Com_Weapon.h"
 #include "Com_Pathfind.h"
+#include "Com_Transport.h"
+
 #include "Mineral.h"
 #include "GasBuilding.h"
 #include "Workman.h"
@@ -54,8 +56,6 @@ void CCom_Worksearch::Update(void)
 		m_target_objid = 0;
 
 	ORDER order = m_pobj->GetUnitinfo().order;
-
-
 
 	if(ORDER_GATHER == order)
 	{
@@ -109,9 +109,7 @@ void CCom_Worksearch::Update(void)
 					else
 					{
 						if(false == ((CWorkman*)m_pobj)->ismineral_fragment())
-						{
-							//((CWorkman*)m_pobj)->SetMineral_mark(m_ptarget);
-							
+						{							
 							if(NULL != m_com_weapon)
 								((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
 						}
@@ -129,7 +127,7 @@ void CCom_Worksearch::Update(void)
 				OBJ_Z_GAS == m_ptarget->GetOBJNAME())
 			{
 
-				if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
+				if(MyIntersectrect(&m_myrc , &(m_ptarget->GetMyRect()) ) )
 				{					
 					if( BUILD != m_ptarget->GetUnitinfo().state)
 					{
@@ -144,14 +142,24 @@ void CCom_Worksearch::Update(void)
 
 							m_pobj->SetActive(false);//여기서 일꾼 area 위치도 삭제해준다
 							m_pobj->area_release();
-
-							((CCom_Pathfind*)m_com_pathfind)->ClearPath();
-							((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
-							((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(0);
 						}
+						((CCom_Pathfind*)m_com_pathfind)->ClearPath();
+						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+						((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(0);
 					}
 				}
-			}			
+			}
+			else if(OBJ_GAS == m_ptarget->GetOBJNAME())
+			{
+				if(MyIntersectrect( &m_myrc , &(m_ptarget->GetMyRect()) ) )
+				{
+					m_pobj->SetOrder(ORDER_NONE);
+					m_pobj->SetState(IDLE);
+					((CCom_Pathfind*)m_com_pathfind)->ClearPath();
+					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
+					((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(0);
+				}
+			}
 		}
 		else
 		{
@@ -209,7 +217,7 @@ void CCom_Worksearch::Update(void)
 			//미네랄을 들고 있으면,,
 			m_pobj->SetOrder(ORDER_RETURN_CARGO);
 		}
-		else if(OBJ_DROPSHIP == m_ptarget->GetOBJNAME())
+		else if(NULL != m_com_transport)
 		{
 			if(m_ptarget->GetTeamNumber() == m_pobj->GetTeamNumber())
 			{
@@ -218,12 +226,12 @@ void CCom_Worksearch::Update(void)
 					//범위에 들어오면
 					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
 
-
-					if(true == ((CDropship*)m_ptarget)->setunit(m_pobj))
+					if(true == m_com_transport->setunit(m_pobj))
 					{
 						m_pobj->SetSelect(NONE_SELECT);
 						m_pobj->area_release();
-						m_pobj->SetActive(false); 
+						m_pobj->SetActive(false);
+						m_com_transport = NULL;
 					}
 					else
 					{

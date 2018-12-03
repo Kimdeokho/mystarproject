@@ -5,14 +5,15 @@ class CBullet :
 	public CObj
 {
 protected:
-	CObj*	m_ptarget;
-	int		m_target_id;
-	D3DXVECTOR2	m_vdest_pos;
-	D3DXVECTOR2 m_old_targetpos;
+	CObj*			m_ptarget;
+	int				m_target_id;
+	D3DXVECTOR2		m_vdest_pos;
+	D3DXVECTOR2		m_old_targetpos;
 
-	UPG_INFO*	m_upg_info;
+	UPG_INFO*		m_upg_info;
 
-	float		m_ftick_distance;
+	float			m_ftick_distance;
+	int				m_objcnt_num;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

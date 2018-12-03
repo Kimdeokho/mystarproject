@@ -45,7 +45,7 @@ void CCom_dirBulletAnim::Render(void)
 		return;
 
 	m_pSprite->SetTransform(&m_objmat);
-	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
+	m_pSprite->Draw(m_curtex->pTexture , NULL , &m_vcenter
 		, NULL , D3DCOLOR_ARGB(255,255,255,255));
 }
 
@@ -58,16 +58,19 @@ void CCom_dirBulletAnim::SetAnimation(const TCHAR* statekey)
 {
 	if(m_statkey != statekey)
 	{
-		if(false == m_battack_end)
-			return;
+		//if(false == m_battack_end)
+		//	return;
 
 		m_statkey = statekey;
 		m_frame.fcurframe = 0;			
 
 		/* [i]는 방향 , DRONE, MOVE의 사진집합 */
-		m_animtexture = CTextureMgr::GetInstance()->GetTUnitTexture(m_objname , m_statkey );
+		m_animtexture = CTextureMgr::GetInstance()->GetMultiTexture(m_objname , m_statkey );
 
 		m_frame.umax = m_animtexture[0].size();
 		m_frame.fframespeed = (float)m_frame.umax;
+
+		m_curtex = m_animtexture[0][0];
+		m_vcenter = D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0);
 	}
 }

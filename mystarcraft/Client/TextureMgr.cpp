@@ -540,21 +540,6 @@ const vector<TEXINFO*>* CTextureMgr::GetMultiTexture(const wstring& wstrobjkey ,
 	else
 		return NULL;
 }
-
-const vector<TEXINFO*>* CTextureMgr::GetMultiTexture32(const wstring& wstrobjkey , const wstring& wstrstatekey )
-{
-	map<wstring , CTexture*>::iterator iter = m_MultiTex32.find(wstrobjkey);
-
-	if(m_MultiTex32.end() != iter)
-	{
-		/*키 값을 찾았다.*/
-		CTexture* pTexture = iter->second;
-
-		return ((CMultiTexture32*)pTexture)->GetMultiTex32(wstrstatekey);
-	}
-	else
-		return NULL;
-}
 const TEXINFO* CTextureMgr::GetSingleTexture(const wstring& wstrObjKey , const wstring& wstrStateKey)
 {
 	map<wstring , CTexture*>::iterator iter = m_SinglelTex.find(wstrObjKey);
@@ -668,19 +653,12 @@ void CTextureMgr::Release( void )
 	if(!m_MultiTex.empty())
 	{
 		for(map<wstring, CTexture*>::iterator iter = m_MultiTex.begin();
-			iter != m_TerranTex.end(); ++iter)
+			iter != m_MultiTex.end(); ++iter)
 		{
 			::Safe_Delete(iter->second);
 		}
 		m_MultiTex.clear();
 	}
-
-	for(map<wstring, CTexture*>::iterator iter = m_MultiTex32.begin();
-		iter != m_MultiTex32.end(); ++iter)
-	{
-		::Safe_Delete(iter->second);
-	}
-	m_MultiTex32.clear();
 
 	for(map<wstring, CTexture*>::iterator iter = m_MultilEffTex.begin();
 		iter != m_MultilEffTex.end(); ++iter)

@@ -345,7 +345,7 @@ void CEngineering::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
-void CEngineering::Input_cmd(const int& nkey , bool* waitkey)
+bool CEngineering::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if(VK_LBUTTON == nkey)
 	{
@@ -377,7 +377,11 @@ void CEngineering::Input_cmd(const int& nkey , bool* waitkey)
 			m_is_preview = true;
 			(m_main_preview)->SetPreviewInfo(L"T_EB", T_EB , 3 , 4 , m_vertex);			
 		}
+		else
+			return true;
 	}
+
+	return false;
 }
 void CEngineering::Update_Cmdbtn(void)
 {

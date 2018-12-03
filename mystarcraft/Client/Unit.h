@@ -7,6 +7,11 @@ class CAstar;
 class CSkill;
 class CUI;
 class CCom_Animation;
+class CCom_Pathfind;
+class CCom_AirPathfind;
+class CCom_Collision;
+class CCom_CC;
+class CCom_UsingSkill;
 
 typedef boost::unordered_map<SKILL_NAME , CSkill*> SKILL_PAIR;
 class CUnit :
@@ -14,11 +19,12 @@ class CUnit :
 {
 protected:
 	CCom_Animation*		m_com_anim;
-	CComponent*			m_com_targetsearch;
-	CComponent*			m_com_pathfind;
-	CComponent*			m_com_collision;
-	CComponent*			m_com_usingskill;
-	CComponent*			m_com_cc;
+	CCom_Pathfind*		m_com_pathfind;
+	CCom_AirPathfind*	m_com_air_pathfind;
+	CCom_Collision*		m_com_collision;
+	CComponent*			m_com_targetsearch;		
+	CCom_UsingSkill*	m_com_usingskill;
+	CCom_CC*			m_com_cc;
 protected:
 	UPG_INFO*		m_upg_info;
 	bool			m_upg_state[UPG_END];

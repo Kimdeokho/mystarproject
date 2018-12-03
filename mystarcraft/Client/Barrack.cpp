@@ -286,7 +286,7 @@ void CBarrack::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
-void CBarrack::Input_cmd(const int& nkey , bool* waitkey)
+bool CBarrack::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if(VK_LBUTTON == nkey)
 	{
@@ -325,11 +325,27 @@ void CBarrack::Input_cmd(const int& nkey , bool* waitkey)
 			m_is_preview = true;
 			(m_main_preview)->SetPreviewInfo(L"T_BARRACK", T_BARRACK , 3 , 4 , m_vertex);			
 		}
+		else
+			return true;
 	}
-}
-void CBarrack::Input_cmd(const int& firstkey , const int& secondkey)
-{
 
+	if(false == m_is_take_off)
+	{
+		if('M' == nkey)
+			return true;
+		if('F' == nkey)
+			return true;
+		if('G' == nkey)
+			return true;
+		if('C' == nkey)
+			return true;
+	}
+
+	return false;
+}
+bool CBarrack::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
 }
 
 void CBarrack::Update_Cmdbtn(void)

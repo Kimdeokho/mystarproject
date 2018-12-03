@@ -460,6 +460,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 				{
 					pobj = new CComset(this/*아니면 오브젝트 아이디*/);
 					pobj->SetPos((m_main_preview)->GetPreviewInfo().vpos);
+					pobj->SetTeamNumber(m_eteamnumber);
 					pobj->Initialize();				
 					CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMSET);
 
@@ -468,6 +469,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 				{
 					pobj = new CNuclear_part(this/*아니면 오브젝트 아이디*/);
 					pobj->SetPos((m_main_preview)->GetPreviewInfo().vpos);
+					pobj->SetTeamNumber(m_eteamnumber);
 					pobj->Initialize();				
 					CObjMgr::GetInstance()->AddObject(pobj , OBJ_NC_PART);
 
@@ -482,15 +484,15 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 void CComandcenter::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 }
-void CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
+bool CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
 {
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state)
-		return;
+		return false;
 
 	if('S' == nkey)
 	{
-		waitkey[nkey] = false;
+		return true;
 	}
 
 	if(VK_LBUTTON == nkey)
@@ -500,13 +502,13 @@ void CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
 
 		if(BTN_TAKE_OFF == eclicked_btn)
 		{
-			Inputkey_reaction('L');
-			return;
+			//Inputkey_reaction('L');
+			//return;
 		}
 		if(BTN_LANDING == eclicked_btn)
 		{
-			Inputkey_reaction('L');
-			return;
+			//Inputkey_reaction('L');
+			//return;
 		}
 
 		if(true == (m_main_preview)->GetActive() &&
@@ -572,13 +574,17 @@ void CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
 		{
 			//이륙
 			m_is_preview = true;
-			(m_main_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 ,  m_vertex);			
+			(m_main_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 ,  m_vertex);
 		}
+		else
+			return true;
 	}
-}
-void CComandcenter::Input_cmd(const int& firstkey , const int& secondkey)
-{
 
+	return false;
+}
+bool CComandcenter::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
 }
 
 void CComandcenter::Release(void)

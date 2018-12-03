@@ -26,9 +26,9 @@ public:
 	void	Initialize(void);
 	void    Setnumber_combine_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0));
 	//void	Setnumber_combine_Font(const TCHAR* szfont , const float& font_number , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/);
-	void	Setbatch_Font(const TCHAR* szfont , const int& font_number , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0) , bool left_align = false);
+	void	Setbatch_Font(const TCHAR* szfont , const int font_number , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0) , bool left_align = false);
 	void	Setbatch_Font(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0) , bool left_align = false);
-	void	Setbatch_Font(const TCHAR* szfont ,const int& num1, const int& num2, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,0,255,0)*/, bool left_align = false);
+	void	Setbatch_Font(const TCHAR* szfont ,const int num1, const int num2, float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0), bool left_align = false);
 	void	Set_KeyInput_Font(const TCHAR* szfont , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0));
 	void	SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0));	
 

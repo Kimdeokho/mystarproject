@@ -402,11 +402,11 @@ void CSience::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
-void CSience::Input_cmd(const int& nkey, bool* waitkey)
+bool CSience::Input_cmd(const int& nkey, bool* waitkey)
 {
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state)
-		return;
+		return false;
 
 	if(VK_LBUTTON == nkey)
 	{
@@ -416,12 +416,12 @@ void CSience::Input_cmd(const int& nkey, bool* waitkey)
 		if(BTN_TAKE_OFF == eclicked_btn)
 		{
 			Inputkey_reaction('L');
-			return;
+			return false;
 		}
 		if(BTN_LANDING == eclicked_btn)
 		{
 			Inputkey_reaction('L');
-			return;
+			return false;
 		}
 
 		if(true == (m_main_preview)->GetActive() &&
@@ -489,11 +489,15 @@ void CSience::Input_cmd(const int& nkey, bool* waitkey)
 			m_is_preview = true;
 			(m_main_preview)->SetPreviewInfo(L"T_SIENCE", T_SIENCE , 3 , 4 ,  m_vertex);			
 		}
+		else
+			return true;
 	}
-}
-void CSience::Input_cmd(const int& firstkey , const int& secondkey)
-{
 
+	return false;
+}
+bool CSience::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
 }
 void CSience::Update_Cmdbtn(void)
 {

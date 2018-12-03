@@ -78,6 +78,10 @@ void CCom_Targetsearch::SetTarget(CObj* ptarget)
 	{
 		m_bforced_target = true;
 		m_target_objid = ptarget->GetObjNumber();
+
+		CComponent* pcom = ptarget->GetComponent(COM_TRANSPORT);
+		if(NULL != pcom)
+			m_com_transport = ((CCom_Transport*)pcom);
 	}
 	else
 	{

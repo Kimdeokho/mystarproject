@@ -404,11 +404,11 @@ void CStarport::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
-void CStarport::Input_cmd(const int& nkey, bool* waitkey)
+bool CStarport::Input_cmd(const int& nkey, bool* waitkey)
 {
 	if(TAKE_OFF == m_unitinfo.state ||
 		LANDING == m_unitinfo.state)
-		return;
+		return false;
 
 	MYRECT<float> temprc;
 	if('C' == nkey)
@@ -425,6 +425,20 @@ void CStarport::Input_cmd(const int& nkey, bool* waitkey)
 			m_is_preview = true;
 			(m_main_preview)->SetPreviewInfo(L"T_FACTORY", T_FACTORY , 3 , 4 ,  m_vertex);			
 		}
+		else
+			return true;
+	}
+
+	if(false == m_is_take_off)
+	{
+		if('W' == nkey)
+			return true;
+		if('D' == nkey)
+			return true;
+		if('V' == nkey)
+			return true;
+		if('B' == nkey)
+			return true;
 	}
 
 	if(VK_LBUTTON == nkey)
@@ -435,12 +449,12 @@ void CStarport::Input_cmd(const int& nkey, bool* waitkey)
 		if(BTN_TAKE_OFF == eclicked_btn)
 		{
 			Inputkey_reaction('L');
-			return;
+			return false;
 		}
 		if(BTN_LANDING == eclicked_btn)
 		{
 			Inputkey_reaction('L');
-			return;
+			return false;
 		}
 
 		if(true == (m_main_preview)->GetActive() &&
@@ -483,10 +497,12 @@ void CStarport::Input_cmd(const int& nkey, bool* waitkey)
 			}
 		}
 	}
-}
-void CStarport::Input_cmd(const int& firstkey , const int& secondkey)
-{
 
+	return false;
+}
+bool CStarport::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
 }
 void CStarport::Update_Cmdbtn(void)
 {

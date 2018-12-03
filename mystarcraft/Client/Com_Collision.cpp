@@ -65,7 +65,7 @@ void CCom_Collision::Update(void)
 
 		if(m_search_time >= 0.2f )
 		{
-			m_collision_target = CArea_Mgr::GetInstance()->Collision_check(m_pobj , m_pobj->Getcuridx(64));
+			m_collision_target = CArea_Mgr::GetInstance()->Collision_check(m_pobj);
 			if(NULL != m_collision_target)
 			{
 				//printf("Ãæµ¹! %d \n" , m_obj_id);

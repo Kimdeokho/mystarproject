@@ -22,8 +22,8 @@ private: //유닛사이 이동 AStar
 
 	//마스크는 256으로 나누고, 
 	//인덱스는 맵크기 0~4096이므로, 4096/n
-	//unsigned int							m_findidx[256*8];
-	unsigned int							m_findidx[128*4];
+	unsigned int							m_findidx[256*8];
+	//unsigned int							m_findidx[128*4];
 	unsigned int							m_mask[32];
 
 	int										m_irow;

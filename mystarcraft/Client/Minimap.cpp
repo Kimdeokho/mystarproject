@@ -103,7 +103,7 @@ void CMinimap::Render(void)
 		 vpos = (*iter)->GetPos();
 		 fogidx = CMyMath::Pos_to_index(vpos , 32);
 
-		if(CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+		if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
 			(*iter)->Render();
 	}
 

@@ -59,7 +59,7 @@ void CCom_WDrone::Render(void)
 {
 
 }
-void CCom_WDrone::fire(CObj*& ptarget)
+void CCom_WDrone::fire(CObj* ptarget)
 {
 	if( OBJ_MINERAL == ptarget->GetOBJNAME() )
 	{

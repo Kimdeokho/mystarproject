@@ -24,7 +24,7 @@ public:
 	void SetAttackDelay(float delay);
 	const WEAPON_INFO& GetWeapon_info(void);
 public:
-	virtual void fire(CObj*&	ptarget) = 0;
+	virtual void fire(CObj*	ptarget) = 0;
 public:
 	virtual void Initialize(CObj* pobj = NULL) = 0;
 	virtual void Update(void);

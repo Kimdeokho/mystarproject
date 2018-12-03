@@ -51,7 +51,10 @@ void CCom_Airsearch::Update(void)
 	}
 	else
 	{
-		if(false == m_ptarget->GetUnitinfo().is_active)
+		TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
+
+		if(false == m_ptarget->GetUnitinfo().is_active || 
+			m_ptarget->GetUnitinfo().detect[eteam] < 1)
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
@@ -94,7 +97,13 @@ void CCom_Airsearch::Update(void)
 			}
 			else
 			{
-				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
+				int frange = 0;
+				if( MOVE_AIR == m_ptarget->GetUnitinfo().eMoveType)
+					frange = *m_pair_range;
+				else 
+					frange = *m_pattack_range;
+
+				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < frange*frange)
 				{		
 					if(ORDER_MOVE == m_pobj->GetUnitinfo().order)
 					{
@@ -165,8 +174,13 @@ void CCom_Airsearch::Update(void)
 
 		if(NULL != m_ptarget)
 		{
+			int frange = 0;
+			if( MOVE_AIR == m_ptarget->GetUnitinfo().eMoveType)
+				frange = *m_pair_range;
+			else 
+				frange = *m_pattack_range;
 			//원거리
-			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
+			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < frange * frange)
 			{			
 				//공격 범위에 들어오면
 				m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());

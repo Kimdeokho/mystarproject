@@ -303,6 +303,12 @@ void CSCV::Inputkey_reaction(const int& nkey)
 
 			//위치에 도착하면 건물생성
 		}
+		else
+		{
+			m_unitinfo.order = ORDER_NONE;
+			m_main_preview->SetActive(false);
+			m_is_preview = false;
+		}
 	}
 
 
@@ -397,12 +403,12 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		CWorkman::SetMineral_mark(NULL);
 	}
 }
-void CSCV::Input_cmd(const int& nkey , bool* waitkey)
+bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 {
 	//m_is_preview = false;
 
 	if(false == m_unitinfo.is_active)
-		return;
+		return false;
 
 	if(VK_RBUTTON == nkey)
 	{
@@ -417,7 +423,7 @@ void CSCV::Input_cmd(const int& nkey , bool* waitkey)
 	if(VK_LBUTTON == nkey)
 	{
 		//여기서 명령을 입력하고
-		if(true == m_is_preview && true == (m_main_preview)->Install_check())
+		if(true == m_is_preview && true == m_main_preview->Install_check())
 		{
 			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
@@ -453,8 +459,10 @@ void CSCV::Input_cmd(const int& nkey , bool* waitkey)
 	{
 		m_ecmd_state = CMD_BASIC;
 	}
+
+	return false;
 }
-void CSCV::Input_cmd(const int& firstkey , const int& secondkey)
+bool CSCV::Input_cmd(const int& firstkey , const int& secondkey)
 {
 	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
 	{
@@ -522,6 +530,8 @@ void CSCV::Input_cmd(const int& firstkey , const int& secondkey)
 		else
 			m_is_preview = false;
 	}
+
+	return false;
 }
 
 void CSCV::Create_Building(void)
@@ -534,6 +544,7 @@ void CSCV::Create_Building(void)
 		{
 			m_unitinfo.order = ORDER_NONE;
 			m_unitinfo.state = IDLE;
+			m_ecmd_state = CMD_BASIC;		
 			return;
 		}
 
@@ -608,6 +619,15 @@ void CSCV::Create_Building(void)
 		((CCom_Pathfind*)m_com_pathfind)->ClearPath();
 		((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 		((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(0);
+	}
+	else
+	{
+		if(false == (m_main_preview)->Install_check(m_preview_info))
+		{
+			m_unitinfo.order = ORDER_NONE;
+			m_unitinfo.state = IDLE;
+			m_ecmd_state = CMD_BASIC;
+		}
 	}
 }
 

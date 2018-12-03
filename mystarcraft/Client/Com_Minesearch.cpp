@@ -114,11 +114,6 @@ void CCom_Minesearch::Update(void)
 			if(NULL != m_com_weapon)
 				((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);
 
-			//if(NULL != m_com_pathfind)
-			//{
-			//	((CCom_Pathfind*)m_com_pathfind)->ClearPath();
-			//	((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
-			//}
 		}
 		else
 		{
