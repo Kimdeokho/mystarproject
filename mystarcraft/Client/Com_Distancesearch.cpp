@@ -260,7 +260,8 @@ void CCom_Distancesearch::Update(void)
 				m_search_time > 0.4f)
 			{				
 				m_search_time = 0.f;
-				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , m_irange , m_search_type);			
+				int iattrange = max(*m_pattack_range , *m_pair_range);
+				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , m_irange ,iattrange , m_search_type);			
 
 				//if(ATTACK == m_pobj->GetUnitinfo().state)
 				//	m_pobj->SetState(IDLE);
@@ -324,7 +325,6 @@ void CCom_Distancesearch::Update(void)
 				//공격범위 밖, 추적범위 안이면
 				//공격 후딜이 다 끝나고 추적
 
-
 				if(ORDER_BUNKER_BOARDING == m_pobj->GetUnitinfo().order)
 				{
 					m_ptarget = NULL;
@@ -346,7 +346,8 @@ void CCom_Distancesearch::Update(void)
 			if(OBJ_TURRET == m_pobj->GetOBJNAME())
 				m_pobj->SetState(IDLE);
 
-			m_search_time = 0.4f;
+			m_btarget_search = true;
+			m_search_time = 1.4f;
 		}
 	}
 }

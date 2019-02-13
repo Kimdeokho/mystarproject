@@ -69,6 +69,7 @@ void CLarva_egg::Initialize(void)
 	m_sortID = SORT_GROUND;
 	m_ecategory = CATEGORY_UNIT;
 
+	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.esize = SIZE_SMALL;

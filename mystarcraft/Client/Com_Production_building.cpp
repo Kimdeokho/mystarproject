@@ -8,6 +8,7 @@
 #include "TimeMgr.h"
 #include "ObjMgr.h"
 #include "Ingame_UIMgr.h"
+#include "UI_Resource.h"
 
 #include "Com_Pathfind.h"
 #include "Com_AirPathfind.h"
@@ -308,74 +309,105 @@ void CCom_Production_building::create_unit(OBJID eid)
 
 	if(OBJ_SCV == eid)
 	{
-		pobj = new CSCV(m_vPos);
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_pobj->GetTeamNumber()))
+		{
+			pobj = new CSCV(m_vPos);
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);		
+		}
 	}
 	else if(OBJ_TANK == eid)
-	{
-		pobj = new CTank;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);
+	{		
+		{
+			pobj = new CTank;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);		
+		}
 	}
 	else if(OBJ_MARINE == eid)
 	{
-		pobj = new CMarine;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MARINE);
+		
+		{
+			pobj = new CMarine;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_MARINE);		
+		}
 	}
 	else if(OBJ_MEDIC == eid)
 	{
-		pobj = new CMedic;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);
+		
+		{
+			pobj = new CMedic;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);		
+		}
 	}
 	else if(OBJ_FIREBAT == eid)
 	{
-		pobj = new CFirebat;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);
+		
+		{
+			pobj = new CFirebat;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);		
+		}
 	}
 	else if(OBJ_GHOST == eid)
 	{
-		pobj = new CGhost;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST);
-	}
-	else if(OBJ_TANK == eid)
-	{
-		pobj = new CTank;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -100,  m_pobj->GetTeamNumber()))
+		{
+			pobj = new CGhost;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST);		
+		}
 	}
 	else if(OBJ_GOLIATH == eid)
 	{
-		pobj = new CGoliath;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);
+		{
+			pobj = new CGoliath;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);		
+		}
 	}
 	else if(OBJ_VULTURE == eid)
-	{
-		pobj = new CVulture;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VULTURE);
+	{		
+		{
+			pobj = new CVulture;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_VULTURE);		
+		}
 	}
 	else if(OBJ_WRAITH == eid)
 	{
-		pobj = new CWraith;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_WRAITH);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_pobj->GetTeamNumber()))
+		{
+			pobj = new CWraith;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_WRAITH);		
+		}
 	}
 	else if(OBJ_DROPSHIP == eid)
 	{
-		pobj = new CDropship;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_DROPSHIP);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_pobj->GetTeamNumber()))
+		{
+			pobj = new CDropship;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_DROPSHIP);		
+		}
 	}
 	else if(OBJ_VESSEL == eid)
 	{
-		pobj = new CVessle;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -225,  m_pobj->GetTeamNumber()))
+		{
+			pobj = new CVessle;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);		
+		}
 	}
 	else if(OBJ_BATTLE == eid)
 	{
-		pobj = new CBattleCruiser;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-400 , -300,  m_pobj->GetTeamNumber()))
+		{
+			pobj = new CBattleCruiser;
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);		
+		}
 	}
 
-	pobj->SetPos(m_vPos);
-	pobj->SetTeamNumber(m_pobj->GetTeamNumber());
-	pobj->Initialize();
-	unit_collocate(pobj);
+	if(NULL != pobj)
+	{
+		pobj->SetPos(m_vPos);
+		pobj->SetTeamNumber(m_pobj->GetTeamNumber());
+		pobj->Initialize();
+		unit_collocate(pobj);
+	}
 
 	if(true == m_is_rally)
 	{

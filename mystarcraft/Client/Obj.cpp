@@ -4,6 +4,7 @@
 
 #include "Area_Mgr.h"
 #include "ScrollMgr.h"
+#include "Debug_Mgr.h"
 #include "Device.h"
 #include "Component.h"
 #include "UnitMgr.h"
@@ -145,6 +146,9 @@ void CObj::SetPos(const D3DXVECTOR2& vpos)
 
 bool CObj::Be_in_camera(void)
 {
+	if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_PATHFIND])
+		return true;
+
 	if( m_vPos.x >= CScrollMgr::m_fScrollX - 100 && 
 		m_vPos.x <= CScrollMgr::m_fScrollX + CLINETSIZE_X + 100 &&
 		m_vPos.y >= CScrollMgr::m_fScrollY - 100 &&
@@ -422,6 +426,11 @@ void CObj::SetMyrect(MYRECT<float> temprc)
 void CObj::SetVertex(MYRECT<float> tempvtx)
 {
 	m_vertex = tempvtx;
+}
+
+void CObj::AddComponent(const COMPONENT_LIST ecomname, CComponent* pcom)
+{
+	m_componentlist.insert(COMPONENT_PAIR::value_type(ecomname , pcom) );
 }
 
 

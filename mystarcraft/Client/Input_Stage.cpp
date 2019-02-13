@@ -90,8 +90,9 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 			memset(m_clickwating , 0 , sizeof(m_clickwating));
 		}		
 	}
-	if(true == m_inst->GetOnceKeyDown_Check(VK_LBUTTON))
+	if( !m_inst->IS_CombineFirstKey(VK_CONTROL) && true == m_inst->GetOnceKeyDown_Check(VK_LBUTTON))
 	{
+
 		m_select = false;
 
 		//첫번째 키다운한 위치 저장
@@ -211,7 +212,7 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 						{
 							if(true == m_clickwating[a])
 							{
-								CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
+								//CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
 							}
 						}
 					}
@@ -254,7 +255,8 @@ void CInput_Stage::Intput_turbokey_reaction(void)
 	{
 		CScrollMgr::m_fScrollY += GETTIME*fspeed;
 	}
-	if( true == m_inst->GetTurboKeyDown_Check(VK_LBUTTON))
+	if( !m_inst->IS_CombineFirstKey(VK_CONTROL) &&
+		true == m_inst->GetTurboKeyDown_Check(VK_LBUTTON))
 	{
 		if(false == m_bwork && true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(m_downpt))
 			CIngame_UIMgr::GetInstance()->SetMinimapCamPos(CMouseMgr::GetInstance()->GetScreenMousePt());
@@ -269,7 +271,7 @@ void CInput_Stage::Intput_turbokey_reaction(void)
 
 void CInput_Stage::Intput_keyup_reaction(void)
 {
-	if(true == m_inst->GetKeyUp_Check(VK_LBUTTON))
+	if(!m_inst->IS_CombineFirstKey(VK_CONTROL) && true == m_inst->GetKeyUp_Check(VK_LBUTTON))
 	{
 		CLineMgr::GetInstance()->SetRenderSwitch(false);
 
@@ -288,7 +290,16 @@ void CInput_Stage::Intput_dbclick_reaction(void)
 
 void CInput_Stage::Intput_combine_reaction(void)
 {
+	if(m_inst->GetCombineKey_Check(VK_CONTROL , VK_LBUTTON))
+	{
+		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		CArea_Mgr::GetInstance()->Choice_Same_unit(vpos);
+	}
 
+	if(m_inst->GetCombineKey_Check(VK_CONTROL , '1'))
+	{
+		int a = 0;
+	}
 }
 
 

@@ -79,7 +79,7 @@ void CCom_Collision::Update(void)
 					//영벡터일때 임의의 방향벡터를 준다.
 					//m_collision_vnormal = OFFSET_DIRVEC;
 
-					m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5) );
+					m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) + 1 , float(rand()%10 - 5) + 1 );
 					D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
 				}
 			}
@@ -91,15 +91,15 @@ void CCom_Collision::Update(void)
 	else
 	{
 		m_nuckback_time += GETTIME;
-		m_collision_target = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
-		MYRECT<float> temp;
-		if(NULL != m_collision_target &&
+		//m_collision_target = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
+		//MYRECT<float> temp;
+		if(/*NULL != m_collision_target &&*/
 			/*MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect())*/ 
 			m_nuckback_time <= 0.4f)
 		{			
 			//임의
 			int idx32 = 0;
-			m_vprepos = m_vPos - GETTIME* (*m_fspeed) *m_collision_vnormal;
+			m_vprepos = m_vPos - GETTIME * (*m_fspeed) * m_collision_vnormal;
 			idx32 = CMyMath::Pos_to_index(m_vprepos , 32);
 
 			/*타겟과 충돌이 일어나는 중이라면*/
@@ -122,9 +122,26 @@ void CCom_Collision::Update(void)
 			}
 			else if(MOVE_NONE == byop)
 			{
-				m_pobj->SetState(IDLE);
-				m_collision_target = NULL;
-				m_nuckback_time = 0.f;
+				D3DXVECTOR2 temppos = CMyMath::index_to_Pos(idx32 ,SQ_TILECNTX, 32);
+
+				D3DXVECTOR2 vtemp_dir =  temppos - m_vPos;
+				D3DXVec2Normalize(&vtemp_dir , &vtemp_dir);
+
+				m_vPos -= GETTIME * (*m_fspeed) * vtemp_dir;
+
+				m_rect.left = m_vPos.x - m_vertex.left; 
+				m_rect.right = m_vPos.x + m_vertex.right;
+				m_rect.top = m_vPos.y - m_vertex.top;
+				m_rect.bottom = m_vPos.y + m_vertex.bottom;
+
+				m_pobj->Setdir(-vtemp_dir);
+				m_pobj->SetState(COLLISION);
+
+				m_collision_vnormal = vtemp_dir;
+
+				
+				//m_collision_target = NULL;
+				//m_nuckback_time = 0.f;
 			}
 		}
 		else

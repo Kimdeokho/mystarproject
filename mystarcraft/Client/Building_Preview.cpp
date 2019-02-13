@@ -10,6 +10,7 @@
 #include "ScrollMgr.h"
 #include "FontMgr.h"
 #include "Session_Mgr.h"
+#include "RoomSession_Mgr.h"
 #include "Obj.h"
 CBuilding_Preview::CBuilding_Preview(CObj* pobj)
 {
@@ -95,6 +96,8 @@ void CBuilding_Preview::Render(void)
 	MYRECT<float>	temprc;
 	D3DCOLOR	tile_color;
 	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+	TRIBE	etribe = m_pobj->GetUnitinfo().etribe;
+	
 
 	for(int i = 0; i < m_preview_info.icol; ++i)
 	{
@@ -146,19 +149,16 @@ void CBuilding_Preview::Render(void)
 			m_tempmat._42 = vtemp.y - CScrollMgr::m_fScrollY;
 			m_pSprite->SetTransform(&m_tempmat);
 			BYTE op = CTileManager::GetInstance()->GetTileOption(idx32);
+			
 			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogLight(idx32 , eteam);
 
 			if(T_GAS == m_preview_info.ebuild ||
 				Z_GAS == m_preview_info.ebuild)
 			{
 				if(op == RESOURCE_GAS && FOG_BLACK != fog_sight)
-				{
 					tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
-				}
 				else
-				{
 					tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
-				}
 			}
 			else
 			{
@@ -166,12 +166,30 @@ void CBuilding_Preview::Render(void)
 					op == MOVE_OK &&
 					FOG_BLACK != fog_sight)
 				{
-					tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
+					//tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
+
+					if( TRIBE_TERRAN == etribe )
+					{
+						if(CTileManager::GetInstance()->GetCreepInstall(idx32))
+							tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
+						else
+							tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
+					}
+					else if(TRIBE_ZERG == etribe)
+					{
+						if(Z_HATCHERY == m_preview_info.ebuild)
+							tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
+						else
+						{
+							if(CTileManager::GetInstance()->GetCreepInstall(idx32))
+								tile_color = D3DCOLOR_ARGB(80, 0 , 255, 0 );
+							else
+								tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
+						}
+					}
 				}
 				else
-				{
 					tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
-				}
 
 				//if(FOG_BLACK == fog_sight)
 				//	tile_color = D3DCOLOR_ARGB(80, 255 , 0, 0 );
@@ -202,8 +220,9 @@ bool CBuilding_Preview::Install_check(void)
 	int idx64 = 0;
 	D3DXVECTOR2 vtemp = m_preview_info.vpos; // 0행0열셀이 가리키는 좌표이다
 	MYRECT<float>	temprc;
-	//TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+	TEAM_NUMBER Player_team = CSession_Mgr::GetInstance()->GetTeamNumber();
 	TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
+	TRIBE	etribe = m_pobj->GetUnitinfo().etribe;
 
 	for(int i = 0; i < m_preview_info.icol; ++i)
 	{
@@ -261,8 +280,11 @@ bool CBuilding_Preview::Install_check(void)
 			{
 				if(RESOURCE_GAS != op || FOG_BLACK == fog_sight)
 				{
-					CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					if(Player_team == eteam)
+					{
+						CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					}
 					return false;
 				}
 			}
@@ -272,11 +294,35 @@ bool CBuilding_Preview::Install_check(void)
 					MOVE_OK == op &&
 					FOG_BLACK != fog_sight)
 				{
+					if(TRIBE_TERRAN == etribe)
+					{
+						if(CTileManager::GetInstance()->GetCreepInstall(idx32) &&
+							Player_team == eteam)
+						{
+							CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+						}
+					}
+					else if(TRIBE_ZERG == etribe)
+					{
+						if(!CTileManager::GetInstance()->GetCreepInstall(idx32) &&
+							Player_team == eteam)
+						{
+							if(Z_HATCHERY != m_preview_info.ebuild)
+							{
+								CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+							}
+						}
+					}
 				}
 				else
 				{
-					CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					if(Player_team == eteam)
+					{
+						CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					}
 					return false;
 				}
 			}
@@ -291,7 +337,9 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 	int idx64 = 0;
 	D3DXVECTOR2 vtemp = cur_info.vpos;
 	MYRECT<float>	temprc;
-	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+	TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
+	TEAM_NUMBER Player_team = CSession_Mgr::GetInstance()->GetTeamNumber();
+	TRIBE	etribe = m_pobj->GetUnitinfo().etribe;
 
 	temprc.left		= cur_info.vcenter_pos.x - cur_info.vtx.left;
 	temprc.right	= cur_info.vcenter_pos.x + cur_info.vtx.right;
@@ -321,8 +369,11 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 			{
 				if(RESOURCE_GAS != op || FOG_BLACK == fog_sight)
 				{
-					CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					if(Player_team == eteam)
+					{
+						CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+					}
 					return false;
 				}
 			}
@@ -332,6 +383,27 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 					MOVE_OK == op /*&&
 					FOG_BLACK != fog_sight*/)
 				{
+					if(TRIBE_TERRAN == etribe)
+					{
+						if(CTileManager::GetInstance()->GetCreepInstall(idx32) &&
+							Player_team == eteam)
+						{
+							CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+								, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+						}
+					}
+					else if(TRIBE_ZERG == etribe)
+					{
+						if(!CTileManager::GetInstance()->GetCreepInstall(idx32) &&
+							Player_team == eteam)
+						{
+							if(Z_HATCHERY != m_preview_info.ebuild)
+							{
+								CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+							}
+						}
+					}
 				}
 				else
 				{

@@ -6,6 +6,9 @@ class CCom_Weapon :
 	public CComponent
 {
 protected:
+	int			m_cur_target_num;
+	int			m_cur_target_cntnum;
+
 	UPG_INFO*	m_upg_info;
 	WEAPON_INFO	m_weapon_info;
 

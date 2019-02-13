@@ -20,9 +20,9 @@ CScene_StagePre::~CScene_StagePre(void)
 }
 
 HRESULT CScene_StagePre::Initialize(void)
-{
+{	
 	CTileManager::GetInstance()->Initialize();
-	CIngame_UIMgr::GetInstance()->Initialize(TERRAN);
+	
 	LoadData();
 
 	return S_OK;
@@ -89,6 +89,15 @@ void CScene_StagePre::LoadData(void)
 	CloseHandle(hFile);
 
 	PLACE_DATA* placeinfo = CRoomSession_Mgr::GetInstance()->GetPlaceData();
+	int			myslot = CRoomSession_Mgr::GetInstance()->GetMyRoomslot();
+	
+	CSession_Mgr::GetInstance()->SetTeamNumber((TEAM_NUMBER)placeinfo[myslot].TEAMNUM);
+
+	if(!lstrcmp(placeinfo[myslot].TRIBE , L"Terran"))
+		CIngame_UIMgr::GetInstance()->Initialize(TRIBE_TERRAN);
+	else if(!lstrcmp(placeinfo[myslot].TRIBE , L"Zerg"))
+		CIngame_UIMgr::GetInstance()->Initialize(TRIBE_ZERG);
+	
 
 	int idx = 0;
 	for(int i = 0; i < 8; ++i)
@@ -96,20 +105,24 @@ void CScene_StagePre::LoadData(void)
 		if( 0 == placeinfo[i].SESSION_ID)
 			continue;
 
-		idx = placeinfo[i].START_SLOT;
+		idx = placeinfo[i].START_SLOT; // 0 ~ 3
 
 		if(CSession_Mgr::GetInstance()->GetSession_Info().SESSION_ID == placeinfo[i].SESSION_ID)
 		{
 			CScrollMgr::m_fScrollX = base_list[idx].x - BACKBUFFER_SIZEX/2;
 			CScrollMgr::m_fScrollY = base_list[idx].y - BACKBUFFER_SIZEY/2;
-			CSession_Mgr::GetInstance()->SetTeamNumber((TEAM_NUMBER)placeinfo[i].TEAMNUM);
+			//CSession_Mgr::GetInstance()->SetTeamNumber((TEAM_NUMBER)placeinfo[i].TEAMNUM);
 		}
 		
 		
 		if(!lstrcmp(placeinfo[i].TRIBE , L"Terran"))
-			CObjMgr::GetInstance()->Place_Terran(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ
+		{			
+			CObjMgr::GetInstance()->Place_Terran(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ			
+		}
 		else if(!lstrcmp(placeinfo[i].TRIBE , L"Zerg"))
-			CObjMgr::GetInstance()->Place_Zerg(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ
+		{
+			CObjMgr::GetInstance()->Place_Zerg(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ			
+		}
 		else
 			CObjMgr::GetInstance()->Place_Terran(base_list[idx] , (TEAM_NUMBER)placeinfo[i].TEAMNUM); //포지션이다. 팀도 넣어야하고, 일꾼도ㅇㅇ
 	}

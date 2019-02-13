@@ -170,6 +170,74 @@ void CUI_Cmd_info::T_Cmdbtn_V_buildsetting(void)
 		Create_Cmdbtn(2 , L"BTN_SIENCE" , BTN_SIENCE , false);
 	}
 }
+void CUI_Cmd_info::Z_Cmdbtn_B_buildsetting(void)
+{
+	//단축키 b를 누르면 나오는 종족 테크트리
+
+	CUI* pui = NULL;
+	for(int i = 0; i < 9; ++i)
+	{
+		pui = m_cmdbtn_list[i];
+		((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
+	}
+
+	Create_Cmdbtn(0 , L"BTN_HATCHERY" , BTN_HATCHERY);	
+	Create_Cmdbtn(2 , L"BTN_Z_GAS" , BTN_Z_GAS );
+
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_HATCHERY))
+	{
+		Create_Cmdbtn(3 , L"BTN_SPWANING" , BTN_SPWANING , true);
+		Create_Cmdbtn(1 , L"BTN_COLONY" , BTN_COLONY );
+		Create_Cmdbtn(4 , L"BTN_CHAMBER" , BTN_CHAMBER , true);		
+	}
+	else
+	{
+		Create_Cmdbtn(3 , L"BTN_SPWANING" , BTN_SPWANING , false);
+		Create_Cmdbtn(1 , L"BTN_COLONY" , BTN_COLONY , false);
+		Create_Cmdbtn(4 , L"BTN_CHAMBER" , BTN_CHAMBER , false);		
+	}
+
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL))
+	{
+		Create_Cmdbtn(6 , L"BTN_HYDRADEN" , BTN_HYDRADEN);
+	}
+	else
+	{
+		Create_Cmdbtn(6 , L"BTN_HYDRADEN" , BTN_HYDRADEN , false);
+	}
+
+}
+void CUI_Cmd_info::Z_Cmdbtn_V_buildsetting(void)
+{
+	CUI* pui = NULL;
+	for(int i = 0; i < 9; ++i)
+	{
+		pui = m_cmdbtn_list[i];
+		((CCmd_btn*)pui)->Init_btn(L"" , BTN_NONE , m_vcmdbtn_pos[i] , true);
+	}
+
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_LAIR) )
+	{
+		Create_Cmdbtn(0 , L"BTN_SPIRE" , BTN_SPIRE);
+		Create_Cmdbtn(1 , L"BTN_QUEEN_NEST" , BTN_QUEEN_NEST);
+	}
+	else
+	{
+		Create_Cmdbtn(0 , L"BTN_SPIRE" , BTN_SPIRE , false);
+		Create_Cmdbtn(1 , L"BTN_QUEEN_NEST" , BTN_QUEEN_NEST , false);
+	}
+
+	if( 0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_HIVE) )
+	{
+		Create_Cmdbtn(3 , L"BTN_ULTRA_CAVE" , BTN_ULTRA_CAVE);
+		Create_Cmdbtn(4 , L"BTN_DEFILER_MOUND" , BTN_DEFILER_MOUND);
+	}
+	else
+	{
+		Create_Cmdbtn(3 , L"BTN_ULTRA_CAVE" , BTN_ULTRA_CAVE , false);
+		Create_Cmdbtn(4 , L"BTN_DEFILER_MOUND" , BTN_DEFILER_MOUND , false);
+	}
+}
 bool CUI_Cmd_info::active_cmdbtn(const int& idx, CMD_BTN ebtn)
 {
 	if(NULL == m_cmdbtn_list[idx])

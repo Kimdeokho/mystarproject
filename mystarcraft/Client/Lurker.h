@@ -1,10 +1,12 @@
 #pragma once
 #include "unit.h"
 
+class CCom_Weapon;
 class CLurker :
 	public CUnit
 {
 private:
+	CCom_Weapon*		m_com_weapon;
 public:
 	void	Burrow_Complete(void);
 public:

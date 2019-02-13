@@ -56,7 +56,7 @@ void CCom_WSunken::fire(CObj* ptarget)
 		CObjMgr::GetInstance()->AddEffect(peff);
 
 		int idx = ptarget->Getcuridx(32);
-		if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
+		if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType &&
 			CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
 			ptarget->SetDamage(m_weapon_info.damage , m_weapon_info.eDamageType);
 	}

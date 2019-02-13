@@ -8,8 +8,10 @@
 #include "MyMath.h"
 #include "ScrollMgr.h"
 #include "Area_Mgr.h"
-#include "UI.h"
 #include "UnitMgr.h"
+#include "Ingame_UIMgr.h"
+
+#include "UI_MiniUnitDisplay.h"
 CZerg_building::CZerg_building(void)
 {
 	m_build_hp = 0.f;
@@ -19,6 +21,12 @@ CZerg_building::CZerg_building(void)
 	m_weight = D3DXVECTOR2(0,0);
 	m_com_anim = NULL;
 	m_com_creep = NULL;
+
+	m_unitinfo.etribe = TRIBE_ZERG;
+
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
+	m_miniunit_display->Initialize();
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }
 
 CZerg_building::~CZerg_building(void)
@@ -141,4 +149,8 @@ void CZerg_building::Release(void)
 
 	if(NULL != m_energybar_ui)
 		Safe_Delete(m_energybar_ui);
+
+	if(NULL != m_miniunit_display)
+		m_miniunit_display->SetDestroy(true);
+
 }

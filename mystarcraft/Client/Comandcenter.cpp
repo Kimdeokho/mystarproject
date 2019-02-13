@@ -29,6 +29,7 @@
 #include "UI_Wireframe.h"
 #include "UI_Cmd_info.h"
 #include "UI_form.h"
+#include "UI_Resource.h"
 
 #include "TextureMgr.h"
 #include "Session_Mgr.h"
@@ -129,6 +130,8 @@ void CComandcenter::Initialize(void)
 	m_offtime = (rand()%3 + 1);
 
 	m_curtime = 0.f;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(10 , m_eteamnumber);
 }
 
 void CComandcenter::Update(void)
@@ -587,40 +590,6 @@ bool CComandcenter::Input_cmd(const int& firstkey , const int& secondkey)
 	return false;
 }
 
-void CComandcenter::Release(void)
-{
-	CTerran_building::area_release();
-
-	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
-	Safe_Delete(m_com_pathfind);
-	if(iter != m_componentlist.end())
-	{
-		m_componentlist.erase(iter);
-	}
-
-
-}
-
-void CComandcenter::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	if(NULL != m_partbuilding)
-	{
-		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
-		m_partbuilding = NULL;
-	}
-}
 void CComandcenter::Update_Cmdbtn(void)
 {
 	CUI_Cmd_info* pcmd = CIngame_UIMgr::GetInstance()->GetCmd_info();
@@ -735,4 +704,37 @@ void CComandcenter::Update_Wireframe(void)
 		}
 	}
 	//-------------------------------------------
+}
+void CComandcenter::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	if(NULL != m_partbuilding)
+	{
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
+		m_partbuilding = NULL;
+	}
+}
+void CComandcenter::Release(void)
+{
+	CTerran_building::area_release();
+
+	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
+	Safe_Delete(m_com_pathfind);
+	if(iter != m_componentlist.end())
+	{
+		m_componentlist.erase(iter);
+	}
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(-10 , m_eteamnumber);
 }

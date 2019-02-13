@@ -65,7 +65,7 @@ void CCom_Minesearch::Update(void)
 			m_search_time > 0.2f)
 		{
 			m_search_time = 0.f;
-			m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
+			m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range, 0, m_search_type);			
 		}
 
 		if(NULL != m_ptarget)

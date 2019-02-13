@@ -29,6 +29,7 @@ void CGoliath_part::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_GOLIATH;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.hp = 0;

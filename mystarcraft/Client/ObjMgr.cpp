@@ -9,6 +9,11 @@
 #include "ObjPoolMgr.h"
 #include "TileManager.h"
 #include "Area_Mgr.h"
+#include "Debug_Mgr.h"
+#include "Session_Mgr.h"
+#include "Ingame_UIMgr.h"
+#include "UI_Resource.h"
+
 #include "UI.h"
 #include "UnitMgr.h"
 #include "Effect.h"
@@ -18,10 +23,11 @@
 
 #include "Larva.h"
 #include "Drone.h"
+#include "Overload.h"
 #include "SCv.h"
 #include "Hatchery.h"
 #include "Comandcenter.h"
-#include "Session_Mgr.h"
+
 
 IMPLEMENT_SINGLETON(CObjMgr)
 CObjMgr::CObjMgr(void)
@@ -109,26 +115,40 @@ void CObjMgr::Destroy_Update(void)
 				
 				if(true == (*iter)->Be_in_camera())
 				{ 
-					if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight((*iter)->Getcuridx(32), eteam))
+					if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
 					{
-						if( (*iter)->GetUnitinfo().detect[eteam] > 0)
-						{
-							if(SORT_AIR == sortid)
-								m_air_rendersort.push_back( (*iter) );
-							else if(SORT_AIR_EFF == sortid)
-								m_aireff_renderlist.push_back( (*iter) );
-							else if(SORT_GROUND_EFF == sortid)
-								m_groundeff_renderlist.push_back( (*iter) );
-							else
-								m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
-						}
+						if(SORT_AIR == sortid)
+							m_air_rendersort.push_back( (*iter) );
+						else if(SORT_AIR_EFF == sortid)
+							m_aireff_renderlist.push_back( (*iter) );
+						else if(SORT_GROUND_EFF == sortid)
+							m_groundeff_renderlist.push_back( (*iter) );
+						else
+							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
 					}
 					else
 					{
-						if(CATEGORY_BUILDING == (*iter)->GetCategory() ||
-							CATEGORY_RESOURCE == (*iter)->GetCategory())
+						if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight((*iter)->Getcuridx(32), eteam))
 						{
-							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+							if( (*iter)->GetUnitinfo().detect[eteam] > 0)
+							{
+								if(SORT_AIR == sortid)
+									m_air_rendersort.push_back( (*iter) );
+								else if(SORT_AIR_EFF == sortid)
+									m_aireff_renderlist.push_back( (*iter) );
+								else if(SORT_GROUND_EFF == sortid)
+									m_groundeff_renderlist.push_back( (*iter) );
+								else
+									m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+							}
+						}
+						else
+						{
+							if(CATEGORY_BUILDING == (*iter)->GetCategory() ||
+								CATEGORY_RESOURCE == (*iter)->GetCategory())
+							{
+								m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+							}
 						}
 					}
 				}
@@ -156,9 +176,16 @@ void CObjMgr::Destroy_Update(void)
 				sortid = (*iter)->GetsortID();
 
 				int idx32 = CMyMath::Pos_to_index((*iter)->GetPos(), 32);
-				if(true == (*iter)->Be_in_camera()  &&
-					FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(idx32, eteam))
-					m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+				if(true == (*iter)->Be_in_camera())
+				{
+					if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
+						m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					else
+					{
+						if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(idx32, eteam))
+							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					}
+				}
 
 				++iter;
 			}
@@ -184,17 +211,33 @@ void CObjMgr::Destroy_Update(void)
 				sortid = (*iter)->GetsortID();
 				int idx32 = CMyMath::Pos_to_index((*iter)->GetPos(), 32);
 
-				if(true == (*iter)->Be_in_camera() &&
-					FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(idx32, eteam))
+				if(true == (*iter)->Be_in_camera())
 				{
-					if(SORT_GROUND_EFF == sortid)
-						m_groundeff_renderlist.push_back( (*iter) );
-					else if(SORT_AIR_EFF == sortid)
-						m_aireff_renderlist.push_back( (*iter) );
-					else if(SORT_AIR == sortid)
-						m_air_rendersort.push_back( (*iter) );
+					if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
+					{
+						if(SORT_GROUND_EFF == sortid)
+							m_groundeff_renderlist.push_back( (*iter) );
+						else if(SORT_AIR_EFF == sortid)
+							m_aireff_renderlist.push_back( (*iter) );
+						else if(SORT_AIR == sortid)
+							m_air_rendersort.push_back( (*iter) );
+						else
+							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					}
 					else
-						m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					{
+						if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(idx32, eteam))
+						{
+							if(SORT_GROUND_EFF == sortid)
+								m_groundeff_renderlist.push_back( (*iter) );
+							else if(SORT_AIR_EFF == sortid)
+								m_aireff_renderlist.push_back( (*iter) );
+							else if(SORT_AIR == sortid)
+								m_air_rendersort.push_back( (*iter) );
+							else
+								m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+						}
+					}
 				}
 
 				++iter;
@@ -474,6 +517,7 @@ void CObjMgr::Place_Terran(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
 		pscv->SetTeamNumber(eteam);
 		pscv->Initialize();
 		AddObject(pscv , OBJ_SCV);
+		CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(1 , eteam);
 		//pscv->Initialize();
 	}
 }
@@ -507,21 +551,18 @@ void CObjMgr::Place_Zerg(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
 
 		pdrone->SetPos(collocate_pos);		
 		pdrone->SetTeamNumber(eteam);
-		pdrone->Initialize();		
+		pdrone->Initialize();
+		CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(1 , eteam);
 	}
 
+	CObj*	poverload = new COverload;
+	AddObject(pdrone , OBJ_OVERLOAD);
 
-	//pobj = new CHatchery(0.f);
-	//pobj->SetPos(D3DXVECTOR2(vpos.x - 150 , vpos.y));
-	//pobj->SetTeamNumber(eteam);
-	//pobj->Initialize();
-	//AddObject(pobj , OBJ_HACERY);
-
-	//pobj = new CHatchery(0.f);
-	//pobj->SetPos(D3DXVECTOR2(vpos.x - 150 , vpos.y - 100));
-	//pobj->SetTeamNumber(eteam);
-	//pobj->Initialize();
-	//AddObject(pobj , OBJ_HACERY);
+	vpos.y -= 30;
+	poverload->SetPos(vpos);
+	poverload->SetTeamNumber(eteam);
+	poverload->Initialize();
+	
 }
 CObj* CObjMgr::GetObj(const USHORT objnum)
 {

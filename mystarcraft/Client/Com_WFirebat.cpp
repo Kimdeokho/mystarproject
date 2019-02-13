@@ -31,9 +31,8 @@ void CCom_WFirebat::Initialize(CObj* pobj /*= NULL*/)
 
 	m_bfire = false;
 
-	m_splash_range[0] = 10;
-	m_splash_range[1] = 10;
-	m_splash_range[2] = 10;
+	for(int i = 0; i < 3; ++i)
+		m_splash_range[i] = 32*0.625f;
 }
 
 void CCom_WFirebat::Update(void)
@@ -86,13 +85,15 @@ void CCom_WFirebat::fire(CObj* ptarget)
 			peff->Initialize();
 			CObjMgr::GetInstance()->AddEffect(peff);
 
-			D3DXVECTOR2	vsplash_pos[3];
+			D3DXVECTOR2	vsplash_pos[5];
 			vsplash_pos[0] = ptarget->GetPos();
-			vsplash_pos[1] = vsplash_pos[0] + vdir * 20;
-			vsplash_pos[2] = vsplash_pos[1] + vdir * 20;
+			for(int i = 1; i < 5; ++i)
+			{
+				vsplash_pos[i] = vsplash_pos[i-1] + vdir * 20;
+			}
 
 			//m_pobj->GetUnitinfo().eAttackType;
-			for(int i = 0; i < 3; ++i)
+			for(int i = 0; i < 5; ++i)
 			{				
 				//renderpos.x = vsplash_pos[i].x - CScrollMgr::m_fScrollX;
 				//renderpos.y = vsplash_pos[i].y - CScrollMgr::m_fScrollY;

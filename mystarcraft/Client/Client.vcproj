@@ -196,6 +196,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\UI_Resource.cpp"
+				>
+			</File>
 			<Filter
 				Name="Maingame"
 				>
@@ -277,6 +281,14 @@
 				</File>
 				<File
 					RelativePath=".\Area_Mgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Debug_Mgr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Debug_Mgr.h"
 					>
 				</File>
 				<File
@@ -2448,6 +2460,14 @@
 				Name="Skill"
 				>
 				<File
+					RelativePath=".\Comset_Scan.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Comset_Scan.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Skill.cpp"
 					>
 				</File>
@@ -2608,6 +2628,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UI_Resource.h"
 				>
 			</File>
 		</Filter>

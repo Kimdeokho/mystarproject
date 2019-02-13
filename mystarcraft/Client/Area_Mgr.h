@@ -48,9 +48,10 @@ public:
 	//void Calculator_eightidx(const int& idx , const int& tilecnt);
 	void SelectCheck( const D3DXVECTOR2& vpos);
 	void DragCheck( const MYRECT<float>& rc);
+	bool Choice_Same_unit(const D3DXVECTOR2& vpos);
 	bool Choice_unit(const int& idx , const D3DXVECTOR2& vpos);
 	bool Choice_unit(const int& idx, const MYRECT<float>& rc);
-	void Choice_building(const int& idx, const MYRECT<float>& rc);
+	void Choice_building(const int idx, const MYRECT<float>& rc);
 	
 	bool DummyCheck(const int& idx, const MYRECT<float>& rc);
 	bool DummyCheck(const int& idx, const D3DXVECTOR2& vpos);
@@ -62,12 +63,12 @@ public:
 	//bool LineCross(CObj* ptarget);
 	//bool diamond_check( const int& idx , CObj* pself ,const CObj* ptarget);
 
-	int overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself , CObj* ptarget);
-	bool Search_Mineral( const int& idx , const int& isearch_range ,CObj* pself , CObj*& pmineral);
-	CObj* Search_Partbuilding(const int& areaidx , const int& searchidx , OBJID eid);
-	bool Mineral_extractor(const D3DXVECTOR2& vpos ,CObj* pself, CObj*& pmineral);
-	bool Mineral_extractor(const int& isearch_range ,CObj* pself , CObj*& pmineral);
-	void gas_extractor(CObj* pself , const D3DXVECTOR2& vpt);
+	int		overlap_prevention(const MYRECT<float>& rc ,const MYRECT<float>& orirect , const D3DXVECTOR2& vpos , const D3DXVECTOR2& voripos , CObj* pself , CObj* ptarget);
+	bool	Search_Mineral( const int& idx , const int& isearch_range ,CObj* pself , CObj*& pmineral);
+	CObj*	Search_Partbuilding(const int& areaidx , const int& searchidx , OBJID eid);
+	bool	Mineral_extractor(const D3DXVECTOR2& vpos ,CObj* pself, CObj*& pmineral);
+	bool	Mineral_extractor(const int& isearch_range ,CObj* pself , CObj*& pmineral);
+	void	gas_extractor(CObj* pself , const D3DXVECTOR2& vpt);
 public:
 	void Areasize_debugrender(const int& areasize , const int& areacnt);
 
@@ -78,14 +79,17 @@ public:
 	void  Setsplash_damage(CObj* pmyobj ,const int& damage , DAMAGE_TYPE edamagetype, const D3DXVECTOR2& vsplash_pos, const float* splash_range  , bool random_splash , list<CObj*>& injurelist);
 public:
 	CObj* Collision_check(CObj* pself);
-	bool Collocate_check(CObj* pself  ,const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
-	bool Building_Collocate_check(CObj* pself , const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
+	bool  Collision_check(CObj* pself , CObj*& ptarget,const MYRECT<float>& myrc);
+	bool  Collocate_check(CObj* pself  ,const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
+	bool  Building_Collocate_check(CObj* pself , const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
 public:
-	CObj*	Auto_explore_target(CObj* pobj , const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
+	CObj*	Melee_explore_target(CObj* pself , const int isearch_range , TARGET_SEARCH_TYPE esearchtype);
+	CObj*	Auto_explore_target(CObj* pobj , const int isearch_range ,const int att_range, TARGET_SEARCH_TYPE esearchtype);
 	CObj*	Explore_medic_target(CObj* pobj , const int& isearch_range );
 	
-	void	Target_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int& isearch_range ,TARGET_SEARCH_TYPE esearchtype);
-	void	MedicTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int& isearch_range);
+	bool	RangeTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int isearch_range ,const int att_range , TARGET_SEARCH_TYPE esearchtype);
+	void	MeleeTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int isearch_range ,TARGET_SEARCH_TYPE esearchtype ,const int path_distance);
+	void	MedicTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int isearch_range);
 	void	TargetChoice(const D3DXVECTOR2& vpos);
 public:
 	void ReleaseObj_Area64(const int& curidx , CObj* pobj);

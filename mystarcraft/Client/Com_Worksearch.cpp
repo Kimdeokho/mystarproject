@@ -86,12 +86,11 @@ void CCom_Worksearch::Update(void)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 					}
 
-					if( false ==  ((CMineral*)m_ptarget)->Getworkman(m_pobj))
+					if( false ==  ((CMineral*)m_ptarget)->Getworkman(m_pobj))//지금 내가 캐고있지 않다
 					{
-						//지금 내가 캐고있지 않다
-						if(false == ((CMineral*)m_ptarget)->Check_workman(m_pobj))
-						{
-							//미네랄 대기자에도 없다
+						m_pobj->SetState(IDLE);
+						if(false == ((CMineral*)m_ptarget)->Check_workman(m_pobj))//미네랄 대기자에도 없다
+						{							
 							if( ((CMineral*)m_ptarget)->Getworkman_count() < 2)
 							{
 								//대기자가 1명이거나 0명이면 대기자 목록에 추가한다
@@ -119,7 +118,7 @@ void CCom_Worksearch::Update(void)
 				}
 				else
 				{
-					CFontMgr::GetInstance()->Setbatch_Font(L"X%d" , 0 , m_pobj->GetPos().x ,m_pobj->GetPos().y );
+					//CFontMgr::GetInstance()->Setbatch_Font(L"X%d" , 0 , m_pobj->GetPos().x ,m_pobj->GetPos().y );
 				}
 
 			}
@@ -143,6 +142,8 @@ void CCom_Worksearch::Update(void)
 							m_pobj->SetActive(false);//여기서 일꾼 area 위치도 삭제해준다
 							m_pobj->area_release();
 						}
+						else
+							m_pobj->SetState(IDLE);
 						((CCom_Pathfind*)m_com_pathfind)->ClearPath();
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 						((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(0);

@@ -8,7 +8,7 @@ CGeneraEff::CGeneraEff(void)
 {
 }
 
-CGeneraEff::CGeneraEff(const TCHAR* texkey ,const D3DXVECTOR2& vpos ,const D3DXVECTOR2& vsize, SORT_ID esortid, const float& ftimespeed
+CGeneraEff::CGeneraEff(const TCHAR* texkey ,const D3DXVECTOR2& vpos ,const D3DXVECTOR2& vsize, SORT_ID esortid, const float ftimespeed
 					   , D3DCOLOR	_color)
 {
 	m_texname = texkey;

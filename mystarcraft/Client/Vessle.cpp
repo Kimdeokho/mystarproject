@@ -26,6 +26,7 @@
 #include "GeneraEff.h"
 #include "MyMath.h"
 
+#include "UI_Resource.h"
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_Energy_bar.h"
@@ -49,6 +50,7 @@ void CVessle::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_VESSEL;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -218,19 +220,6 @@ bool CVessle::Input_cmd(const int& nkey , bool* waitkey)
 
 	return false;
 }
-void CVessle::Release(void)
-{
-	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-}
-
-void CVessle::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.95f,0.95f) , SORT_GROUND );
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-}
 
 void CVessle::Update_Cmdbtn(void)
 {
@@ -331,4 +320,17 @@ void CVessle::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 	}
 	if(m_unitinfo.hp >= m_unitinfo.maxhp)
 		m_unitinfo.hp = m_unitinfo.maxhp;
+}
+void CVessle::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.95f,0.95f) , SORT_GROUND );
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+void CVessle::Release(void)
+{
+	CObj::area_release();
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
 }

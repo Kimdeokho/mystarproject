@@ -25,6 +25,7 @@
 #include "GeneraEff.h"
 #include "MyMath.h"
 
+#include "UI_Resource.h"
 #include "UI_Wireframe.h"
 #include "UI_Cmd_info.h"
 #include "UI_Energy_bar.h"
@@ -48,6 +49,7 @@ void CQueen::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_MUTAL;
 
+	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -234,11 +236,11 @@ void CQueen::Update_Wireframe(void)
 	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
-		pui = new CUI_Wireframe(L"WIRE_DROPSHIP" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui = new CUI_Wireframe(L"WIRE_QUEEN" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
 		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
-		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Dropship" ,interface_pos.x + 320 , interface_pos.y + 390 );
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Queen" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}
 
 	D3DCOLOR font_color;
@@ -322,4 +324,5 @@ void CQueen::Release(void)
 	CObj::area_release();
 
 	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 }

@@ -40,7 +40,7 @@ HRESULT CScene_Test::Initialize(void)
 	CKeyMgr::GetInstance()->SetInput_Device(SCENE_TEST);
 	CUnitMgr::GetInstance()->Initialize();
 	CTileManager::GetInstance()->Initialize();
-	CIngame_UIMgr::GetInstance()->Initialize(TERRAN);
+	CIngame_UIMgr::GetInstance()->Initialize(TRIBE_TERRAN);
 	CSession_Mgr::GetInstance()->SetTeamNumber(TEAM_0);
 	LoadData();
 

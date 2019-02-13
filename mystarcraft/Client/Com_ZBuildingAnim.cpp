@@ -65,7 +65,9 @@ void CCom_ZBuildingAnim::Update(void)
 			SetTextureName(m_origin_name);
 			SetAnimation(L"IDLE");
 			m_pobj->SetState(IDLE);
-			((CZerg_building*)m_pobj)->Build_Complete();
+
+			if(OBJ_Z_GAS != m_pobj->GetOBJNAME())
+				((CZerg_building*)m_pobj)->Build_Complete();
 		}
 	}
 

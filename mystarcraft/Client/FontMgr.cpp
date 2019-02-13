@@ -193,8 +193,8 @@ void CFontMgr::Setbatch_Font(const TCHAR* szfont , const int font_number , float
 	입력받고 렌더 후 지우는 방식이다*/
 	FONT_INFO ptemp;
 
-	ptemp.fX = posX - CScrollMgr::m_fScrollX;
-	ptemp.fY = posY - CScrollMgr::m_fScrollY;
+	ptemp.fX = posX;// - CScrollMgr::m_fScrollX;
+	ptemp.fY = posY;// - CScrollMgr::m_fScrollY;
 	ptemp.font_color = _color;
 	ptemp.left_align = left_align;
 

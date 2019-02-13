@@ -68,8 +68,12 @@ void CBattle_bim::Update(void)
 		if(NULL != m_ptarget)
 		{
 			int idx = m_ptarget->Getcuridx(32);
-			if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType && 
-				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+			if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType)
+			{
+				if(CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+					m_ptarget->SetDamage(25 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 3, DAMAGE_NOMAL);
+			}
+			else
 				m_ptarget->SetDamage(25 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 3, DAMAGE_NOMAL);
 		}
 

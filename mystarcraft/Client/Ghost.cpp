@@ -21,6 +21,7 @@
 #include "FontMgr.h"
 #include "UI_Select.h"
 #include "UI_Energy_bar.h"
+#include "UI_Resource.h"
 
 #include "Corpse.h"
 #include "UnitMgr.h"
@@ -55,6 +56,7 @@ void CGhost::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_GHOST;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -388,4 +390,6 @@ void CGhost::Release(void)
 	CObj::area_release();
 	m_com_pathfind = NULL;
 	m_com_weapon = NULL;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 }

@@ -61,7 +61,7 @@ void CCom_WGoliath::fire(CObj* ptarget)
 
 				int idx = ptarget->Getcuridx(32);
 				if(CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
-				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt
+					ptarget->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt
 					, m_weapon_info.eDamageType);
 
 				((CGoliath_part*)m_pobj)->settarget_movetype(MOVE_GROUND);

@@ -115,51 +115,51 @@ float CMyMath::dir_to_dgree(D3DXVECTOR2 vdir)
 	return fangle;
 }
 
-void CMyMath::Calculator_eight_idx(int* idxarr , const D3DXVECTOR2& vpos, const int& tilecnt)
+void CMyMath::Calculator_eight_idx(int* idxarr , const D3DXVECTOR2& vpos, const int tilecnt)
 {
-	idxarr[CENTER]		= CMyMath::Pos_to_index(vpos , 64);
+	idxarr[CENTER]		= CMyMath::Pos_to_index(vpos , tilecnt);
 
-	if( 0 == idxarr[CENTER]%64 || 0 == idxarr[CENTER]/64 )
+	if( 0 == idxarr[CENTER]% tilecnt || 0 == idxarr[CENTER]/tilecnt )
 		idxarr[LEFT_UP]	= -1;
 	else
-		idxarr[LEFT_UP]	= idxarr[CENTER] - 1 - 64;
+		idxarr[LEFT_UP]	= idxarr[CENTER] - 1 - tilecnt;
 
-	if( 0 == idxarr[CENTER]/64 )
+	if( 0 == idxarr[CENTER]/tilecnt )
 		idxarr[UP]	= -1;
 	else
-		idxarr[UP]	= idxarr[CENTER] - 64;
+		idxarr[UP]	= idxarr[CENTER] - tilecnt;
 
-	if( 0 == idxarr[CENTER]/64 )
+	if( 0 == idxarr[CENTER]/tilecnt )
 		idxarr[UP]	= -1;
 	else
-		idxarr[UP]	= idxarr[CENTER] - 64;
+		idxarr[UP]	= idxarr[CENTER] - tilecnt;
 
-	if( 63 == idxarr[CENTER]%64 || 0 == idxarr[CENTER]/64 )
+	if( tilecnt - 1 == idxarr[CENTER]% tilecnt || 0 == idxarr[CENTER]/tilecnt )
 		idxarr[RIGHT_UP]	= -1;
 	else
-		idxarr[RIGHT_UP]	= idxarr[CENTER] + 1 - 64;
+		idxarr[RIGHT_UP]	= idxarr[CENTER] + 1 - tilecnt;
 
-	if( 63 == idxarr[CENTER]%64 )
+	if( tilecnt - 1 == idxarr[CENTER]%tilecnt )
 		idxarr[RIGHT]	= -1;
 	else
 		idxarr[RIGHT]	= idxarr[CENTER] + 1;
 
-	if( 63 == idxarr[CENTER]%64 || 63 == idxarr[CENTER]/64)
+	if( tilecnt - 1 == idxarr[CENTER]%tilecnt || tilecnt - 1 == idxarr[CENTER]/tilecnt)
 		idxarr[RIGHT_DOWN]	= -1;
 	else
-		idxarr[RIGHT_DOWN]	= idxarr[CENTER] + 1 + 64;
+		idxarr[RIGHT_DOWN]	= idxarr[CENTER] + 1 + tilecnt;
 
-	if( 63 == idxarr[CENTER]/64)
+	if( tilecnt - 1 == idxarr[CENTER]/tilecnt)
 		idxarr[DOWN]	= -1;
 	else
-		idxarr[DOWN]	= idxarr[CENTER] + 64;
+		idxarr[DOWN]	= idxarr[CENTER] + tilecnt;
 
-	if( 0 == idxarr[CENTER]%64 || 63 == idxarr[CENTER]/64)
+	if( 0 == idxarr[CENTER]% tilecnt || tilecnt - 1 == idxarr[CENTER]/tilecnt)
 		idxarr[LEFT_DOWN]	= -1;
 	else
-		idxarr[LEFT_DOWN]	= idxarr[CENTER] - 1 + 64;
+		idxarr[LEFT_DOWN]	= idxarr[CENTER] - 1 + tilecnt;
 
-	if( 0 == idxarr[CENTER]%64)
+	if( 0 == idxarr[CENTER]%tilecnt)
 		idxarr[LEFT]	= -1;
 	else
 		idxarr[LEFT]	= idxarr[CENTER] - 1;

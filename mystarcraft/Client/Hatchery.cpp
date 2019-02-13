@@ -12,6 +12,7 @@
 #include "UnitMgr.h"
 #include "Area_Mgr.h"
 #include "ObjMgr.h"
+#include "LineMgr.h"
 
 #include "Com_fog.h"
 #include "Com_Creep.h"
@@ -23,6 +24,7 @@
 #include "UI_Select.h"
 #include "UI_Energy_bar.h"
 #include "UI_Cmd_info.h"
+#include "UI_Resource.h"
 
 #include "Corpse.h"
 #include "GeneraEff.h"
@@ -106,6 +108,8 @@ void CHatchery::Initialize(void)
 	m_energybar_ui->Initialize();
 
 	m_build_maxhp = m_unitinfo.maxhp;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(1 , m_eteamnumber);
 }
 
 void CHatchery::Update(void)
@@ -196,6 +200,8 @@ void CHatchery::Render(void)
 	m_com_anim->Render();
 
 	m_energybar_ui->Render();
+
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
 void CHatchery::Inputkey_reaction(const int& nkey)
@@ -260,6 +266,12 @@ bool CHatchery::Input_cmd(const int& nkey , bool* waitkey)
 		CUnitMgr::GetInstance()->discharge_unit();
 		m_com_larvahatch->Select_Larva();
 	}
+
+	if('L' == nkey)
+		return true;
+	if('H' == nkey)
+		return true;
+
 	return false;
 }
 
@@ -327,30 +339,13 @@ void CHatchery::Update_Cmdbtn(void)
 	CUI_Cmd_info* pcmd = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state )
 	{			
-		pcmd->Create_Cmdbtn(0 , L"BTN_SCV" , BTN_SCV , true);
-		pcmd->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
+		pcmd->Create_Cmdbtn(0 , L"BTN_LARVA" , BTN_SCV , true);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ACADEMY))
-			pcmd->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , true);
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL))
+			pcmd->Create_Cmdbtn(6 , L"BTN_LAIR" , BTN_COMSET , true);
 		else
-			pcmd->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , false);
+			pcmd->Create_Cmdbtn(6 , L"BTN_LAIR" , BTN_COMSET , false);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_GHOST_ADDON))
-			pcmd->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , true);
-		else
-			pcmd->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , false);
-
-	}
-	else if( PRODUCTION == m_unitinfo.state)
-	{
-		pcmd->Create_Cmdbtn(0 , L"BTN_SCV" , BTN_SCV , true);
-	}
-	else if(AIR_IDLE == m_unitinfo.state ||
-		TAKE_OFF == m_unitinfo.state)
-	{
-		pcmd->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
-		pcmd->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
-		pcmd->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
 	}
 }
 void CHatchery::Update_Wireframe(void)
@@ -359,17 +354,26 @@ void CHatchery::Update_Wireframe(void)
 
 	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{		
-		CUI* pui = NULL;
-		pui = new CUI_Wireframe(L"WIRE_COMMAND" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
-		pui->Initialize();
-		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+		CUI* pui = NULL;	
 
 		if(OBJ_HATCERY == m_eOBJ_NAME)
+		{
+			pui = new CUI_Wireframe(L"WIRE_HATCHERY" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 			CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Hatchery" ,interface_pos.x + 320 , interface_pos.y + 390 );
+		}
 		else if(OBJ_LAIR == m_eOBJ_NAME)
+		{
+			pui = new CUI_Wireframe(L"WIRE_LAIR" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 			CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Lair" ,interface_pos.x + 320 , interface_pos.y + 390 );
+		}
 		else if(OBJ_HIVE == m_eOBJ_NAME)
+		{
+			pui = new CUI_Wireframe(L"WIRE_HIVE" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 			CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Hive" ,interface_pos.x + 320 , interface_pos.y + 390 );
+		}
+
+		pui->Initialize();
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		if(BUILD == m_unitinfo.state)
 		{
@@ -422,4 +426,6 @@ void CHatchery::Dead(void)
 void CHatchery::Release(void)
 {
 	CZerg_building::area_release();
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(-1 , m_eteamnumber);
 }

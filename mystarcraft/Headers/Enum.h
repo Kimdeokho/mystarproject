@@ -26,6 +26,8 @@ enum CMD_BTN
 	BTN_STOP,
 	BTN_B_BUILD,
 	BTN_V_BUILD,
+	BTN_B_ZBUILD,
+	BTN_V_ZBUILD,
 	BTN_HOLD,
 	BTN_PATROL,
 	BTN_STEAMPACK,
@@ -53,6 +55,8 @@ enum CMD_BTN
 	BTN_LANDING,
 	BTN_GHOST_N,
 	BTN_DEFENSIVE,
+	BTN_BURROW,
+	BTN_UNBURROW,
 	//
 	BTN_T_BEW,
 	BTN_T_BEA,
@@ -98,6 +102,32 @@ enum CMD_BTN
 	BTN_BATTLE,
 	BTN_VESSEL,
 	BTN_NC_MISSILE,
+
+	BTN_DRONE, //===================저그 유닛===================
+	BTN_ZERGLING,
+	BTN_OVERLOAD,
+	BTN_HYDRA,
+	BTN_MUTAL,
+	BTN_SCOURGE,
+	BTN_QUEEN,
+	BTN_ULTRA,
+	BTN_DEFILER,
+	BTN_LURKER,
+
+	BTN_HATCHERY, //===================저그 건물===================
+	BTN_LAIR,
+	BTN_HIVE,
+	BTN_COLONY,
+	BTN_Z_GAS,
+	BTN_SPWANING,
+	BTN_CHAMBER,
+	BTN_SUNKEN,
+	BTN_SPORE,
+	BTN_HYDRADEN,
+	BTN_SPIRE,
+	BTN_QUEEN_NEST,
+	BTN_DEFILER_MOUND,
+	BTN_ULTRA_CAVE,
 
 };
 enum CMD_STATE
@@ -257,6 +287,21 @@ enum UPGRADE
 	UPG_T_VIP0,
 	UPG_T_VIP1,
 
+	UPG_Z_BH2, //버로우
+	UPG_Z_BH3, //드랍업
+	UPG_Z_BH4, //오버더듬이
+	UPG_Z_BH5, //오버이속
+
+	UPG_Z_BS0, //저글링 이속
+	UPG_Z_BS1, //저글링 공속
+
+	UPG_Z_BD0, //히드라 이속
+	UPG_Z_BD1, //히드라 사거리
+	UPG_Z_BD2, //럴커업
+
+	UPG_Z_VQ0, //인스네어
+	UPG_Z_VQ1, //브루드링
+
 	UPG_Z_MELEE_ATT, //지상 근접공격
 	UPG_Z_MISSILE_ATT, //지상 원거리공격
 	UPG_Z_FLYER_ATT, //지상 원거리
@@ -267,10 +312,12 @@ enum UPGRADE
 
 	UPG_END,
 };
-enum RACE
+enum TRIBE
 {
-	TERRAN,
-	ZERG,
+	TRIBE_NONE,
+	TRIBE_TERRAN,
+	TRIBE_ZERG,
+	TRIBE_END,
 };
 
 enum OBJ_POS_KIND
@@ -423,6 +470,7 @@ enum STATE
 
 enum CATEGORY
 {
+	CATEGORY_NONE,
 	CATEGORY_UNIT,
 	CATEGORY_BUILDING,
 	CATEGORY_RESOURCE,

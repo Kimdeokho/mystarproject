@@ -41,7 +41,7 @@ void CCom_Meleesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);
 
 	m_search_time = 0.f;
-	m_meleesearch_time = 0.f;
+	m_search_around_time = 0.f;
 	m_btarget_search = true;
 }
 
@@ -207,14 +207,16 @@ void CCom_Meleesearch::Update(void)
 			m_search_time += GETTIME;
 
 			if(true == m_btarget_search &&
-				m_search_time > 0.3f)
+				m_search_time > 0.5f)
 			{
 				m_search_time = 0.f;
-				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
+				m_ptarget = CArea_Mgr::GetInstance()->Melee_explore_target(m_pobj , *m_psearch_range , m_search_type);							
 			}
 
 			if(NULL != m_ptarget)
-				m_target_objid = m_ptarget->GetObjNumber();
+			{
+				//m_target_objid = m_ptarget->GetObjNumber();
+			}
 			else
 			{
 				m_bforced_target = false;
@@ -240,8 +242,8 @@ void CCom_Meleesearch::Update(void)
 			}
 			else
 			{
-				m_meleerangeX = 8.f;
-				m_meleerangeY = 8.f;
+				m_meleerangeX = 10.f;
+				m_meleerangeY = 10.f;
 			}
 
 			m_myrc = m_pobj->GetMyRect();
@@ -249,6 +251,15 @@ void CCom_Meleesearch::Update(void)
 			m_myrc.right += m_meleerangeX;
 			m_myrc.top -= m_meleerangeY;
 			m_myrc.bottom += m_meleerangeY;
+
+			m_search_around_time += GETTIME;
+			if(m_btarget_search && m_search_around_time > 0.2f)
+			{
+				m_search_around_time = 0.f;
+				CArea_Mgr::GetInstance()->Collision_check(m_pobj , m_ptarget , m_myrc);
+			}
+
+			m_target_objid = m_ptarget->GetObjNumber();
 
 			if( MyIntersectrect( &m_myrc , &(m_ptarget->GetMyRect()) ) )
 			{
@@ -287,12 +298,19 @@ void CCom_Meleesearch::Update(void)
 					if(NULL != m_com_pathfind)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 				}
-				//m_bmelee_search = true;
 				m_btarget_search = true;
 			}
 		}
 		else
-			m_search_time = 0.3f;
+		{
+			m_btarget_search = true;
+
+			//if(!m_btarget_search)
+			{
+				m_search_time = 1.4f;
+				m_search_around_time = 0.2f;
+			}
+		}
 	}
 }
 

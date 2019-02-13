@@ -16,6 +16,8 @@ public:
 	void clear_btn(void);
 	void T_Cmdbtn_B_buildsetting(void);
 	void T_Cmdbtn_V_buildsetting(void);
+	void Z_Cmdbtn_B_buildsetting(void);
+	void Z_Cmdbtn_V_buildsetting(void);
 	bool active_cmdbtn(const int& idx, CMD_BTN ebtn);
 	CMD_BTN Get_clicked_btn(void);
 public:

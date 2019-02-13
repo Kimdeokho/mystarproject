@@ -152,26 +152,7 @@ void CTurret::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CTurret::Release(void)
-{
-	CTerran_building::area_release();
 
-	Safe_Delete(m_turrethead);
-}
-
-void CTurret::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-}
 
 void CTurret::Inputkey_reaction(const int& nkey)
 {
@@ -184,7 +165,7 @@ void CTurret::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 void CTurret::Update_Cmdbtn(void)
 {
-	const CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 }
 
 void CTurret::Update_Wireframe(void)
@@ -231,4 +212,25 @@ void CTurret::Update_Wireframe(void)
 void CTurret::SetTurretHead(void)
 {
 	m_turrethead->SetState(IDLE);
+}
+
+
+void CTurret::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+}
+void CTurret::Release(void)
+{
+	CTerran_building::area_release();
+
+	Safe_Delete(m_turrethead);
 }

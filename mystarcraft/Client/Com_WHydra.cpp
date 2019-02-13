@@ -69,9 +69,13 @@ void CCom_WHydra::fire(CObj* ptarget)
 			CObjMgr::GetInstance()->AddEffect(peff);
 
 			int idx = ptarget->Getcuridx(32);
-			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
-				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
-				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_Z_MISSILE_ATT].upg_cnt , m_weapon_info.eDamageType);
+			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType)
+			{
+				if(CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+					ptarget->SetDamage(m_weapon_info.damage + m_upg_info[UPG_Z_MISSILE_ATT].upg_cnt , m_weapon_info.eDamageType);
+			}
+			else
+				ptarget->SetDamage(m_weapon_info.damage + m_upg_info[UPG_Z_MISSILE_ATT].upg_cnt , m_weapon_info.eDamageType);
 		}
 	}
 	else

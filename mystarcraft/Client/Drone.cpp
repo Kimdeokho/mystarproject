@@ -44,6 +44,10 @@
 #include "Ultra_cave.h"
 #include "Defiler_mound.h"
 
+#include "UI_Wireframe.h"
+#include "UI_Resource.h"
+#include "FontMgr.h"
+
 CDrone::CDrone(void)
 {
 }
@@ -64,6 +68,7 @@ void CDrone::Initialize(void)
 	m_sortID = SORT_GROUND;
 	m_ecategory = CATEGORY_UNIT;
 
+	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.esize = SIZE_SMALL;
@@ -189,7 +194,7 @@ void CDrone::Render(void)
 	m_energybar_ui->Render();
 
 	m_com_pathfind->Render();
-	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 
 }
 
@@ -201,8 +206,9 @@ void CDrone::Create_Building(void)
 	float onestep = GETTIME*m_unitinfo.fspeed;
 
 	if( fdistance < onestep*onestep*2)
+	//if( fdistance < 32*32)
 	{
-		if(false == (m_main_preview)->Install_check(m_preview_info))
+		if(false == m_main_preview->Install_check(m_preview_info))
 		{
 			m_unitinfo.order = ORDER_NONE;
 			m_unitinfo.state = IDLE;
@@ -214,7 +220,7 @@ void CDrone::Create_Building(void)
 		m_unitinfo.state = BUILD;
 		if(Z_HATCHERY == m_preview_info.ebuild)
 		{
-			pobj = new CHatchery(10.5f);
+			pobj = new CHatchery(1.5f);
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_HATCERY);			
 		}
 		else if(Z_FCOLONY == m_preview_info.ebuild)
@@ -266,7 +272,7 @@ void CDrone::Create_Building(void)
 			pobj->Initialize();
 		}
 
-		m_charge_building = pobj;
+		//m_charge_building = pobj;
 
 		((CCom_Pathfind*)m_com_pathfind)->ClearPath();
 		((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
@@ -274,7 +280,7 @@ void CDrone::Create_Building(void)
 	}
 	else
 	{
-		if(false == (m_main_preview)->Install_check(m_preview_info))
+		if(false == m_main_preview->Install_check(m_preview_info))
 		{
 			m_unitinfo.order = ORDER_NONE;
 			m_unitinfo.state = IDLE;
@@ -287,16 +293,12 @@ void CDrone::Create_Building(CObj* pgas_resorce)
 {
 	CObj* pobj = NULL;
 
-	//float fdistance = CMyMath::pos_distance(m_vPos , m_preview_info.vcenter_pos);
-	//float onestep = GETTIME*m_unitinfo.fspeed;
-	//if( fdistance < onestep*onestep)
-
 	if(CMyMath::Pos_to_index(m_vPos , 32) == 
 		CMyMath::Pos_to_index(m_preview_info.vcenter_pos , 32))
 	{
 		if(Z_GAS == m_preview_info.ebuild)
 		{
-			if(false == (m_main_preview)->Install_check(m_preview_info))
+			if(false == m_main_preview->Install_check(m_preview_info))
 			{
 				m_unitinfo.order = ORDER_NONE;
 				m_unitinfo.state = IDLE;
@@ -312,7 +314,7 @@ void CDrone::Create_Building(CObj* pgas_resorce)
 			pobj->Initialize();
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_Z_GAS);		
 
-			m_charge_building = pobj;
+			//m_charge_building = pobj;
 		}
 
 		((CCom_Pathfind*)m_com_pathfind)->ClearPath();
@@ -344,8 +346,7 @@ void CDrone::Inputkey_reaction(const int& nkey)
 			((CCom_Pathfind*)m_com_pathfind)->SetFlowField();
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 
-			m_main_preview->SetActive(false);
-			m_is_preview = false;
+			m_main_preview->SetActive(false);			
 
 			//위치에 도착하면 건물생성
 		}
@@ -353,8 +354,8 @@ void CDrone::Inputkey_reaction(const int& nkey)
 		{
 			m_unitinfo.order = ORDER_NONE;
 			m_main_preview->SetActive(false);
-			m_is_preview = false;
 		}
+		m_is_preview = false;
 	}
 
 	m_is_preview = false;
@@ -458,7 +459,7 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 		{
 			m_main_preview->SetActive(false);
 			m_is_preview = false;
-			m_ecmd_state = CMD_BASIC;
+			//m_ecmd_state = CMD_BASIC;
 		}
 	}
 
@@ -477,33 +478,91 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 		}		
 	}
 
-	if('B' == nkey)
+	if('B' == nkey && CMD_BASIC == m_ecmd_state)
 	{
 		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
-		if( true == pui->active_cmdbtn(6 , BTN_B_BUILD) )
+		if( true == pui->active_cmdbtn(6 , BTN_B_ZBUILD) )
 		{
 			m_ecmd_state = CMD_B_VIEW;
-			waitkey[nkey] = true;
+			//waitkey[nkey] = true;
 		}
 	}
 
-	if('V' == nkey)
+	if('V' == nkey && CMD_BASIC == m_ecmd_state)
 	{
 		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
-		if( true == pui->active_cmdbtn(7 , BTN_V_BUILD) )
+		if( true == pui->active_cmdbtn(7 , BTN_V_ZBUILD) )
 		{
 			m_ecmd_state = CMD_V_VIEW;
-			waitkey[nkey] = true;
+			//waitkey[nkey] = true;
 		}
-	}
-	if('W' == nkey)
-	{
-		m_eteamnumber = TEAM_1;
 	}
 
 	if(VK_ESCAPE == nkey)
-	{
 		m_ecmd_state = CMD_BASIC;
+
+
+	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
+	{		
+		if(CMD_B_VIEW == m_ecmd_state)
+		{
+			m_is_preview = true;
+			if('H' == nkey)
+			{
+				// L , R , T ,B
+				MYRECT<float> vtx(49.f , 50.f , 32.f , 33.f);
+				SetPreview_info(L"Z_HATCHERY" , Z_HATCHERY , 3 , 4 , vtx);
+			}
+			else if('C' == nkey)
+			{
+				MYRECT<float> vtx(24.f , 24.f, 24.f, 24.f);
+				SetPreview_info(L"Z_FCOLONY" , Z_FCOLONY , 2 , 2 , vtx);
+			}
+			else if('E' == nkey)
+			{
+				MYRECT<float> vtx(64.f , 64.f , 32.f , 32.f);
+				SetPreview_info(L"Z_GAS" , Z_GAS , 2 , 4 , vtx);
+			}
+			else if('S' == nkey)
+			{
+				MYRECT<float> vtx(36.f , 41.f , 28.f , 19.f);
+				SetPreview_info(L"Z_SPWANING_POOL" , Z_SPWANING_POOL , 2 , 3 , vtx);
+			}
+			else if('V' == nkey)
+			{
+				MYRECT<float> vtx(44 , 48-15 , 32 , 32-11);
+				SetPreview_info(L"Z_CHAMBER" , Z_CHAMBER , 2 , 3 , vtx);
+			}
+			else if('D' == nkey)
+			{
+				MYRECT<float> vtx(48-8 , 48-7 , 32 , 32-7);
+				SetPreview_info(L"Z_HYDRADEN" , Z_HYDRADEN , 2 , 3 , vtx);
+			}
+		}
+		else if(CMD_V_VIEW == m_ecmd_state)
+		{
+			m_is_preview = true;
+			if('S' == nkey)
+			{
+				MYRECT<float> vtx(32-4 , 32-3 , 32 , 32-7);
+				SetPreview_info(L"Z_SPIRE" , Z_SPIRE , 2 , 2 , vtx);
+			}
+			else if('Q' == nkey)
+			{
+				MYRECT<float> vtx(48-10 , 48-15 , 32-8 , 32-3);
+				SetPreview_info(L"Z_QUEEN_NEST" , Z_QUEEN_NEST , 2 , 3 , vtx);
+			}
+			else if('U' == nkey)
+			{
+				MYRECT<float> vtx(48-8, 48-15, 32 , 32);
+				SetPreview_info(L"Z_ULTRA_CAVE" , Z_ULTRA_CAVE , 2 , 3 , vtx);
+			}
+			else if('F' == nkey)
+			{
+				MYRECT<float> vtx(64-16 , 64-15 , 32 , 32-27);
+				SetPreview_info(L"Z_DEFILER_MOUND" , Z_DEFILER_MOUND , 2 , 4 , vtx);
+			}
+		}
 	}
 
 	return false;
@@ -582,12 +641,12 @@ void CDrone::Update_Cmdbtn(void)
 	}
 	else if(CMD_B_VIEW == m_ecmd_state)
 	{
-		pui->T_Cmdbtn_B_buildsetting();
+		pui->Z_Cmdbtn_B_buildsetting();
 		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 	}
 	else if(CMD_V_VIEW == m_ecmd_state)
 	{
-		pui->T_Cmdbtn_V_buildsetting();
+		pui->Z_Cmdbtn_V_buildsetting();
 		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 	}
 	else
@@ -598,14 +657,46 @@ void CDrone::Update_Cmdbtn(void)
 		pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
 		pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 
-		pui->Create_Cmdbtn(6 , L"BTN_BBUILD" , BTN_B_BUILD);
-		pui->Create_Cmdbtn(7 , L"BTN_VBUILD" , BTN_V_BUILD);
+		pui->Create_Cmdbtn(6 , L"BTN_ZBBUILD" , BTN_B_ZBUILD);
+		pui->Create_Cmdbtn(7 , L"BTN_ZVBUILD" , BTN_V_ZBUILD);
 	}
 }
 
 void CDrone::Update_Wireframe(void)
 {
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		//m_ecmd_state = CMD_BASIC;
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_DRONE" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Drone" ,interface_pos.x + 320 , interface_pos.y + 390 );
+	}
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	WEAPON_INFO temp_info = ((CCom_Weapon*)m_com_weapon)->GetWeapon_info();
+	CFontMgr::GetInstance()->Setbatch_Font(L"공격력: %d + %d" ,temp_info.damage , 0,
+		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
+	CFontMgr::GetInstance()->Setbatch_Font(L"방어력:%d + %d",m_unitinfo.armor, m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt 
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CDrone::Dead(void)
@@ -627,5 +718,7 @@ void CDrone::Release(void)
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_TARGET_SEARCH);
 	m_componentlist.erase(iter);
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 }
 

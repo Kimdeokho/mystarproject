@@ -3,7 +3,7 @@
 
 #include "TextureMgr.h"
 #include "Session_Mgr.h"
-CUI_MiniUnitDisplay::CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER eteam)
+CUI_MiniUnitDisplay::CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER* eteam)
 :m_vminipos(vobjpos) , m_eteam(eteam)
 {
 	m_statekey = L"DebugTile";
@@ -28,14 +28,15 @@ void CUI_MiniUnitDisplay::Initialize(void)
 	m_vweight.x = (BACKBUFFER_SIZEX - 640)/2 + 5;
 	m_vweight.y = BACKBUFFER_SIZEY - 130;
 
-	if(m_eteam != CSession_Mgr::GetInstance()->GetTeamNumber())
-		m_color = D3DCOLOR_ARGB(255,255,0,0);
-	else
-		m_color = D3DCOLOR_ARGB(255,0, 255,0);
+	m_myteam = CSession_Mgr::GetInstance()->GetTeamNumber();
 }
 
 void CUI_MiniUnitDisplay::Update(void)
 {	
+	if(*m_eteam != m_myteam)
+		m_color = D3DCOLOR_ARGB(255,255,0,0);
+	else
+		m_color = D3DCOLOR_ARGB(255,0, 255,0);
 
 	m_matworld._41 = m_vminipos.x * 0.03125f + m_vweight.x;
 	m_matworld._42 = m_vminipos.y * 0.03125f+ m_vweight.y;

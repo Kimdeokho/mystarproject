@@ -42,7 +42,6 @@ void CCom_Detect::Update(void)
 			if((*iter)->GetUnitinfo().is_hide)
 				(*iter)->Get_ref_Unitinfo().detect[eteam] -= 1;
 		}
-
 		m_oldlist.clear();
 
 		D3DXVECTOR2 vpos = m_pobj->GetPos();

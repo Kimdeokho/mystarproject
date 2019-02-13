@@ -63,6 +63,7 @@ private:
 	CMyHeapSort<FLOW_NODE*>*	m_heapsort;
 	FLOW_NODE*	m_flownode[SQ_TILECNTX*SQ_TILECNTY];
 	short		m_flowdestidx[SQ_TILECNTX*SQ_TILECNTY];
+
 	int			m_eight_idx[ASTAR_DIR_END];
 	float		m_fTimeTest;
 	int			m_flowfield_goalidx;
@@ -70,6 +71,7 @@ private:
 public:
 	void Initialize(void);
 	void Init_eightidx(const int& idx);
+
 public:
 	void Flowfield_Pathfinding(const D3DXVECTOR2& goalpos);
 public:

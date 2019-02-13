@@ -13,6 +13,8 @@
 #include "Area_Mgr.h"
 #include "UnitMgr.h"
 #include "ObjMgr.h"
+#include "Ingame_UIMgr.h"
+
 #include "GeneraEff.h"
 
 #include "UI_Select.h"
@@ -29,6 +31,7 @@
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_form.h"
+#include "UI_Resource.h"
 
 #include "UI_Energy_bar.h"
 #include "KeyMgr.h"
@@ -61,6 +64,7 @@ void CFactory::Initialize(void)
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_FACTORY;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
 	m_unitinfo.order = ORDER_NONE;
@@ -284,11 +288,20 @@ void CFactory::Inputkey_reaction(const int& nkey)
 	if(false == m_is_take_off)
 	{
 		if('T' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_TANK , L"BTN_TANK");
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-150 , -100, m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_TANK , L"BTN_TANK");
+		}
 		if('V' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_VULTURE , L"BTN_VULTURE");
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-75 , 0,  m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_VULTURE , L"BTN_VULTURE");
+		}
 		if('G' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_GOLIATH , L"BTN_GOLIATH");
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -50,  m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_GOLIATH , L"BTN_GOLIATH");
+		}
 	}
 
 	if(VK_RBUTTON == nkey)

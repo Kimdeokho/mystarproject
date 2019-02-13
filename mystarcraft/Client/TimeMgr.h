@@ -3,9 +3,11 @@
 #include "Include.h"
 
 //const float FIXTIME = 0.03333f;
-const float FIXTIME = 1/48.f;
+
 class CTimeMgr
 {
+private:
+	static const float FIXTIME;
 public:
 	DECLARE_SINGLETON(CTimeMgr)
 

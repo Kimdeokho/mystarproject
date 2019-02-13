@@ -157,7 +157,8 @@ void CCom_Airsearch::Update(void)
 		{
 			if(NULL == m_ptarget)
 			{
-				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , *m_psearch_range , m_search_type);			
+				int att_range = max(*m_pair_range , *m_pattack_range);
+				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj, *m_psearch_range, att_range, m_search_type);			
 			}
 
 			if(NULL != m_ptarget)

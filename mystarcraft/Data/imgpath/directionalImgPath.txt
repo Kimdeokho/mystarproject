@@ -54,7 +54,6 @@ ZERG|UNIT|LURKER|BURROW|17|..\Texture\Multi\Zerg\Unit\lurker\burrow\lurker_burro
 ZERG|UNIT|OVERLOAD|IDLE|17|..\Texture\Multi\Zerg\Unit\overload\idle\over_idle%d.png
 ZERG|UNIT|OVERLOAD|MOVE|51|..\Texture\Multi\Zerg\Unit\overload\move\over_move%d.png
 ZERG|UNIT|MUTAL|IDLE|85|..\Texture\Multi\Zerg\Unit\mutal\idle\mutal_idle%d.png
-ZERG|UNIT|SCOURGE|IDLE|17|..\Texture\Multi\Zerg\Unit\scourge\idle\scourge_idle%d.png
 ZERG|UNIT|SCOURGE|MOVE|68|..\Texture\Multi\Zerg\Unit\scourge\move\scourge_move%d.png
 ZERG|UNIT|QUEEN|IDLE|85|..\Texture\Multi\Zerg\Unit\queen\idle\queen_idle%d.png
 ZERG|UNIT|QUEEN|ATTACK|102|..\Texture\Multi\Zerg\Unit\queen\attack\queen_attack%d.png

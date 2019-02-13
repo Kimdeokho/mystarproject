@@ -27,6 +27,8 @@ public:
 	CObj*			m_pfire_eff1;
 	CObj*			m_pfire_eff2;
 	CObj*			m_pfire_eff3;
+
+	CUI*			m_miniunit_display;
 protected:
 	vector<int>		m_areaidx_vec;
 	vector<int>		m_old_areaidx_vec;

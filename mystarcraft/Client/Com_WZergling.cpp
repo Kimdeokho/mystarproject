@@ -44,36 +44,11 @@ void CCom_WZergling::Update(void)
 		{
 			m_attack_time = 0.f;
 			m_bfire = false;
+			//¿©±â¿¡ IDLE?
 		}
 	}
 
-	if(m_attack_on)
-	{
-		CObj* ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
 
-		if(NULL != ptarget && m_target_cntnum == ptarget->GetObjCountNumber())
-		{
-			if(true == ((CCom_Animation*)m_animation)->GetRotationComplete())
-			{				
-				m_pobj->SetState(ATTACK);
-				m_attack_time = 0.f;			
-
-				if(true == ((CCom_Animation*)m_animation)->GetAttackSync())
-				{
-					m_bfire = true;				
-					ptarget->SetDamage( m_weapon_info.damage , m_weapon_info.eDamageType );
-					m_attack_on = false;
-				}
-			}
-		}
-		else
-		{
-			m_attack_time = m_attack_delay;
-			m_attack_on = false;
-			m_target_cntnum = 0;
-			m_target_id = 0;
-		}
-	}
 }
 
 void CCom_WZergling::Render(void)
@@ -89,6 +64,34 @@ void CCom_WZergling::fire(CObj* ptarget)
 		m_pobj->SetState(IDLE);
 		m_target_cntnum = ptarget->GetObjCountNumber();
 		m_target_id = ptarget->GetObjNumber();
+	}
+
+	if(m_attack_on)
+	{
+		CObj* ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
+
+		if(NULL != ptarget && m_target_cntnum == ptarget->GetObjCountNumber())
+		{
+			if(true == ((CCom_Animation*)m_animation)->GetRotationComplete())
+			{				
+				m_pobj->SetState(ATTACK);
+				m_attack_time = 0.f;			
+
+				//if(true == ((CCom_Animation*)m_animation)->GetAttackSync())
+				//{
+					m_bfire = true;				
+					ptarget->SetDamage( m_weapon_info.damage , m_weapon_info.eDamageType );
+					m_attack_on = false;
+				//}
+			}
+		}
+		else
+		{
+			m_attack_time = m_attack_delay;
+			m_attack_on = false;
+			m_target_cntnum = 0;
+			m_target_id = 0;
+		}
 	}
 }
 void CCom_WZergling::Release(void)

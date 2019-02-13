@@ -15,6 +15,7 @@ CSkill_DarkSwarm::CSkill_DarkSwarm(const D3DXVECTOR2 vpos)
 
 CSkill_DarkSwarm::~CSkill_DarkSwarm(void)
 {
+	Release();
 }
 
 void CSkill_DarkSwarm::Initialize(void)
@@ -58,7 +59,7 @@ void CSkill_DarkSwarm::Initialize(void)
 	m_generatex = CTextureMgr::GetInstance()->GetGeneralTexture(L"DARK_SWARM");
 
 	m_frame.fcurframe = 0;
-	m_frame.umax = m_generatex->size();
+	m_frame.umax = m_generatex->size() - 1;
 	m_frame.fframespeed = float(m_frame.umax)*2.5f;
 
 	m_curtex = ((*m_generatex)[0]);

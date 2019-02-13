@@ -13,6 +13,9 @@
 #include "Area_Mgr.h"
 #include "UnitMgr.h"
 #include "ObjMgr.h"
+#include "Ingame_UIMgr.h"
+#include "UI_Resource.h"
+
 #include "GeneraEff.h"
 
 #include "UI_Select.h"
@@ -60,6 +63,7 @@ void CBarrack::Initialize(void)
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_BARRACK;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
 	m_unitinfo.order = ORDER_NONE;
@@ -272,13 +276,25 @@ void CBarrack::Inputkey_reaction(const int& nkey)
 	if(false == m_is_take_off)
 	{
 		if('M' == nkey)
-			m_com_production->add_production_info(1.f , OBJ_MARINE , L"BTN_MARINE");
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , OBJ_MARINE , L"BTN_MARINE");
+		}
 		if('F' == nkey)
-			m_com_production->add_production_info(1.f , OBJ_FIREBAT , L"BTN_FIREBAT");
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -25,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , OBJ_FIREBAT , L"BTN_FIREBAT");
+		}
 		if('G' == nkey)
-			m_com_production->add_production_info(1.f , OBJ_GHOST , L"BTN_GHOST");
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -25,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , OBJ_GHOST , L"BTN_GHOST");
+		}
 		if('C' == nkey)
-			m_com_production->add_production_info(1.f , OBJ_MEDIC , L"BTN_MEDIC");
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -25,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , OBJ_MEDIC , L"BTN_MEDIC");
+		}
 	}
 }
 
@@ -350,37 +366,37 @@ bool CBarrack::Input_cmd(const int& firstkey , const int& secondkey)
 
 void CBarrack::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state || PRODUCTION == m_unitinfo.state)
 	{
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MARINE" , BTN_MARINE , true);
+		pui->Create_Cmdbtn(0 , L"BTN_MARINE" , BTN_MARINE , true);
 
 		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ACADEMY))
 		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , true);
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , true);
+			pui->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , true);
+			pui->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , true);
 		}
 		else
 		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , false);
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , false);
+			pui->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , false);
+			pui->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , false);
 		}
 
 		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_GHOST_ADDON))
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST , true);
+			pui->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST , true);
 		else
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST, false);
+			pui->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST, false);
 
 		if(IDLE == m_unitinfo.state)
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
+			pui->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
 
 	}
 	else if(AIR_IDLE == m_unitinfo.state ||
 		TAKE_OFF == m_unitinfo.state)
 	{
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
+		pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
+		pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
+		pui->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
 	}
 
 }

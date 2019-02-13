@@ -89,11 +89,18 @@ void CMutal_Bullet::Update(void)
 	{
 		if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 		{
+			Dead();
+
 			if(NULL != m_ptarget)
 			{
 				int idx = m_ptarget->Getcuridx(32);
-				if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType && 
-					CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+
+				if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType)
+				{
+					if(CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+						m_ptarget->SetDamage(9 / m_collcnt, DAMAGE_NOMAL);
+				}
+				else
 					m_ptarget->SetDamage(9 / m_collcnt, DAMAGE_NOMAL);
 
 				CObj* pnext_target = NULL;
@@ -104,14 +111,18 @@ void CMutal_Bullet::Update(void)
 					m_target_id = pnext_target->GetObjNumber();
 					m_target_cntnum = pnext_target->GetObjCountNumber();
 					m_target_movetype = pnext_target->GetUnitinfo().eMoveType;
+
+					if(MOVE_NOT == m_target_movetype)
+						int a = 0;
 				}
 				else
+				{
 					m_bdestroy = true;
+				}
 			}
 			else
 				m_bdestroy = true;
 
-			Dead();		
 			++m_collcnt;
 		}
 	}
@@ -151,6 +162,9 @@ CObj* CMutal_Bullet::NextTarget_Search(void)
 
 	for(int i = 0; i < ASTAR_DIR_END; ++i)
 	{
+		if(idx[i] < 0)
+			continue;
+
 		list<CObj*>::iterator iter = obj_list[idx[i] ].begin();
 		list<CObj*>::iterator iter_end = obj_list[ idx[i] ].end();
 		
@@ -159,16 +173,20 @@ CObj* CMutal_Bullet::NextTarget_Search(void)
 		{
 			if( CATEGORY_RESOURCE == (*iter)->GetCategory())
 				continue;
+			if( TEAM_NONE == (*iter)->GetTeamNumber())
+				continue;
 
+			if(m_eteam == (*iter)->GetTeamNumber())
+				continue;
 			//공중만 공격 가능한 유닛은 공중만 검사하고
 			//지상만 공격 가능한 유닛은 지상만 검사한다
 
-			etarget_movetype = (*iter)->GetUnitinfo().eMoveType;
-
+			
 			if( SEARCH_ONLY_ENEMY == esearchtype)
 			{
-				if(m_eteam == (*iter)->GetTeamNumber())
-					continue;
+				etarget_movetype = (*iter)->GetUnitinfo().eMoveType;
+
+
 
 				if( ATTACK_ONLY_AIR == m_attack_type)
 				{
@@ -206,7 +224,10 @@ CObj* CMutal_Bullet::NextTarget_Search(void)
 						objcnt_num = m_vec_objid[j];
 
 						if( (*iter)->GetObjCountNumber() == objcnt_num)
+						{
 							duplication = true;
+							break;
+						}
 					}
 					if(!duplication)
 					{
@@ -226,22 +247,23 @@ void CMutal_Bullet::Release(void)
 }
 
 void CMutal_Bullet::Dead(void)
-{
-	CObj* peff = NULL;
+{	
 	D3DXVECTOR2 vpos;
-	SORT_ID esort = SORT_END;
-
+	
 	if(NULL != m_ptarget)
 		vpos = m_ptarget->GetPos();		
 	else
 		vpos = m_vdest_pos;
 
+	SORT_ID esort = SORT_GROUND_EFF;
+
 	if(MOVE_GROUND == m_target_movetype)
 		esort = SORT_GROUND_EFF;
 	else if(MOVE_AIR == m_target_movetype)
 		esort = SORT_AIR_EFF;
-		
 
+
+	CObj* peff = NULL;
 	peff = new CGeneraEff(L"MUTAL_HIT" ,vpos  , D3DXVECTOR2(1.1f , 1.1f), esort );
 
 	peff->Initialize();

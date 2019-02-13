@@ -34,6 +34,8 @@
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_Energy_bar.h"
+#include "UI_Resource.h"
+
 #include "Skill_Defensive.h"
 CFirebat::CFirebat(void)
 {
@@ -58,6 +60,7 @@ void CFirebat::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_FIREBAT;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
@@ -225,21 +228,6 @@ void CFirebat::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	}
 }
 
-void CFirebat::Release(void)
-{
-	CObj::area_release();
-
-	m_com_pathfind = NULL;
-	m_com_weapon = NULL;
-	//Safe_Delete(m_skill_sp);
-}
-
-void CFirebat::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2( 0.7f,0.7f) , SORT_GROUND ,1.4f);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-}
 void CFirebat::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
 	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();
@@ -338,4 +326,21 @@ void CFirebat::Update_Wireframe(void)
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_BIO_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 
+}
+
+
+void CFirebat::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2( 0.7f,0.7f) , SORT_GROUND ,1.4f);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+void CFirebat::Release(void)
+{
+	CObj::area_release();
+
+	m_com_pathfind = NULL;
+	m_com_weapon = NULL;
+	//Safe_Delete(m_skill_sp);
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 }

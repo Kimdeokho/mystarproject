@@ -93,17 +93,6 @@ void CUI_armyunitlist::Render(void)
 	}
 }
 
-void CUI_armyunitlist::Release(void)
-{
-	for(int i = 0; i < 2; ++i)
-	{
-		for(int j = 0; j < 6; ++j)
-		{
-			Safe_Delete(m_backform[i][j]);
-			Safe_Delete(m_unitform[i][j]);
-		}
-	}
-}
 
 void CUI_armyunitlist::set_armylist(list<CObj*>* armylist)
 {
@@ -137,4 +126,38 @@ void CUI_armyunitlist::set_wireframe(OBJID eid , const int& icol , const int& ir
 		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_GHOST");
 	else if(OBJ_VESSEL == eid)
 		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_VESSEL");
+
+	else if(OBJ_ZERGLING == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_ZERGLING");
+	else if(OBJ_DRONE == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_DRONE");
+	else if(OBJ_HYDRA == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_HYDRA");
+	else if(OBJ_MUTAL == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_MUTAL");
+	else if(OBJ_SCOURGE == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_SCOURGE");
+	else if(OBJ_ULTRA == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_ULTRA");
+	else if(OBJ_DEFILER == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_DEFILER");
+	else if(OBJ_OVERLOAD == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_OVERLOAD");
+	else if(OBJ_LARVA== eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_LARVA");
+	else if(OBJ_LURKER == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_LURKER");
+	else if(OBJ_LARVA_EGG == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_EGG");
+}
+void CUI_armyunitlist::Release(void)
+{
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int j = 0; j < 6; ++j)
+		{
+			Safe_Delete(m_backform[i][j]);
+			Safe_Delete(m_unitform[i][j]);
+		}
+	}
 }

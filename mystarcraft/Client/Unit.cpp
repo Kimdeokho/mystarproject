@@ -37,7 +37,7 @@ CUnit::~CUnit(void)
 
 void CUnit::Initialize(void)
 {
-	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , m_eteamnumber);
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
 	m_miniunit_display->Initialize();
 	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }

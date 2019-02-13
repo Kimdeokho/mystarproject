@@ -2,6 +2,7 @@
 #include "component.h"
 
 class CAstar;
+class CCom_Animation;
 
 class CCom_Pathfind :
 	public CComponent
@@ -18,7 +19,7 @@ private:
 	
 private:
 	CComponent*			m_com_target;
-	CComponent*			m_com_animation;
+	CCom_Animation*		m_com_animation;
 	CComponent*			m_com_collision;
 private:
 	CAstar*		m_Astar;
@@ -80,6 +81,8 @@ public:
 	void SetFlowField(void);
 	void Setrally_path(const vector<D3DXVECTOR2>& vrally_path);
 	void Target_chase(void);
+
+	int  GetTargetPath_size(void);
 public:
 	const D3DXVECTOR2 GetGoalPos(void);
 public:

@@ -52,6 +52,7 @@ void CBunker::Initialize(void)
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_BUNKER;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
 	m_unitinfo.order = ORDER_NONE;

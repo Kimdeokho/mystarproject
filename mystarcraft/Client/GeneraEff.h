@@ -14,6 +14,6 @@ public:
 	virtual void Release(void);
 public:
 	CGeneraEff(void);
-	CGeneraEff(const TCHAR* texkey ,const D3DXVECTOR2& vpos ,const D3DXVECTOR2& vsize, SORT_ID esortid, const float& ftimespeed = 1 , D3DCOLOR	_color = D3DCOLOR_ARGB(255,255,255,255));
+	CGeneraEff(const TCHAR* texkey ,const D3DXVECTOR2& vpos ,const D3DXVECTOR2& vsize, SORT_ID esortid, const float ftimespeed = 1.f , D3DCOLOR	_color = D3DCOLOR_ARGB(255,255,255,255));
 	~CGeneraEff(void);
 };

@@ -52,7 +52,7 @@ void CSession_Mgr::Update(void)
 void CSession_Mgr::SendTurnPacket(void)
 {
 	if(NS_PLAYING != m_estate)
-		return;
+		return; //여기도 디스커넥트 일수도
 
 	m_subTurnNumber++;
 	if ( m_subTurnNumber == 6 )
@@ -101,6 +101,7 @@ void CSession_Mgr::TryAdvanceTurn(void)
 			pcmdlist->ClearCommand();
 
 			Sleep(100);
+			//여기가 디스커넥트인가
 		}
 		++m_TurnNumber;
 		m_subTurnNumber = 0;
@@ -117,7 +118,7 @@ void CSession_Mgr::TryAdvanceTurn(void)
 		//동기화 전, 승패가 결정났는지 한번 보자.
 	}
 	else
-		m_estate = NS_DELAY;
+		m_estate = NS_DELAY; //여기가 디스커넥트인가
 }
 void CSession_Mgr::Read_UDPPacket(void)
 {

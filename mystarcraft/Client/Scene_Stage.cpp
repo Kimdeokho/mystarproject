@@ -9,6 +9,7 @@
 #include "Ingame_UIMgr.h"
 #include "ObjPoolMgr.h"
 #include "MouseMgr.h"
+#include "Debug_Mgr.h"
 
 #include "UnitMgr.h"
 
@@ -84,6 +85,7 @@ void CScene_Stage::Update(void)
 	CObjMgr::GetInstance()->Update();	
 
 	//CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
+	CDebug_Mgr::GetInstance()->Update();
 
 	m_fTime += GETTIME;
 }
@@ -93,7 +95,7 @@ void CScene_Stage::Render(void)
 	CObjMgr::GetInstance()->Render();
 
 	CTileManager::GetInstance()->RenderFog();
-	//CTileManager::GetInstance()->Render_Flowfield();	
+	CTileManager::GetInstance()->Render_Flowfield();	
 	
 	//CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
 	CLineMgr::GetInstance()->RectLineRender();
@@ -127,5 +129,6 @@ void CScene_Stage::Release(void)
 	CObjMgr::DestroyInstance();
 	CIngame_UIMgr::DestroyInstance();
 	CMouseMgr::DestroyInstance();
+	CDebug_Mgr::DestroyInstance();
 	//CAstar::DestroyInstance();
 }

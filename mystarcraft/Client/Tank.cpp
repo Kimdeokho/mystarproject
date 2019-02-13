@@ -26,7 +26,9 @@
 #include "GeneraEff.h"
 #include "Area_Mgr.h"
 #include "ObjMgr.h"
+
 #include "UI_Select.h"
+#include "UI_Resource.h"
 
 #include "Ingame_UIMgr.h"
 
@@ -57,6 +59,7 @@ void CTank::Initialize(void)
 	m_eOBJ_NAME = OBJ_TANK;
 
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -81,7 +84,7 @@ void CTank::Initialize(void)
 
 
 	m_tankbarrel = new CTankbarrel(this);
-	m_tankbarrel->SetPos(m_vPos);
+	m_tankbarrel->SetPos(D3DXVECTOR2(-100.f, -100.f));
 	m_tankbarrel->SetTeamNumber(m_eteamnumber);
 	m_tankbarrel->SetObjID(m_obj_id);
 
@@ -395,6 +398,13 @@ void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 	}
 }
+bool CTank::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('O' == nkey)
+		return true;
+
+	return false;
+}
 void CTank::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
 	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();
@@ -455,39 +465,6 @@ bool CTank::GetTransformReady(void)
 void CTank::SetTransformReady(bool btransform_ready)
 {
 	m_btransform_ready = btransform_ready;
-}
-void CTank::Release(void)
-{
-	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	Safe_Delete(m_tankbarrel);
-
-	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
-
-	if(iter != m_componentlist.end())
-	{
-		m_componentlist.erase(iter);		
-	}
-	Safe_Delete(m_com_pathfind);
-
-	iter = m_componentlist.find(COM_ANIMATION);
-
-	if(iter != m_componentlist.end())
-	{
-		m_componentlist.erase(iter);		
-	}
-	Safe_Delete(m_com_tankanim);
-	Safe_Delete(m_com_siegeanim);
-	m_com_anim = NULL;
-}
-
-void CTank::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
 }
 void CTank::Update_Cmdbtn(void)
 {
@@ -555,3 +532,39 @@ void CTank::Update_Wireframe(void)
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
+void CTank::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+
+void CTank::Release(void)
+{
+	CObj::area_release();
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	Safe_Delete(m_tankbarrel);
+
+	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
+
+	if(iter != m_componentlist.end())
+	{
+		m_componentlist.erase(iter);		
+	}
+	Safe_Delete(m_com_pathfind);
+
+	iter = m_componentlist.find(COM_ANIMATION);
+
+	if(iter != m_componentlist.end())
+	{
+		m_componentlist.erase(iter);		
+	}
+	Safe_Delete(m_com_tankanim);
+	Safe_Delete(m_com_siegeanim);
+	m_com_anim = NULL;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
+}
+

@@ -1,9 +1,12 @@
 #pragma once
 #include "unit.h"
 
+class CCom_Weapon;
 class CMutal :
 	public CUnit
 {
+private:
+	CCom_Weapon*	m_com_weapon;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

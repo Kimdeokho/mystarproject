@@ -23,13 +23,13 @@ public:
 	T Render(const int& idx);
 	void Release(void);
 public:
-	CMyHeapSort(const int& HEAPSIZE);
+	CMyHeapSort(const int HEAPSIZE);
 	~CMyHeapSort();
 
 };
 
 template<typename T>
-CMyHeapSort<T>::CMyHeapSort(const int& HEAPSIZE)
+CMyHeapSort<T>::CMyHeapSort(const int HEAPSIZE)
 {
 	
 	m_cursize = 0;

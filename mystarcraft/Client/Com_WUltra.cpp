@@ -47,6 +47,19 @@ void CCom_WUltra::Update(void)
 		}
 	}
 
+
+}
+
+void CCom_WUltra::fire(CObj* ptarget)
+{
+	if( false == m_bfire)
+	{
+		m_attack_on = true;
+		m_pobj->SetState(IDLE);
+		m_target_cntnum = ptarget->GetObjCountNumber();
+		m_target_id = ptarget->GetObjNumber();
+	}
+
 	if(m_attack_on)
 	{
 		CObj* ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
@@ -58,7 +71,7 @@ void CCom_WUltra::Update(void)
 				m_pobj->SetState(ATTACK);
 				m_attack_time = 0.f;			
 
-				if(true == ((CCom_Animation*)m_animation)->GetAttackSync())
+				//if(true == ((CCom_Animation*)m_animation)->GetAttackSync())
 				{
 					m_bfire = true;				
 					ptarget->SetDamage( m_weapon_info.damage , m_weapon_info.eDamageType );
@@ -74,18 +87,6 @@ void CCom_WUltra::Update(void)
 			m_target_id = 0;
 		}
 	}
-}
-
-void CCom_WUltra::fire(CObj* ptarget)
-{
-	if( false == m_bfire)
-	{
-		m_attack_on = true;
-		m_pobj->SetState(IDLE);
-		m_target_cntnum = ptarget->GetObjCountNumber();
-		m_target_id = ptarget->GetObjNumber();
-	}
-
 }
 
 void CCom_WUltra::Render(void)

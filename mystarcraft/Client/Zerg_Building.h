@@ -3,12 +3,14 @@
 
 class CCom_ZBuildingAnim;
 class CCom_Creep;
+class CUI;
 class CZerg_building :
 	public CObj
 {
 protected:
 	CCom_ZBuildingAnim*			m_com_anim;
 	CCom_Creep*					m_com_creep;
+	CUI*						m_miniunit_display;
 protected:
 	UPG_INFO*		m_upg_info;
 protected:

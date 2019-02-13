@@ -49,6 +49,8 @@ public:
 	bool GetTurboKeyDown_Check(const int& nkey );	
 	bool GetDbClick_Check(const int& nkey );	
 	bool GetCombineKey_Check(const int& firstkey , const int& secondkey);
+	bool IS_CombineFirstKey(const int firstkey);
+	bool IS_CombineSecondKey(const int secondkey);
 public:	
 public:
 	CKeyMgr(void);

@@ -25,6 +25,7 @@
 #include "GeneraEff.h"
 #include "MyMath.h"
 
+#include "UI_Resource.h"
 #include "UI_Wireframe.h"
 #include "UI_Cmd_info.h"
 #include "UI_Energy_bar.h"
@@ -50,6 +51,7 @@ void CScourge::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_MUTAL;
 
+	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -76,12 +78,13 @@ void CScourge::Initialize(void)
 	m_com_air_pathfind = new CCom_AirPathfind(m_vPos);
 	m_com_cc = new CCom_CC();
 	m_com_targetsearch = new CCom_Airsearch();
+	m_com_weapon = new CCom_WScourge;
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , new CCom_WScourge ));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_WEAPON , m_com_weapon ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_air_pathfind));	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , m_com_targetsearch )) ;
 
@@ -92,10 +95,10 @@ void CScourge::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 26);
+	m_select_ui = new CUI_Select(L"Select22" , m_vPos , 14);
 	m_select_ui->Initialize();
 
-	m_energybar_ui = new CUI_Energy_bar(this , 25 , m_vertex.bottom*2);
+	m_energybar_ui = new CUI_Energy_bar(this , 20 , m_vertex.bottom*2);
 	m_energybar_ui->Initialize();
 
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
@@ -112,9 +115,9 @@ void CScourge::Update(void)
 		iter->second->Update();
 
 	if(IDLE == m_unitinfo.state)
-		m_com_anim->SetAnimation(L"IDLE");
+		m_com_anim->SetAnimation(L"MOVE");
 	else if(MOVE == m_unitinfo.state)
-		m_com_anim->SetAnimation(L"IDLE");
+		m_com_anim->SetAnimation(L"MOVE");
 
 	m_select_ui->Update();
 	m_energybar_ui->Update();
@@ -195,11 +198,11 @@ void CScourge::Update_Wireframe(void)
 	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
-		pui = new CUI_Wireframe(L"WIRE_DROPSHIP" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui = new CUI_Wireframe(L"WIRE_SCOURGE" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
 		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
-		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Dropship" ,interface_pos.x + 320 , interface_pos.y + 390 );
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Scourge" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}
 
 	D3DCOLOR font_color;
@@ -217,6 +220,9 @@ void CScourge::Update_Wireframe(void)
 	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
 		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
 
+	WEAPON_INFO temp_info = (m_com_weapon)->GetWeapon_info();
+	CFontMgr::GetInstance()->Setbatch_Font(L"공격력:%d + %d" ,temp_info.damage , m_upg_info[UPG_Z_MELEE_ATT].upg_cnt,
+		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
 	CFontMgr::GetInstance()->Setbatch_Font(L"방어력:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_AIR_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
@@ -283,4 +289,6 @@ void CScourge::Release(void)
 	CObj::area_release();
 
 	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-0.5f , m_eteamnumber);
 }

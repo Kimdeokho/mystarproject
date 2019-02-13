@@ -56,7 +56,7 @@ void CTimeMgr::SetTime( void )
 	if(m_fTime < FIXTIME )
 	{
 		Sleep( DWORD( (FIXTIME - m_fTime) *1000 ));
-		//Sleep( (0.0167 - (update~render까지 걸린시간)) *1000);
+		//Sleep( (FIXTIME - (update~render까지 걸린시간)) *1000);
 	}
 	QueryPerformanceCounter(&m_FrameTime);
 	m_FixTime = m_FrameTime;
@@ -75,3 +75,4 @@ void CTimeMgr::FPS_fix(void)
 	//}	
 }
 
+const float CTimeMgr::FIXTIME = 1/60.f;

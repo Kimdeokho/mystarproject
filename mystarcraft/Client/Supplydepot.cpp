@@ -20,6 +20,7 @@
 #include "Corpse.h"
 #include "Ingame_UIMgr.h"
 
+#include "UI_Resource.h"
 #include "UI_Wireframe.h"
 #include "UI_Energy_bar.h"
 CSupplydepot::CSupplydepot(void)
@@ -49,6 +50,7 @@ void CSupplydepot::Initialize(void)
 	m_ecategory = CATEGORY_BUILDING;
 	m_eOBJ_NAME = OBJ_SUPPLY;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
 	m_unitinfo.order = ORDER_NONE;
@@ -80,6 +82,8 @@ void CSupplydepot::Initialize(void)
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(8 , m_eteamnumber);
 }
 
 void CSupplydepot::Update(void)
@@ -132,26 +136,6 @@ void CSupplydepot::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CSupplydepot::Release(void)
-{
-	CTerran_building::area_release();
-}
-
-void CSupplydepot::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-}
-
 void CSupplydepot::Inputkey_reaction(const int& nkey)
 {
 
@@ -202,4 +186,24 @@ void CSupplydepot::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
 
+}
+void CSupplydepot::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+}
+void CSupplydepot::Release(void)
+{
+	CTerran_building::area_release();
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(-8 , m_eteamnumber);
 }

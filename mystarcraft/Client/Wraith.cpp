@@ -28,6 +28,7 @@
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_Energy_bar.h"
+#include "UI_Resource.h"
 #include "Skill_Defensive.h"
 CWraith::CWraith(void)
 {
@@ -47,6 +48,7 @@ void CWraith::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_WRAITH;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -265,6 +267,8 @@ void CWraith::Release(void)
 	CObj::area_release();
 
 	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
 }
 
 void CWraith::Dead(void)

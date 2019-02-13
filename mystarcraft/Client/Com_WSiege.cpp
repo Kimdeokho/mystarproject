@@ -75,7 +75,7 @@ void CCom_WSiege::fire(CObj* ptarget)
 				D3DXVECTOR2 vdir;
 				vdir = ptarget->GetPos() - m_pobj->GetPos();
 				D3DXVec2Normalize(&vdir , &vdir);
-				m_targetpos -= vdir*20;
+				m_targetpos -= vdir*30;
 			}
 
 			CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, 

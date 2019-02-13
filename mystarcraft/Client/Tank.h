@@ -22,6 +22,7 @@ public:
 	virtual void Release(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+	virtual bool Input_cmd(const int& nkey, bool* waitkey);
 
 	//virtual CComponent*		GetComponent(COMPONENT_LIST ecom_name);
 	virtual void Dead(void);

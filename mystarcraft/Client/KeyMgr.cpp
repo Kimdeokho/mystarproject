@@ -90,6 +90,60 @@ void CKeyMgr::OnceKeyDown(const int& nkey)
 void CKeyMgr::CombineKey(const int& firstkey ,const int& secondkey)
 {
 
+	//if(GetAsyncKeyState(firstkey) & 0x8000)
+	//{
+	//	m_bCombine = true;
+	//	if(false == m_bcombinefirst[firstkey])
+	//	{
+	//		m_bcombinefirst[firstkey] = true;
+	//		m_combine_ready[m_combineidx] = firstkey;
+	//		++m_combineidx;
+	//	}
+	//}
+	//else
+	//{
+	//	m_combineidx = 0;
+	//	m_bcombinefirst[firstkey] = false;
+	//	m_bCombine = false;
+	//}
+
+
+	//if(GetAsyncKeyState(secondkey) & 0x8000)
+	//{
+	//	if(false == m_bcombinesecond[secondkey])
+	//	{
+	//		m_bcombinesecond[secondkey] = true;
+	//		m_combine_ready[m_combineidx] = secondkey;
+	//		++m_combineidx;
+	//	}
+	//}
+	//else
+	//	m_bcombinesecond[secondkey] = false;
+
+
+
+	//if(m_combineidx >= 2)
+	//{
+	//	m_combineidx = 0;
+
+	//	if(firstkey == m_combine_ready[0] &&
+	//		secondkey == m_combine_ready[1] )
+	//	{
+	//		m_combinekey[firstkey] = true;
+	//		m_combinekey[secondkey] = true;
+	//	}
+
+	//	m_bcombinefirst[firstkey] = false;
+	//	m_bcombinesecond[secondkey] = false; //보류
+	//}
+	//else
+	//{
+	//	m_combinekey[firstkey] = false;
+	//	m_combinekey[secondkey] = false;
+	//}
+
+
+
 	if(GetAsyncKeyState(firstkey) & 0x8000)
 	{
 		m_bCombine = true;
@@ -104,6 +158,8 @@ void CKeyMgr::CombineKey(const int& firstkey ,const int& secondkey)
 	{
 		m_combineidx = 0;
 		m_bcombinefirst[firstkey] = false;
+		m_combinekey[firstkey] = false;
+		
 		m_bCombine = false;
 	}
 
@@ -118,27 +174,22 @@ void CKeyMgr::CombineKey(const int& firstkey ,const int& secondkey)
 		}
 	}
 	else
-		m_bcombinesecond[secondkey] = false;
-
-
-	if(m_combineidx >= 2)
 	{
-		m_combineidx = 0;
+		m_bcombinesecond[secondkey] = false;
+		m_combinekey[secondkey] = false;
+	}
 
-		if(firstkey == m_combine_ready[0] &&
-			secondkey == m_combine_ready[1] )
+
+
+	if(firstkey == m_combine_ready[0] &&
+		secondkey == m_combine_ready[1] )
+	{
+		if(m_combineidx >= 2)
 		{
+			m_combineidx = 0;
 			m_combinekey[firstkey] = true;
 			m_combinekey[secondkey] = true;
 		}
-
-		m_bcombinefirst[firstkey] = false;
-		m_bcombinesecond[secondkey] = false; //보류
-	}
-	else
-	{
-		m_combinekey[firstkey] = false;
-		m_combinekey[secondkey] = false;
 	}
 }
 void CKeyMgr::MouseOnceKeyDown(const int& nkey)
@@ -245,11 +296,13 @@ void CKeyMgr::Update(void)
 
 
 	for(int i = 'A'; i <= 'Z'; ++i)
-	{
 		OnceKeyDown(i);
-	}
+
 	OnceKeyDown(VK_RETURN);
 	OnceKeyDown(VK_ESCAPE);
+
+	for(int i = VK_F1; i < VK_F12; ++i)
+		OnceKeyDown(i);
 
 	MouseOnceKeyDown(VK_LBUTTON);
 	MouseKeyUp(VK_LBUTTON);
@@ -257,6 +310,7 @@ void CKeyMgr::Update(void)
 	MouseKeyUp(VK_RBUTTON);
 
 
+	CombineKey(VK_CONTROL , VK_LBUTTON);
 	CombineKey(VK_CONTROL , '1');
 	CombineKey(VK_CONTROL , '2');
 	CombineKey(VK_CONTROL , '3');
@@ -273,6 +327,14 @@ void CKeyMgr::Update(void)
 //{
 //	return m_TurboKeyPress[VK_LBUTTON];
 //}
+bool CKeyMgr::IS_CombineFirstKey(const int firstkey)
+{
+	return m_combinekey[firstkey];
+}
+bool CKeyMgr::IS_CombineSecondKey(const int secondkey)
+{
+	return m_combinekey[secondkey];
+}
 bool CKeyMgr::GetCombineKey_Check(const int& firstkey , const int& secondkey)
 {
 	return (m_combinekey[firstkey] && m_combinekey[secondkey]);

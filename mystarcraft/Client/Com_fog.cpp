@@ -6,6 +6,7 @@
 #include "MyMath.h"
 #include "TileManager.h"
 #include "Session_Mgr.h"
+#include "Debug_Mgr.h"
 
 CCom_fog::CCom_fog(const int& curidx , const int* irange):m_rcuridx32(curidx)
 , m_iSightrange(irange)

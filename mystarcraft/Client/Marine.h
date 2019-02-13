@@ -1,7 +1,6 @@
 #pragma once
 #include "unit.h"
 
-class CComponent;
 class CSkill;
 class CMarine :
 	public CUnit

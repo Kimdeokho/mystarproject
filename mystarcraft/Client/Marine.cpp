@@ -21,6 +21,7 @@
 #include "Com_Collision.h"
 #include "FontMgr.h"
 #include "UI_Select.h"
+#include "UI_Resource.h"
 #include "UI_Energy_bar.h"
 
 #include "Corpse.h"
@@ -55,10 +56,11 @@ void CMarine::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_MARINE;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
-	m_unitinfo.esize = SIZE_SMALL;
+	m_unitinfo.eArmorType = ARMOR_SMALL;
 	m_unitinfo.erace = OBJRACE_CREATURE;
 	m_unitinfo.esize = SIZE_SMALL;
 	m_unitinfo.hp = 40;
@@ -360,5 +362,7 @@ void CMarine::Release(void)
 	m_com_pathfind = NULL;
 	m_com_weapon = NULL;
 	Safe_Delete(m_skill_sp);
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 
 }

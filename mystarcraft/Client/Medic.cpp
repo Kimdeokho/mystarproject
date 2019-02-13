@@ -31,6 +31,8 @@
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_Energy_bar.h"
+#include "UI_Resource.h"
+
 #include "Skill_Defensive.h"
 CMedic::CMedic(void)
 {
@@ -55,6 +57,7 @@ void CMedic::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_MEDIC;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -331,6 +334,8 @@ void CMedic::Release(void)
 	CObj::area_release();
 
 	m_com_pathfind = NULL;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 }
 
 void CMedic::Dead(void)

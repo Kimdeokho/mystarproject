@@ -4,6 +4,8 @@
 class CZergling :
 	public CUnit
 {
+private:
+	CComponent*		m_com_weapon;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

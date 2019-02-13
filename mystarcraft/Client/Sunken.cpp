@@ -11,6 +11,7 @@
 #include "FontMgr.h"
 #include "ObjMgr.h"
 #include "UnitMgr.h"
+#include "LineMgr.h"
 
 #include "Com_fog.h"
 #include "Com_Creep.h"
@@ -159,6 +160,8 @@ void CSunken::Render(void)
 	m_sunken_anim->Render();
 
 	m_energybar_ui->Render();
+
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
 void CSunken::Inputkey_reaction(const int& nkey)
@@ -173,12 +176,52 @@ void CSunken::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 void CSunken::Update_Cmdbtn(void)
 {
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
+	pui->Create_Cmdbtn(1, L"BTN_STOP", BTN_STOP);
+	pui->Create_Cmdbtn(2, L"BTN_ATTACK", BTN_ATTACK);
 }
 
 void CSunken::Update_Wireframe(void)
 {
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;	
+
+		pui = new CUI_Wireframe(L"WIRE_SUNKEN" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Sunken" ,interface_pos.x + 320 , interface_pos.y + 390 );
+
+		pui->Initialize();
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+		if(BUILD == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction" , interface_pos.x + 320 , interface_pos.y + 415);
+		}
+	}
+
+	//--------------------계속해서 갱신받는 부분
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	if(BUILD == m_unitinfo.state)
+	{		
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_build_maxhp );
+	}
 }
 void CSunken::Build_Complete(void)
 {

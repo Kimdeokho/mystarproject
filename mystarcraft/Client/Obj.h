@@ -97,6 +97,8 @@ public:
 	void SetHP(const int& ihp);
 	void SetMyrect(MYRECT<float> temprc);
 	void SetVertex(MYRECT<float> tempvtx);
+
+	void AddComponent(const COMPONENT_LIST ecomname, CComponent*	pcom);
 public:
 	const D3DXMATRIX&		GetMat(void);
 	int						GetObjNumber(void);

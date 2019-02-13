@@ -46,26 +46,17 @@ typedef struct tagTile
 }TILE;
 typedef struct foginfo
 {
-	unsigned short		   fog_sequence[TEAM_END];
 	D3DCOLOR			   fog_color[TEAM_END];
-	//bool				   bLight[TEAM_END];
 	FOGSIGHT_OPTION		   eSight[TEAM_END];
 	int					   overlap_cnt[TEAM_END]; 
-	//FOGSIGHT_OPTION		   eSight;
 	foginfo()
 	{
-		//fog_sequence		 = 1;
 		for(int i = 0; i < TEAM_END; ++i)
 		{
-			fog_sequence [i] = 1;
 			fog_color[i] = D3DCOLOR_ARGB(255,255,255,255);
 			eSight[i] = FOG_BLACK;
 		}
-		
-		//bLight = false;
-		//memset(bLight , 0 , sizeof(bLight));
 		memset(overlap_cnt , 0 , sizeof(overlap_cnt));
-		//eSight = FOG_BLACK;
 	}
 }FOG_INFO;
 typedef struct creepinfo
@@ -242,6 +233,7 @@ typedef struct tagunitinfo
 	ORDER				order; //받은 명령
 	UNIT_SIZE			esize;
 	OBJ_RACE			erace;
+	TRIBE				etribe;
 
 	float				fbuildtime;
 	float				fspeed;
@@ -262,6 +254,7 @@ typedef struct tagunitinfo
 	int					detect[TEAM_END];
 	tagunitinfo()
 	{
+		etribe = TRIBE_NONE;
 		esize = SIZE_NONE;
 		erace = OBJRACE_NONE;
 		eMoveType = MOVE_NOT;

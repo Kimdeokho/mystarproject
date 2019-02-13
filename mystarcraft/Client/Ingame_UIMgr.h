@@ -6,6 +6,7 @@ class CUI;
 class CObj;
 class CUI_Cmd_info;
 class CUI_Building_info;
+class CUI_Resource;
 class CIngame_UIMgr
 {
 	DECLARE_SINGLETON(CIngame_UIMgr)
@@ -21,11 +22,9 @@ private:
 	CUI*						m_armyunitlist_info;
 	CUI*						m_boarding_info;
 	CUI*						m_cmd_info;
+	CUI*						m_resource_info;
 private:
-	int				m_total_mineral;
-	int				m_total_gas;
-private:
-	RACE			m_erace;
+	TRIBE			m_erace;
 	int				m_build_state[BUILD_TECH_END];
 	UPG_INFO		m_upginfo[UPG_END];
 private:
@@ -34,7 +33,7 @@ private:
 	CObj*		m_pobj_adress;
 	STATE		m_old_state;
 public:
-	void Initialize(RACE erace);
+	void Initialize(const TRIBE erace);
 	void Update(void);
 	void Render(void);
 public:
@@ -54,6 +53,7 @@ public:
 public:
 	CUI_Cmd_info*		GetCmd_info(void);
 	UPG_INFO*			GetUpginfo();
+	CUI_Resource*		GetResource_UI(void);
 	int					Get_BuildTech(TERRAN_BUILD_TECH etech );
 public:
 	void	BuildTech_Update(TERRAN_BUILD_TECH etech , const int& cnt);

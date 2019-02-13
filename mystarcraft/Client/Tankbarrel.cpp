@@ -38,6 +38,7 @@ void CTankbarrel::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_TANK;
 	
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;

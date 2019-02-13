@@ -34,6 +34,8 @@ void CCom_Wmarine::Initialize(CObj* pobj /*= NULL*/)
 }
 void CCom_Wmarine::fire(CObj*	ptarget )
 {
+	m_cur_target_num = ptarget->GetObjNumber();
+	m_cur_target_cntnum = ptarget->GetObjCountNumber();
 	if(false == m_bfire)
 	{
 		m_pobj->SetState(IDLE);
@@ -69,9 +71,14 @@ void CCom_Wmarine::fire(CObj*	ptarget )
 			CObjMgr::GetInstance()->AddEffect(peff);
 
 			int idx = ptarget->Getcuridx(32);
-			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
-				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
-				(ptarget)->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_BIO_WEAPON].upg_cnt , m_weapon_info.eDamageType);
+			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType)
+			{
+				if(CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
+					ptarget->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_BIO_WEAPON].upg_cnt , m_weapon_info.eDamageType);
+			}
+			else
+				ptarget->SetDamage(m_weapon_info.damage + m_upg_info[UPG_T_BIO_WEAPON].upg_cnt , m_weapon_info.eDamageType);
+
 		}
 	}
 	else
@@ -82,15 +89,30 @@ void CCom_Wmarine::fire(CObj*	ptarget )
 }
 void CCom_Wmarine::Update(void)
 {
-	if(m_bfire)
-	{
-		m_attack_time += GETTIME;
-		if(m_attack_time > m_attack_delay) //½ºÆÀ»¡¸é ÀÌ°Ô ÁÙ°ÚÁö
+	//CObj* pobj = CObjMgr::GetInstance()->obj_alivecheck(m_cur_target_num);
+
+	//if(NULL == pobj)
+	//	m_attack_time = 0.f;
+	//else
+	//{
+	//	if(m_cur_target_cntnum != pobj->GetObjCountNumber())
+	//	{
+	//		//m_cur_target_cntnum = pobj->GetObjCountNumber();
+	//		m_attack_time = 0.f;
+	//	}
+	//	else
 		{
-			m_attack_time = 0.f;
-			m_bfire = false;
+			if(m_bfire)
+			{
+				m_attack_time += GETTIME;
+				if(m_attack_time > m_attack_delay) //½ºÆÀ»¡¸é ÀÌ°Ô ÁÙ°ÚÁö
+				{
+					m_attack_time = 0.f;
+					m_bfire = false;
+				}
+			}
 		}
-	}
+	//}
 }
 
 void CCom_Wmarine::Render(void)

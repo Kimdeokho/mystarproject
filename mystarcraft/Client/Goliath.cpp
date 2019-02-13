@@ -31,6 +31,7 @@
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_Energy_bar.h"
+#include "UI_Resource.h"
 #include "Skill_Defensive.h"
 CGoliath::CGoliath(void)
 {
@@ -52,6 +53,7 @@ void CGoliath::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_GOLIATH;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -70,7 +72,7 @@ void CGoliath::Initialize(void)
 	m_vertex.bottom = 16;
 
 	m_pgoliath_arm = new CGoliath_part(this);
-	m_pgoliath_arm->SetPos(m_vPos);
+	m_pgoliath_arm->SetPos(D3DXVECTOR2(-100.f , -100.f));
 	m_pgoliath_arm->SetTeamNumber(m_eteamnumber);
 	m_pgoliath_arm->SetObjID(m_obj_id);
 
@@ -157,6 +159,8 @@ void CGoliath::Render(void)
 
 	if(NULL != m_com_pathfind)
 		m_com_pathfind->Render();
+
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
 
@@ -218,23 +222,6 @@ void CGoliath::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 	m_pgoliath_arm->Inputkey_reaction(firstkey , secondkey);
 }
-
-void CGoliath::Release(void)
-{
-	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	Safe_Delete(m_pgoliath_arm);
-}
-
-void CGoliath::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-}
-
 void CGoliath::sync_arm(void)
 {
 	((CGoliath_part*)m_pgoliath_arm)->setarm_pos(m_vPos);
@@ -338,4 +325,20 @@ void CGoliath::Update_Wireframe(void)
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 
+}
+void CGoliath::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+void CGoliath::Release(void)
+{
+	CObj::area_release();
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	Safe_Delete(m_pgoliath_arm);
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
 }

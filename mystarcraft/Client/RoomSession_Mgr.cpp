@@ -136,7 +136,7 @@ void CRoomSession_Mgr::Init_RoomUserInfo(const S_PT_ROOM_USER_RENEWAL_SUCC_U& _i
 		if(m_myinfo->SESSION_ID == _info.ROOM_USER_INFO[i].SESSION_ID)
 			m_curslot = i;
 	}
-	printf("%d \n" , m_player_cnt);
+	//printf("%d \n" , m_player_cnt);
 }
 
 void CRoomSession_Mgr::SetPlaceData(PLACE_DATA* _data)
@@ -148,7 +148,6 @@ PLACE_DATA* CRoomSession_Mgr::GetPlaceData(void)
 {
 	return m_placedata;
 }
-
 void CRoomSession_Mgr::Release_sessioninfo(void)
 {
 	for(int i = 0; i < 8; ++i)

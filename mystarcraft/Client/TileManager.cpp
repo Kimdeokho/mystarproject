@@ -12,6 +12,7 @@
 #include "Obj.h"
 #include "Area_Mgr.h"
 #include "Session_Mgr.h"
+#include "Debug_Mgr.h"
 
 IMPLEMENT_SINGLETON(CTileManager)
 
@@ -113,36 +114,40 @@ void CTileManager::RenderTile(void)
 	}
 
 
+	RenderCreep();
+	//Flowfield_Render();
 
 	/*타일 옵션 디버그 확인용*/
 
-	//const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
-	//int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
-	//int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
-	//int idx;
-	//for(int i = 0; i < CULLINGCNTY; ++i)
-	//{
-	//	for(int j = 0; j < CULLINGCNTX; ++j)
-	//	{
-	//		idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
-	//		if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
-	//			continue;
 
-	//		m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
-	//		m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+	if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_TILEPOP])
+	{
+		const TEXINFO* ptex = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"White");
+		int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
+		int istartY = (int)CScrollMgr::m_fScrollY/SQ_TILESIZEY;
+		int idx;
+		for(int i = 0; i < CULLINGCNTY; ++i)
+		{
+			for(int j = 0; j < CULLINGCNTX; ++j)
+			{
+				idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
+				if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
+					continue;
 
-	//		if(MOVE_OK == m_sqTile[idx]->byOption)
-	//			continue;
+				m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
+				m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
 
-	//		m_pSprite->SetTransform(&m_matWorld);
-	//		m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
-	//			,D3DCOLOR_ARGB(255,0,0,0));
-	//	}
-	//}
+				if(MOVE_OK == m_sqTile[idx]->byOption)
+					continue;
+
+				m_pSprite->SetTransform(&m_matWorld);
+				m_pSprite->Draw(ptex->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
+					,D3DCOLOR_ARGB(255,255,0,0));
+			}
+		}
+	}
 
 
-	RenderCreep();
-	//Flowfield_Render();
 
 
 	//TCHAR sz[32] = L"";
@@ -169,6 +174,10 @@ void CTileManager::RenderFog(void)
 	//여기가 안개 렌더
 	//TEXINFO**	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
 	//const vector<TEXINFO*>*	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
+
+	if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
+		return;
+
 	int ifogsquence = 1;
 
 	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
@@ -192,7 +201,17 @@ void CTileManager::RenderFog(void)
 			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;
 
 			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_fogTile[idx]->bLight[eteam] , m_sqTile[idx]->vPos.x  , m_sqTile[idx]->vPos.y);
-			ifogsquence = m_fogTile[idx]->fog_sequence[eteam];
+
+			if(FOG_ALPHA == m_fogTile[idx]->eSight[eteam])
+			{
+				ifogsquence = 0;
+			}
+			else if(FOG_BLACK == m_fogTile[idx]->eSight[eteam] ||
+				FOG_GREY == m_fogTile[idx]->eSight[eteam])
+			{
+				ifogsquence = 1;
+			}
+			//ifogsquence = m_fogTile[idx]->fog_sequence[eteam];
 
 			//if(0 == ifogsquence ||
 				//2 == ifogsquence)
@@ -399,8 +418,8 @@ void CTileManager::RenderCreep(void)
 
 			else
 			{
-				CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_creepTile[idx]->creep_cnt ,
-					m_sqTile[idx]->vPos.x , m_sqTile[idx]->vPos.y);
+				//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_creepTile[idx]->creep_cnt ,
+				//	m_sqTile[idx]->vPos.x , m_sqTile[idx]->vPos.y);
 				continue;
 			}
 
@@ -662,12 +681,10 @@ void CTileManager::SightOffRender(const int& idx ,const TEAM_NUMBER& eteam)
 
 	if(m_fogTile[idx]->overlap_cnt[eteam] <= 0)
 	{
-		m_fogTile[idx]->overlap_cnt[eteam] = 0;
-		//m_fogTile[idx]->bLight[eteam] = false;
-		m_fogTile[idx]->eSight[eteam] = FOG_GREY;
+		m_fogTile[idx]->overlap_cnt[eteam] = 0;	
 
 		m_fogTile[idx]->fog_color[eteam] = D3DCOLOR_ARGB(50,0,0,0);
-		m_fogTile[idx]->fog_sequence[eteam] = 1;
+		m_fogTile[idx]->eSight[eteam] = FOG_GREY;
 
 		if(CSession_Mgr::GetInstance()->GetTeamNumber() == eteam)
 			m_minifog_offidx.push_back(idx);
@@ -692,7 +709,8 @@ void CTileManager::SightOnRender(const int& idx ,const int& irange , vector<int>
 		sightoff_list.push_back(startIdx);
 
 		m_fogTile[idx]->overlap_cnt[eteam] += 1;
-		m_fogTile[idx]->fog_sequence[eteam] = 0;
+
+		m_fogTile[idx]->eSight[eteam] = FOG_ALPHA;
 		SetFogLight(idx , eteam);
 	}
 
@@ -839,25 +857,6 @@ void CTileManager::SetFogLight(int idx , const TEAM_NUMBER& eteam)
 		m_minifog_onidx.push_back(idx);
 
 }
-//void CTileManager::SetFogLight(int idx , float fdistance , float fradius , const TEAM_NUMBER& eteam)
-//{
-//	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
-//		return;
-//
-//	if(false == m_fogTile[idx]->bLight[eteam])
-//		m_fogTile[idx]->bLight[eteam] = true;
-//
-//	//m_fogTile[idx]->eSight = FOG_ALPHA;
-//
-//	int ivalue = int(fdistance/fradius*100);
-//
-//	if( m_fogTile[idx]->fog_color[eteam] < D3DCOLOR_ARGB(ivalue, 0, 0 , 0) ) //기존에 있던 불빛이 더 밝다면
-//		return;
-//
-//	m_fogTile[idx]->fog_color[eteam] = D3DCOLOR_ARGB(0 , 0,0,0 );
-//	m_minifog_onidx.push_back(idx);
-//
-//}
 void CTileManager::SetCreepInstall(const int& idx , bool binstall)
 {
 	m_creepTile[idx]->bcreep_install = binstall;
@@ -1013,6 +1012,7 @@ void CTileManager::LoadTileData(HANDLE hFile)
 	
 	ReadyMainMap();
 	ReadyMiniMap();
+
 }
 void CTileManager::ReadyMainMap(void)
 {
@@ -1188,7 +1188,10 @@ FOGSIGHT_OPTION CTileManager::GetFogLight(const int& idx , const TEAM_NUMBER& et
 }
 bool CTileManager::GetCreepInstall(const int& idx)
 {
-	return m_creepTile[idx]->bcreep_install;
+	if(m_creepTile[idx]->creep_cnt == 0)
+		return false;
+	else
+		 return true;
 }
 
 TILE** CTileManager::GetSqTile(void)
@@ -1352,7 +1355,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						m_fogTile[idx]->overlap_cnt[eteam] += 1;											
 					}
 
-					m_fogTile[idx]->fog_sequence[eteam] = 0;
+					m_fogTile[idx]->eSight[eteam] = FOG_ALPHA;
 					SetFogLight(idx , eteam);
 					//}
 				}
@@ -1367,7 +1370,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 							m_fogTile[idx]->overlap_cnt[eteam] += 1;											
 						}
 
-						m_fogTile[idx]->fog_sequence[eteam] = 0;
+						m_fogTile[idx]->eSight[eteam] = FOG_ALPHA;
 						SetFogLight(idx , eteam);
 					}
 					else
@@ -1411,7 +1414,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 						m_fogTile[idx]->overlap_cnt[eteam] += 1;								
 					}
 
-					m_fogTile[idx]->fog_sequence[eteam] = 0;
+					m_fogTile[idx]->eSight[eteam] = FOG_ALPHA;
 					SetFogLight(idx , eteam);
 				}
 				else if(MOVE_GROUND == etype)
@@ -1425,7 +1428,7 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 							m_fogTile[idx]->overlap_cnt[eteam] += 1;			
 						}
 
-						m_fogTile[idx]->fog_sequence[eteam] = 0;
+						m_fogTile[idx]->eSight[eteam] = FOG_ALPHA;
 						SetFogLight(idx , eteam);
 					}
 					else
@@ -1603,7 +1606,7 @@ void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 			m_flowdestidx[ m_eight_idx[i] ] = pnode->index;
 
 			//가로 세로 10 , 대각 14
-			if( i <= 4)
+			if( LEFT == i || RIGHT == i || UP == i || DOWN == i)
 				pushnode->iCost = curcost + 10;
 			else
 				pushnode->iCost = curcost + 14;
@@ -1619,6 +1622,8 @@ void CTileManager::Flowfield_Pathfinding(const D3DXVECTOR2& goalpos)
 }
 void CTileManager::Render_Flowfield(void)
 {
+	if(!CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FLOWPATH])
+		return;
 
 	const TEXINFO*	ptemp = NULL;
 	int ifogsquence = 1;
@@ -1799,6 +1804,3 @@ LPDIRECT3DTEXTURE9 CTileManager::GetMiniFogmapTexture(void)
 {
 	return m_MinifogTexture;
 }
-
-
-

@@ -29,7 +29,12 @@
 #include "Input_Interface.h"
 
 #include "MyCmd_Building.h"
+
 #include "UI_Cmd_info.h"
+#include "UI_Resource.h"
+#include "UI_Wireframe.h"
+#include "FontMgr.h"
+
 #include "Corpse.h"
 
 #include "Skill_Defensive.h"
@@ -52,6 +57,7 @@ void CDefiler::Initialize(void)
 	m_sortID = SORT_GROUND;
 	m_ecategory = CATEGORY_UNIT;
 
+	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.esize = SIZE_MEDIUM;
@@ -265,12 +271,47 @@ bool CDefiler::Input_cmd(const int& firstkey , const int& secondkey)
 
 void CDefiler::Update_Cmdbtn(void)
 {
+	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 }
 
 void CDefiler::Update_Wireframe(void)
 {
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_ZERGLING" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Defiler" ,interface_pos.x + 320 , interface_pos.y + 390 );
+	}
+
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt 
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CDefiler::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
@@ -334,4 +375,6 @@ void CDefiler::Dead(void)
 void CDefiler::Release(void)
 {
 	CObj::area_release();
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 }

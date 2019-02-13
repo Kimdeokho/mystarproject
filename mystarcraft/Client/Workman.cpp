@@ -9,6 +9,10 @@
 
 #include "Fog_object.h"
 #include "ObjMgr.h"
+
+#include "UI_Resource.h"
+#include "Session_Mgr.h"
+
 CWorkman::CWorkman(void)
 {
 	m_select_ui = NULL;
@@ -40,7 +44,7 @@ CWorkman::~CWorkman(void)
 
 void CWorkman::Initialize(void)
 {
-	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , m_eteamnumber);
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
 	m_miniunit_display->Initialize();
 	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }
@@ -133,12 +137,18 @@ void CWorkman::setgas_fragment(CObj* pgas_frag)
 
 void CWorkman::destroy_frag(void)
 {
+	if(CSession_Mgr::GetInstance()->GetTeamNumber() != m_eteamnumber)
+		return;
+
+	CUI_Resource* pui = CIngame_UIMgr::GetInstance()->GetResource_UI();
+	
 	if(NULL != m_pmineral_fragment)
 	{
 		m_pmineral_fragment->SetDestroy(true);
 		m_pmineral_fragment = NULL;
 
-		CIngame_UIMgr::GetInstance()->SetMineral(8);
+		pui->SetResource(8 , 0 ,  m_eteamnumber);
+		
 		//여기에 미네랄 자원 ++
 	}
 
@@ -147,7 +157,7 @@ void CWorkman::destroy_frag(void)
 		m_pgas_fragment->SetDestroy(true);
 		m_pgas_fragment = NULL;
 
-		CIngame_UIMgr::GetInstance()->SetGas(8);
+		pui->SetResource(0, 8 , m_eteamnumber);
 		//여기에 가스 자원 ++
 	}
 }

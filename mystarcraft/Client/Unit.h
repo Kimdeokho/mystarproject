@@ -14,6 +14,7 @@ class CCom_CC;
 class CCom_UsingSkill;
 
 typedef boost::unordered_map<SKILL_NAME , CSkill*> SKILL_PAIR;
+
 class CUnit :
 	public CObj
 {

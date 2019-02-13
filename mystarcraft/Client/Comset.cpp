@@ -6,6 +6,7 @@
 #include "Com_Collision.h"
 #include "Com_fog.h"
 #include "Com_AirPathfind.h"
+#include "Com_Detect.h"
 
 #include "ScrollMgr.h"
 #include "MyMath.h"
@@ -31,6 +32,7 @@
 #include "UI_Cmd_info.h"
 
 #include "UI_Energy_bar.h"
+
 CComset::CComset(CObj* command)
 {
 	m_mainbuilding = command;
@@ -60,6 +62,7 @@ void CComset::Initialize(void)
 	m_eOBJ_NAME = OBJ_COMSET;
 	m_eteamnumber = m_mainbuilding->GetTeamNumber();
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
 	m_unitinfo.order = ORDER_NONE;
@@ -122,12 +125,12 @@ void CComset::Update(void)
 		}
 	}
 
-	D3DXVECTOR2 vpos;
-	vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
-	vpos.x -= CScrollMgr::m_fScrollX;
-	vpos.y -= CScrollMgr::m_fScrollY;
-	CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
-		m_vPos.y - CScrollMgr::m_fScrollY);
+	//D3DXVECTOR2 vpos;
+	//vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
+	//vpos.x -= CScrollMgr::m_fScrollX;
+	//vpos.y -= CScrollMgr::m_fScrollY;
+	//CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
+	//	m_vPos.y - CScrollMgr::m_fScrollY);
 
 
 	CTerran_building::fire_eff_update();
@@ -150,34 +153,11 @@ void CComset::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CComset::Release(void)
-{
-	CTerran_building::area_release();	
-}
-
-void CComset::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	if(NULL != m_mainbuilding)
-		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
-
-}
 
 void CComset::Inputkey_reaction(const int& nkey)
 {
 	if(nkey == 'S')
 	{
-
 	}
 }
 
@@ -199,14 +179,28 @@ void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}	
 
 		CObj* pobj = NULL;
+		CComponent* pcom = new CCom_Detect;
 
 		pobj = new CFog_object(320*2 , 10.f , vmousept , MOVE_AIR , m_eteamnumber);
-		pobj->Initialize();
-
+		
+		pobj->AddComponent(COM_DETECTOR , pcom);
+		pcom->Initialize(this);
+		pobj->Initialize();		
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FOG);
+
+		CObj* peff = NULL;
+		peff = new CGeneraEff( L"SCAN" , vmousept , D3DXVECTOR2(5.f,5.f) , SORT_AIR_EFF);
+		peff->Initialize();
+		CObjMgr::GetInstance()->AddEffect(peff);
 	}
 }
+bool CComset::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('S' == nkey)
+		waitkey[nkey] = true;
 
+	return false;
+}
 void CComset::Setlink(bool blink , CObj* pobj)
 {
 	if(true == blink)
@@ -269,4 +263,26 @@ void CComset::Update_Wireframe(void)
 	{		
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
+}
+
+void CComset::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	if(NULL != m_mainbuilding)
+		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
+
+}
+void CComset::Release(void)
+{
+	CTerran_building::area_release();	
 }

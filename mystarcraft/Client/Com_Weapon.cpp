@@ -12,6 +12,9 @@ CCom_Weapon::CCom_Weapon(void)
 	m_bair_fire = false;
 
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
+
+	m_cur_target_num = -1;
+	m_cur_target_cntnum = -1;
 }
 
 CCom_Weapon::~CCom_Weapon(void)

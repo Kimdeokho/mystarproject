@@ -11,7 +11,7 @@ private:
 	float	 m_meleerangeY;
 
 	float	 m_search_time;
-	float	 m_meleesearch_time;
+	float	 m_search_around_time;
 	bool	 m_btarget_search;
 public:
 	virtual void Initialize(CObj* pobj = NULL);

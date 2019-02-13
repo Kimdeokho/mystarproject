@@ -12,6 +12,7 @@
 #include "ObjMgr.h"
 #include "LineMgr.h"
 #include "ObjMgr.h"
+#include "UI_Resource.h"
 
 #include "Com_fog.h"
 #include "Com_LarvaAnim.h"
@@ -31,6 +32,8 @@
 #include "Corpse.h"
 #include "Larva_egg.h"
 
+#include "FontMgr.h"
+#include "UI_Wireframe.h"
 
 CLarva::CLarva(int hatch_number)
 {
@@ -50,6 +53,7 @@ void CLarva::Initialize(void)
 	m_sortID = SORT_CORPSE;
 	m_ecategory = CATEGORY_UNIT;
 
+	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eAttackType = ATTACK_ONLY_GROUND;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.esize = SIZE_SMALL;
@@ -198,72 +202,100 @@ void CLarva::Inputkey_reaction(const int& nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_DRONE , m_hatch_num , 1 , L"DRONE_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);	
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_DRONE , m_hatch_num , 1 , L"DRONE_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if('H' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_HYDRA , m_hatch_num , 10 , L"HYDRA_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-75 , -25,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_HYDRA , m_hatch_num , 10 , L"HYDRA_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if('Z' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_ZERGLING , m_hatch_num , 10 , L"ZERGLING_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_ZERGLING , m_hatch_num , 10 , L"ZERGLING_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if('U' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_ULTRA , m_hatch_num , 1 , L"ULTRA_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-200 , -200,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_ULTRA , m_hatch_num , 1 , L"ULTRA_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if('O' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_OVERLOAD , m_hatch_num , 1 , L"OVER_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , 0,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_OVERLOAD , m_hatch_num , 1 , L"OVER_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		}
+		
 	}
 
 	if('M' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_MUTAL , m_hatch_num , 1 , L"MUTAL_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_MUTAL , m_hatch_num , 1 , L"MUTAL_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if('S' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_SCOURGE , m_hatch_num , 2 , L"SCOURGE_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-25 , -75,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_SCOURGE , m_hatch_num , 2 , L"SCOURGE_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if('Q' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_QUEEN , m_hatch_num , 1 , L"QUEEN_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_QUEEN , m_hatch_num , 1 , L"QUEEN_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if('F' == nkey)
 	{
 		SetDestroy(true);
 
-		pobj = new CLarva_egg(1.f , OBJ_DEFILER , m_hatch_num , 1 , L"DEFILER_BIRTH");
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
+		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -150,  m_eteamnumber))
+		{
+			pobj = new CLarva_egg(1.f , OBJ_DEFILER , m_hatch_num , 1 , L"DEFILER_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+		}
 	}
 
 	if( NULL != pobj)
@@ -320,12 +352,79 @@ bool CLarva::Input_cmd(const int& firstkey , const int& secondkey)
 
 void CLarva::Update_Cmdbtn(void)
 {
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
+	pui->Create_Cmdbtn(0 , L"BTN_DRONE" , BTN_DRONE , true);
+	pui->Create_Cmdbtn(2 , L"BTN_OVERLOAD" , BTN_OVERLOAD , true);
+
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL))
+		pui->Create_Cmdbtn(1 , L"BTN_ZERGLING" , BTN_ZERGLING , true);
+	else
+		pui->Create_Cmdbtn(1 , L"BTN_ZERGLING" , BTN_ZERGLING , false);
+
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_HYDRADEN))
+		pui->Create_Cmdbtn(3 , L"BTN_HYDRA" , BTN_HYDRA , true);
+	else
+		pui->Create_Cmdbtn(3 , L"BTN_HYDRA" , BTN_HYDRA, false);
+
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPIRE))
+	{
+		pui->Create_Cmdbtn(4 , L"BTN_MUTAL" , BTN_MUTAL , true);
+		pui->Create_Cmdbtn(5 , L"BTN_SCOURGE" , BTN_SCOURGE , true);
+	}
+	else
+	{
+		pui->Create_Cmdbtn(4 , L"BTN_MUTAL" , BTN_MUTAL , false);
+		pui->Create_Cmdbtn(5 , L"BTN_SCOURGE" , BTN_SCOURGE , false);
+	}
+
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_QUEEN_NEST))
+		pui->Create_Cmdbtn(6 , L"BTN_QUEEN" , BTN_QUEEN , true);
+	else
+		pui->Create_Cmdbtn(6 , L"BTN_QUEEN" , BTN_QUEEN , false);
+
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_ULTRA_CAVE))
+		pui->Create_Cmdbtn(7 , L"BTN_ULTRA" , BTN_ULTRA , true);
+	else
+		pui->Create_Cmdbtn(7 , L"BTN_ULTRA" , BTN_ULTRA , false);
+
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_DEFILER_MOUND))
+		pui->Create_Cmdbtn(8 , L"BTN_DEFILER" , BTN_DEFILER , true);
+	else
+		pui->Create_Cmdbtn(8 , L"BTN_DEFILER" , BTN_DEFILER , false);
 }
 
 void CLarva::Update_Wireframe(void)
 {
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_LARVA" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Larva" ,interface_pos.x + 320 , interface_pos.y + 390 );
+	}
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, 0
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CLarva::Dead(void)

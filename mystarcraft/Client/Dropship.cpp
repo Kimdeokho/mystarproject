@@ -20,6 +20,7 @@
 #include "UnitMgr.h"
 
 #include "UI_Select.h"
+#include "UI_Resource.h"
 
 #include "GeneraEff.h"
 #include "MyMath.h"
@@ -47,6 +48,7 @@ void CDropship::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_DROPSHIP;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -292,4 +294,6 @@ void CDropship::Release(void)
 	CObj::area_release();
 
 	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
 }

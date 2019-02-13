@@ -89,6 +89,7 @@ EFFECT|PLAGUE_S|PLAGUE_S|4|..\Texture\General\Effect\plague_hit\palgue_hit_s%d.p
 EFFECT|PLAGUE_M|PLAGUE_M|4|..\Texture\General\Effect\plague_hit\palgue_hit_m%d.png
 EFFECT|PLAGUE_L|PLAGUE_L|4|..\Texture\General\Effect\plague_hit\palgue_hit_l%d.png
 EFFECT|DARK_SWARM|DARK_SWARM|10|..\Texture\General\Effect\dark_swarm\dark_swarm%d.png
+EFFECT|SCAN|SCAN|8|..\Texture\General\Effect\scan\scan%d.png
 BULLET|VULTURE_BULLET|VULTURE_BULLET|4|..\Texture\General\bullet\vulture\vulture_bullet%d.png
 BULLET|SPORE_BULLET|SPORE_BULLET|4|..\Texture\General\bullet\spore\spore_bullet%d.png
 BULLET|LURK_BULLET|LURK_BULLET|11|..\Texture\General\bullet\lurk\lurk_bullet%d.png

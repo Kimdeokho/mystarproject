@@ -49,15 +49,15 @@ void CCom_ZerglingAnim::Update(void)
 	}
 
 
-	if(L"ATTACK" == m_statkey)
-	{
-		if( 2 == int(m_frame.fcurframe) )
-		{
-			m_battack_sync = true;
-		}
-		else
-			m_battack_sync = false;
-	}
+	//if(L"ATTACK" == m_statkey)
+	//{
+	//	if( 0 == int(m_frame.fcurframe) )
+	//	{
+	//		m_battack_sync = true;
+	//	}
+	//	else
+	//		m_battack_sync = false;
+	//}
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
 		m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];

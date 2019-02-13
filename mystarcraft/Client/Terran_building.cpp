@@ -19,6 +19,8 @@
 #include "FontMgr.h"
 
 #include "SCV.h"
+#include "UI_MiniUnitDisplay.h"
+
 CTerran_building::CTerran_building(void)
 {
 	m_pfire_eff1 = NULL;
@@ -48,12 +50,16 @@ CTerran_building::CTerran_building(void)
 	m_fbuild_tick = 0.f;
 	m_build_hp = 0.f;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
+
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
+	m_miniunit_display->Initialize();
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
 }
 
 CTerran_building::~CTerran_building(void)
 {
 	Release();
-	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , -1);
 }
 
 void CTerran_building::Initialize(void)
@@ -124,7 +130,7 @@ void CTerran_building::building_pos_Initialize(const int& col , const int& row)
 
 void CTerran_building::building_area_update(void)
 {
-	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
 	m_curidx32 = CMyMath::Pos_to_index(m_vPos ,32);
 	m_curidx64 = CMyMath::Pos_to_index(m_vPos , 64);
 
@@ -180,6 +186,11 @@ void CTerran_building::Release(void)
 
 	if(NULL != m_energybar_ui)
 		Safe_Delete(m_energybar_ui);
+
+	if(NULL != m_miniunit_display)
+		m_miniunit_display->SetDestroy(true);
+
+	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , -1);
 }
 
 void CTerran_building::Dead(void)

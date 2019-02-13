@@ -6,7 +6,8 @@ class CUI_MiniUnitDisplay :
 {
 	const D3DXVECTOR2& m_vminipos;
 	D3DXVECTOR2			m_vweight;
-	TEAM_NUMBER			m_eteam;
+	TEAM_NUMBER*		m_eteam;
+	TEAM_NUMBER			m_myteam;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
@@ -14,6 +15,6 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER eteam);
+	CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER* eteam);
 	~CUI_MiniUnitDisplay(void);
 };

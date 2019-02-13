@@ -29,6 +29,7 @@ CAstar::CAstar(void)
 
 	m_fdummytime = 0.f;
 
+	m_eight_weight[CENTER] = 0;
 	m_eight_weight[UP] = 32;
 	m_eight_weight[DOWN] = 32;
 	m_eight_weight[LEFT] = 32;
@@ -273,6 +274,8 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 		else
 			m_terrain_end = false;
 	}
+	else
+		m_terrain_end = true;
 	
 
 	if( NULL != m_ptarget)
@@ -289,13 +292,6 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 	//m_unit_stepsize = 16;
 	m_unit_stepsize = stepsize;
 	m_tilecnt = int(SQ_TILECNTX*(float)SQ_TILESIZEX/(float)m_unit_stepsize);
-
-	//if(8 == m_unit_stepsize)
-	//	m_unit_diagonalstep = 11.3f;
-	//else if(16 == m_unit_stepsize)
-	//	m_unit_diagonalstep = 22.f;
-	//else if(32 == m_unit_stepsize)
-	//	m_unit_diagonalstep = 45.f;
 
 	m_vStart_pos = startpos;
 	m_vGoal_pos = goalpos;
@@ -328,8 +324,8 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 	PATH_NODE* pnode;
 
 	MYRECT<float> temprect;
-	float gdistance = 0;
-	int range = 0;
+	//float gdistance = 0;
+	//int range = 0;
 
 	m_ptarget = ptarget;
 
@@ -365,7 +361,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 		if( pnode->index == m_goalidx)
 		{
 			//m_maxnodecnt = MAXPATH_IDX;
-			if(NULL == m_ptarget)
+			if( ORDER_MOVE_BUILD == m_pObj->GetUnitinfo().order)
 				pnode->vPos = m_vGoal_pos;
 
 			while(NULL != pnode)
@@ -382,10 +378,12 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			m_pathpool_idx = 0;
 
 			PATH_NODE* tempnode = NULL;
-			if(NULL == m_ptarget)
-				tempnode = m_dummynodeH;
-			else
-				tempnode = m_dummynodeX;
+
+			tempnode = m_dummynodeH;
+			//if(NULL == m_ptarget)
+			//	tempnode = m_dummynodeH;
+			//else
+			//	tempnode = m_dummynodeX;
 
 			while(NULL != tempnode)
 			{
@@ -397,23 +395,27 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if(m_pathpool_idx >= m_maxnodecnt - 1)
 		{
+
 			//dummyG
 			if(!m_terrain_end)
 			{
-				while(NULL != m_dummynodeX)
+				PATH_NODE* tempnode = m_dummynodeH;
+
+				while(NULL != tempnode)
 				{
-					vecpath.push_back(m_dummynodeX->vPos);
-					m_dummynodeX = m_dummynodeX->pParent;
+					vecpath.push_back(tempnode->vPos);
+					tempnode = tempnode->pParent;
 				}
 			}
 			else
 			{
 				//m_maxnodecnt = 100;
 				PATH_NODE* tempnode = NULL;
-				if(NULL == m_ptarget)
-					tempnode = m_dummynodeH;
-				else
-					tempnode = m_dummynodeX;
+				tempnode = m_dummynodeH;
+				//if(NULL == m_ptarget)
+				//	tempnode = m_dummynodeX;
+				//else
+				//	tempnode = m_dummynodeH;
 
 				while(NULL != tempnode)
 				{
@@ -444,7 +446,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			//	i == RIGHT_UP || i == LEFT_UP)
 			//	gdistance = m_unit_diagonalstep;
 			//else
-				gdistance = (float)m_unit_stepsize;
+			//	gdistance = (float)m_unit_stepsize;
 
 			if( Check_TileOption(m_eight_vpos[i]) &&
 				/*Check_CloseList(m_eight_vpos[i]) &&
@@ -453,7 +455,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			{
 				if( m_areamgr_inst->Check_Area(m_eight_rect[i] , m_eight_vpos[i] , temprc_center , tempv_center , m_pObj , m_ptarget , m_unit_stepsize) )
 				{
-					Make_UnitNode(pnode , m_eight_vpos[i] , gdistance);	
+					Make_UnitNode(pnode , m_eight_vpos[i] , m_eight_weight[i]);	
 				}
 				else
 				{

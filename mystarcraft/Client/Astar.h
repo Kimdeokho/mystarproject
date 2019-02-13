@@ -48,7 +48,7 @@ private:
 	PATH_NODE*				m_dummynodeX;
 
 	int						m_eight_idx[ASTAR_DIR_END];
-	int						m_eight_weight[ASTAR_DIR_END];
+	float					m_eight_weight[ASTAR_DIR_END];
 	D3DXVECTOR2				m_eight_vpos[ASTAR_DIR_END];
 	MYRECT<float>			m_eight_rect[ASTAR_DIR_END];
 	float					m_fdummytime;

@@ -173,8 +173,8 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 	{
 		vpos = (*iter)->GetPos();
 
-		if(magicbox.right - magicbox.left <= 240 &&
-			magicbox.bottom - magicbox.top <= 240)
+		if(magicbox.right - magicbox.left <= BACKBUFFER_SIZEX / 2 &&
+			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY / 2)
 		{
 			//++m_magicbox_unitcnt;
 			//m_vUnitcenterpt += vpos;
@@ -193,6 +193,8 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 }
 void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptarget*/)
 {
+
+	//서버일땐 필요없음
 	list<CObj*>::iterator iter = m_curunitList.begin();
 	list<CObj*>::iterator iter_end = m_curunitList.end();
 
@@ -239,8 +241,8 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptar
 	{
 		vpos = (*iter)->GetPos();
 
-		if(magicbox.right - magicbox.left <= 350 &&
-			magicbox.bottom - magicbox.top <= 350)
+		if(magicbox.right - magicbox.left <= BACKBUFFER_SIZEX / 2 &&
+			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY / 2)
 		{
 			//++m_magicbox_unitcnt;
 			//m_vUnitcenterpt += vpos;
@@ -337,7 +339,7 @@ void CUnitMgr::Update_UI_Infomation(void)
 				((CUI_Cmd_info*)pui)->Update_Cmdbtn(NULL);
 			else
 			{
-				if(OBJ_SCV == pobj->GetOBJNAME())
+				if(OBJ_SCV == pobj->GetOBJNAME() || OBJ_DRONE == pobj->GetOBJNAME())
 					((CUI_Cmd_info*)pui)->Update_Cmdbtn(NULL);
 				else
 					((CUI_Cmd_info*)pui)->Update_Cmdbtn(pobj);				

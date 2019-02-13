@@ -18,6 +18,7 @@
 #include "LineMgr.h"
 #include "FontMgr.h"
 #include "UI_Select.h"
+#include "UI_Resource.h"
 
 #include "Corpse.h"
 #include "UnitMgr.h"
@@ -51,6 +52,7 @@ void CBattleCruiser::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_BATTLE;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -320,6 +322,8 @@ void CBattleCruiser::Release(void)
 	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	m_yamaeff = NULL;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-6 , m_eteamnumber);
 }
 void CBattleCruiser::Dead(void)
 {

@@ -56,6 +56,7 @@ void CStar_addon::Initialize(void)
 	m_eOBJ_NAME = OBJ_STAR_ADDON;
 	m_eteamnumber = m_mainbuilding->GetTeamNumber();
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = BUILD;
 	m_unitinfo.order = ORDER_NONE;

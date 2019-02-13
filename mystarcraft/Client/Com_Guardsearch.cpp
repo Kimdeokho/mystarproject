@@ -119,7 +119,8 @@ void CCom_Guardsearch::Update(void)
 				m_search_time > 0.2f)
 			{				
 				m_search_time = 0.f;
-				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , m_irange , m_search_type);			
+				int att_range = max(*m_pattack_range , *m_pair_range);
+				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , m_irange , att_range , m_search_type);			
 			}
 
 			if(NULL != m_ptarget)

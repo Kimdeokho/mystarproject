@@ -20,15 +20,13 @@
 
 #include "UI_armyunitlist.h"
 #include "UI_Boarding_info.h"
+#include "UI_Resource.h"
 
 #include "UI_Cmd_info.h"
 
 IMPLEMENT_SINGLETON(CIngame_UIMgr)
 CIngame_UIMgr::CIngame_UIMgr(void)
-{
-	m_total_mineral = 0;
-	m_total_gas = 0;
-	
+{	
 }
 
 CIngame_UIMgr::~CIngame_UIMgr(void)
@@ -40,6 +38,7 @@ CIngame_UIMgr::~CIngame_UIMgr(void)
 	Safe_Delete(m_armyunitlist_info);
 	Safe_Delete(m_boarding_info);
 	Safe_Delete(m_cmd_info);
+	Safe_Delete(m_resource_info);
 
 	list<CUI*>::iterator iter = m_wireframe_ui_list.begin();
 	list<CUI*>::iterator iter_end = m_wireframe_ui_list.end();
@@ -51,22 +50,19 @@ CIngame_UIMgr::~CIngame_UIMgr(void)
 	m_wireframe_ui_list.clear();
 
 }
-
-void CIngame_UIMgr::Initialize(RACE erace)
+void CIngame_UIMgr::Initialize(const TRIBE erace)
 {
 	m_erace = erace;
 
-	if(TERRAN == m_erace)
+	if(TRIBE_TERRAN == m_erace)
 		m_main_interface = new CUI_MainInterface(L"terran_interface");
-	else if(ZERG == m_erace)
+	else if(TRIBE_ZERG == m_erace)
 		m_main_interface = new CUI_MainInterface(L"zerg_interface");
-
 	m_main_interface->Initialize();
 
-
-	memset(m_build_state , 0 , sizeof(m_build_state));
-
 	D3DXVECTOR2 interface_pos = m_main_interface->GetPos();
+
+	memset(m_build_state , 0 , sizeof(m_build_state));	
 
 	m_pobj_adress = NULL;
 	m_old_state = STATE_NONE;
@@ -92,6 +88,9 @@ void CIngame_UIMgr::Initialize(RACE erace)
 	m_cmd_info = new CUI_Cmd_info;
 	m_cmd_info->SetPos( D3DXVECTOR2(interface_pos.x + 510 , interface_pos.y + 360));
 	m_cmd_info->Initialize();
+
+	m_resource_info = new CUI_Resource;
+	m_resource_info->Initialize();
 }
 
 void CIngame_UIMgr::Update(void)
@@ -105,6 +104,7 @@ void CIngame_UIMgr::Update(void)
 	m_building_info->Update();
 	m_armyunitlist_info->Update();
 	m_cmd_info->Update();
+	m_resource_info->Update();
 }
 
 void CIngame_UIMgr::Render(void)
@@ -131,6 +131,7 @@ void CIngame_UIMgr::Render(void)
 	m_production_bar->Render();
 	m_boarding_info->Render();
 	m_cmd_info->Render();
+	m_resource_info->Render();
 
 	m_minimap->Render();
 
@@ -158,15 +159,6 @@ bool	CIngame_UIMgr::intersect_minimap_mousept(const D3DXVECTOR2& vmouse)
 		return true;
 
 	return false;
-}
-void CIngame_UIMgr::SetMineral(const int& amount)
-{
-	m_total_mineral += amount;
-}
-
-void CIngame_UIMgr::SetGas(const int& amount)
-{
-	m_total_gas += amount;
 }
 
 void CIngame_UIMgr::SetPreview(CUI* building_preview)
@@ -236,8 +228,8 @@ void CIngame_UIMgr::SetProduction_info(const D3DXVECTOR2& vpos , const float& ra
 }
 void CIngame_UIMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
 {
-	(m_building_info)->SetActive(true);
-	(m_building_info)->InitNumber();
+	m_building_info->SetActive(true);
+	m_building_info->InitNumber();
 
 	int idx = 0;
 	list<PRODUCTION_INFO>::iterator iter = ui_list.begin();
@@ -245,7 +237,7 @@ void CIngame_UIMgr::SetBuilding_info(list<PRODUCTION_INFO>& ui_list)
 
 	for( ; iter != iter_end; ++iter)
 	{
-		(m_building_info)->SetBuilding_info(idx , (*iter).texkey);
+		m_building_info->SetBuilding_info(idx , (*iter).texkey);
 		++idx;
 	}
 }
@@ -261,7 +253,10 @@ CUI_Cmd_info* CIngame_UIMgr::GetCmd_info(void)
 {
 	return ((CUI_Cmd_info*)m_cmd_info);
 }
-
+CUI_Resource* CIngame_UIMgr::GetResource_UI(void)
+{
+	return ((CUI_Resource*)m_resource_info);
+}
 const D3DXVECTOR2& CIngame_UIMgr::GetMainInterface_pos(void)
 {
 	return m_main_interface->GetPos();

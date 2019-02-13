@@ -86,7 +86,7 @@ void CGasResource::Initialize(void)
 }
 void CGasResource::Update(void)
 {
-	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_vPos.x , m_vPos.y);
 	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_gasa_mount , m_vPos.x - CScrollMgr::m_fScrollX
 	//	,m_vPos.y - CScrollMgr::m_fScrollY);
 
@@ -112,7 +112,7 @@ void CGasResource::Render(void)
 	m_pSprite->SetTransform(&m_matWorld);
 	m_pSprite->Draw((*m_vecTex)[0]->pTexture , NULL , &D3DXVECTOR3(64,32,0) , NULL , D3DCOLOR_ARGB(255,255,255,255));
 
-	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 void CGasResource::Release(void)
 {

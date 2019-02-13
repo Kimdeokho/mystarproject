@@ -74,7 +74,7 @@ BUILDING|None|Z_GAS|IDLE|4|..\Texture\Multi\Zerg\Building\gas\z_gas%d.png
 BUILDING|None|Z_CHAMBER|IDLE|3|..\Texture\Multi\Zerg\Building\chamber\chamber%d.png
 BUILDING|None|Z_DEFILER_MOUND|IDLE|4|..\Texture\Multi\Zerg\Building\defiler_mound\defiler_mound%d.png
 BUILDING|None|Z_SPWANING_POOL|IDLE|4|..\Texture\Multi\Zerg\Building\spawning_pool\spawning_pool%d.png
-BUILDING|None|Z_ULTRA_CAVE|DLE|3|..\Texture\Multi\Zerg\Building\ultra_cave\ultra_cave%d.png
+BUILDING|None|Z_ULTRA_CAVE|IDLE|3|..\Texture\Multi\Zerg\Building\ultra_cave\ultra_cave%d.png
 BUILDING|None|Z_SPIRE|IDLE|4|..\Texture\Multi\Zerg\Building\spire\spire%d.png
 BUILDING|None|Z_HYDRADEN|IDLE|3|..\Texture\Multi\Zerg\Building\hydraden\hydraden%d.png
 BUILDING|None|Z_SUNKEN|IDLE|3|..\Texture\Multi\Zerg\Building\sunken\idle\sunken_idle%d.png

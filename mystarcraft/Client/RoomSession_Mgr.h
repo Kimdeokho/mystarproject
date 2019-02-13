@@ -35,6 +35,7 @@ public:
 	USER_INFO**					GetUserinfolist(void){return m_Roomsession_info;}
 	const WCHAR*				GetTitle(void){return m_title;}
 	int							GetPlayerCnt(void){return m_player_cnt;}
+	USER_INFO*					GetMyinfo(void){return m_myinfo;}
 
 	void	Release_sessioninfo(void);
 public:

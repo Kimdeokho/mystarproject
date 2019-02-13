@@ -30,6 +30,7 @@
 
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
+#include "UI_Resource.h"
 
 #include "Spidermine.h"
 #include "MyMath.h"
@@ -42,7 +43,7 @@ CVulture::CVulture(void)
 
 CVulture::~CVulture(void)
 {
-		Release();
+	Release();
 }
 
 void CVulture::Initialize(void)
@@ -59,6 +60,7 @@ void CVulture::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_VULTURE;
 
+	m_unitinfo.etribe = TRIBE_TERRAN;
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -287,19 +289,6 @@ bool CVulture::Input_cmd(const int& nkey , bool* waitkey)
 
 	return false;
 }
-void CVulture::Release(void)
-{
-	CObj::area_release();
-
-	m_com_pathfind = NULL;
-}
-
-void CVulture::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND ,1.4f);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-}
 
 void CVulture::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
@@ -401,4 +390,19 @@ void CVulture::Update_Wireframe(void)
 		interface_pos.x + 310 , interface_pos.y + 440 , D3DCOLOR_ARGB(255,255,255,255));
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
+}
+
+void CVulture::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND ,1.4f);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+void CVulture::Release(void)
+{
+	CObj::area_release();
+
+	m_com_pathfind = NULL;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
 }

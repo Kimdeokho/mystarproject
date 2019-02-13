@@ -146,7 +146,8 @@ void CMouseMgr::Update(void)
 	}
 	else
 	{
-		SetMouseState(MS_IDLE);
+		if(MS_AIM != m_cur_ms)
+			SetMouseState(MS_IDLE);
 	}
 }
 void CMouseMgr::Render(void)
@@ -278,6 +279,9 @@ const D3DXVECTOR2& CMouseMgr::GetClick_Pos(void)
 
 bool CMouseMgr::Unitdetect(void)
 {
+	if(MS_AIM == m_cur_ms)
+		return false;
+
 	list<CObj*>* arealist = CArea_Mgr::GetInstance()->GetArea64();
 
 	D3DXVECTOR2 vmouse_pos = GetAddScrollvMousePt();
@@ -304,6 +308,9 @@ bool CMouseMgr::Unitdetect(void)
 
 		for( ; iter != iter_end; ++iter)
 		{
+			if(OBJ_NONE == (*iter)->GetOBJNAME())
+				continue;
+
 			if(MyPtInrect( vmouse_pos ,  &((*iter)->GetMyRect()) ))
 			{
 				//»öº¯°æ

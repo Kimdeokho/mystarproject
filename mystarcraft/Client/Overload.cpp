@@ -27,6 +27,7 @@
 #include "UI_Wireframe.h"
 #include "UI_Cmd_info.h"
 #include "UI_Energy_bar.h"
+#include "UI_Resource.h"
 #include "Skill_Defensive.h"
 
 COverload::COverload(void)
@@ -47,6 +48,7 @@ void COverload::Initialize(void)
 	m_ecategory = CATEGORY_UNIT;
 	m_eOBJ_NAME = OBJ_OVERLOAD;
 
+	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eMoveType = MOVE_AIR;
 	m_unitinfo.state = IDLE;
 	m_unitinfo.order = ORDER_NONE;
@@ -94,6 +96,8 @@ void COverload::Initialize(void)
 	m_energybar_ui->Initialize();
 
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(8 , m_eteamnumber);
 }
 
 void COverload::Update(void)
@@ -202,11 +206,11 @@ void COverload::Update_Wireframe(void)
 	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
-		pui = new CUI_Wireframe(L"WIRE_DROPSHIP" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui = new CUI_Wireframe(L"WIRE_OVERLOAD" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
 		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
-		CFontMgr::GetInstance()->SetInfomation_font(L"Terran Dropship" ,interface_pos.x + 320 , interface_pos.y + 390 );
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Overload" ,interface_pos.x + 320 , interface_pos.y + 390 );
 	}
 
 	((CCom_Transport*)m_com_transport)->boarding_wire_ui();
@@ -294,4 +298,6 @@ void COverload::Release(void)
 	CObj::area_release();
 
 	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(-8 , m_eteamnumber);
 }
