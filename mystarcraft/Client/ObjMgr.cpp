@@ -556,7 +556,7 @@ void CObjMgr::Place_Zerg(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
 	}
 
 	CObj*	poverload = new COverload;
-	AddObject(pdrone , OBJ_OVERLOAD);
+	AddObject(poverload , OBJ_OVERLOAD);
 
 	vpos.y -= 30;
 	poverload->SetPos(vpos);

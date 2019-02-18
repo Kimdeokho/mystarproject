@@ -173,6 +173,9 @@ void CMutal::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 bool CMutal::Input_cmd(const int& nkey , bool* waitkey)
 {
+	if('A' == nkey)
+		waitkey[nkey] = true;
+
 	return false;
 }
 

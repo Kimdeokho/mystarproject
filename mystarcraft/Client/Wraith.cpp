@@ -161,6 +161,13 @@ void CWraith::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 	}
 }
+bool CWraith::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('A' == nkey)
+		waitkey[nkey] = true;
+
+	return false;
+}
 void CWraith::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
 	CSkill* pskill = ((CCom_CC*)m_com_cc)->GetDefensive();

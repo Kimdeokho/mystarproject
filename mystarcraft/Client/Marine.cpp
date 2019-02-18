@@ -244,7 +244,13 @@ void CMarine::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		}
 	}
 }
+bool CMarine::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('A' == nkey)
+		waitkey[nkey] = true;
 
+	return false;
+}
 
 void CMarine::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {

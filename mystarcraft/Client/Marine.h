@@ -15,7 +15,8 @@ public:
 	virtual void Render(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
-	
+	virtual bool Input_cmd(const int& nkey , bool* waitkey);
+
 	virtual void Release(void);
 	virtual void Dead(void);
 

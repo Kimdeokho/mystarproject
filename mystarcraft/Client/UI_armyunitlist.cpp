@@ -135,6 +135,8 @@ void CUI_armyunitlist::set_wireframe(OBJID eid , const int& icol , const int& ir
 		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_HYDRA");
 	else if(OBJ_MUTAL == eid)
 		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_MUTAL");
+	else if(OBJ_QUEEN == eid)
+		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_QUEEN");
 	else if(OBJ_SCOURGE == eid)
 		((CUI_form*)m_unitform[icol][irow])->set_texture(L"WIRE_SCOURGE");
 	else if(OBJ_ULTRA == eid)

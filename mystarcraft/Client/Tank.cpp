@@ -402,6 +402,8 @@ bool CTank::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('O' == nkey)
 		return true;
+	else if('A' == nkey)
+		waitkey[nkey] = true;
 
 	return false;
 }

@@ -110,10 +110,20 @@ bool CUI_Resource::SetResource(const int _mineral ,const int _gas, const TEAM_NU
 		return true; //자원 교환 성공
 	}
 }
-
+bool CUI_Resource::is_excess_of_population(const float _popvalue , const TEAM_NUMBER eteam)
+{
+	if( int(m_population_val[eteam] + _popvalue) > m_population_maxval[eteam])
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
 bool CUI_Resource::SetPopvalue(const float _popvalue , const TEAM_NUMBER eteam)
 {
-	if( m_population_val[eteam] < 0)
+	if( m_population_val[eteam] + _popvalue < 0)
 	{
 		m_population_val[eteam] = 0.f;
 		return false;

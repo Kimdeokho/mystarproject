@@ -325,12 +325,14 @@ typedef struct tag_production
 {
 	float curtime;
 	float maxtime;
+	float popvalue;
 	OBJID eid;
 	const TCHAR* texkey;
 
 	tag_production()
 	{
 		texkey = L"";
+		popvalue = 0.f;
 		curtime = 0.f;
 		maxtime = 0.f;
 		eid = OBJ_NONE;
@@ -340,8 +342,8 @@ typedef struct tag_production
 typedef struct tag_boarding
 {
 	void* obj_address;
-	int irow;
-	int icol;
+	int irow; //За
+	int icol; //ї­
 	const TCHAR* texkey;
 
 	tag_boarding()

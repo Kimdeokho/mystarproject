@@ -29,6 +29,7 @@
 #include "UI_Cmd_info.h"
 #include "UI_Wireframe.h"
 #include "UI_form.h"
+#include "UI_Resource.h"
 
 #include "UI_Energy_bar.h"
 #include "KeyMgr.h"
@@ -390,14 +391,28 @@ void CStarport::Inputkey_reaction(const int& nkey)
 
 	if(false == m_is_take_off)
 	{
+		CUI_Resource* pui = CIngame_UIMgr::GetInstance()->GetResource_UI();
+
 		if('W' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_WRAITH , L"BTN_WRAITH");
+		{
+			if(pui->is_excess_of_population(2 , m_eteamnumber) && pui->SetResource(-150 , -100, m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , 2, OBJ_WRAITH , L"BTN_WRAITH");
+		}
 		if('D' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_DROPSHIP , L"BTN_DROPSHIP");
+		{
+			if(pui->is_excess_of_population(2 , m_eteamnumber) && pui->SetResource(-100 , -100, m_eteamnumber))
+			((CCom_Production_building*)m_com_production)->add_production_info(1.f , 2, OBJ_DROPSHIP , L"BTN_DROPSHIP");
+		}
 		if('V' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_VESSEL , L"BTN_VESSEL");
+		{
+			if(pui->is_excess_of_population(2 , m_eteamnumber) && pui->SetResource(-100 , -225, m_eteamnumber))
+			((CCom_Production_building*)m_com_production)->add_production_info(1.f , 2, OBJ_VESSEL , L"BTN_VESSEL");
+		}
 		if('B' == nkey)
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_BATTLE , L"BTN_BATTLE");
+		{
+			if(pui->is_excess_of_population(6 , m_eteamnumber) && pui->SetResource(-400 , -300, m_eteamnumber))
+			((CCom_Production_building*)m_com_production)->add_production_info(1.f , 6, OBJ_BATTLE , L"BTN_BATTLE");
+		}
 	}
 }
 

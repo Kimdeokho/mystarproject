@@ -460,78 +460,85 @@ bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 	else if(VK_ESCAPE == nkey)
 		m_ecmd_state = CMD_BASIC;
 
-	else if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
+	else if(CMD_B_VIEW == m_ecmd_state || CMD_V_VIEW == m_ecmd_state)
 	{
-		if(CMD_B_VIEW == m_ecmd_state)
+		if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
 		{
-			m_is_preview = true;
-			if('A' == nkey)
+			if(CMD_B_VIEW == m_ecmd_state)
 			{
-				MYRECT<float> vtx(40.f , 43.f , 32.f , 25.f);
-				SetPreview_info(L"T_ACADEMY" , T_ACADEMY , 2 , 3 , vtx );
+				m_is_preview = true;
+				if('A' == nkey)
+				{
+					MYRECT<float> vtx(40.f , 43.f , 32.f , 25.f);
+					SetPreview_info(L"T_ACADEMY" , T_ACADEMY , 2 , 3 , vtx );
+				}
+				else if('B' == nkey)
+				{
+					MYRECT<float> vtx(48.f , 57.f , 40.f , 33.f);
+					SetPreview_info(L"T_BARRACK" , T_BARRACK , 3 , 4 , vtx);
+				}
+				else if('C' == nkey)
+				{
+					MYRECT<float> vtx(58.f , 59.f , 41.f , 32.f);
+					SetPreview_info(L"COMMANDCENTER" , T_COMMANDCENTER , 3 , 4 , vtx);
+				}
+				else if('E' == nkey)
+				{
+					MYRECT<float> vtx(48.f , 49.f , 32.f , 35.f);
+					SetPreview_info(L"T_EB" , T_EB , 3 , 4 , vtx);
+				}
+				else if('R' == nkey)
+				{
+					MYRECT<float> vtx(56.f , 57.f , 32.f , 32.f);
+					SetPreview_info(L"T_GAS" , T_GAS , 2 , 4 , vtx);
+				}
+				else if('S' == nkey)
+				{
+					MYRECT<float> vtx(38.f , 39.f , 22.f , 27.f);
+					SetPreview_info(L"T_SUPPLY" , T_SUPPLY , 2 , 3 , vtx);
+				}
+				else if('T' == nkey)
+				{
+					MYRECT<float> vtx(16.f , 17.f , 32.f , 17.f);
+					SetPreview_info(L"T_TURRET_PREVIEW" , T_TURRET , 2 , 2 , vtx);
+				}
+				else if('U' == nkey)
+				{
+					MYRECT<float> vtx(32.f , 33.f , 24.f , 17.f);
+					SetPreview_info(L"T_BUNKER" , T_BUNKER , 2 , 3 , vtx);
+				}
 			}
-			else if('B' == nkey)
+			else if(CMD_V_VIEW == m_ecmd_state)
 			{
-				MYRECT<float> vtx(48.f , 57.f , 40.f , 33.f);
-				SetPreview_info(L"T_BARRACK" , T_BARRACK , 3 , 4 , vtx);
-			}
-			else if('C' == nkey)
-			{
-				MYRECT<float> vtx(58.f , 59.f , 41.f , 32.f);
-				SetPreview_info(L"COMMANDCENTER" , T_COMMANDCENTER , 3 , 4 , vtx);
-			}
-			else if('E' == nkey)
-			{
-				MYRECT<float> vtx(48.f , 49.f , 32.f , 35.f);
-				SetPreview_info(L"T_EB" , T_EB , 3 , 4 , vtx);
-			}
-			else if('R' == nkey)
-			{
-				MYRECT<float> vtx(56.f , 57.f , 32.f , 32.f);
-				SetPreview_info(L"T_GAS" , T_GAS , 2 , 4 , vtx);
-			}
-			else if('S' == nkey)
-			{
-				MYRECT<float> vtx(38.f , 39.f , 22.f , 27.f);
-				SetPreview_info(L"T_SUPPLY" , T_SUPPLY , 2 , 3 , vtx);
-			}
-			else if('T' == nkey)
-			{
-				MYRECT<float> vtx(16.f , 17.f , 32.f , 17.f);
-				SetPreview_info(L"T_TURRET_PREVIEW" , T_TURRET , 2 , 2 , vtx);
-			}
-			else if('U' == nkey)
-			{
-				MYRECT<float> vtx(32.f , 33.f , 24.f , 17.f);
-				SetPreview_info(L"T_BUNKER" , T_BUNKER , 2 , 3 , vtx);
-			}
-		}
-		else if(CMD_V_VIEW == m_ecmd_state)
-		{
-			m_is_preview = true;
+				m_is_preview = true;
 
-			if('A' == nkey)
-			{
-				MYRECT<float> vtx(48.f , 48.f , 32.f , 23.f);
-				SetPreview_info(L"T_ARMOURY" , T_ARMOURY , 2 , 3 , vtx);
-			}
-			else if('F' == nkey)
-			{
-				MYRECT<float> vtx(56.f , 57.f , 40.f , 41.f);
-				SetPreview_info(L"T_FACTORY" , T_FACTORY , 3 , 4 , vtx);
-			}
-			else if('I' == nkey)
-			{
-				MYRECT<float> vtx(48.f , 49.f , 38.f , 39.f);
-				SetPreview_info(L"T_SIENCE" , T_SIENCE , 3 , 4 , vtx);
-			}
-			else if('S' == nkey)
-			{
-				MYRECT<float> vtx(48.f , 49.f , 40.f , 39.f);
-				SetPreview_info(L"T_STARPORT" , T_STARPORT , 3 , 4 , vtx);
+				if('A' == nkey)
+				{
+					MYRECT<float> vtx(48.f , 48.f , 32.f , 23.f);
+					SetPreview_info(L"T_ARMOURY" , T_ARMOURY , 2 , 3 , vtx);
+				}
+				else if('F' == nkey)
+				{
+					MYRECT<float> vtx(56.f , 57.f , 40.f , 41.f);
+					SetPreview_info(L"T_FACTORY" , T_FACTORY , 3 , 4 , vtx);
+				}
+				else if('I' == nkey)
+				{
+					MYRECT<float> vtx(48.f , 49.f , 38.f , 39.f);
+					SetPreview_info(L"T_SIENCE" , T_SIENCE , 3 , 4 , vtx);
+				}
+				else if('S' == nkey)
+				{
+					MYRECT<float> vtx(48.f , 49.f , 40.f , 39.f);
+					SetPreview_info(L"T_STARPORT" , T_STARPORT , 3 , 4 , vtx);
+				}
 			}
 		}
 	}
+
+	else if('A' == nkey)
+		waitkey[nkey] = true;
+
 	return false;
 }
 bool CSCV::Input_cmd(const int& firstkey , const int& secondkey)
@@ -599,8 +606,6 @@ bool CSCV::Input_cmd(const int& firstkey , const int& secondkey)
 			MYRECT<float> vtx(48.f , 49.f , 40.f , 39.f);
 			SetPreview_info(L"T_STARPORT" , T_STARPORT , 3 , 4 , vtx);
 		}
-		else
-			m_is_preview = false;
 	}
 
 	return false;

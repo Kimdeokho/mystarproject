@@ -99,7 +99,7 @@ void CBrood_Bullet::Dead(void)
 	for(int i = 0; i < 2; ++i)
 	{
 		pobj = new CBrude;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BRUDE);
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BROODLING);
 
 		pobj->SetTeamNumber(m_eteam);
 		pobj->SetPos(m_vPos.x + i*10.f , m_vPos.y);

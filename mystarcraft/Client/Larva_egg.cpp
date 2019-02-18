@@ -231,7 +231,7 @@ void CLarva_egg::Release(void)
 			pobj = new CScourge;
 		else if(OBJ_QUEEN == m_production_info.eid)
 			pobj = new CQueen;
-		else if(OBJ_BRUDE == m_production_info.eid)
+		else if(OBJ_BROODLING == m_production_info.eid)
 			pobj = new CBrude;
 		else if(OBJ_DEFILER == m_production_info.eid)
 			pobj = new CDefiler;

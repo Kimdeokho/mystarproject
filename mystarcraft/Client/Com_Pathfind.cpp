@@ -189,6 +189,11 @@ void CCom_Pathfind::Update(void)
 		{
 			m_multithread = false;
 			m_realpathidx = m_realpath.size() - 1;
+			//if(0 == m_realpathidx)
+			//{
+			//	if(CMyMath::pos_distance(m_pobj->GetPos(), m_realpath[m_realpathidx]) < 16*16)
+			//		m_realpath.clear();
+			//}
 		}
 	}
 	UnitMoving_update();
@@ -379,7 +384,7 @@ void CCom_Pathfind::UnitMoving_update()
 		m_is_stop = false;
 		m_collisionmove_time = 0.f;
 		m_stoptime = 0.f;
-		m_realpath.clear(); //이구간이 문제다
+		m_realpath.clear();
 
 		if(NULL == m_pTarget)
 		{

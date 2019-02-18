@@ -6,6 +6,7 @@
 #include "Login_UIMgr.h"
 #include "Loby_UIMgr.h"
 #include "Room_UIMgr.h"
+#include "FontMgr.h"
 #include "RoomSession_Mgr.h"
 
 #include "KeyMgr.h"
@@ -55,7 +56,7 @@ void CSession_Mgr::SendTurnPacket(void)
 		return; //여기도 디스커넥트 일수도
 
 	m_subTurnNumber++;
-	if ( m_subTurnNumber == 6 )
+	if ( m_subTurnNumber == 8 )
 	{
 		CInput_Stage* pinput = ((CInput_Stage*)CKeyMgr::GetInstance()->GetInputDevice());
 		CMyCommandList* pcmdlist = pinput->GetCmdList();
@@ -98,10 +99,12 @@ void CSession_Mgr::TryAdvanceTurn(void)
 
 			CInput_Stage* pinput = ((CInput_Stage*)CKeyMgr::GetInstance()->GetInputDevice());
 			CMyCommandList* pcmdlist = pinput->GetCmdList();
-			pcmdlist->ClearCommand();
+			pcmdlist->ClearCommand();			
 
 			Sleep(100);
 			//여기가 디스커넥트인가
+
+			
 		}
 		++m_TurnNumber;
 		m_subTurnNumber = 0;
@@ -118,7 +121,10 @@ void CSession_Mgr::TryAdvanceTurn(void)
 		//동기화 전, 승패가 결정났는지 한번 보자.
 	}
 	else
+	{
 		m_estate = NS_DELAY; //여기가 디스커넥트인가
+		CFontMgr::GetInstance()->SetNoticeFont(L"디스커넥트다 씨발꺼" , 320, 240);
+	}
 }
 void CSession_Mgr::Read_UDPPacket(void)
 {

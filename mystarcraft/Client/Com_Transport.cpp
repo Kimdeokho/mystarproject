@@ -80,7 +80,7 @@ bool CCom_Transport::setunit(CObj* pobj)
 	}
 	else if(OBJ_VULTURE == eid)
 	{
-		info.icol = 2;
+		info.irow = 2;
 		info.texkey = L"BOARDING_VULTURE";
 	}
 	else if(OBJ_TANK == eid)
@@ -91,9 +91,44 @@ bool CCom_Transport::setunit(CObj* pobj)
 	}
 	else if(OBJ_GOLIATH == eid)
 	{
-		info.icol = 2;
+		info.irow = 2;
 		info.texkey = L"BOARDING_GOLIATH";
 	}
+	else if(OBJ_DRONE == eid)
+	{
+		info.texkey = L"BOARDING_DRONE";
+	}
+	else if(OBJ_ZERGLING == eid)
+	{
+		info.texkey = L"BOARDING_ZERGLING";
+	}
+	else if(OBJ_HYDRA == eid)
+	{
+		info.irow = 2;
+		info.texkey = L"BOARDING_HYDRA";
+	}
+	else if(OBJ_LURKER == eid)
+	{
+		info.irow = 2;
+		info.icol = 2;
+		info.texkey = L"BOARDING_LURKER";
+	}
+	else if(OBJ_ULTRA == eid)
+	{
+		info.irow = 2;
+		info.icol = 2;		
+		info.texkey = L"BOARDING_ULTRA";
+	}
+	else if(OBJ_DEFILER == eid)
+	{
+		info.irow = 2;
+		info.texkey = L"BOARDING_DEFILER";
+	}
+	else if(OBJ_BROODLING == eid)
+	{
+		info.texkey = L"BOARDING_BROODLING";
+	}
+
 
 	if( m_curcapacity >= info.icol * info.irow )
 	{
@@ -135,7 +170,7 @@ bool CCom_Transport::unit_landing(void)
 		collocate_unit( (CObj*)(temp.obj_address) );
 		m_curcapacity += temp.icol * temp.irow;
 
-		printf("%d \n" , m_curcapacity);
+		//printf("%d \n" , m_curcapacity);
 	}
 
 	return true;

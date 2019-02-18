@@ -193,12 +193,8 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 				}
 				if(!escape)
 				{
-					if('A' == a) //야매...
-					{
-						m_clickwating[a] = true;
-						CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
-					}
-					else if(true == CUnitMgr::GetInstance()->Unit_Unification())
+
+					if(true == CUnitMgr::GetInstance()->Unit_Unification())
 					{
 						if(CUnitMgr::GetInstance()->Input_cmd(a , m_clickwating))
 						{
@@ -211,10 +207,13 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 						else
 						{
 							if(true == m_clickwating[a])
-							{
-								//CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
-							}
+								CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
 						}
+					}
+					else if('A' == a) //야매...
+					{
+						m_clickwating[a] = true;
+						CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
 					}
 					break;
 				}

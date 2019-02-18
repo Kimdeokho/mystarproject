@@ -41,6 +41,7 @@ void CCom_Production_building::Initialize(CObj* pobj /*= NULL*/)
 	m_pobj = pobj;
 
 	m_is_rally = false;
+	m_isupdate = true;
 }
 
 void CCom_Production_building::Update(void)
@@ -49,9 +50,22 @@ void CCom_Production_building::Update(void)
 }
 void CCom_Production_building::update_production(void)
 {
-	if(!m_production_list.empty())
+	if(!m_production_list.empty() && m_isupdate)
 	{
-		m_pobj->SetState(PRODUCTION);
+		if(0 == m_production_list.front().curtime)
+		{
+			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->is_excess_of_population(m_production_list.front().popvalue , m_pobj->GetTeamNumber()))
+			{
+				CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(m_production_list.front().popvalue , m_pobj->GetTeamNumber());
+				m_isupdate = true;
+			}
+			else
+				m_isupdate = false;
+
+			m_pobj->SetState(PRODUCTION);
+		}
+
+		
 		float maxtime = m_production_list.front().maxtime;
 		m_production_list.front().curtime += GETTIME;
 
@@ -85,7 +99,7 @@ void CCom_Production_building::unit_collocate(CObj* const pobj)
 	bool bescape = false;
 	int idx32 = 0;
 
-	
+
 	while(!bescape)
 	{				
 		collocate_pos[0].x = m_vPos.x - m_weight.x - loopcnt*32; //밑줄 오른쪽방향
@@ -277,13 +291,14 @@ void CCom_Production_building::rallypoint_pathfinding(void)
 		tempidx = flowfieldpath[tempidx]; //다음 경로로 가는 인덱스를 준다
 	}
 }
-void CCom_Production_building::add_production_info(const float& maxtime , OBJID eid , const TCHAR* texkey)
+void CCom_Production_building::add_production_info(const float maxtime ,const float popval, OBJID eid , const TCHAR* texkey)
 {
 	PRODUCTION_INFO temp;
 
 	temp.maxtime = maxtime;
 	temp.eid = eid;
 	temp.texkey = texkey;
+	temp.popvalue = popval;
 
 	if( m_production_list.size() < 5 )
 	{
@@ -309,96 +324,63 @@ void CCom_Production_building::create_unit(OBJID eid)
 
 	if(OBJ_SCV == eid)
 	{
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_pobj->GetTeamNumber()))
-		{
-			pobj = new CSCV(m_vPos);
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);		
-		}
+		pobj = new CSCV(m_vPos);
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);	
 	}
 	else if(OBJ_TANK == eid)
-	{		
-		{
-			pobj = new CTank;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);		
-		}
+	{	
+		pobj = new CTank;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);		
 	}
 	else if(OBJ_MARINE == eid)
 	{
-		
-		{
-			pobj = new CMarine;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_MARINE);		
-		}
+		pobj = new CMarine;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MARINE);
 	}
 	else if(OBJ_MEDIC == eid)
 	{
-		
-		{
-			pobj = new CMedic;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);		
-		}
+		pobj = new CMedic;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);
 	}
 	else if(OBJ_FIREBAT == eid)
 	{
-		
-		{
-			pobj = new CFirebat;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);		
-		}
+		pobj = new CFirebat;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);	
 	}
 	else if(OBJ_GHOST == eid)
 	{
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -100,  m_pobj->GetTeamNumber()))
-		{
-			pobj = new CGhost;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST);		
-		}
+		pobj = new CGhost;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST);
 	}
 	else if(OBJ_GOLIATH == eid)
 	{
-		{
-			pobj = new CGoliath;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);		
-		}
+		pobj = new CGoliath;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);	
 	}
 	else if(OBJ_VULTURE == eid)
-	{		
-		{
-			pobj = new CVulture;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_VULTURE);		
-		}
+	{	
+		pobj = new CVulture;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VULTURE);
 	}
 	else if(OBJ_WRAITH == eid)
 	{
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_pobj->GetTeamNumber()))
-		{
-			pobj = new CWraith;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_WRAITH);		
-		}
+		pobj = new CWraith;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_WRAITH);	
 	}
 	else if(OBJ_DROPSHIP == eid)
 	{
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_pobj->GetTeamNumber()))
-		{
-			pobj = new CDropship;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_DROPSHIP);		
-		}
+		pobj = new CDropship;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_DROPSHIP);
 	}
 	else if(OBJ_VESSEL == eid)
 	{
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -225,  m_pobj->GetTeamNumber()))
-		{
-			pobj = new CVessle;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);		
-		}
+		pobj = new CVessle;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);		
 	}
 	else if(OBJ_BATTLE == eid)
 	{
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-400 , -300,  m_pobj->GetTeamNumber()))
-		{
-			pobj = new CBattleCruiser;
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);		
-		}
+		pobj = new CBattleCruiser;
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);		
 	}
 
 	if(NULL != pobj)
@@ -412,7 +394,7 @@ void CCom_Production_building::create_unit(OBJID eid)
 	if(true == m_is_rally)
 	{
 		pobj->SetOrder(ORDER_MOVE);
-		
+
 		if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
 		{
 			pcom = pobj->GetComponent(COM_PATHFINDE);

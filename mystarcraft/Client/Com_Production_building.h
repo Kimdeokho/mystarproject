@@ -10,6 +10,7 @@ private:
 	const D3DXVECTOR2&		m_vPos;
 	const D3DXVECTOR2&		m_weight;
 
+	bool					m_isupdate;
 	D3DXVECTOR2				m_rallypoint;
 	bool					m_is_rally;
 	vector<D3DXVECTOR2>		m_rallypath;
@@ -17,7 +18,7 @@ private:
 public:
 	void unit_collocate(CObj* const pobj);
 	void rallypoint_pathfinding(void);
-	void add_production_info(const float& maxtime , OBJID eid , const TCHAR* texkey);
+	void add_production_info(const float maxtime ,const float popval, OBJID eid , const TCHAR* texkey);
 	void update_production(void);
 	void create_unit(OBJID eid);
 	void show_production_state();

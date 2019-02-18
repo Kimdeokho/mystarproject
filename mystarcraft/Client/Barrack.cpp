@@ -275,25 +275,30 @@ void CBarrack::Inputkey_reaction(const int& nkey)
 
 	if(false == m_is_take_off)
 	{
+		CUI_Resource* pui = CIngame_UIMgr::GetInstance()->GetResource_UI();
 		if('M' == nkey)
 		{
-			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_eteamnumber))
-				m_com_production->add_production_info(1.f , OBJ_MARINE , L"BTN_MARINE");
+			if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+				pui->SetResource(-50 , 0,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , 1.f ,OBJ_MARINE , L"BTN_MARINE");
 		}
 		if('F' == nkey)
 		{
-			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -25,  m_eteamnumber))
-				m_com_production->add_production_info(1.f , OBJ_FIREBAT , L"BTN_FIREBAT");
+			if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+				pui->SetResource(-50 , -25,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , 1.f , OBJ_FIREBAT , L"BTN_FIREBAT");
 		}
 		if('G' == nkey)
 		{
-			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -25,  m_eteamnumber))
-				m_com_production->add_production_info(1.f , OBJ_GHOST , L"BTN_GHOST");
+			if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+				pui->SetResource(-50 , -25,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , 1.f ,OBJ_GHOST , L"BTN_GHOST");
 		}
 		if('C' == nkey)
 		{
-			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -25,  m_eteamnumber))
-				m_com_production->add_production_info(1.f , OBJ_MEDIC , L"BTN_MEDIC");
+			if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+				pui->SetResource(-50 , -25,  m_eteamnumber))
+				m_com_production->add_production_info(1.f , 1.f ,OBJ_MEDIC , L"BTN_MEDIC");
 		}
 	}
 }

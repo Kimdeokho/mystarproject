@@ -463,7 +463,7 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 		}
 	}
 
-	if(VK_LBUTTON == nkey)
+	else if(VK_LBUTTON == nkey)
 	{
 		//여기서 명령을 입력하고
 		if(true == m_is_preview && true == (m_main_preview)->Install_check())
@@ -478,7 +478,7 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 		}		
 	}
 
-	if('B' == nkey && CMD_BASIC == m_ecmd_state)
+	else if('B' == nkey && CMD_BASIC == m_ecmd_state)
 	{
 		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 		if( true == pui->active_cmdbtn(6 , BTN_B_ZBUILD) )
@@ -488,7 +488,7 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 		}
 	}
 
-	if('V' == nkey && CMD_BASIC == m_ecmd_state)
+	else if('V' == nkey && CMD_BASIC == m_ecmd_state)
 	{
 		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 		if( true == pui->active_cmdbtn(7 , BTN_V_ZBUILD) )
@@ -501,69 +501,74 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 	if(VK_ESCAPE == nkey)
 		m_ecmd_state = CMD_BASIC;
 
-
-	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
-	{		
-		if(CMD_B_VIEW == m_ecmd_state)
-		{
-			m_is_preview = true;
-			if('H' == nkey)
+	else if(CMD_B_VIEW == m_ecmd_state || CMD_V_VIEW == m_ecmd_state)
+	{
+		if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
+		{		
+			if(CMD_B_VIEW == m_ecmd_state)
 			{
-				// L , R , T ,B
-				MYRECT<float> vtx(49.f , 50.f , 32.f , 33.f);
-				SetPreview_info(L"Z_HATCHERY" , Z_HATCHERY , 3 , 4 , vtx);
+				m_is_preview = true;
+				if('H' == nkey)
+				{
+					// L , R , T ,B
+					MYRECT<float> vtx(49.f , 50.f , 32.f , 33.f);
+					SetPreview_info(L"Z_HATCHERY" , Z_HATCHERY , 3 , 4 , vtx);
+				}
+				else if('C' == nkey)
+				{
+					MYRECT<float> vtx(24.f , 24.f, 24.f, 24.f);
+					SetPreview_info(L"Z_FCOLONY" , Z_FCOLONY , 2 , 2 , vtx);
+				}
+				else if('E' == nkey)
+				{
+					MYRECT<float> vtx(64.f , 64.f , 32.f , 32.f);
+					SetPreview_info(L"Z_GAS" , Z_GAS , 2 , 4 , vtx);
+				}
+				else if('S' == nkey)
+				{
+					MYRECT<float> vtx(36.f , 41.f , 28.f , 19.f);
+					SetPreview_info(L"Z_SPWANING_POOL" , Z_SPWANING_POOL , 2 , 3 , vtx);
+				}
+				else if('V' == nkey)
+				{
+					MYRECT<float> vtx(44 , 48-15 , 32 , 32-11);
+					SetPreview_info(L"Z_CHAMBER" , Z_CHAMBER , 2 , 3 , vtx);
+				}
+				else if('D' == nkey)
+				{
+					MYRECT<float> vtx(48-8 , 48-7 , 32 , 32-7);
+					SetPreview_info(L"Z_HYDRADEN" , Z_HYDRADEN , 2 , 3 , vtx);
+				}
 			}
-			else if('C' == nkey)
+			else if(CMD_V_VIEW == m_ecmd_state)
 			{
-				MYRECT<float> vtx(24.f , 24.f, 24.f, 24.f);
-				SetPreview_info(L"Z_FCOLONY" , Z_FCOLONY , 2 , 2 , vtx);
-			}
-			else if('E' == nkey)
-			{
-				MYRECT<float> vtx(64.f , 64.f , 32.f , 32.f);
-				SetPreview_info(L"Z_GAS" , Z_GAS , 2 , 4 , vtx);
-			}
-			else if('S' == nkey)
-			{
-				MYRECT<float> vtx(36.f , 41.f , 28.f , 19.f);
-				SetPreview_info(L"Z_SPWANING_POOL" , Z_SPWANING_POOL , 2 , 3 , vtx);
-			}
-			else if('V' == nkey)
-			{
-				MYRECT<float> vtx(44 , 48-15 , 32 , 32-11);
-				SetPreview_info(L"Z_CHAMBER" , Z_CHAMBER , 2 , 3 , vtx);
-			}
-			else if('D' == nkey)
-			{
-				MYRECT<float> vtx(48-8 , 48-7 , 32 , 32-7);
-				SetPreview_info(L"Z_HYDRADEN" , Z_HYDRADEN , 2 , 3 , vtx);
-			}
-		}
-		else if(CMD_V_VIEW == m_ecmd_state)
-		{
-			m_is_preview = true;
-			if('S' == nkey)
-			{
-				MYRECT<float> vtx(32-4 , 32-3 , 32 , 32-7);
-				SetPreview_info(L"Z_SPIRE" , Z_SPIRE , 2 , 2 , vtx);
-			}
-			else if('Q' == nkey)
-			{
-				MYRECT<float> vtx(48-10 , 48-15 , 32-8 , 32-3);
-				SetPreview_info(L"Z_QUEEN_NEST" , Z_QUEEN_NEST , 2 , 3 , vtx);
-			}
-			else if('U' == nkey)
-			{
-				MYRECT<float> vtx(48-8, 48-15, 32 , 32);
-				SetPreview_info(L"Z_ULTRA_CAVE" , Z_ULTRA_CAVE , 2 , 3 , vtx);
-			}
-			else if('F' == nkey)
-			{
-				MYRECT<float> vtx(64-16 , 64-15 , 32 , 32-27);
-				SetPreview_info(L"Z_DEFILER_MOUND" , Z_DEFILER_MOUND , 2 , 4 , vtx);
+				m_is_preview = true;
+				if('S' == nkey)
+				{
+					MYRECT<float> vtx(32-4 , 32-3 , 32 , 32-7);
+					SetPreview_info(L"Z_SPIRE" , Z_SPIRE , 2 , 2 , vtx);
+				}
+				else if('Q' == nkey)
+				{
+					MYRECT<float> vtx(48-10 , 48-15 , 32-8 , 32-3);
+					SetPreview_info(L"Z_QUEEN_NEST" , Z_QUEEN_NEST , 2 , 3 , vtx);
+				}
+				else if('U' == nkey)
+				{
+					MYRECT<float> vtx(48-8, 48-15, 32 , 32);
+					SetPreview_info(L"Z_ULTRA_CAVE" , Z_ULTRA_CAVE , 2 , 3 , vtx);
+				}
+				else if('F' == nkey)
+				{
+					MYRECT<float> vtx(64-16 , 64-15 , 32 , 32-27);
+					SetPreview_info(L"Z_DEFILER_MOUND" , Z_DEFILER_MOUND , 2 , 4 , vtx);
+				}
 			}
 		}
 	}
+
+	else if('A' == nkey)
+		waitkey[nkey] = true;
 
 	return false;
 }

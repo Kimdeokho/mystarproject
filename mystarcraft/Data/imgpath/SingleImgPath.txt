@@ -213,6 +213,13 @@ UI|BOARDING_VULTURE|..\Texture\Single\UI\wire_boarding\vulture.png
 UI|BOARDING_TANK|..\Texture\Single\UI\wire_boarding\tank.png
 UI|BOARDING_GOLIATH|..\Texture\Single\UI\wire_boarding\goliath.png
 UI|BOARDING_GHOST|..\Texture\Single\UI\wire_boarding\ghost.png
+UI|BOARDING_ZERGLING|..\Texture\Single\UI\wire_boarding\zergling.png
+UI|BOARDING_DRONE|..\Texture\Single\UI\wire_boarding\drone.png
+UI|BOARDING_HYDRA|..\Texture\Single\UI\wire_boarding\hydra.png
+UI|BOARDING_LURKER|..\Texture\Single\UI\wire_boarding\lurker.png
+UI|BOARDING_BROODLING|..\Texture\Single\UI\wire_boarding\broodling.png
+UI|BOARDING_ULTRA|..\Texture\Single\UI\wire_boarding\ultra.png
+UI|BOARDING_DEFILER|..\Texture\Single\UI\wire_boarding\defiler.png
 UI|LOGIN_IME|..\Texture\Single\UI\pStatus.png
 UI|ROOMLIST|..\Texture\Single\UI\pRoomList.png
 UI|OK|..\Texture\Single\UI\pok.png

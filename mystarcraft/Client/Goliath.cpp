@@ -222,6 +222,13 @@ void CGoliath::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 	m_pgoliath_arm->Inputkey_reaction(firstkey , secondkey);
 }
+bool CGoliath::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('A' == nkey)
+		waitkey[nkey] = true;
+
+	return false;
+}
 void CGoliath::sync_arm(void)
 {
 	((CGoliath_part*)m_pgoliath_arm)->setarm_pos(m_vPos);

@@ -90,10 +90,10 @@ void CUI_Boarding_info::set_boarding_infolist(multimap<int , BOARDING_INFO , gre
 		TCHAR	tempstr[32] = L"";
 
 
-		int startrow = 0;
+		int startcol = 0;
 
 		if(OBJ_BUNKER == eid)
-			startrow = 1;
+			startcol = 1;
 
 		bool is_escape = false;
 
@@ -102,24 +102,24 @@ void CUI_Boarding_info::set_boarding_infolist(multimap<int , BOARDING_INFO , gre
 			is_escape = false;
 			temp_info = iter->second;
 
-			for(int irow = startrow; irow < 4; ++irow)
+			for(int col = startcol; col < 4; ++col)
 			{
-				for(int icol = 0; icol < 2; ++icol)
+				for(int row = 0; row < 2; ++row)
 				{
-					if(true == m_occupy[icol][irow])
+					if(true == m_occupy[row][col])
 					{
-						wsprintf(tempstr , L"EDGE_%dX%d" , temp_info.icol , temp_info.irow);
+						wsprintf(tempstr , L"EDGE_%dX%d" , temp_info.irow , temp_info.icol);
 
-						((CUI_form*)(m_backform[icol][irow]))->set_texture(tempstr);
+						((CUI_form*)(m_backform[row][col]))->set_texture(tempstr);
 
-						((CUI_wireform*)(m_wireform[icol][irow]))->set_texturekey(temp_info.texkey);
-						((CUI_wireform*)(m_wireform[icol][irow]))->set_objaddress( (CObj*)(temp_info.obj_address) );
+						((CUI_wireform*)(m_wireform[row][col]))->set_texturekey(temp_info.texkey);
+						((CUI_wireform*)(m_wireform[row][col]))->set_objaddress( (CObj*)(temp_info.obj_address) );
 
-						for(int m = 0; m < temp_info.icol; ++m)
+						for(int m = 0; m < temp_info.irow; ++m)
 						{
-							for(int n = 0; n < temp_info.irow; ++n)
+							for(int n = 0; n < temp_info.icol; ++n)
 							{
-								m_occupy[icol + m][irow + n] = false;
+								m_occupy[row + m][col + n] = false;
 							}
 						}
 						is_escape = true;

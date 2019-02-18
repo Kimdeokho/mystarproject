@@ -238,6 +238,8 @@ bool CHydra::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('L' == nkey)
 		return true;
+	else if('A' == nkey)
+		waitkey[nkey] = true;
 
 	return false;
 }

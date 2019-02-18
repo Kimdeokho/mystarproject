@@ -213,10 +213,12 @@ bool CVessle::Input_cmd(const int& nkey , bool* waitkey)
 		waitkey[nkey] = true;
 	}
 
-	if('I' == nkey)
+	else if('I' == nkey)
 	{
 		waitkey[nkey] = true;
 	}
+	else if('A' == nkey)
+		waitkey[nkey] = true;
 
 	return false;
 }

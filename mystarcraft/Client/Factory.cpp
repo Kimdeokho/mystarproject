@@ -287,20 +287,22 @@ void CFactory::Inputkey_reaction(const int& nkey)
 
 	if(false == m_is_take_off)
 	{
+		CUI_Resource* pui = CIngame_UIMgr::GetInstance()->GetResource_UI();
+
 		if('T' == nkey)
 		{
-			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-150 , -100, m_eteamnumber))
-				((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_TANK , L"BTN_TANK");
+			if(pui->is_excess_of_population(2 , m_eteamnumber) && pui->SetResource(-150 , -100, m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , 2.f, OBJ_TANK , L"BTN_TANK");
 		}
 		if('V' == nkey)
 		{
-			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-75 , 0,  m_eteamnumber))
-				((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_VULTURE , L"BTN_VULTURE");
+			if(pui->is_excess_of_population(2 , m_eteamnumber) && pui->SetResource(-75 , 0,  m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , 2.f,OBJ_VULTURE , L"BTN_VULTURE");
 		}
 		if('G' == nkey)
 		{
-			if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -50,  m_eteamnumber))
-				((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_GOLIATH , L"BTN_GOLIATH");
+			if(pui->is_excess_of_population(2 , m_eteamnumber) && pui->SetResource(-100 , -50,  m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , 2.f,OBJ_GOLIATH , L"BTN_GOLIATH");
 		}
 	}
 

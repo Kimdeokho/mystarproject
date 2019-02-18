@@ -27,6 +27,7 @@ private:
 	TEAM_NUMBER		m_myteam;
 	
 public:
+	bool is_excess_of_population(const float _popvalue , const TEAM_NUMBER eteam);
 	bool SetResource(const int _mineral ,const int _gas , const TEAM_NUMBER eteam);
 	void SetMaxPopvalue(const float _popvalue, const TEAM_NUMBER eteam);
 	bool SetPopvalue(const float _popvalue, const TEAM_NUMBER eteam);

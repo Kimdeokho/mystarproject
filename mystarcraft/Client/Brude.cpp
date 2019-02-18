@@ -53,7 +53,7 @@ void CBrude::Initialize(void)
 	CObj::unit_area_Initialize();
 	CUnit::Initialize();
 
-	m_eOBJ_NAME = OBJ_BRUDE;
+	m_eOBJ_NAME = OBJ_BROODLING;
 	m_sortID = SORT_GROUND;
 	m_ecategory = CATEGORY_UNIT;
 
@@ -216,6 +216,9 @@ void CBrude::Inputkey_reaction(const int& firstkey , const int& secondkey)
 
 bool CBrude::Input_cmd(const int& nkey , bool* waitkey)
 {
+	if('A' == nkey)
+		waitkey[nkey] = true;
+
 	return false;
 }
 

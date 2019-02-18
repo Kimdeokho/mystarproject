@@ -47,7 +47,7 @@ void CQueen::Initialize(void)
 
 	m_sortID = SORT_AIR;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eOBJ_NAME = OBJ_MUTAL;
+	m_eOBJ_NAME = OBJ_QUEEN;
 
 	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eMoveType = MOVE_AIR;
@@ -64,7 +64,7 @@ void CQueen::Initialize(void)
 	m_unitinfo.attack_range = 4*32;
 	m_unitinfo.air_attack_range = 4*32;
 	m_unitinfo.search_range = 255;
-	m_unitinfo.fog_range = 512;
+	m_unitinfo.fog_range = 32*18;
 
 	m_vertex.left = 24.f;
 	m_vertex.right = 24.f;
@@ -90,7 +90,7 @@ void CQueen::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-	m_select_ui = new CUI_Select(L"Select48" , m_vPos , 26);
+	m_select_ui = new CUI_Select(L"Select48" , m_vPos , 13);
 	m_select_ui->Initialize();
 
 	m_energybar_ui = new CUI_Energy_bar(this , 50 , m_vertex.bottom*2);
@@ -220,13 +220,17 @@ bool CQueen::Input_cmd(const int& firstkey , const int& secondkey)
 
 void CQueen::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	pui->Create_Cmdbtn(6 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(7 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(8 , L"BTN_HOLD" , BTN_HOLD);
 }
 
 void CQueen::Update_Wireframe(void)

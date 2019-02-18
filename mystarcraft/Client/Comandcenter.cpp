@@ -383,7 +383,10 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 		
 		if(false == m_is_take_off)
 		{
-			((CCom_Production_building*)m_com_production)->add_production_info(1.f , OBJ_SCV , L"BTN_SCV");
+			CUI_Resource* pui = CIngame_UIMgr::GetInstance()->GetResource_UI();
+
+			if(pui->is_excess_of_population(1 , m_eteamnumber) && pui->SetResource(-50 , 0,  m_eteamnumber))
+				((CCom_Production_building*)m_com_production)->add_production_info(1.f , 1.f, OBJ_SCV , L"BTN_SCV");
 			//((CCom_Production_building*)m_com_production)->add_production_info(1.f , PRODUCTION_TANK , L"BTN_TANK");
 		}
 	}

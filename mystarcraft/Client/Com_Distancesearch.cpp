@@ -45,8 +45,8 @@ void CCom_Distancesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_pair_range = &( m_pobj->GetUnitinfo().air_attack_range );
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);	
 
-	m_target_objid = -1;
-	m_search_time = 0.f;
+	m_target_objid = 0;
+	m_search_time = 0.4f;
 	m_btarget_search = true;
 
 	m_irange = 0;
@@ -64,6 +64,11 @@ void CCom_Distancesearch::Update(void)
 
 	if( NULL == m_ptarget)
 	{
+		//if(0 != m_target_objid)
+		//{
+		//	//공격하고 있던 유닛이 죽은거
+		//	m_search_time = 0.2f;
+		//}
 		if(m_bforced_target)
 		{
 			m_pobj->SetOrder(ORDER_NONE);
@@ -257,7 +262,7 @@ void CCom_Distancesearch::Update(void)
 			m_search_time += GETTIME;
 
 			if(true == m_btarget_search &&
-				m_search_time > 0.4f)
+				m_search_time > 0.2f)
 			{				
 				m_search_time = 0.f;
 				int iattrange = max(*m_pattack_range , *m_pair_range);
@@ -347,7 +352,7 @@ void CCom_Distancesearch::Update(void)
 				m_pobj->SetState(IDLE);
 
 			m_btarget_search = true;
-			m_search_time = 1.4f;
+			//m_search_time = 1.4f;
 		}
 	}
 }

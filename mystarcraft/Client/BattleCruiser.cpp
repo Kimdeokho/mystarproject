@@ -210,6 +210,8 @@ bool CBattleCruiser::Input_cmd(const int& nkey , bool* waitkey)
 	{
 		waitkey[nkey] = true;
 	}
+	else if('A' == nkey)
+		waitkey[nkey] = true;
 
 	return false;
 }

@@ -113,7 +113,7 @@ void CFontMgr::FontRender(void)
 		{
 			(*iter).fnotice_time += GETTIME;
 
-			if( (*iter).fnotice_time > 1.f)
+			if( (*iter).fnotice_time > 2.f)
 			{
 				iter = m_list_noticefont.erase(iter);
 			}

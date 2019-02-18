@@ -49,9 +49,9 @@ void CCom_AirPathfind::TargetChase(void)
 {
 	if(NULL != m_pTarget)
 	{
-		//m_fchase_time += GETTIME;
+		m_fchase_time += GETTIME;
 
-		//if(m_fchase_time >= 0.2f)
+		if(m_fchase_time >= 0.2f)
 		{
 			m_fchase_time = 0.f;
 

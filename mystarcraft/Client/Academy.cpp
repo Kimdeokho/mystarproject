@@ -144,63 +144,6 @@ void CAcademy::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-
-
-void CAcademy::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	if( true == m_upg_info[UPG_T_STEAMPACK].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_STEAMPACK].obj_num)
-	{
-		m_upg_info[UPG_T_STEAMPACK].proceeding = false;
-		m_upg_info[UPG_T_STEAMPACK].obj_num = 0;
-		m_upg_info[UPG_T_STEAMPACK].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA0].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA0].obj_num)
-	{
-		m_upg_info[UPG_T_BA0].proceeding = false;
-		m_upg_info[UPG_T_BA0].obj_num = 0;
-		m_upg_info[UPG_T_BA0].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA3].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA3].obj_num)
-	{
-		m_upg_info[UPG_T_BA3].proceeding = false;
-		m_upg_info[UPG_T_BA3].obj_num = 0;
-		m_upg_info[UPG_T_BA3].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA4].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA4].obj_num)
-	{
-		m_upg_info[UPG_T_BA4].proceeding = false;
-		m_upg_info[UPG_T_BA4].obj_num = 0;
-		m_upg_info[UPG_T_BA4].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA5].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA5].obj_num)
-	{
-		m_upg_info[UPG_T_BA5].proceeding = false;
-		m_upg_info[UPG_T_BA5].obj_num = 0;
-		m_upg_info[UPG_T_BA5].curtime = 0;
-	}
-}
-
 void CAcademy::Inputkey_reaction(const int& nkey)
 {
 	if(DEVELOPING == m_unitinfo.state)
@@ -278,6 +221,26 @@ void CAcademy::Inputkey_reaction(const int& nkey)
 void CAcademy::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
+}
+bool CAcademy::Input_cmd(const int& nkey, bool* waitkey)
+{
+	if( 'Q' == nkey )
+		return true;
+	if( 'W' == nkey )
+		return true;
+	if( 'A' == nkey )
+		return true;
+	if( 'S' == nkey )
+		return true;
+	if( 'D' == nkey )
+		return true;
+
+	return false;
+}
+
+bool CAcademy::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
 }
 void CAcademy::Update_Cmdbtn(void)
 {
@@ -408,15 +371,59 @@ void CAcademy::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BA5].curtime / m_upg_info[UPG_T_BA5].maxtime );
 	//-------------------------------------------
 }
-
-bool CAcademy::Input_cmd(const int& nkey, bool* waitkey)
+void CAcademy::Dead(void)
 {
-	return false;
-}
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
 
-bool CAcademy::Input_cmd(const int& firstkey , const int& secondkey)
-{
-	return false;
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	if( true == m_upg_info[UPG_T_STEAMPACK].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_STEAMPACK].obj_num)
+	{
+		m_upg_info[UPG_T_STEAMPACK].proceeding = false;
+		m_upg_info[UPG_T_STEAMPACK].obj_num = 0;
+		m_upg_info[UPG_T_STEAMPACK].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA0].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA0].obj_num)
+	{
+		m_upg_info[UPG_T_BA0].proceeding = false;
+		m_upg_info[UPG_T_BA0].obj_num = 0;
+		m_upg_info[UPG_T_BA0].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA3].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA3].obj_num)
+	{
+		m_upg_info[UPG_T_BA3].proceeding = false;
+		m_upg_info[UPG_T_BA3].obj_num = 0;
+		m_upg_info[UPG_T_BA3].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA4].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA4].obj_num)
+	{
+		m_upg_info[UPG_T_BA4].proceeding = false;
+		m_upg_info[UPG_T_BA4].obj_num = 0;
+		m_upg_info[UPG_T_BA4].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BA5].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BA5].obj_num)
+	{
+		m_upg_info[UPG_T_BA5].proceeding = false;
+		m_upg_info[UPG_T_BA5].obj_num = 0;
+		m_upg_info[UPG_T_BA5].curtime = 0;
+	}
 }
 void CAcademy::Release(void)
 {

@@ -381,6 +381,10 @@ bool CEngineering::Input_cmd(const int& nkey , bool* waitkey)
 		else
 			return true;
 	}
+	if('W' == nkey)
+		return true;
+	if('A' == nkey)
+		return true;
 
 	return false;
 }
