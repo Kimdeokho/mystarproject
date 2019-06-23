@@ -16,6 +16,7 @@ CSkill_Ensnare::CSkill_Ensnare(CObj* ptarget)
 
 CSkill_Ensnare::~CSkill_Ensnare(void)
 {
+	Release();
 }
 
 void CSkill_Ensnare::Initialize(void)
@@ -45,6 +46,12 @@ void CSkill_Ensnare::Initialize(void)
 
 	m_ori_speed = m_ptarget->GetUnitinfo().fspeed;
 	m_ptarget->Get_ref_Unitinfo().fspeed = m_ori_speed / 2.5f;
+
+	for(int i = 0; i < TEAM_END; ++i)
+	{
+		if(i != m_ptarget->GetTeamNumber())
+			m_ptarget->Get_ref_Unitinfo().detect[i] += 1;
+	}
 }
 
 void CSkill_Ensnare::Update(void)
@@ -87,5 +94,9 @@ void CSkill_Ensnare::Render(void)
 
 void CSkill_Ensnare::Release(void)
 {
-
+	for(int i = 0; i < TEAM_END; ++i)
+	{
+		if(i != m_ptarget->GetTeamNumber())
+			m_ptarget->Get_ref_Unitinfo().detect[i] -= 1;
+	}
 }

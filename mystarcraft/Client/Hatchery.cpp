@@ -13,6 +13,7 @@
 #include "Area_Mgr.h"
 #include "ObjMgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_Creep.h"
@@ -25,6 +26,7 @@
 #include "UI_Energy_bar.h"
 #include "UI_Cmd_info.h"
 #include "UI_Resource.h"
+#include "UI_form.h"
 
 #include "Corpse.h"
 #include "GeneraEff.h"
@@ -66,6 +68,8 @@ void CHatchery::Initialize(void)
 	m_unitinfo.search_range = 0;
 	m_unitinfo.fog_range = 32*19;
 
+	m_is_rally = false;
+
 	m_com_anim = new CCom_ZBuildingAnim(L"Z_HATCHERY" , m_matWorld);
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));	
@@ -104,7 +108,7 @@ void CHatchery::Initialize(void)
 	m_select_ui = new CUI_Select(L"Select146" , m_vPos , 10);
 	m_select_ui->Initialize();
 
-	m_energybar_ui = new CUI_Energy_bar(this , 146 , m_vertex.bottom*1.5f);
+	m_energybar_ui = new CUI_Energy_bar(this , 146 , m_vertex.bottom*1.7f);
 	m_energybar_ui->Initialize();
 
 	m_build_maxhp = m_unitinfo.maxhp;
@@ -182,13 +186,15 @@ void CHatchery::Update(void)
 				m_com_larvahatch->Initialize(this);
 			}
 
-			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_HATCHERY , 1);
+			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_HATCHERY , 1 , m_eteamnumber);
 		}
 	}
 
 	m_select_ui->Update();
 	m_energybar_ui->Update();
-	//CFontMgr::GetInstance()->Setnumber_combine_Font(L"%d" , 111 , 400 , 300);
+
+	for(int i = UPG_Z_BH3; i <= UPG_Z_BH5; ++i)
+		CZerg_building::upginfo_update((UPGRADE)i);
 }
 void CHatchery::Render(void)
 {
@@ -196,12 +202,16 @@ void CHatchery::Render(void)
 	m_matWorld._42 = m_vPos.y - CScrollMgr::m_fScrollY;
 
 	m_select_ui->Render();
-
 	m_com_anim->Render();
-
 	m_energybar_ui->Render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
+
+	if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+	{
+		if(m_isSelect && m_is_rally)
+			CLineMgr::GetInstance()->PathLineRender(m_vPos , m_rallypoint , 2.0f);
+	}
 }
 
 void CHatchery::Inputkey_reaction(const int& nkey)
@@ -209,7 +219,6 @@ void CHatchery::Inputkey_reaction(const int& nkey)
 	if(VK_RBUTTON == nkey)
 	{
 		CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
-
 		m_rallypoint = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 		if(this == ptarget)
@@ -255,6 +264,37 @@ void CHatchery::Inputkey_reaction(const int& nkey)
 	}
 
 
+	if('Z' == nkey)
+	{
+		if( !m_upg_info[UPG_Z_BH3].proceeding &&
+			m_upg_info[UPG_Z_BH3].upg_cnt < 1)
+		{
+			m_upg_info[UPG_Z_BH3].proceeding = true;
+			m_upg_info[UPG_Z_BH3].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+
+		}
+	}
+	if('X' == nkey)
+	{
+		if( !m_upg_info[UPG_Z_BH4].proceeding &&
+			m_upg_info[UPG_Z_BH4].upg_cnt < 1)
+		{
+			m_upg_info[UPG_Z_BH4].proceeding = true;
+			m_upg_info[UPG_Z_BH4].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if('P' == nkey)
+	{
+		if( !m_upg_info[UPG_Z_BH5].proceeding &&
+			m_upg_info[UPG_Z_BH5].upg_cnt < 1)
+		{
+			m_upg_info[UPG_Z_BH5].proceeding = true;
+			m_upg_info[UPG_Z_BH5].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
 }
 void CHatchery::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
@@ -270,6 +310,13 @@ bool CHatchery::Input_cmd(const int& nkey , bool* waitkey)
 	if('L' == nkey)
 		return true;
 	if('H' == nkey)
+		return true;
+
+	if('Z' == nkey)
+		return true;
+	if('X' == nkey)
+		return true;
+	if('P' == nkey)
 		return true;
 
 	return false;
@@ -339,14 +386,41 @@ void CHatchery::Update_Cmdbtn(void)
 	CUI_Cmd_info* pcmd = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state )
 	{			
-		pcmd->Create_Cmdbtn(0 , L"BTN_LARVA" , BTN_SCV , true);
+		pcmd->Create_Cmdbtn(0 , L"BTN_LARVA" , BTN_LARVA , true);
+		pcmd->set_shortkey(0 , L"S");
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL))
-			pcmd->Create_Cmdbtn(6 , L"BTN_LAIR" , BTN_COMSET , true);
-		else
-			pcmd->Create_Cmdbtn(6 , L"BTN_LAIR" , BTN_COMSET , false);
+		if( !m_upg_info[UPG_Z_BH3].proceeding && m_upg_info[UPG_Z_BH3].upg_cnt == 0)
+			pcmd->Create_Cmdbtn(3 , L"BTN_Z_BH3" , BTN_Z_BH3 , true , L"Z");
+		if( !m_upg_info[UPG_Z_BH4].proceeding && m_upg_info[UPG_Z_BH4].upg_cnt == 0)
+			pcmd->Create_Cmdbtn(4 , L"BTN_Z_BH4" , BTN_Z_BH4 , true , L"X");
+		if(!m_upg_info[UPG_Z_BH5].proceeding && m_upg_info[UPG_Z_BH5].upg_cnt == 0)
+			pcmd->Create_Cmdbtn(5 , L"BTN_Z_BH5" , BTN_Z_BH5 , true , L"P");
 
+		if(OBJ_HATCERY == m_eOBJ_NAME)
+		{
+			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL ,m_eteamnumber))
+				pcmd->Create_Cmdbtn(6 , L"BTN_LAIR" , BTN_LAIR , true);				
+			else
+				pcmd->Create_Cmdbtn(6 , L"BTN_LAIR" , BTN_LAIR , false);
+
+			pcmd->set_shortkey(6 , L"L");
+		}
+		else if(OBJ_LAIR == m_eOBJ_NAME)
+		{
+			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_QUEEN_NEST ,m_eteamnumber))
+				pcmd->Create_Cmdbtn(6 , L"BTN_HIVE" , BTN_HIVE , true);
+			else
+				pcmd->Create_Cmdbtn(6 , L"BTN_HIVE" , BTN_HIVE, false);
+
+			pcmd->set_shortkey(6 , L"H");
+		}
+		else if(OBJ_HIVE == m_eOBJ_NAME)
+		{
+		}
 	}
+	else if(DEVELOPING == m_unitinfo.state)
+		pcmd->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+
 }
 void CHatchery::Update_Wireframe(void)
 {
@@ -371,13 +445,38 @@ void CHatchery::Update_Wireframe(void)
 			pui = new CUI_Wireframe(L"WIRE_HIVE" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 			CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Hive" ,interface_pos.x + 320 , interface_pos.y + 390 );
 		}
-
 		pui->Initialize();
 		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		if(BUILD == m_unitinfo.state)
 		{
 			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction" , interface_pos.x + 320 , interface_pos.y + 415);
+		}
+		else if(DEVELOPING == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Upgrading" , interface_pos.x + 330 , interface_pos.y + 415);
+
+			pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+			CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+			if(true == m_upg_info[UPG_Z_BH3].proceeding && 
+				m_upg_info[UPG_Z_BH3].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_Z_BH3" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_Z_BH4].proceeding && 
+				m_upg_info[UPG_Z_BH4].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_Z_BH4" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_Z_BH5].proceeding && 
+				m_upg_info[UPG_Z_BH5].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_Z_BH5" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+			}
 		}
 	}
 
@@ -408,6 +507,13 @@ void CHatchery::Update_Wireframe(void)
 	}
 
 	//-------------------------------------------
+
+	if(true == m_upg_info[UPG_Z_BH3].proceeding && m_upg_info[UPG_Z_BH3].obj_num == m_obj_id)
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_Z_BH3].curtime / m_upg_info[UPG_Z_BH3].maxtime );
+	else if(true == m_upg_info[UPG_Z_BH4].proceeding && m_upg_info[UPG_Z_BH4].obj_num == m_obj_id)
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_Z_BH4].curtime / m_upg_info[UPG_Z_BH4].maxtime );
+	else if(true == m_upg_info[UPG_Z_BH5].proceeding && m_upg_info[UPG_Z_BH5].obj_num == m_obj_id)
+		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_Z_BH5].curtime / m_upg_info[UPG_Z_BH5].maxtime );
 }
 
 void CHatchery::Dead(void)
@@ -421,7 +527,19 @@ void CHatchery::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	for(int i = 0; i < UPG_END; ++i)
+	{
+		if( true == m_upg_info[i].proceeding &&
+			m_obj_id == m_upg_info[i].obj_num)
+		{
+			m_upg_info[i].proceeding = false;
+			m_upg_info[i].obj_num = 0;
+			m_upg_info[i].curtime = 0;
+			break;
+		}
+	}
+
 }
 void CHatchery::Release(void)
 {

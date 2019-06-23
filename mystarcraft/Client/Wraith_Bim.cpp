@@ -27,7 +27,7 @@ CWraith_Bim::~CWraith_Bim(void)
 
 void CWraith_Bim::Initialize(void)
 {
-	m_sortID = SORT_AIR_EFF;
+	m_sortID = SORT_AIR;
 
 	m_vcurdir = m_vdest_pos - m_vPos;
 
@@ -40,6 +40,9 @@ void CWraith_Bim::Initialize(void)
 		iter->second->Initialize(this);
 
 	m_ftick_distance = GETTIME*800;
+
+	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
+	m_objcnt_num = m_ptarget->GetObjCountNumber();
 }
 
 void CWraith_Bim::Update(void)
@@ -54,8 +57,17 @@ void CWraith_Bim::Update(void)
 
 	if(NULL != m_ptarget)
 	{
-		m_vdest_pos = m_ptarget->GetPos();
-		m_old_targetpos = m_vdest_pos;
+		if(m_objcnt_num == m_ptarget->GetObjCountNumber())
+		{
+			m_vdest_pos = m_ptarget->GetPos();
+			m_old_targetpos = m_vdest_pos;
+		}
+		else
+		{
+			m_ptarget = NULL;
+			m_target_id = 0;
+			m_vdest_pos = m_old_targetpos;
+		}
 	}
 	else
 	{
@@ -69,6 +81,7 @@ void CWraith_Bim::Update(void)
 
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
+		Dead();
 		if(NULL != m_ptarget)
 		{
 			int idx = m_ptarget->Getcuridx(32);
@@ -78,7 +91,7 @@ void CWraith_Bim::Update(void)
 		}
 
 		m_bdestroy = true;
-		Dead();
+		
 	}	
 
 	m_matWorld._41 = m_vPos.x - CScrollMgr::m_fScrollX;

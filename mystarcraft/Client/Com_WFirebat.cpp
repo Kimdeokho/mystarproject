@@ -32,7 +32,7 @@ void CCom_WFirebat::Initialize(CObj* pobj /*= NULL*/)
 	m_bfire = false;
 
 	for(int i = 0; i < 3; ++i)
-		m_splash_range[i] = 32*0.625f;
+		m_splash_range[i] = 48*0.625f;
 }
 
 void CCom_WFirebat::Update(void)

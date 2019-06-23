@@ -10,7 +10,7 @@
 #include "ObjPoolMgr.h"
 #include "MouseMgr.h"
 #include "Debug_Mgr.h"
-
+#include "RoomSession_Mgr.h"
 #include "UnitMgr.h"
 
 #include "ScrollMgr.h"
@@ -18,6 +18,7 @@
 #include "TimeMgr.h"
 
 #include "Device.h"
+#include "SoundDevice.h"
 
 #include "SCV.h"
 #include "Medic.h"
@@ -65,7 +66,13 @@ HRESULT CScene_Stage::Initialize(void)
 	CArea_Mgr::GetInstance();
 	CTimeMgr::GetInstance()->InitTime();
 
+	if(!wcscmp(L"Terran" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+		CSoundDevice::GetInstance()->PlayBgmSound(SND_BGM_T1 , 0);
+	else if(!wcscmp(L"Zerg" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+		CSoundDevice::GetInstance()->PlayBgmSound(SND_BGM_Z1 , 0);
 	//SetFocus(NULL);
+
+
 	return S_OK;
 }
 
@@ -78,15 +85,12 @@ void CScene_Stage::Update(void)
 	CScrollMgr::update();
 	CIngame_UIMgr::GetInstance()->Update();
 	
-
-	static float time = 0.f;
-	time += GETTIME;
-
 	CObjMgr::GetInstance()->Update();	
 
 	//CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
 	CDebug_Mgr::GetInstance()->Update();
 
+	CSoundDevice::GetInstance()->StageUpdate();
 	m_fTime += GETTIME;
 }
 void CScene_Stage::Render(void)
@@ -106,7 +110,6 @@ void CScene_Stage::Render(void)
 
 
 	CMouseMgr::GetInstance()->Render();
-	CTimeMgr::GetInstance()->FPS_fix();
 	RenderFPS();
 }
 void CScene_Stage::RenderFPS(void)

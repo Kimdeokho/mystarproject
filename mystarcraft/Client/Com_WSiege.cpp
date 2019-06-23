@@ -53,10 +53,7 @@ void CCom_WSiege::fire(CObj* ptarget)
 			//m_targetpos.x += float(rand()%20 - 10);
 			//m_targetpos.y += float(rand()%20 - 10);
 
-			CObj* peff = new CGeneraEff(L"SIEGEBOOM" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 1.2f);
-
-			peff->Initialize();
-			CObjMgr::GetInstance()->AddEffect(peff);
+			CObj* peff = NULL; 
 
 			peff = new CMultiEff(L"SIEGEFIRE" , ((CCom_Animation*)m_animation)->GetCurDirIdx() ,2.0f , 1 , SORT_GROUND_EFF);
 
@@ -72,11 +69,20 @@ void CCom_WSiege::fire(CObj* ptarget)
 			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
 				CSkill_DarkSwarm::m_darkswarm_cnt[idx] > 0)
 			{
-				D3DXVECTOR2 vdir;
 				vdir = ptarget->GetPos() - m_pobj->GetPos();
 				D3DXVec2Normalize(&vdir , &vdir);
 				m_targetpos -= vdir*30;
 			}
+			else if(0 == CSkill_DarkSwarm::m_darkswarm_cnt[idx])
+			{
+				vdir = ptarget->GetPos() - m_pobj->GetPos();
+				D3DXVec2Normalize(&vdir , &vdir);
+				m_targetpos -= vdir*7;
+			}
+
+			peff = new CGeneraEff(L"SIEGEBOOM" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 1.2f);
+			peff->Initialize();
+			CObjMgr::GetInstance()->AddEffect(peff);
 
 			CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, 
 				m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*5,
@@ -100,7 +106,7 @@ void CCom_WSiege::Update(void)
 		m_attack_time += GETTIME;
 		if(m_attack_time > m_attack_delay) //스팀빨면 이게 줄겠지
 		{
-			m_attack_time = 0.f;
+			m_attack_time = GETTIME * float(rand()%5);
 			m_bfire = false;
 		}
 	}

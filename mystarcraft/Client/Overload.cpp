@@ -4,6 +4,7 @@
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
 #include "MouseMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_OverAnim.h"
@@ -11,6 +12,7 @@
 #include "Com_AirCollision.h"
 #include "Com_Transport.h"
 #include "Com_CC.h"
+#include "Com_Detect.h"
 
 #include "ObjMgr.h"
 #include "LineMgr.h"
@@ -80,7 +82,8 @@ void COverload::Initialize(void)
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_COLLISION , new CCom_AirCollision(m_vPos , m_rect , m_vertex)));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , m_com_anim ));
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_AIR_PATHFIND , m_com_air_pathfind));
-	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TRANSPORT , m_com_transport));	
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TRANSPORT , m_com_transport));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_DETECTOR , new CCom_Detect()));
 
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -254,7 +257,12 @@ void COverload::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -296,8 +304,6 @@ void COverload::Dead(void)
 void COverload::Release(void)
 {
 	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetMaxPopvalue(-8 , m_eteamnumber);
 }

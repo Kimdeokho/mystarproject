@@ -233,7 +233,12 @@ void CBattleCruiser::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -317,20 +322,19 @@ void CBattleCruiser::Update_Wireframe(void)
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_AIR_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
-void CBattleCruiser::Release(void)
-{
-	CObj::area_release();
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	m_yamaeff = NULL;
-
-	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-6 , m_eteamnumber);
-}
 void CBattleCruiser::Dead(void)
 {
 	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(1.0f ,1.0f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);
 
+}
+void CBattleCruiser::Release(void)
+{
+	CObj::area_release();
+
+	m_yamaeff = NULL;
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-6 , m_eteamnumber);
 }

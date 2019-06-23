@@ -27,6 +27,8 @@ CZerg_building::CZerg_building(void)
 	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
 	m_miniunit_display->Initialize();
 	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
+
+	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
 
 CZerg_building::~CZerg_building(void)
@@ -110,11 +112,25 @@ void CZerg_building::building_pos_Initialize(const int& col , const int& row)
 
 	m_oldidx64 = m_curidx64;
 }
+void CZerg_building::upginfo_update(const UPGRADE eupg)
+{
+	if(true == m_upg_info[eupg].proceeding &&
+		m_upg_info[eupg].obj_num == m_obj_id)
+	{
+		m_upg_info[eupg].curtime += GETTIME;
 
-//void CZerg_building::SetDestroy(void)
-//{
-//	m_bdestroy = true;
-//}
+		if( m_upg_info[eupg].curtime >= m_upg_info[eupg].maxtime )
+		{
+			m_upg_info[eupg].curtime = 0;
+			m_upg_info[eupg].proceeding = false;
+			m_upg_info[eupg].upg_cnt += 1;
+			m_upg_info[eupg].maxtime += 0.f;
+			m_upg_info[eupg].obj_num = 0;
+
+			m_unitinfo.state = IDLE;
+		}
+	}
+}
 void CZerg_building::Build_Complete(void)
 {
 

@@ -6,6 +6,9 @@
 #include "MyCmd_InputClick.h"
 #include "MyCmd_Building.h"
 #include "MyCmd_PartBuilding.h"
+#include "MyCmd_Leave.h"
+#include "MyCmd_chat.h"
+
 CMyCommand::CMyCommand(void)
 {
 }
@@ -86,6 +89,24 @@ CMyCommand* CMyCommand::StaticReadAndCreate(CStreamSP& readstream)
 	case CMDTYPE_PART_BUILDING:
 		{
 			pcmd = new CMyCmd_PartBuilding;
+
+			pcmd->m_eteamnum = eteamnum;
+			pcmd->m_ecmdtype = ecmd;
+			pcmd->Read(readstream);
+			break;
+		}
+	case CMDTYPE_LEAVE_PLAYER:
+		{
+			pcmd = new CMyCmd_Leave;
+
+			pcmd->m_eteamnum = eteamnum;
+			pcmd->m_ecmdtype = ecmd;
+			pcmd->Read(readstream);
+			break;
+		}
+	case CMDTYPE_CHAT:
+		{
+			pcmd = new CMyCmd_chat;
 
 			pcmd->m_eteamnum = eteamnum;
 			pcmd->m_ecmdtype = ecmd;

@@ -5,7 +5,6 @@
 #include "TimeMgr.h"
 #include "Area_Mgr.h"
 #include "TileManager.h"
-#include "Com_Animation.h"
 #include "ObjMgr.h"
 
 #include "MyMath.h"
@@ -67,21 +66,30 @@ void CCom_Collision::Update(void)
 		{
 			m_collision_target = CArea_Mgr::GetInstance()->Collision_check(m_pobj);
 			if(NULL != m_collision_target)
-			{
-				//printf("충돌! %d \n" , m_obj_id);
+			{				
 				m_target_objid = m_collision_target->GetObjNumber();
-				m_vtargetpos = m_collision_target->GetPos();
-				m_collision_vnormal = m_vtargetpos - m_vPos;
+				//m_vtargetpos = m_collision_target->GetPos();
+				//m_collision_vnormal = m_vtargetpos - m_vPos;
+
+				m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5));
+				//printf("충돌! %d , 벡터x %f ,벡터y %f \n" , m_target_objid , m_collision_vnormal.x , m_collision_vnormal.y);
 				D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
 
-				if( int(m_collision_vnormal.x) == 0 && int(m_collision_vnormal.y == 0) )
-				{
-					//영벡터일때 임의의 방향벡터를 준다.
-					//m_collision_vnormal = OFFSET_DIRVEC;
 
-					m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) + 1 , float(rand()%10 - 5) + 1 );
-					D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
-				}
+				//if( CMyMath::FLT_compare(m_collision_vnormal.x , 0.f) && 
+				//	CMyMath::FLT_compare(m_collision_vnormal.y , 0.f))
+				//{
+				//	//영벡터일때 임의의 방향벡터를 준다.
+				//	//m_collision_vnormal = OFFSET_DIRVEC;
+
+				//	m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5));
+
+				//	if( CMyMath::FLT_compare(m_collision_vnormal.x , 0.f) && 
+				//		CMyMath::FLT_compare(m_collision_vnormal.y , 0.f))
+				//		m_collision_vnormal.x = 1.f;
+
+				//	D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
+				//}
 			}
 
 			m_search_time = 0.f;

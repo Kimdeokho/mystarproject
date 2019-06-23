@@ -4,6 +4,7 @@
 #include "ScrollMgr.h"
 #include "TimeMgr.h"
 #include "MouseMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_MutalAnim.h"
@@ -105,6 +106,7 @@ void CMutal::Initialize(void)
 
 void CMutal::Update(void)
 {
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_matWorld._41 , m_matWorld._42);
 	CObj::area_update();	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -249,7 +251,12 @@ void CMutal::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_FLYER_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_FLYER_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -291,8 +298,6 @@ void CMutal::Dead(void)
 void CMutal::Release(void)
 {
 	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
 }

@@ -39,8 +39,9 @@ public:
 public:
 	void building_area_Initialize(const int& col , const int& row);
 	void building_pos_Initialize(const int& col , const int& row);
+	void upginfo_update(const UPGRADE eupg);
+
 public:
-	//void SetDestroy(void);
 	virtual void Build_Complete(void);
 public:
 	virtual void Initialize(void);

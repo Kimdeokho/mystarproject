@@ -130,7 +130,7 @@ void CSunken::Update(void)
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = STATE_NONE;
 
-			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_SUNKEN , 1);
+			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_SUNKEN , 1 , m_eteamnumber);
 		}
 	}
 	else if(ATTACK == m_unitinfo.state)

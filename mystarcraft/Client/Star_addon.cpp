@@ -62,6 +62,7 @@ void CStar_addon::Initialize(void)
 	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.maxhp = 500;
+	m_unitinfo.hp = 1;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;

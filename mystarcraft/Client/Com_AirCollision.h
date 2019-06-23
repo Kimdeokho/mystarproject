@@ -18,6 +18,7 @@ private:
 	MYRECT<float>				m_air_vertex;
 
 	int				m_target_objid;
+	int				m_obj_cnt;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

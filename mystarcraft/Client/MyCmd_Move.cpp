@@ -8,6 +8,7 @@
 #include "UnitMgr.h"
 #include "ObjMgr.h"
 #include "TileManager.h"
+#include "SoundDevice.h"
 
 CMyCmd_Move::CMyCmd_Move(void)
 {
@@ -57,6 +58,8 @@ void CMyCmd_Move::Progress(void)
 	list<CObj*>	unitlist;
 	D3DXVECTOR2	vdest = D3DXVECTOR2((float)m_x , (float)m_y);
 
+	//printf("%f , %f\n" , vdest.x , vdest.y);
+
 	for(USHORT i = 0; i < m_unitsize; ++i)
 	{
 		pobj = CObjMgr::GetInstance()->GetObj(m_unit_numlist[i]);
@@ -70,21 +73,35 @@ void CMyCmd_Move::Progress(void)
 	CUnitMgr::GetInstance()->Calculate_UnitCenterPt(unitlist , vdest);
 	CTileManager::GetInstance()->Flowfield_Pathfinding(vdest);
 
-	list<CObj*>::iterator iter = unitlist.begin();
-	list<CObj*>::iterator iter_end = unitlist.end();
-	for(; iter != iter_end; ++iter)
+	if(!unitlist.empty())
 	{
-		(*iter)->Inputkey_reaction(VK_RBUTTON);
+		list<CObj*>::iterator iter = unitlist.begin();
+		list<CObj*>::iterator iter_end = unitlist.end();
+		for(; iter != iter_end; ++iter)
+		{
+			(*iter)->Inputkey_reaction(VK_RBUTTON);
+		}
 	}
 }
 
 CMyCmd_Move* CMyCmd_Move::StaticCreate(const D3DXVECTOR2& vpt_arrive)
 {
 	//명령을 입력한 시점이다.
+	list<CObj*>* unitlist = CUnitMgr::GetInstance()->Getcur_unitlist();
+
+	if(!unitlist->empty())
+	{
+		if(unitlist->front()->GetTeamNumber() != 
+			CSession_Mgr::GetInstance()->GetTeamNumber())
+			return NULL;
+		else
+			CSoundDevice::GetInstance()->SetUnitVoice(unitlist->front()->GetOBJNAME());
+	}
+
+
 	CMyCmd_Move*	pcmd = new CMyCmd_Move;
 	CObj*			ptarget = NULL;
 
-	list<CObj*>* unitlist = CUnitMgr::GetInstance()->Getcur_unitlist();
 	pcmd->m_unitsize = unitlist->size();
 
 	ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();

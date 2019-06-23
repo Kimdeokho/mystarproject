@@ -16,7 +16,7 @@ public:
 	virtual void Write(CStreamSP& writestream);
 	virtual void Read(CStreamSP& readstream);
 public:
-	static CMyCmd_InputClick* StaticCreate(D3DXVECTOR2& vdest , const USHORT& nkey);
+	static CMyCmd_InputClick* StaticCreate(const D3DXVECTOR2& vdest , const USHORT nkey);
 public:
 	CMyCmd_InputClick(void);
 	~CMyCmd_InputClick(void);

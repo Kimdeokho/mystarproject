@@ -40,6 +40,7 @@ HRESULT CScene_Loby::Initialize(void)
 		, WRITE_PT_ROOMLIST_RENEWAL(WriteBuffer));
 
 	CRoomSession_Mgr::GetInstance()->Release_sessioninfo();
+
 	return S_OK;
 }
 

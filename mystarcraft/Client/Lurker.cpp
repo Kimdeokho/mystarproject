@@ -11,6 +11,7 @@
 #include "MyMath.h"
 #include "ObjMgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
@@ -73,7 +74,7 @@ void CLurker::Initialize(void)
 	m_unitinfo.air_attack_range = 6*32;
 	m_unitinfo.search_range = 7*32;
 	m_unitinfo.fog_range = 32*8*2;
-	m_unitinfo.armor = 0;
+	m_unitinfo.armor = 1;
 
 	m_vertex.left = 16.f;
 	m_vertex.right = 16.f;
@@ -112,9 +113,6 @@ void CLurker::Initialize(void)
 		m_com_targetsearch->Initialize(this);
 	}
 
-	
-	
-
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
 
@@ -127,7 +125,6 @@ void CLurker::Initialize(void)
 	m_energybar_ui = new CUI_Energy_bar(this , 40 , 30);
 	m_energybar_ui->Initialize();
 
-	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(2 , m_eteamnumber);
 }
 
 void CLurker::Update(void)
@@ -216,7 +213,10 @@ void CLurker::Inputkey_reaction(const int& nkey)
 		if(m_unitinfo.is_hide)
 		{
 			for(int i = 0; i < TEAM_END; ++i)
-				m_unitinfo.detect[i] += 1;
+			{
+				if(i != m_eteamnumber)
+					m_unitinfo.detect[i] += 1;
+			}
 
 			m_unitinfo.is_hide = false;
 			m_com_anim->SetAnimation(L"UNBURROW");
@@ -361,7 +361,12 @@ void CLurker::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{

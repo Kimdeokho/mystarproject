@@ -92,7 +92,7 @@ void CUI_Join::UI_Reaction(void)
 	//	CLoby_UIMgr::GetInstance()->Room_Popup(false);
 	//}
 
-	USHORT roomidx = CLoby_UIMgr::GetInstance()->GetRoomIdx();
+	int roomidx = CLoby_UIMgr::GetInstance()->GetRoomIdx();
 	if( roomidx >= 0)
 	{
 		//먼저 방장의 세션아이디를 알 수있는 패킷을 보낸다

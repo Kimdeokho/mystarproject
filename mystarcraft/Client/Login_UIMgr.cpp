@@ -8,6 +8,7 @@
 #include "UI_Connect.h"
 #include "SceneMgr.h"
 #include "Session_Mgr.h"
+#include "SoundDevice.h"
 #include "TestSession.h"
 IMPLEMENT_SINGLETON(CLogin_UIMgr)
 
@@ -49,6 +50,8 @@ void CLogin_UIMgr::Initialize(void)
 	m_list.push_back(m_log_connect);
 
 	m_rootlist.push_back(pui);
+
+	CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_JOIN , 0);
 }
 void CLogin_UIMgr::Update(void)
 {
@@ -110,15 +113,15 @@ void CLogin_UIMgr::Exit(void)
 	for( ; iter != iter_end; ++iter)
 	{
 		if( !(*iter)->GetEntryComplete() )
-		{
 			is_check = true;
-		}
 	}
 
 	if(!is_check)
 	{
+		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_EXIT , 0);
 		iter = m_rootlist.begin();
 		iter_end = m_rootlist.end();
+
 		for( ; iter != iter_end; ++iter)
 			(*iter)->SetExit(true);
 

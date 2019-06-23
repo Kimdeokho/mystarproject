@@ -5,6 +5,7 @@
 #include "TextureMgr.h"
 #include "Device.h"
 #include "SceneMgr.h"
+#include "SoundDevice.h"
 CScene_Logo::CScene_Logo(void):m_pBackTexture(NULL)
 {
 	m_pLoding = NULL;
@@ -21,6 +22,9 @@ HRESULT CScene_Logo::Initialize(void)
 
 	if(CTextureMgr::GetInstance()->Read_LodingImgPath(L"../Data/imgpath/LodingImgPath.txt") )
 		ERR_MSG(L"로딩텍스쳐 불러오기 실패");
+
+	CSoundDevice::GetInstance()->ReadLodingSound();
+	CSoundDevice::GetInstance()->PlayLoadingSound(SND_BGM_TITLE , 1);
 
 	if( 800 == BACKBUFFER_SIZEX)
 		m_pBackTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"Scene" , L"Loding800")->pTexture;

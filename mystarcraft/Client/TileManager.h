@@ -106,7 +106,7 @@ public:
 	//void CreepAlgorithm(void);
 public:	
 	void SightOffRender(const int& idx,const TEAM_NUMBER& eteam);
-	void SightOnRender(const int& idx ,const int& irange , vector<int>& sightoff_list , bool* fogsearch , CObj* pobj);
+	void SightOnRender(const int idx ,const int irange , vector<int>& sightoff_list , bool* fogsearch , CObj* pobj);
 
 	//void Creep_increase(const D3DXVECTOR2& vPos/*À¯´ÖÀÇ À§Ä¡*/ , int irange);
 	void Creep_decrease_autotile(const int& idx);

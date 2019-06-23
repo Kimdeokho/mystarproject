@@ -9,6 +9,7 @@
 
 #include "TileManager.h"
 #include "Session_Mgr.h"
+#include "ScrollMgr.h"
 
 #include "Sunken.h"
 
@@ -33,29 +34,41 @@ void CCom_SunkenAnim::Initialize(CObj* pobj)
 	m_escape = false;
 
 	m_sign = 1.f;
+
+	m_bsighton = false;
+	m_isescape = false;
+
+	m_staticTex = NULL;
+	m_updateTex = NULL;
+
+	D3DXMatrixIdentity(&m_curMat);
+	m_staticPos = D3DXVECTOR2(0,0);
 }
 
 void CCom_SunkenAnim::Update(void)
 {
 	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
-	if(CTileManager::GetInstance()->GetFogLight(m_pobj->Getcuridx(32) , eteam))
+
+	if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight( m_pobj->Getcuridx(32) , eteam))
 	{
-		m_sighton = true;
-		m_escape = false;
+		m_bsighton = true;
+		m_isescape = false;
 	}
 	else
 	{		
-		if(m_sighton)
+		m_isescape = true;
+		if(m_bsighton)
 		{
 			//켜졌다가 꺼진상태
-			m_sighton = false;
+			m_bsighton = false;
 			//마지막 상태 저장
-			m_escape = true;
+
+
+			m_staticTex = (*m_generaltex)[int(m_frame.fcurframe)];
+			m_curMat = m_objmat;
+			m_staticPos = m_pobj->GetPos();
 		}
 	}
-	if(m_escape)
-		return;
-
 
 	m_frame.fcurframe += GETTIME*m_frame.fframespeed * m_sign;
 
@@ -81,6 +94,12 @@ void CCom_SunkenAnim::Update(void)
 		m_battack_end = true;
 		m_frame.fcurframe = 0.f;
 		m_sign *= -1;
+
+		if(ATTACK == m_pobj->GetUnitinfo().state)
+		{
+			SetAnimation(L"IDLE");
+			m_pobj->SetState(IDLE);
+		}
 	}
 	else
 	{
@@ -91,12 +110,29 @@ void CCom_SunkenAnim::Update(void)
 	}
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (*m_generaltex)[int(m_frame.fcurframe)];
+		m_updateTex = (*m_generaltex)[int(m_frame.fcurframe)];
 }
 
 void CCom_SunkenAnim::Render(void)
 {
-	m_pSprite->SetTransform(&m_objmat);
+	if(m_isescape)
+	{
+		m_curtex = m_staticTex;
+		m_curMat._41 = m_staticPos.x - CScrollMgr::m_fScrollX;
+		m_curMat._42 = m_staticPos.y - CScrollMgr::m_fScrollY;
+	}
+	else
+	{
+		m_curtex = m_updateTex;
+		m_curMat = m_objmat;
+	}
+
+	if(!CScrollMgr::inside_camera(m_staticPos.x , m_staticPos.y))
+		return;
+	if(NULL == m_curtex)
+		return;
+
+	m_pSprite->SetTransform(&m_curMat);
 	m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
 		, NULL , D3DCOLOR_ARGB(255, 255, 255, 255));
 }

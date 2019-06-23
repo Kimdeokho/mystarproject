@@ -24,10 +24,8 @@ CWorkman::CWorkman(void)
 	m_pmineral_fragment = NULL;
 
 	m_charge_building = NULL;
-	m_upg_info = NULL;
 
 	m_is_preview = false;
-
 	m_main_preview = new CBuilding_Preview(this);
 
 	m_ecmd_state = CMD_BASIC;
@@ -137,9 +135,6 @@ void CWorkman::setgas_fragment(CObj* pgas_frag)
 
 void CWorkman::destroy_frag(void)
 {
-	if(CSession_Mgr::GetInstance()->GetTeamNumber() != m_eteamnumber)
-		return;
-
 	CUI_Resource* pui = CIngame_UIMgr::GetInstance()->GetResource_UI();
 	
 	if(NULL != m_pmineral_fragment)
@@ -164,15 +159,15 @@ void CWorkman::destroy_frag(void)
 
 void CWorkman::Fragment_Pos_update(void)
 {
-	if( NULL != m_pmineral_fragment)
-	{		
-		m_pmineral_fragment->SetPos( m_vPos + m_vcurdir*15);
-	}
+	//if( NULL != m_pmineral_fragment)
+	//{		
+	//	m_pmineral_fragment->SetPos( m_vPos + m_vcurdir*15);
+	//}
 
-	if( NULL != m_pgas_fragment)
-	{		
-		m_pgas_fragment->SetPos( m_vPos + m_vcurdir*15);
-	}
+	//if( NULL != m_pgas_fragment)
+	//{		
+	//	m_pgas_fragment->SetPos( m_vPos + m_vcurdir*15);
+	//}
 }
 void CWorkman::Create_Building(void)
 {
@@ -198,7 +193,7 @@ void CWorkman::SetPreview_info(const TCHAR* objkey , TERRAN_BUILD_TECH ebuild , 
 	//버튼 비활성화면 못보여줌
 
 	m_ecmd_state = CMD_BUILDING;
-	(m_main_preview)->SetPreviewInfo(objkey ,ebuild, icol , irow ,  vtx);
+	m_main_preview->SetPreviewInfo(objkey ,ebuild, icol , irow ,  vtx);
 
 }
 void CWorkman::SetPreview_info(PREVIEW_INFO _info)

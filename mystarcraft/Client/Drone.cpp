@@ -11,6 +11,7 @@
 #include "MyMath.h"
 #include "ObjMgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
@@ -101,7 +102,7 @@ void CDrone::Initialize(void)
 
 	//m_panimation = new CCom_DroneAnim(m_matWorld , m_curtex);
 
-	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,32);
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
 	m_com_anim = new CCom_DroneAnim(m_matWorld);
 	m_com_targetsearch = new CCom_Meleesearch(SEARCH_ONLY_ENEMY);
 	m_com_worksearch = new CCom_Worksearch();
@@ -206,7 +207,7 @@ void CDrone::Create_Building(void)
 	float onestep = GETTIME*m_unitinfo.fspeed;
 
 	if( fdistance < onestep*onestep*2)
-	//if( fdistance < 32*32)
+	//if( fdistance < 17*17)
 	{
 		if(false == m_main_preview->Install_check(m_preview_info))
 		{
@@ -459,16 +460,21 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 		{
 			m_main_preview->SetActive(false);
 			m_is_preview = false;
-			//m_ecmd_state = CMD_BASIC;
 		}
+
+		if(ORDER_MOVE_BUILD == m_unitinfo.order)
+			m_ecmd_state = CMD_BASIC;
+
+		if(CMD_BUILDING == m_ecmd_state)
+			m_ecmd_state = CMD_BASIC;
 	}
 
 	else if(VK_LBUTTON == nkey)
 	{
 		//여기서 명령을 입력하고
-		if(true == m_is_preview && true == (m_main_preview)->Install_check())
-		{
-			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+		if(true == m_is_preview && true == m_main_preview->Install_check())
+		{			
+			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetClick_Pos();
 			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
 
 			m_main_preview->SetActive(false);
@@ -575,63 +581,63 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 
 bool CDrone::Input_cmd(const int& firstkey , const int& secondkey)
 {
-	if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
-	{
-		m_is_preview = true;
-		if('B' == firstkey && 'H' == secondkey)
-		{
-			// L , R , T ,B
-			MYRECT<float> vtx(49.f , 50.f , 32.f , 33.f);
-			SetPreview_info(L"Z_HATCHERY" , Z_HATCHERY , 3 , 4 , vtx);
-		}
-		else if('B' == firstkey && 'C' == secondkey)
-		{
-			MYRECT<float> vtx(24.f , 24.f, 24.f, 24.f);
-			SetPreview_info(L"Z_FCOLONY" , Z_FCOLONY , 2 , 2 , vtx);
-		}
-		else if('B' == firstkey && 'E' == secondkey)
-		{
-			MYRECT<float> vtx(64.f , 64.f , 32.f , 32.f);
-			SetPreview_info(L"Z_GAS" , Z_GAS , 2 , 4 , vtx);
-		}
-		else if('B' == firstkey && 'S' == secondkey)
-		{
-			MYRECT<float> vtx(36.f , 41.f , 28.f , 19.f);
-			SetPreview_info(L"Z_SPWANING_POOL" , Z_SPWANING_POOL , 2 , 3 , vtx);
-		}
-		else if('B' == firstkey && 'V' == secondkey)
-		{
-			MYRECT<float> vtx(44 , 48-15 , 32 , 32-11);
-			SetPreview_info(L"Z_CHAMBER" , Z_CHAMBER , 2 , 3 , vtx);
-		}
-		else if('B' == firstkey && 'D' == secondkey)
-		{
-			MYRECT<float> vtx(48-8 , 48-7 , 32 , 32-7);
-			SetPreview_info(L"Z_HYDRADEN" , Z_HYDRADEN , 2 , 3 , vtx);
-		}
-		else if('V' == firstkey && 'S' == secondkey)
-		{
-			MYRECT<float> vtx(32-4 , 32-3 , 32 , 32-7);
-			SetPreview_info(L"Z_SPIRE" , Z_SPIRE , 2 , 2 , vtx);
-		}
-		else if('V' == firstkey && 'Q' == secondkey)
-		{
-			MYRECT<float> vtx(48-10 , 48-15 , 32-8 , 32-3);
-			SetPreview_info(L"Z_QUEEN_NEST" , Z_QUEEN_NEST , 2 , 3 , vtx);
-		}
-		else if('V' == firstkey && 'U' == secondkey)
-		{
-			MYRECT<float> vtx(48-8, 48-15, 32 , 32);
-			SetPreview_info(L"Z_ULTRA_CAVE" , Z_ULTRA_CAVE , 2 , 3 , vtx);
-		}
-		else if('V' == firstkey && 'F' == secondkey)
-		{
-			MYRECT<float> vtx(64-16 , 64-15 , 32 , 32-27);
-			SetPreview_info(L"Z_DEFILER_MOUND" , Z_DEFILER_MOUND , 2 , 4 , vtx);
-		}
-		else
-			m_is_preview = false;
-	}
+	//if( 1 == CUnitMgr::GetInstance()->GetSelectunit_size())
+	//{
+	//	m_is_preview = true;
+	//	if('B' == firstkey && 'H' == secondkey)
+	//	{
+	//		// L , R , T ,B
+	//		MYRECT<float> vtx(49.f , 50.f , 32.f , 33.f);
+	//		SetPreview_info(L"Z_HATCHERY" , Z_HATCHERY , 3 , 4 , vtx);
+	//	}
+	//	else if('B' == firstkey && 'C' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(24.f , 24.f, 24.f, 24.f);
+	//		SetPreview_info(L"Z_FCOLONY" , Z_FCOLONY , 2 , 2 , vtx);
+	//	}
+	//	else if('B' == firstkey && 'E' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(64.f , 64.f , 32.f , 32.f);
+	//		SetPreview_info(L"Z_GAS" , Z_GAS , 2 , 4 , vtx);
+	//	}
+	//	else if('B' == firstkey && 'S' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(36.f , 41.f , 28.f , 19.f);
+	//		SetPreview_info(L"Z_SPWANING_POOL" , Z_SPWANING_POOL , 2 , 3 , vtx);
+	//	}
+	//	else if('B' == firstkey && 'V' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(44 , 48-15 , 32 , 32-11);
+	//		SetPreview_info(L"Z_CHAMBER" , Z_CHAMBER , 2 , 3 , vtx);
+	//	}
+	//	else if('B' == firstkey && 'D' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(48-8 , 48-7 , 32 , 32-7);
+	//		SetPreview_info(L"Z_HYDRADEN" , Z_HYDRADEN , 2 , 3 , vtx);
+	//	}
+	//	else if('V' == firstkey && 'S' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(32-4 , 32-3 , 32 , 32-7);
+	//		SetPreview_info(L"Z_SPIRE" , Z_SPIRE , 2 , 2 , vtx);
+	//	}
+	//	else if('V' == firstkey && 'Q' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(48-10 , 48-15 , 32-8 , 32-3);
+	//		SetPreview_info(L"Z_QUEEN_NEST" , Z_QUEEN_NEST , 2 , 3 , vtx);
+	//	}
+	//	else if('V' == firstkey && 'U' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(48-8, 48-15, 32 , 32);
+	//		SetPreview_info(L"Z_ULTRA_CAVE" , Z_ULTRA_CAVE , 2 , 3 , vtx);
+	//	}
+	//	else if('V' == firstkey && 'F' == secondkey)
+	//	{
+	//		MYRECT<float> vtx(64-16 , 64-15 , 32 , 32-27);
+	//		SetPreview_info(L"Z_DEFILER_MOUND" , Z_DEFILER_MOUND , 2 , 4 , vtx);
+	//	}
+	//	else
+	//		m_is_preview = false;
+	//}
 
 	return false;
 }
@@ -646,12 +652,12 @@ void CDrone::Update_Cmdbtn(void)
 	}
 	else if(CMD_B_VIEW == m_ecmd_state)
 	{
-		pui->Z_Cmdbtn_B_buildsetting();
+		pui->Z_Cmdbtn_B_buildsetting(m_eteamnumber);
 		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 	}
 	else if(CMD_V_VIEW == m_ecmd_state)
 	{
-		pui->Z_Cmdbtn_V_buildsetting();
+		pui->Z_Cmdbtn_V_buildsetting(m_eteamnumber);
 		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 	}
 	else

@@ -47,12 +47,16 @@ void CSkill_SP::Update(void)
 		}
 	}
 }
-void CSkill_SP::use(void)
+void CSkill_SP::use_sp(void)
 {
-	m_bonce = true;
-	m_bstimpack = true;
-	((CCom_Weapon*)m_com_weapon)->SetAttackDelay(0.375f);
-	m_pobj->SetSpeed(98);
+	if( m_pobj->GetUnitinfo().hp - 10 > 10)
+	{
+		m_pobj->SetHP(-10);
+		m_bonce = true;
+		m_bstimpack = true;
+		((CCom_Weapon*)m_com_weapon)->SetAttackDelay(0.375f);
+		m_pobj->SetSpeed(98);
+	}
 }
 
 

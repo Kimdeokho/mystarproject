@@ -283,7 +283,7 @@ bool CBuilding_Preview::Install_check(void)
 					if(Player_team == eteam)
 					{
 						CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 					}
 					return false;
 				}
@@ -300,7 +300,7 @@ bool CBuilding_Preview::Install_check(void)
 							Player_team == eteam)
 						{
 							CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 						}
 					}
 					else if(TRIBE_ZERG == etribe)
@@ -311,7 +311,7 @@ bool CBuilding_Preview::Install_check(void)
 							if(Z_HATCHERY != m_preview_info.ebuild)
 							{
 								CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 							}
 						}
 					}
@@ -321,7 +321,7 @@ bool CBuilding_Preview::Install_check(void)
 					if(Player_team == eteam)
 					{
 						CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 					}
 					return false;
 				}
@@ -372,7 +372,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 					if(Player_team == eteam)
 					{
 						CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 					}
 					return false;
 				}
@@ -389,7 +389,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 							Player_team == eteam)
 						{
 							CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-								, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+								, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 						}
 					}
 					else if(TRIBE_ZERG == etribe)
@@ -400,7 +400,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 							if(Z_HATCHERY != m_preview_info.ebuild)
 							{
 								CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 							}
 						}
 					}
@@ -408,7 +408,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 				else
 				{
 					CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f);
+						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
 					return false;
 				}
 			}

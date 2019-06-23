@@ -46,8 +46,8 @@ bool CUI_IDslot::UI_ptinrect(const D3DXVECTOR2 vpos)
 
 	if(MyPtInrect(vpos , &m_rect))
 		return true;
-
-	return false;
+	else
+		return false;
 }
 
 void CUI_IDslot::UI_Reaction(void)
@@ -55,12 +55,12 @@ void CUI_IDslot::UI_Reaction(void)
 
 }
 
-void CUI_IDslot::Release(void)
-{
-	lstrcpy(m_text , L"");
-}
-
 void CUI_IDslot::SetUser(const WCHAR* szid)
 {
 	lstrcpy(m_text , szid);
+}
+
+void CUI_IDslot::Release(void)
+{
+	lstrcpy(m_text , L"");
 }

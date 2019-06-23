@@ -2,7 +2,7 @@
 
 #include "Include.h"
 
-const int MAXPATH_IDX = 150;
+const int MAXPATH_IDX = 250;
 template<typename T> class CMyHeapSort;
 class CObj;
 class CArea_Mgr;
@@ -72,7 +72,7 @@ public:
 public:
 	//void TerrainPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos);
 	//void TerrainPath_calculation_Update(const D3DXVECTOR2& goalpos);
-	void UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos, const int& stepsize, const vector<D3DXVECTOR2>& terrain_path , const int& terrain_idx);
+	void UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos, const int& stepsize, const vector<D3DXVECTOR2>& terrain_path , const int terrain_idx);
 	void UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* ptarget);
 	void Path_Render(void);
 	bool Check_idx(const D3DXVECTOR2& vpos);

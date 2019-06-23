@@ -33,6 +33,7 @@ CCom_Worksearch::~CCom_Worksearch(void)
 
 void CCom_Worksearch::Initialize(CObj* pobj /*= NULL*/)
 {
+	m_com_transport = NULL;
 	m_pmineral = NULL;
 
 	m_pobj = pobj;
@@ -47,11 +48,14 @@ void CCom_Worksearch::Initialize(CObj* pobj /*= NULL*/)
 	m_core_number = 0;
 
 	m_fsearch_time = 0.f;
+
+	m_collRange = GETTIME * m_pobj->GetUnitinfo().fspeed * 3;
 }
 
 void CCom_Worksearch::Update(void)
 {
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
+
 	if(NULL == m_ptarget)
 		m_target_objid = 0;
 
@@ -62,10 +66,10 @@ void CCom_Worksearch::Update(void)
 		if(NULL != m_ptarget)
 		{
 			m_myrc= m_pobj->GetMyRect();
-			m_myrc.left -= 3;
-			m_myrc.right += 3;
-			m_myrc.top -= 3;
-			m_myrc.bottom += 3;
+			m_myrc.left -= m_collRange;
+			m_myrc.right += m_collRange;
+			m_myrc.top -= m_collRange;
+			m_myrc.bottom += m_collRange;
 
 			((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_ptarget->GetObjNumber());
 			((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
@@ -78,7 +82,7 @@ void CCom_Worksearch::Update(void)
 					/*점유 하고 있다면 ... 다른 미네랄을 찾는다
 					만약 전부 누군가 점유하고있다면 원래 미네랄에서 대기한다*/
 
-					m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+					m_pobj->Setdir( m_ptarget->GetPos() - m_pobj->GetPos());
 
 					if(NULL != m_com_pathfind)
 					{
@@ -186,10 +190,10 @@ void CCom_Worksearch::Update(void)
 		{
 			m_core_number = m_core_center->GetObjNumber();
 			m_myrc= m_pobj->GetMyRect();
-			m_myrc.left -= 3;
-			m_myrc.right += 3;
-			m_myrc.top -= 3;
-			m_myrc.bottom += 3;
+			m_myrc.left -= m_collRange;
+			m_myrc.right += m_collRange;
+			m_myrc.top -= m_collRange;
+			m_myrc.bottom += m_collRange;
 
 			((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_core_center->GetObjNumber());
 			((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
@@ -265,10 +269,10 @@ void CCom_Worksearch::Update(void)
 			((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 
 			m_myrc= m_pobj->GetMyRect();
-			m_myrc.left -= 2;
-			m_myrc.right += 2;
-			m_myrc.top -= 2;
-			m_myrc.bottom += 2;
+			m_myrc.left -= m_collRange;
+			m_myrc.right += m_collRange;
+			m_myrc.top -= m_collRange;
+			m_myrc.bottom += m_collRange;
 
 			if(MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
 			{

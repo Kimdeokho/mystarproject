@@ -3,6 +3,8 @@
 
 #include "FontMgr.h"
 #include "TimeMgr.h"
+#include "Ingame_UIMgr.h"
+
 #include "Input_Test.h"
 #include "Input_Login.h"
 #include "Input_Loby.h"
@@ -189,6 +191,9 @@ void CKeyMgr::CombineKey(const int& firstkey ,const int& secondkey)
 			m_combineidx = 0;
 			m_combinekey[firstkey] = true;
 			m_combinekey[secondkey] = true;
+
+			m_bcombinefirst[firstkey] = false;
+			m_bcombinesecond[secondkey] = false;
 		}
 	}
 }
@@ -275,8 +280,8 @@ void CKeyMgr::DbClick(const int& nkey)
 }
 void CKeyMgr::Update(void)
 {
-	//if(GetActiveWindow() != g_hWnd)
-		//return;
+	if(GetActiveWindow() != g_hWnd)
+		return;
 
 	TurboKeyDown(VK_LEFT);
 	TurboKeyDown(VK_RIGHT);
@@ -298,7 +303,7 @@ void CKeyMgr::Update(void)
 	for(int i = 'A'; i <= 'Z'; ++i)
 		OnceKeyDown(i);
 
-	OnceKeyDown(VK_RETURN);
+	OnceKeyDown(VK_RETURN); //ฟฃลอ
 	OnceKeyDown(VK_ESCAPE);
 
 	for(int i = VK_F1; i < VK_F12; ++i)
@@ -311,11 +316,9 @@ void CKeyMgr::Update(void)
 
 
 	CombineKey(VK_CONTROL , VK_LBUTTON);
-	CombineKey(VK_CONTROL , '1');
-	CombineKey(VK_CONTROL , '2');
-	CombineKey(VK_CONTROL , '3');
-	CombineKey(VK_CONTROL , '4');
-	CombineKey(VK_CONTROL , '5');
+
+	for(int i = '1'; i <= '9'; ++i)
+		CombineKey(VK_CONTROL , i);
 
 	DbClick(VK_LBUTTON);
 

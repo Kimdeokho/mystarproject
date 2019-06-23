@@ -12,6 +12,7 @@ public:
 	DECLARE_SINGLETON(CObjMgr)
 private:
 	list<CObj*>		m_ObjList[OBJ_END];
+	list<CObj*>		m_bullet_list;
 	list<CObj*>		m_CorpseList;
 	//list<CObj*>		m_ZBuilding_List[ZB_END];
 	//list<CObj*>		m_ZUnit_List[ZU_END];

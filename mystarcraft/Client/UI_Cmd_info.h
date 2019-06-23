@@ -10,14 +10,16 @@ private:
 	D3DXVECTOR2		m_vcmdbtn_pos[9];
 	CMD_BTN			m_clicked_cmd_btn;
 public:
-	void Create_Cmdbtn(const int& idx ,const TCHAR* texkey, CMD_BTN ebtn , bool is_active = true);
+	void Create_Cmdbtn(const int idx ,const TCHAR* texkey, CMD_BTN ebtn , bool is_active = true ,const TCHAR* shortkey = L"");
+	void set_shortkey(const int idx ,const TCHAR* str);
 	void Click_cmdbtn(const D3DXVECTOR2& vpt);
+	
 	void Update_Cmdbtn(CObj* pobj);
 	void clear_btn(void);
-	void T_Cmdbtn_B_buildsetting(void);
-	void T_Cmdbtn_V_buildsetting(void);
-	void Z_Cmdbtn_B_buildsetting(void);
-	void Z_Cmdbtn_V_buildsetting(void);
+	void T_Cmdbtn_B_buildsetting(const TEAM_NUMBER teamnum);
+	void T_Cmdbtn_V_buildsetting(const TEAM_NUMBER teamnum);
+	void Z_Cmdbtn_B_buildsetting(const TEAM_NUMBER teamnum);
+	void Z_Cmdbtn_V_buildsetting(const TEAM_NUMBER teamnum);
 	bool active_cmdbtn(const int& idx, CMD_BTN ebtn);
 	CMD_BTN Get_clicked_btn(void);
 public:

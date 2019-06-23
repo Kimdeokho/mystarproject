@@ -3,6 +3,7 @@
 #include "Loding.h"
 #include "TextureMgr.h"
 #include "FontMgr.h"
+#include "SoundDevice.h"
 
 CLoding::CLoding(void)
 {
@@ -42,17 +43,12 @@ void CLoding::Initialize(void)
 
 	m_bLodingComplete = false;
 	m_pTextureMgr = CTextureMgr::GetInstance();
+	m_pSoundDevice = CSoundDevice::GetInstance();
 
 	InitializeCriticalSection(&m_CriticalSection);	
 
 	m_Thread = (HANDLE)_beginthreadex(NULL , 0 , LodingStart ,this , 0 , NULL);
 
-}
-void CLoding::Release(void)
-{
-	WaitForSingleObject(m_Thread , INFINITE);
-	DeleteCriticalSection(&m_CriticalSection);
-	CloseHandle(m_Thread);
 }
 
 CLoding::LODINGFLAG CLoding::GetLodingFlag(void)
@@ -68,7 +64,10 @@ CRITICAL_SECTION CLoding::GetKey(void)
 void CLoding::Load_BaiscTexture(void)
 {
 	if(m_pTextureMgr->Read_Texture(m_szPath))
-		m_bLodingComplete = true;
+	{
+		if(m_pSoundDevice->ReadSoundResource(m_szPath))
+			m_bLodingComplete = true;
+	}
 	
 }
 
@@ -84,4 +83,11 @@ void CLoding::Logo_LodingRender(void)
 bool CLoding::GetLoadingComplete(void)
 {
 	return m_bLodingComplete;
+}
+
+void CLoding::Release(void)
+{
+	WaitForSingleObject(m_Thread , INFINITE);
+	DeleteCriticalSection(&m_CriticalSection);
+	CloseHandle(m_Thread);
 }

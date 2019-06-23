@@ -54,13 +54,13 @@ void CMutal_Bullet::Initialize(void)
 
 void CMutal_Bullet::Update(void)
 {
-	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
-
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
 	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
 
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
+
+	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
 
 	if(NULL != m_ptarget)
 	{
@@ -72,6 +72,7 @@ void CMutal_Bullet::Update(void)
 		else
 		{
 			m_ptarget = NULL;
+			m_target_id = 0;
 			m_vdest_pos = m_old_targetpos;
 		}
 	}
@@ -112,13 +113,9 @@ void CMutal_Bullet::Update(void)
 					m_target_cntnum = pnext_target->GetObjCountNumber();
 					m_target_movetype = pnext_target->GetUnitinfo().eMoveType;
 
-					if(MOVE_NOT == m_target_movetype)
-						int a = 0;
 				}
 				else
-				{
 					m_bdestroy = true;
-				}
 			}
 			else
 				m_bdestroy = true;
@@ -175,7 +172,6 @@ CObj* CMutal_Bullet::NextTarget_Search(void)
 				continue;
 			if( TEAM_NONE == (*iter)->GetTeamNumber())
 				continue;
-
 			if(m_eteam == (*iter)->GetTeamNumber())
 				continue;
 			//공중만 공격 가능한 유닛은 공중만 검사하고
@@ -185,8 +181,6 @@ CObj* CMutal_Bullet::NextTarget_Search(void)
 			if( SEARCH_ONLY_ENEMY == esearchtype)
 			{
 				etarget_movetype = (*iter)->GetUnitinfo().eMoveType;
-
-
 
 				if( ATTACK_ONLY_AIR == m_attack_type)
 				{
@@ -219,7 +213,7 @@ CObj* CMutal_Bullet::NextTarget_Search(void)
 					int objcnt_num = 0;
 					bool duplication = false;
 
-					for(size_t j = 0; j < m_vec_objid.size(); ++j)
+					for(unsigned int j = 0; j < m_vec_objid.size(); ++j)
 					{			
 						objcnt_num = m_vec_objid[j];
 
@@ -241,10 +235,6 @@ CObj* CMutal_Bullet::NextTarget_Search(void)
 
 	return ptarget;
 }
-void CMutal_Bullet::Release(void)
-{
-	vector<int>().swap(m_vec_objid);	
-}
 
 void CMutal_Bullet::Dead(void)
 {	
@@ -255,7 +245,7 @@ void CMutal_Bullet::Dead(void)
 	else
 		vpos = m_vdest_pos;
 
-	SORT_ID esort = SORT_GROUND_EFF;
+	SORT_ID esort = SORT_END;
 
 	if(MOVE_GROUND == m_target_movetype)
 		esort = SORT_GROUND_EFF;
@@ -268,4 +258,10 @@ void CMutal_Bullet::Dead(void)
 
 	peff->Initialize();
 	CObjMgr::GetInstance()->AddEffect(peff);
+}
+
+void CMutal_Bullet::Release(void)
+{
+	vector<int> temp;	
+	temp.swap(m_vec_objid);	
 }

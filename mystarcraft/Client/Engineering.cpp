@@ -216,55 +216,6 @@ void CEngineering::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CEngineering::Release(void)
-{
-	CTerran_building::area_release();
-
-	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
-	Safe_Delete(m_com_pathfind);
-	if(iter != m_componentlist.end())
-	{
-		m_componentlist.erase(iter);
-	}
-}
-
-void CEngineering::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	if(NULL != m_partbuilding)
-	{
-		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
-		m_partbuilding = NULL;
-	}
-
-	if( true == m_upg_info[UPG_T_BIO_WEAPON].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BIO_WEAPON].obj_num)
-	{
-		m_upg_info[UPG_T_BIO_WEAPON].proceeding = false;
-		m_upg_info[UPG_T_BIO_WEAPON].obj_num = 0;
-		m_upg_info[UPG_T_BIO_WEAPON].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BIO_ARMOR].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BIO_ARMOR].obj_num)
-	{
-		m_upg_info[UPG_T_BIO_ARMOR].proceeding = false;
-		m_upg_info[UPG_T_BIO_ARMOR].obj_num = 0;
-		m_upg_info[UPG_T_BIO_ARMOR].curtime = 0;
-	}
-}
-
 void CEngineering::Inputkey_reaction(const int& nkey)
 {
 	if(TAKE_OFF == m_unitinfo.state ||
@@ -309,10 +260,10 @@ void CEngineering::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_BIO_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
-					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
+					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f , 3.f);
 				return;
 			}
 			m_upg_info[UPG_T_BIO_WEAPON].proceeding = true;
@@ -328,10 +279,10 @@ void CEngineering::Inputkey_reaction(const int& nkey)
 			m_upg_info[UPG_T_BIO_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
 			{
 				CFontMgr::GetInstance()->SetNoticeFont(L"테크가 부족합니다 (필요건물 Sience facility)"
-					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f);
+					, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY - BACKBUFFER_SIZEY/3.2f , 3.f);
 				return;
 			}
 
@@ -397,7 +348,7 @@ void CEngineering::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_BIO_WEAPON].proceeding && m_upg_info[UPG_T_BIO_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_WEAPON].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BEW" , BTN_T_BEW , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BEW" , BTN_T_BEW , true);
@@ -405,7 +356,7 @@ void CEngineering::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_BIO_ARMOR].proceeding && m_upg_info[UPG_T_BIO_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_BIO_ARMOR].upg_cnt &&
-				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE) == 0)
+				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_BEA" , BTN_T_BEA , false);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_BEA" , BTN_T_BEA , true);
@@ -488,4 +439,49 @@ void CEngineering::Update_Wireframe(void)
 	else if(true == m_upg_info[UPG_T_BIO_ARMOR].proceeding && m_upg_info[UPG_T_BIO_ARMOR].obj_num == m_obj_id)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_BIO_ARMOR].curtime / m_upg_info[UPG_T_BIO_ARMOR].maxtime );
 	//-------------------------------------------
+}
+void CEngineering::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	if(NULL != m_partbuilding)
+	{
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
+		m_partbuilding = NULL;
+	}
+
+	if( true == m_upg_info[UPG_T_BIO_WEAPON].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BIO_WEAPON].obj_num)
+	{
+		m_upg_info[UPG_T_BIO_WEAPON].proceeding = false;
+		m_upg_info[UPG_T_BIO_WEAPON].obj_num = 0;
+		m_upg_info[UPG_T_BIO_WEAPON].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_BIO_ARMOR].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_BIO_ARMOR].obj_num)
+	{
+		m_upg_info[UPG_T_BIO_ARMOR].proceeding = false;
+		m_upg_info[UPG_T_BIO_ARMOR].obj_num = 0;
+		m_upg_info[UPG_T_BIO_ARMOR].curtime = 0;
+	}
+}
+void CEngineering::Release(void)
+{
+	CTerran_building::area_release();
+
+	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
+	Safe_Delete(m_com_pathfind);
+	if(iter != m_componentlist.end())
+	{
+		m_componentlist.erase(iter);
+	}
 }

@@ -81,7 +81,7 @@ public:
 	void SetPartBuilding(CObj* pobj);
 	void Build_Complete(void);
 
-	void	upginfo_update(const UPGRADE& eupg);
+	void	upginfo_update(const UPGRADE eupg);
 	void	SetPreview_info(const PREVIEW_INFO& maininfo , const PREVIEW_INFO& subinfo);
 public:
 	virtual void Initialize(void);

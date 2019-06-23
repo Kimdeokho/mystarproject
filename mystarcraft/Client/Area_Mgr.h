@@ -83,11 +83,11 @@ public:
 	bool  Collocate_check(CObj* pself  ,const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
 	bool  Building_Collocate_check(CObj* pself , const D3DXVECTOR2& vpos ,MYRECT<float>& myrc );
 public:
-	CObj*	Melee_explore_target(CObj* pself , const int isearch_range , TARGET_SEARCH_TYPE esearchtype);
+	CObj*	Melee_explore_target(CObj* pself , const int isearch_range , TARGET_SEARCH_TYPE esearchtype , const int path_size);
 	CObj*	Auto_explore_target(CObj* pobj , const int isearch_range ,const int att_range, TARGET_SEARCH_TYPE esearchtype);
 	CObj*	Explore_medic_target(CObj* pobj , const int& isearch_range );
 	
-	bool	RangeTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int isearch_range ,const int att_range , TARGET_SEARCH_TYPE esearchtype);
+	bool	RangeTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, vector<CObj*>& attlist, const int isearch_range ,const int att_range , TARGET_SEARCH_TYPE esearchtype);
 	void	MeleeTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int isearch_range ,TARGET_SEARCH_TYPE esearchtype ,const int path_distance);
 	void	MedicTarget_extract(CObj* pself ,const D3DXVECTOR2& vpos, float& fminvalue, CObj*& ptarget,  const int isearch_range);
 	void	TargetChoice(const D3DXVECTOR2& vpos);

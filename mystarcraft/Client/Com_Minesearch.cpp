@@ -49,6 +49,11 @@ void CCom_Minesearch::Update(void)
 
 	if( NULL != m_ptarget)
 	{
+		if(NULL != m_ptarget && m_obj_cnt != m_ptarget->GetObjCountNumber())
+		{
+			m_ptarget = NULL;
+			m_target_objid = 0;
+		}
 	}
 	else
 		m_target_objid = 0;
@@ -71,6 +76,7 @@ void CCom_Minesearch::Update(void)
 		if(NULL != m_ptarget)
 		{
 			m_target_objid = m_ptarget->GetObjNumber();
+			m_obj_cnt = m_ptarget->GetObjCountNumber();
 		}
 		else
 		{

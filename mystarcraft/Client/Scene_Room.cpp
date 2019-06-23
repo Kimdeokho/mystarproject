@@ -13,6 +13,7 @@
 #include "Session_Mgr.h"
 #include "RoomSession_Mgr.h"
 #include "MouseMgr.h"
+#include "SoundDevice.h"
 
 CScene_Room::CScene_Room(void)
 {
@@ -71,5 +72,6 @@ void CScene_Room::Render(void)
 void CScene_Room::Release(void)
 {
 	CRoom_UIMgr::DestroyInstance();
+	CSoundDevice::GetInstance()->ReleaseSound();
 	//CRoomSession_Mgr::DestroyInstance();
 }

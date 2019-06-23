@@ -54,7 +54,7 @@ void CCom_Pathfind::Initialize(CObj* pobj)
 	m_terrainpath.reserve(256);
 	m_realpath.reserve( 256 );
 
-	m_collisionmove_time = 0;
+	m_collisionMove_time = 0;
 	m_vcurdir = D3DXVECTOR2(0.f , 0.f);
 	m_vgap = D3DXVECTOR2(0.f, 0.f);
 	m_arrivalrange = 64;
@@ -83,31 +83,33 @@ void CCom_Pathfind::Initialize(CObj* pobj)
 	m_curobj_idx = &(m_pobj->Getcuridx(32));
 	m_oldobj_idx = -1;
 	m_oldcase = -1;
+
+	m_stopTimeOffset = m_pobj->GetVertex().left * 0.0075f;	
 }
 void CCom_Pathfind::Target_chase(void)
 {
 	if(NULL != m_pTarget)
 	{
-		m_refind_time = 0.f;
+		m_refind_time = 0.4f - GETTIME*4;
 		m_fchase_time += GETTIME;
 
-		if(m_fchase_time >= 0.2f )
+		if(m_fchase_time >= 1.0f )
 		{
 			m_fchase_time = 0.f;
 			if( true == ((CCom_Animation*)m_com_animation)->GetAttack_end())
 			{
 				if(false == m_multithread && false == m_pathfind_pause )
 				{
-					//몇초마다 한번씩 길찾기 하기로 하자
-					//적을 추적한다
-
 					if(ATTACK != m_pobj->GetUnitinfo().state)
 					{
 						int target_curidx = CMyMath::Pos_to_index(m_pTarget->GetPos() , m_substep);
 						if(target_curidx != m_target_oldidx)
 						{
 							m_target_oldidx = target_curidx;
-							ClearPath();
+							//ClearPath();
+							if(!m_terrainpath.empty())
+								m_terrainpath.clear();
+							
 							//공격 대상도 탐색에 제외
 							D3DXVECTOR2 target_pos = m_pTarget->GetPos();
 
@@ -122,7 +124,7 @@ void CCom_Pathfind::Target_chase(void)
 	else
 	{
 		m_target_oldidx = -1;
-		m_fchase_time = 0.2f - GETTIME*3;
+		m_fchase_time = 1.2f;
 		m_pathfind_pause = true;
 		if( ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order && 
 			m_terrainpath.empty() )
@@ -131,11 +133,8 @@ void CCom_Pathfind::Target_chase(void)
 			m_pobj->SetState(IDLE);			
 			m_refind_time += GETTIME;
 
-			//if(!m_realpath.empty())
-			//	m_realpath.clear();
-
 			//명령이 어택무브 중이었다면 다시 지형을 찾는다.
-			if(m_refind_time >= GETTIME*5.f)
+			if(m_refind_time >= 0.4f)
 			{
 				if(!m_realpath.empty())
 					m_realpath.clear();
@@ -183,17 +182,31 @@ void CCom_Pathfind::Update(void)
 
 	if(true == m_multithread)
 	{
-		m_Astar->UnitPath_calculation_Update(m_realpath , m_pTarget);
+		bool pathType = false;
+		if(!m_realpath.empty()) //기존 경로가 있는 상태에서 길구하기
+			pathType = true;
 
+		m_Astar->UnitPath_calculation_Update(m_realpath , m_pTarget);
 		if(!m_realpath.empty())
 		{
 			m_multithread = false;
 			m_realpathidx = m_realpath.size() - 1;
-			//if(0 == m_realpathidx)
-			//{
-			//	if(CMyMath::pos_distance(m_pobj->GetPos(), m_realpath[m_realpathidx]) < 16*16)
-			//		m_realpath.clear();
-			//}
+
+			if(pathType)
+			{
+				D3DXVECTOR2 vtemp1 , vtemp2;
+				for(int i = m_realpathidx; i > 0; --i)
+				{
+					vtemp1 = m_realpath[i] - m_vPos;
+					vtemp2 = m_realpath[i - 1] - m_realpath[i];
+
+					if(0.0f <= D3DXVec2Dot(&vtemp1 , &vtemp2)) //90도보다 작다
+					{
+						m_realpathidx = i + 1;
+						break;
+					}
+				}
+			}
 		}
 	}
 	UnitMoving_update();
@@ -260,7 +273,7 @@ void CCom_Pathfind::UnitMoving_update()
 				float frange = (float)m_terrain_step/2.f*(float)SQ_TILESIZEX;
 
 				if( m_curterrain_pathidx < (int)m_terrainpath.size() - 1 &&
-					(CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx])) < (frange*frange))
+					(CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx])) < frange*frange)
 				{
 					if(!CTileManager::GetInstance()->Bresenham_Tilecheck(m_vPos , m_terrainpath[m_curterrain_pathidx]))
 					{
@@ -280,7 +293,7 @@ void CCom_Pathfind::UnitMoving_update()
 	{
 		if(0 == m_realpathidx) 
 		{
-			//m_pobj->SetState(IDLE); 생각해보니 굳이 할 필요가 없다.
+			m_pobj->SetState(IDLE);
 			m_realpath.clear();
 
 			if(NULL != m_pTarget)
@@ -297,16 +310,18 @@ void CCom_Pathfind::UnitMoving_update()
 	}
 
 	float onestep = GETTIME*(*m_fspeed);	
-	if( (CMyMath::pos_distance( m_vprepos ,m_realpath[m_realpathidx - 1]) <= onestep*onestep) )
+	if( (CMyMath::pos_distance( m_vprepos ,m_realpath[m_realpathidx - 1]) <= onestep*onestep*1.5f) )
 	{
 		--m_realpathidx;
+		if( 0 == m_realpathidx)
+			m_pobj->SetState(IDLE);
+
 		m_vprepos = m_realpath[m_realpathidx];
 
 		m_prerect.left = m_vprepos.x - m_obj_vertex.left;
 		m_prerect.right = m_vprepos.x + m_obj_vertex.right;
 		m_prerect.top = m_vprepos.y - m_obj_vertex.top;
 		m_prerect.bottom = m_vprepos.y + m_obj_vertex.bottom;
-
 	}
 	else
 	{
@@ -314,7 +329,6 @@ void CCom_Pathfind::UnitMoving_update()
 		D3DXVec2Normalize(&m_vcurdir , &m_vcurdir);
 		m_pobj->Setdir(m_vcurdir);
 
-		//m_vprepos = m_vPos + m_vcurdir*GETTIME*(*m_fspeed);
 		m_vprepos = m_vPos + m_vcurdir*onestep;
 
 		m_prerect.left = m_vprepos.x - m_obj_vertex.left;
@@ -329,23 +343,26 @@ void CCom_Pathfind::UnitMoving_update()
 	if(icase != m_oldcase)
 	{
 		m_oldcase = icase;
-		m_collisionmove_time = 0;
+		m_collisionMove_time -= GETTIME / 2;
+
+		if(m_collisionMove_time < 0 )
+			m_collisionMove_time = 0.f;
 	}
 	if( 1 == icase)
 	{		
-		m_collisionmove_time += GETTIME;
+		m_collisionMove_time += GETTIME;
 		m_pobj->SetState(IDLE);
 		m_is_stop = true;
 
 		if(NULL != m_pTarget)
-			m_timeoffset = 0.0f;
+			m_timeoffset = 0.f;
 		else
-			m_timeoffset = 0.60f;
+			m_timeoffset = 0.37f;
 	}
 	else if( 2 == icase)
 	{
 		//곧바로 길찾기
-		m_collisionmove_time += GETTIME;
+		m_collisionMove_time += GETTIME;
 		m_pobj->SetState(IDLE);
 		m_timeoffset = 0.1f;
 	}
@@ -354,13 +371,13 @@ void CCom_Pathfind::UnitMoving_update()
 		//m_collisionmove_time = 0.f;
 		//m_collisionmove_time -= GETTIME;
 		//if(m_collisionmove_time < 0)
-		m_collisionmove_time = 0.f;
+		m_collisionMove_time = 0.f;
 
 		if(true == m_is_stop)
 		{			
 			m_stoptime += GETTIME;
 
-			if(m_stoptime >=  0.15f)
+			if(m_stoptime >=  m_stopTimeOffset)
 			{
 				m_stoptime = 0.f;
 				m_is_stop = false;
@@ -379,13 +396,13 @@ void CCom_Pathfind::UnitMoving_update()
 		}
 	}
 
-	if(m_collisionmove_time >= m_timeoffset)
+	if(m_collisionMove_time >= m_timeoffset)
 	{
 		m_is_stop = false;
-		m_collisionmove_time = 0.f;
+		m_collisionMove_time = 0.f;
 		m_stoptime = 0.f;
+		
 		m_realpath.clear();
-
 		if(NULL == m_pTarget)
 		{
 			if(!m_terrainpath.empty())
@@ -393,27 +410,12 @@ void CCom_Pathfind::UnitMoving_update()
 				m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
 				m_multithread = true;
 			}
-			//if(!m_terrainpath.empty())
-			//{
-			//	if(CMyMath::pos_distance(m_terrainpath[m_curterrain_pathidx] ,m_vprepos) > 64*64)
-			//	{
-			//		m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
-			//		m_multithread = true;
-			//	}
-			//	else
-			//	{
-			//		//m_pobj->SetOrder(ORDER_NONE);
-			//		m_pobj->SetState(IDLE);
-			//	}
-			//}
 		}
 		else
 		{
 			m_terrainpath.clear();
 
-			D3DXVECTOR2 target_pos = m_pTarget->GetPos();
-
-			m_Astar->UnitPath_calculation_Start(m_vPos , target_pos , m_substep, m_terrainpath , m_curterrain_pathidx);
+			m_Astar->UnitPath_calculation_Start(m_vPos , m_pTarget->GetPos() , m_substep, m_terrainpath , m_curterrain_pathidx);
 			m_multithread = true;
 		}
 	}
@@ -593,7 +595,7 @@ void CCom_Pathfind::Render(void)
 			CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
 
 			if( i < m_realpath.size() - 1 )
-				CLineMgr::GetInstance()->RallyLineRender(m_realpath[i] , m_realpath[i + 1]);
+				CLineMgr::GetInstance()->PathLineRender(m_realpath[i] , m_realpath[i + 1] , 1.0f);
 			//if(0 == i)
 			//	CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
 			//else if( i == m_realpath.size() - 1)
@@ -646,11 +648,7 @@ void CCom_Pathfind::ClearPath(void)
 
 const D3DXVECTOR2 CCom_Pathfind::GetGoalPos(void)
 {
-	//return m_goalpos + m_pobj->GetPos() - CUnitMgr::GetInstance()->GetUnitCentterPt();
 	return m_goalpos + m_vgap;
-
-	//USHORT usize = m_terrainpath.size() - 1;
-	//return m_terrainpath[usize];
 }
 
 

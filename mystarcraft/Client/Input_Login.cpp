@@ -5,6 +5,8 @@
 #include "Login_UIMgr.h"
 #include "MouseMgr.h"
 #include "KeyMgr.h"
+#include "SoundDevice.h"
+
 CInput_Login::CInput_Login(void)
 {
 }
@@ -24,6 +26,8 @@ void CInput_Login::Update(void)
 	{
 		D3DXVECTOR2 vpt = CMouseMgr::GetInstance()->GetScreenMousePt();
 		CLogin_UIMgr::GetInstance()->UI_Reaction(vpt);
+
+		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_CLICK , 0);
 	}
 }
 

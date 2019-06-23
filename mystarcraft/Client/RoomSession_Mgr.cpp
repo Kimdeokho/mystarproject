@@ -58,6 +58,21 @@ void CRoomSession_Mgr::Release(void)
 	}
 	Safe_Delete(m_myinfo);
 }
+void CRoomSession_Mgr::quit_play(const DWORD sessionid)
+{
+	for(int i = 0; i < 8; ++i)
+	{
+		if(NULL == m_Roomsession_info[i])
+			continue;
+
+		if(sessionid == m_Roomsession_info[i]->SESSION_ID)
+		{
+			Safe_Delete(m_Roomsession_info[i]);
+			--m_player_cnt;
+			break;
+		}
+	}
+}
 void CRoomSession_Mgr::Exit_Others(const S_PT_ROOM_LEAVE_M& _info)
 {
 	for(int i = 0; i < 8; ++i)
@@ -80,6 +95,7 @@ void CRoomSession_Mgr::Exit_Others(const S_PT_ROOM_LEAVE_M& _info)
 }
 void CRoomSession_Mgr::Receive_NewUser(const S_PT_ROOM_USER_ENTRY_M& _info)
 {
+	//새로 들어온 유저를 받아들일때
 	USHORT idx =  _info.SLOT_IDX;
 
 	if(NULL == m_Roomsession_info[idx])
@@ -102,13 +118,13 @@ void CRoomSession_Mgr::Receive_NewUser(const S_PT_ROOM_USER_ENTRY_M& _info)
 		}
 	}
 
-	printf("%d \n" , m_player_cnt);
 }
 
 void CRoomSession_Mgr::Init_RoomUserInfo(const S_PT_ROOM_USER_RENEWAL_SUCC_U& _info)
 {
 	//_info.TITLE roomUIMGR에서 가져갈 데이터
 
+	//내가 방에 들어가는 유저입장이고 , 방안에 들어와있는 유저들을 받아올때
 	m_master_sessionID = _info.MASTERSESSION_ID;
 	for(int i = 0; i < 8; ++i)
 	{

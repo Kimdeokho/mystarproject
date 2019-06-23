@@ -148,7 +148,7 @@ void CSCV::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	if(!m_bSelect)
+	if(!m_isSelect)
 		m_ecmd_state = CMD_BASIC;
 
 	if(IDLE == m_unitinfo.state)
@@ -407,8 +407,6 @@ void CSCV::Inputkey_reaction(const int& firstkey , const int& secondkey)
 }
 bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 {
-	//m_is_preview = false;
-
 	if(false == m_unitinfo.is_active)
 		return false;
 
@@ -418,8 +416,13 @@ bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 		{
 			m_main_preview->SetActive(false);
 			m_is_preview = false;
-			//m_ecmd_state = CMD_BASIC;
 		}
+
+		if(ORDER_MOVE_BUILD == m_unitinfo.order)
+			m_ecmd_state = CMD_BASIC;
+
+		if(CMD_BUILDING == m_ecmd_state)
+			m_ecmd_state = CMD_BASIC;
 	}
 
 	if(VK_LBUTTON == nkey)
@@ -427,7 +430,8 @@ bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 		//여기서 명령을 입력하고
 		if(true == m_is_preview && true == m_main_preview->Install_check())
 		{
-			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			//D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetClick_Pos();
 			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
 
 			m_main_preview->SetActive(false);
@@ -802,12 +806,12 @@ void CSCV::Update_Cmdbtn(void)
 	}
 	else if(CMD_B_VIEW == m_ecmd_state)
 	{
-		pui->T_Cmdbtn_B_buildsetting();
+		pui->T_Cmdbtn_B_buildsetting(m_eteamnumber);
 		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 	}
 	else if(CMD_V_VIEW == m_ecmd_state)
 	{
-		pui->T_Cmdbtn_V_buildsetting();
+		pui->T_Cmdbtn_V_buildsetting(m_eteamnumber);
 		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 	}
 	else

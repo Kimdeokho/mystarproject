@@ -59,7 +59,9 @@ VOID CGameIocp::onPT_ROOM_SENDCHAT(CConnectedUser* connectedUser, BYTE *packet)
 			WRITE_PT_ROOM_RECEIVE_CHAT_M(WriteBuffer , 
 			Data.USER_ID,
 			Data.MESSAGE,			
-			Data.SESSION_ID));
+			Data.SESSION_ID,
+			Data.CUR_TIME,
+			Data.RETAIN_TIME));
 	}
 }
 VOID CGameIocp::onPT_ROOM_TRIBE_CHANGE(CConnectedUser* connectedUser, BYTE *packet)

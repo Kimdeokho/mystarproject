@@ -37,9 +37,6 @@ void CCom_WLurker::fire(CObj* ptarget)
 		m_bfire = true;
 
 		m_attack_time = 0.f;
-		//ÃÑ¾Ë»ý¼º
-		//CLurker_Bullet
-		//CLurker_spike
 
 		CObj* pbullet = new CLurker_Thornfire(m_pobj->GetPos() , ptarget->GetPos() , m_pobj->GetUnitinfo().attack_range , m_weapon_info , m_pobj );
 		CObjMgr::GetInstance()->AddObject(pbullet , OBJ_BULLET);

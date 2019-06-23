@@ -14,6 +14,7 @@
 #include "Ingame_UIMgr.h"
 
 #include "UI_Cmd_info.h"
+#include "SoundDevice.h"
 
 IMPLEMENT_SINGLETON(CUnitMgr)
 CUnitMgr::CUnitMgr(void)
@@ -28,11 +29,6 @@ CUnitMgr::~CUnitMgr(void)
 
 void CUnitMgr::Initialize(void)
 {
-	for(int i = 0; i < 10; ++i)
-	{
-		m_troops[i].reserve(12);
-	}
-
 	m_vUnitcenterpt		= D3DXVECTOR2(0,0);
 	m_vGoalPos			= D3DXVECTOR2(0,0);
 	m_magicbox_unitcnt	= 0;
@@ -43,7 +39,19 @@ void CUnitMgr::SetUnit(CObj* pobj)
 	//pobj->SetSelect(GENERAL_SELECT);
 	m_curunitList.push_back(pobj);
 }
+bool CUnitMgr::is_unit(const CObj* const pobj)
+{
+	list<CObj*>::iterator iter = m_curunitList.begin();
+	list<CObj*>::iterator iter_end = m_curunitList.end();
 
+	for( ; iter != iter_end; ++iter)
+	{
+		if(pobj == *iter)
+			return true;
+	}
+
+	return false;
+}
 void CUnitMgr::discharge_unit(void)
 {
 	list<CObj*>::iterator iter = m_curunitList.begin();
@@ -62,6 +70,7 @@ void CUnitMgr::Intputkey_reaction(const int& nkey)
 		list<CObj*>::iterator iter = m_curunitList.begin();
 		list<CObj*>::iterator iter_end = m_curunitList.end();
 
+		
 		for( ; iter != iter_end; ++iter)
 		{
 			(*iter)->Inputkey_reaction(nkey);
@@ -101,7 +110,7 @@ bool CUnitMgr::Input_cmd(const int& firstkey , const int& secondkey)
 
 
 void CUnitMgr::clear_destroy_unitlist(CObj* pobj)
-{
+{	
 	if(!m_curunitList.empty())
 	{
 		list<CObj*>::iterator iter = m_curunitList.begin();
@@ -117,10 +126,27 @@ void CUnitMgr::clear_destroy_unitlist(CObj* pobj)
 			else
 				++iter;
 		}
+
+		if(m_curunitList.empty())
+			CIngame_UIMgr::GetInstance()->ClearWireFrame();
+
 	}
 	else
 	{
 		CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(NULL , STATE_NONE);
+	}
+
+	int objcnt = pobj->GetObjCountNumber();
+	map<int , CObj*>::iterator map_iter;
+	for(int i = 0; i < 10; ++i)
+	{
+		if(!m_troops[i].empty())
+		{
+			map_iter = m_troops[i].find(objcnt);
+			if(m_troops[i].end() != map_iter)
+				m_troops[i].erase(map_iter);
+		}
+
 	}
 }
 void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& vgoalpos)
@@ -174,7 +200,7 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 		vpos = (*iter)->GetPos();
 
 		if(magicbox.right - magicbox.left <= BACKBUFFER_SIZEX / 2 &&
-			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY / 2)
+			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY )
 		{
 			//++m_magicbox_unitcnt;
 			//m_vUnitcenterpt += vpos;
@@ -194,7 +220,7 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptarget*/)
 {
 
-	//서버일땐 필요없음
+	//서버(멀티플레이)일땐 필요없음
 	list<CObj*>::iterator iter = m_curunitList.begin();
 	list<CObj*>::iterator iter_end = m_curunitList.end();
 
@@ -242,7 +268,7 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptar
 		vpos = (*iter)->GetPos();
 
 		if(magicbox.right - magicbox.left <= BACKBUFFER_SIZEX / 2 &&
-			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY / 2)
+			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY )
 		{
 			//++m_magicbox_unitcnt;
 			//m_vUnitcenterpt += vpos;
@@ -314,10 +340,11 @@ void CUnitMgr::Update_UI_Infomation(void)
 {
 	if(!m_curunitList.empty())
 	{
-		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+
 		if(1 == m_curunitList.size())
 		{
-			((CUI_Cmd_info*)pui)->Update_Cmdbtn( m_curunitList.front() );
+			pui->Update_Cmdbtn( m_curunitList.front() );
 			CIngame_UIMgr::GetInstance()->Update_Wireframe( m_curunitList.front() );
 		}
 		else
@@ -336,15 +363,15 @@ void CUnitMgr::Update_UI_Infomation(void)
 				}
 			}
 			if(true == bflag)
-				((CUI_Cmd_info*)pui)->Update_Cmdbtn(NULL);
+				pui->Update_Cmdbtn(NULL);
 			else
 			{
 				if(OBJ_SCV == pobj->GetOBJNAME() || OBJ_DRONE == pobj->GetOBJNAME())
-					((CUI_Cmd_info*)pui)->Update_Cmdbtn(NULL);
+					pui->Update_Cmdbtn(NULL);
 				else
-					((CUI_Cmd_info*)pui)->Update_Cmdbtn(pobj);				
+					pui->Update_Cmdbtn(pobj);				
 			}
-
+			
 			CFontMgr::GetInstance()->renewal_infomation_font();
 			CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(NULL , STATE_NONE);
 		}
@@ -352,8 +379,8 @@ void CUnitMgr::Update_UI_Infomation(void)
 	else
 	{
 		//명렁 버튼을 비운다
-		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
-		((CUI_Cmd_info*)pui)->clear_btn();
+		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+		(pui)->clear_btn();
 		//CIngame_UIMgr::GetInstance()->clear_cmdbtn();
 	}
 }
@@ -366,5 +393,45 @@ int CUnitMgr::GetSelectunit_size(void)
 list<CObj*>* CUnitMgr::Getcur_unitlist(void)
 {
 	return &m_curunitList;
+}
+void CUnitMgr::Troop_call(const int idx)
+{
+	if(!m_troops[idx - 48].empty())
+	{
+		if(!m_curunitList.empty())
+		{
+			list<CObj*>::iterator iter = m_curunitList.begin();
+			list<CObj*>::iterator iter_end = m_curunitList.end();
+
+			for( ; iter != iter_end; ++iter)
+				(*iter)->SetSelect(NONE_SELECT);
+
+			m_curunitList.clear();
+		}
+
+		map<int , CObj*>::iterator iter_map = m_troops[idx - 48].begin();
+		map<int , CObj*>::iterator iter_map_end = m_troops[idx - 48].end();
+
+		for( ; iter_map != iter_map_end; ++iter_map)
+		{
+			m_curunitList.push_back(iter_map->second);
+			iter_map->second->SetSelect(GENERAL_SELECT);
+		}
+	}	
+}
+void CUnitMgr::Assigned_troop(const int idx)
+{
+	if(!m_curunitList.empty())
+	{
+		m_troops[idx - 48].clear();
+
+		list<CObj*>::iterator iter = m_curunitList.begin();
+		list<CObj*>::iterator iter_end = m_curunitList.end();
+
+		for( ; iter != iter_end; ++iter)
+		{			
+			m_troops[idx - 48].insert(make_pair((*iter)->GetObjCountNumber() , *iter));
+		}
+	}	
 }
 

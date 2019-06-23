@@ -16,6 +16,7 @@ protected:
 
 	//float			m_fsearchtime;
 	int				m_target_objid;
+	int				m_obj_cnt;
 
 	const int*				m_pattack_range;
 	const int*				m_psearch_range;

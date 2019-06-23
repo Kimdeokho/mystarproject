@@ -11,6 +11,7 @@
 #include "MyMath.h"
 #include "ObjMgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
@@ -294,7 +295,12 @@ void CUltra::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -312,6 +318,14 @@ void CUltra::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 	{
 		if(DAMAGE_VIBRATE == edamagetype)
 			tempdamage *= 0.25f;
+	}
+
+	if((int)tempdamage <= 0)
+	{
+		if( 0 == rand()%2)
+			tempdamage = 1;
+		else
+			tempdamage = 0;
 	}
 
 	m_unitinfo.hp -= (int)(tempdamage + 0.5f);

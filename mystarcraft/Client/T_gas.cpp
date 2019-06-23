@@ -36,7 +36,7 @@ CT_gas::CT_gas(CObj* resource_gas)
 CT_gas::~CT_gas(void)
 {
 	Release();
-	CIngame_UIMgr::GetInstance()->BuildTech_Update(T_GAS , -1);
+	CIngame_UIMgr::GetInstance()->BuildTech_Update(T_GAS , -1 , m_eteamnumber);
 }
 
 void CT_gas::Initialize(void)
@@ -113,7 +113,7 @@ void CT_gas::Update(void)
 		{
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = IDLE;
-			CIngame_UIMgr::GetInstance()->BuildTech_Update(T_GAS , 1);
+			CIngame_UIMgr::GetInstance()->BuildTech_Update(T_GAS , 1 , m_eteamnumber);
 		}
 	}
 
@@ -179,22 +179,6 @@ void CT_gas::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
 	}
 }
-void CT_gas::Release(void)
-{
-	CGasBuilding::area_release();
-
-	if(NULL != m_select_ui)
-		Safe_Delete(m_select_ui);
-
-	if(NULL != m_energybar_ui)
-		Safe_Delete(m_energybar_ui);
-	//if( NULL != m_pgas_resource)
-	//{
-	//	((CGasResource*)m_pgas_resource)->building_area_Initialize();
-	//	m_pgas_resource = NULL;
-	//}
-}
-
 void CT_gas::Dead(void)
 {
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
@@ -206,6 +190,7 @@ void CT_gas::Dead(void)
 	if( NULL != m_pworkman)
 	{
 		m_pworkman->SetActive(true);
+		m_pworkman->SetSelect(NONE_SELECT);
 		m_pworkman->SetOrder(ORDER_NONE);
 		m_pworkman->SetState(IDLE);
 		m_pworkman->unit_area_Initialize();
@@ -217,4 +202,19 @@ void CT_gas::Dead(void)
 		((CGasResource*)m_pgas_resource)->building_area_Initialize();
 		m_pgas_resource = NULL;
 	}
+}
+void CT_gas::Release(void)
+{
+	//CGasBuilding::area_release();
+
+	if(NULL != m_select_ui)
+		Safe_Delete(m_select_ui);
+
+	if(NULL != m_energybar_ui)
+		Safe_Delete(m_energybar_ui);
+	//if( NULL != m_pgas_resource)
+	//{
+	//	((CGasResource*)m_pgas_resource)->building_area_Initialize();
+	//	m_pgas_resource = NULL;
+	//}
 }

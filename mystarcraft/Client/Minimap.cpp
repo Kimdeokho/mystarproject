@@ -7,6 +7,8 @@
 #include "LineMgr.h"
 #include "Session_Mgr.h"
 #include "MyMath.h"
+#include "Debug_Mgr.h"
+
 #include "Obj.h"
 #include "UI_MiniUnitDisplay.h"
 CMinimap::CMinimap(void)
@@ -87,10 +89,12 @@ void CMinimap::Render(void)
 		
 	//CTileManager::GetInstance()->MinifogUpdate();
 
-	m_pSprite->SetTransform(&m_matworld);
-	m_pSprite->Draw(m_MinifogTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
-		, D3DCOLOR_ARGB(255,255,255,255));
-
+	if(!CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
+	{
+		m_pSprite->SetTransform(&m_matworld);
+		m_pSprite->Draw(m_MinifogTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
+			, D3DCOLOR_ARGB(255,255,255,255));
+	}
 
 	list<CUI*>::iterator iter		= m_miniunit_display.begin();
 	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
@@ -100,11 +104,16 @@ void CMinimap::Render(void)
 	D3DXVECTOR2 vpos;
 	for( ; iter != iter_end; ++iter)
 	{
-		 vpos = (*iter)->GetPos();
-		 fogidx = CMyMath::Pos_to_index(vpos , 32);
+		vpos = (*iter)->GetPos();
+		fogidx = CMyMath::Pos_to_index(vpos , 32);
 
-		if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+		if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
 			(*iter)->Render();
+		else
+		{
+			if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+				(*iter)->Render();
+		}
 	}
 
 	MYRECT<float> cam_rect;
@@ -113,11 +122,6 @@ void CMinimap::Render(void)
 	cam_rect.right = (CScrollMgr::m_fScrollX + BACKBUFFER_SIZEX) * 0.03125f + m_matworld._41;
 	cam_rect.bottom = (CScrollMgr::m_fScrollY + BACKBUFFER_SIZEY) * 0.03125f + m_matworld._42;
 	CLineMgr::GetInstance()->minicambox_render(cam_rect);
-
-}
-
-void CMinimap::Release(void)
-{
 
 }
 
@@ -167,4 +171,9 @@ void CMinimap::Minimappos_to_screen(D3DXVECTOR2& vmousept)
 		vmousept.y *= 32;
 	}
 	
+}
+
+void CMinimap::Release(void)
+{
+
 }

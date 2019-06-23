@@ -111,19 +111,30 @@ void CFontMgr::FontRender(void)
 
 		for( ; iter != iter_end; )
 		{
-			(*iter).fnotice_time += GETTIME;
+			(*iter).fcur_time += GETTIME;
 
-			if( (*iter).fnotice_time > 2.f)
-			{
-				iter = m_list_noticefont.erase(iter);
-			}
-			else
+			if((*iter).fnotice_time < 0)
 			{
 				m_matfont._41 = (*iter).fX - lstrlen((*iter).font)/2*10;
 				m_matfont._42 = (*iter).fY;
 				m_pSprite->SetTransform(&m_matfont);
 				m_pFont->DrawTextW(m_pSprite, (*iter).font , lstrlen((*iter).font) , &rc , DT_NOCLIP , (*iter).font_color );
 				++iter;
+			}
+			else
+			{
+				if( (*iter).fcur_time > (*iter).fnotice_time)
+				{
+					iter = m_list_noticefont.erase(iter);
+				}
+				else
+				{
+					m_matfont._41 = (*iter).fX - lstrlen((*iter).font)/2*10;
+					m_matfont._42 = (*iter).fY;
+					m_pSprite->SetTransform(&m_matfont);
+					m_pFont->DrawTextW(m_pSprite, (*iter).font , lstrlen((*iter).font) , &rc , DT_NOCLIP , (*iter).font_color );
+					++iter;
+				}
 			}
 		}
 	}
@@ -246,26 +257,28 @@ void CFontMgr::SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCO
 
 	m_render_fontlist.push_back(ptemp);
 }
-void CFontMgr::SetNoticeFont(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
+void CFontMgr::SetNoticeFont(const TCHAR* szfont , float posX , float posY , const float notice_time, D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
 {
 	/*한번 입력받고 몇초동안 지속적으로 렌더 후 삭제되는 폰트*/
 	FONT_INFO ptemp;
 
 	ptemp.fX = posX;//- CScrollMgr::m_fScrollX;
 	ptemp.fY = posY;// - CScrollMgr::m_fScrollY;
+	ptemp.fnotice_time = notice_time;
 	ptemp.font_color = _color;
 
 	lstrcpy(ptemp.font , szfont);
 
 	m_list_noticefont.push_back(ptemp);
 }
-void CFontMgr::SetNoticeFont(const TCHAR* szfont , const int& fontnumber, float posX , float posY , D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
+void CFontMgr::SetNoticeFont(const TCHAR* szfont , const int& fontnumber, float posX , float posY , const float notice_time, D3DCOLOR _color /*= D3DCOLOR_ARGB(255,255,255,255)*/)
 {
 	/*한번 입력받고 몇초동안 지속적으로 렌더 후 삭제되는 폰트*/
 	FONT_INFO ptemp;
 
 	ptemp.fX = posX;
 	ptemp.fY = posY;
+	ptemp.fnotice_time = notice_time;
 	ptemp.font_color = _color;
 
 	wsprintf(ptemp.font , szfont , fontnumber);

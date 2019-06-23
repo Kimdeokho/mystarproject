@@ -42,7 +42,7 @@ void CCom_WZergling::Update(void)
 		m_attack_time += GETTIME;
 		if(m_attack_time > m_attack_delay) 
 		{
-			m_attack_time = 0.f;
+			m_attack_time = GETTIME * float(rand()%5);
 			m_bfire = false;
 			//¿©±â¿¡ IDLE?
 		}
@@ -75,7 +75,7 @@ void CCom_WZergling::fire(CObj* ptarget)
 			if(true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 			{				
 				m_pobj->SetState(ATTACK);
-				m_attack_time = 0.f;			
+				m_attack_time = GETTIME * float(rand()%5);	
 
 				//if(true == ((CCom_Animation*)m_animation)->GetAttackSync())
 				//{
@@ -87,7 +87,7 @@ void CCom_WZergling::fire(CObj* ptarget)
 		}
 		else
 		{
-			m_attack_time = m_attack_delay;
+			//m_attack_time = m_attack_delay;
 			m_attack_on = false;
 			m_target_cntnum = 0;
 			m_target_id = 0;

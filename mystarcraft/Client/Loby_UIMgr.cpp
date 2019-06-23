@@ -13,6 +13,9 @@
 #include "SceneMgr.h"
 #include "Session_Mgr.h"
 #include "TestSession.h"
+
+#include "SoundDevice.h"
+
 IMPLEMENT_SINGLETON(CLoby_UIMgr)
 CLoby_UIMgr::CLoby_UIMgr(void)
 {
@@ -70,6 +73,8 @@ void CLoby_UIMgr::Initialize(void)
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 	m_flag = LB_FLAG_NONE;
+
+	CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_JOIN , 0);
 }
 
 void CLoby_UIMgr::Update(void)
@@ -202,6 +207,8 @@ void CLoby_UIMgr::Exit(EXIT_FLAG eflag)
 
 	if(!is_check)
 	{
+		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_EXIT , 0);
+
 		iter = m_rootlist.begin();
 		iter_end = m_rootlist.end();
 		for( ; iter != iter_end; ++iter)

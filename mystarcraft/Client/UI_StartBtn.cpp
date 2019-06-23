@@ -104,13 +104,15 @@ void CUI_StartBtn::UI_Reaction(void)
 		temp[i].START_SLOT = baseslot[i];		
 	}
 
+	delete[] baseslot;
+
 	WRITEALL_UDP_PACKET(PU_START_ARRANGEMENT , WriteBuffer,
 		WRITE_PU_START_ARRANGEMENT(WriteBuffer , temp));
 
 	WRITEALL_UDP_PACKET(PU_INIT_GAME , WriteBuffer,
 		WRITE_PU_INIT_GAME(WriteBuffer, rand()%1000 , CRoomSession_Mgr::GetInstance()->GetPlayerCnt()) );
 
-	delete[] baseslot;
+	
 }
 
 void CUI_StartBtn::Release(void)

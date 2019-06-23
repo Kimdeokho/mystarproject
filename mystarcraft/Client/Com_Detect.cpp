@@ -5,6 +5,8 @@
 
 #include "Area_Mgr.h"
 #include "TimeMgr.h"
+#include "FontMgr.h"
+#include "ScrollMgr.h"
 
 #include "MyMath.h"
 CCom_Detect::CCom_Detect(void)
@@ -13,6 +15,7 @@ CCom_Detect::CCom_Detect(void)
 
 CCom_Detect::~CCom_Detect(void)
 {
+	Release();
 }
 
 void CCom_Detect::Initialize(CObj* pobj /*= NULL*/)
@@ -125,5 +128,15 @@ void CCom_Detect::Render(void)
 
 void CCom_Detect::Release(void)
 {
+	TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
 
+	list<CObj*>::iterator iter = m_oldlist.begin();
+	list<CObj*>::iterator iter_end = m_oldlist.end();
+
+	for( ; iter != iter_end; ++iter) 
+	{
+		if((*iter)->GetUnitinfo().is_hide)
+			(*iter)->Get_ref_Unitinfo().detect[eteam] -= 1;
+	}
+	m_oldlist.clear();
 }

@@ -1,0 +1,3 @@
+..\SoundResource\effect\uiclick.wav
+..\SoundResource\effect\uiexit.wav
+..\SoundResource\effect\uijoin.wav

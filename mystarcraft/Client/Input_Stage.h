@@ -10,7 +10,7 @@ class CInput_Stage :
 {
 	//t
 private:
-	CMyCommandList*		m_cmdlist; //공유가 아니라 복사해야한다..
+	CMyCommandList*		m_cmdlist;
 
 private:
 	D3DXVECTOR2	m_downpt;

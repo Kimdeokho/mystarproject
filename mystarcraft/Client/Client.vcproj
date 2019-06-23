@@ -196,10 +196,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\UI_Resource.cpp"
-				>
-			</File>
 			<Filter
 				Name="Maingame"
 				>
@@ -369,6 +365,14 @@
 				</File>
 				<File
 					RelativePath=".\ScrollMgr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SoundDevice.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SoundDevice.h"
 					>
 				</File>
 				<File
@@ -2316,6 +2320,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\UI_Notice.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Notice.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Resource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UI_Resource.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UI_Select.cpp"
 					>
 				</File>
@@ -2544,6 +2564,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MyCmd_chat.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_chat.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MyCmd_InputClick.cpp"
 					>
 				</File>
@@ -2557,6 +2585,14 @@
 				</File>
 				<File
 					RelativePath=".\MyCmd_InputKey.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_Leave.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MyCmd_Leave.h"
 					>
 				</File>
 				<File
@@ -2628,10 +2664,6 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UI_Resource.h"
 				>
 			</File>
 		</Filter>

@@ -24,7 +24,8 @@ protected:
 	CComponent*		m_animation;
 	D3DXVECTOR2		m_targetpos;
 public:
-	void SetAttackDelay(float delay);
+	void SetAttackTime(const float atttime);
+	void SetAttackDelay(const float delay);
 	const WEAPON_INFO& GetWeapon_info(void);
 public:
 	virtual void fire(CObj*	ptarget) = 0;

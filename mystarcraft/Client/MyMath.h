@@ -17,6 +17,7 @@ public:
 	static bool	 linecross_check(const MYLINE& line1 , const MYLINE& line2);
 	static float dir_to_dgree(D3DXVECTOR2 vdir);
 	static void  Calculator_eight_idx(int* idxarr , const D3DXVECTOR2& vpos, const int tilecnt);
+	static bool	 FLT_compare(const float val1 , const float val2);
 public:
 	CMyMath(void);
 	~CMyMath(void);

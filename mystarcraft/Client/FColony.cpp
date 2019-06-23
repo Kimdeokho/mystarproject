@@ -126,7 +126,7 @@ void CFColony::Update(void)
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = STATE_NONE;
 
-			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_FCOLONY , 1);
+			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_FCOLONY , 1 , m_eteamnumber);
 		}
 	}
 
@@ -198,15 +198,15 @@ void CFColony::Update_Cmdbtn(void)
 {
 	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL))
-		pui->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_SUNKEN , true);
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL ,m_eteamnumber))
+		pui->Create_Cmdbtn(6 , L"BTN_SUNKEN" , BTN_SUNKEN , true);
 	else
-		pui->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_SUNKEN, false);
+		pui->Create_Cmdbtn(6 , L"BTN_SUNKEN" , BTN_SUNKEN, false);
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_CHAMBER))
-		pui->Create_Cmdbtn(2 , L"BTN_SPORE" , BTN_SPORE , true);
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_CHAMBER ,m_eteamnumber))
+		pui->Create_Cmdbtn(7 , L"BTN_SPORE" , BTN_SPORE , true);
 	else
-		pui->Create_Cmdbtn(2 , L"BTN_SPORE" , BTN_SPORE, false);
+		pui->Create_Cmdbtn(7 , L"BTN_SPORE" , BTN_SPORE, false);
 }
 
 void CFColony::Update_Wireframe(void)
@@ -262,7 +262,6 @@ void CFColony::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 }
 
 void CFColony::Release(void)

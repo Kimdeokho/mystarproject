@@ -58,7 +58,7 @@ void CLarva::Initialize(void)
 	m_unitinfo.eMoveType = MOVE_GROUND;
 	m_unitinfo.esize = SIZE_SMALL;
 	m_unitinfo.erace = OBJRACE_CREATURE;
-	m_unitinfo.state = IDLE;
+	m_unitinfo.state = BURROW;
 	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_SMALL;
 	m_unitinfo.maxhp = 40;
@@ -71,10 +71,10 @@ void CLarva::Initialize(void)
 	m_unitinfo.fog_range = 32*4*2;
 	m_unitinfo.armor = 10;
 
-	m_vertex.left = 0.f;
-	m_vertex.right = 0.f;
-	m_vertex.top =  0.f;
-	m_vertex.bottom = 0.f;
+	m_vertex.left = 8.0f;
+	m_vertex.right = 8.0f;
+	m_vertex.top =  8.0f;
+	m_vertex.bottom = 8.0f;
 
 
 	m_rect.left = m_vPos.x - m_vertex.left; 
@@ -131,14 +131,17 @@ void CLarva::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	if(IDLE == m_unitinfo.state)
+	if(BURROW == m_unitinfo.state)
 	{
-		m_com_anim->SetAnimation(L"IDLE");
+		if(!m_moveswitch)
+			m_com_anim->SetAnimation(L"IDLE");
+		else
+			m_com_anim->SetAnimation(L"MOVE");
 	}
-	else if(MOVE == m_unitinfo.state)
-	{
-		m_com_anim->SetAnimation(L"MOVE");
-	}
+	//else if(MOVE == m_unitinfo.state)
+	//{
+	//	m_com_anim->SetAnimation(L"MOVE");
+	//}
 
 
 	/*
@@ -147,7 +150,8 @@ void CLarva::Update(void)
 
 	if(!m_moveswitch)
 	{
-		m_unitinfo.state = IDLE;
+		//IDLE
+		m_unitinfo.state = BURROW;
 		m_idletime += GETTIME;
 		if(m_standard < (DWORD)m_idletime)
 		{
@@ -161,7 +165,7 @@ void CLarva::Update(void)
 	}
 	else
 	{
-		m_unitinfo.state = MOVE;
+		m_unitinfo.state = BURROW;
 
 		float onestep = GETTIME * m_unitinfo.fspeed;		
 		m_vPos += m_vcurdir * onestep;
@@ -198,56 +202,56 @@ void CLarva::Render(void)
 void CLarva::Inputkey_reaction(const int& nkey)
 {
 	CObj* pobj = NULL;
+
+	CUI_Resource* pui = CIngame_UIMgr::GetInstance()->GetResource_UI();
 	if('D' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_eteamnumber))
+		if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+			pui->SetResource(-50 , 0,  m_eteamnumber))
 		{
+			pui->SetPopvalue(1.f , m_eteamnumber);
 			pobj = new CLarva_egg(1.f , OBJ_DRONE , m_hatch_num , 1 , L"DRONE_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
 	if('H' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-75 , -25,  m_eteamnumber))
+		if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+			pui->SetResource(-75 , -25,  m_eteamnumber))
 		{
+			pui->SetPopvalue(1.f , m_eteamnumber);
 			pobj = new CLarva_egg(1.f , OBJ_HYDRA , m_hatch_num , 10 , L"HYDRA_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
 	if('Z' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , 0,  m_eteamnumber))
+		if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+			pui->SetResource(-50 , 0,  m_eteamnumber))
 		{
+			pui->SetPopvalue(1.f , m_eteamnumber);
 			pobj = new CLarva_egg(1.f , OBJ_ZERGLING , m_hatch_num , 10 , L"ZERGLING_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
 	if('U' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-200 , -200,  m_eteamnumber))
+		if(pui->is_excess_of_population(4 , m_eteamnumber) &&
+			pui->SetResource(-200 , -200,  m_eteamnumber))
 		{
+			pui->SetPopvalue(4.f , m_eteamnumber);
 			pobj = new CLarva_egg(1.f , OBJ_ULTRA , m_hatch_num , 1 , L"ULTRA_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
 	if('O' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , 0,  m_eteamnumber))
-		{
+		if(pui->SetResource(-100 , 0,  m_eteamnumber))
+		{		
 			pobj = new CLarva_egg(1.f , OBJ_OVERLOAD , m_hatch_num , 1 , L"OVER_BIRTH");
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
@@ -256,45 +260,45 @@ void CLarva::Inputkey_reaction(const int& nkey)
 
 	if('M' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_eteamnumber))
+		if(pui->is_excess_of_population(2 , m_eteamnumber) &&
+			pui->SetResource(-100 , -100,  m_eteamnumber))
 		{
-			pobj = new CLarva_egg(1.f , OBJ_MUTAL , m_hatch_num , 1 , L"MUTAL_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			pui->SetPopvalue(2.f , m_eteamnumber);
+			pobj = new CLarva_egg(1.f , OBJ_MUTAL , m_hatch_num , 10 , L"MUTAL_BIRTH");
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
 	if('S' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-25 , -75,  m_eteamnumber))
+		if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+			pui->SetResource(-25 , -75,  m_eteamnumber))
 		{
+			pui->SetPopvalue(1.f , m_eteamnumber);
 			pobj = new CLarva_egg(1.f , OBJ_SCOURGE , m_hatch_num , 2 , L"SCOURGE_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
 	if('Q' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-100 , -100,  m_eteamnumber))
+		if(pui->is_excess_of_population(2 , m_eteamnumber) &&
+			pui->SetResource(-100 , -100,  m_eteamnumber))
 		{
+			pui->SetPopvalue(2.f , m_eteamnumber);
 			pobj = new CLarva_egg(1.f , OBJ_QUEEN , m_hatch_num , 1 , L"QUEEN_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
 	if('F' == nkey)
 	{
-		SetDestroy(true);
-
-		if(CIngame_UIMgr::GetInstance()->GetResource_UI()->SetResource(-50 , -150,  m_eteamnumber))
+		if(pui->is_excess_of_population(1 , m_eteamnumber) &&
+			pui->SetResource(-50 , -150,  m_eteamnumber))
 		{
+			pui->SetPopvalue(1.f , m_eteamnumber);
 			pobj = new CLarva_egg(1.f , OBJ_DEFILER , m_hatch_num , 1 , L"DEFILER_BIRTH");
-			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);		
+			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
 
@@ -302,7 +306,10 @@ void CLarva::Inputkey_reaction(const int& nkey)
 	{
 		pobj->SetPos(m_vPos);
 		pobj->SetTeamNumber(m_eteamnumber);
-		pobj->Initialize();		
+		pobj->Initialize();
+
+		CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+		SetDestroy(true);
 	}
 }
 
@@ -357,17 +364,17 @@ void CLarva::Update_Cmdbtn(void)
 	pui->Create_Cmdbtn(0 , L"BTN_DRONE" , BTN_DRONE , true);
 	pui->Create_Cmdbtn(2 , L"BTN_OVERLOAD" , BTN_OVERLOAD , true);
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL))
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPWANING_POOL ,m_eteamnumber))
 		pui->Create_Cmdbtn(1 , L"BTN_ZERGLING" , BTN_ZERGLING , true);
 	else
 		pui->Create_Cmdbtn(1 , L"BTN_ZERGLING" , BTN_ZERGLING , false);
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_HYDRADEN))
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_HYDRADEN ,m_eteamnumber))
 		pui->Create_Cmdbtn(3 , L"BTN_HYDRA" , BTN_HYDRA , true);
 	else
 		pui->Create_Cmdbtn(3 , L"BTN_HYDRA" , BTN_HYDRA, false);
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPIRE))
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_SPIRE ,m_eteamnumber))
 	{
 		pui->Create_Cmdbtn(4 , L"BTN_MUTAL" , BTN_MUTAL , true);
 		pui->Create_Cmdbtn(5 , L"BTN_SCOURGE" , BTN_SCOURGE , true);
@@ -378,17 +385,17 @@ void CLarva::Update_Cmdbtn(void)
 		pui->Create_Cmdbtn(5 , L"BTN_SCOURGE" , BTN_SCOURGE , false);
 	}
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_QUEEN_NEST))
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_QUEEN_NEST ,m_eteamnumber))
 		pui->Create_Cmdbtn(6 , L"BTN_QUEEN" , BTN_QUEEN , true);
 	else
 		pui->Create_Cmdbtn(6 , L"BTN_QUEEN" , BTN_QUEEN , false);
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_ULTRA_CAVE))
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_ULTRA_CAVE ,m_eteamnumber))
 		pui->Create_Cmdbtn(7 , L"BTN_ULTRA" , BTN_ULTRA , true);
 	else
 		pui->Create_Cmdbtn(7 , L"BTN_ULTRA" , BTN_ULTRA , false);
 
-	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_DEFILER_MOUND))
+	if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_DEFILER_MOUND ,m_eteamnumber))
 		pui->Create_Cmdbtn(8 , L"BTN_DEFILER" , BTN_DEFILER , true);
 	else
 		pui->Create_Cmdbtn(8 , L"BTN_DEFILER" , BTN_DEFILER , false);

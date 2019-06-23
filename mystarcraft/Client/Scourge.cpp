@@ -13,6 +13,7 @@
 #include "Com_WScourge.h"
 #include "Com_Airsearch.h"
 
+#include "Session_Mgr.h"
 #include "ObjMgr.h"
 #include "LineMgr.h"
 #include "FontMgr.h"
@@ -49,7 +50,7 @@ void CScourge::Initialize(void)
 
 	m_sortID = SORT_AIR;	
 	m_ecategory = CATEGORY_UNIT;
-	m_eOBJ_NAME = OBJ_MUTAL;
+	m_eOBJ_NAME = OBJ_SCOURGE;
 
 	m_unitinfo.etribe = TRIBE_ZERG;
 	m_unitinfo.eMoveType = MOVE_AIR;
@@ -247,7 +248,12 @@ void CScourge::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -290,8 +296,6 @@ void CScourge::Dead(void)
 void CScourge::Release(void)
 {
 	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-0.5f , m_eteamnumber);
 }

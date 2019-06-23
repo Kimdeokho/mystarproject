@@ -32,6 +32,7 @@ protected:
 protected:
 	//D3DXMATRIX		m_matshadow;
 protected:
+	CObj*			m_deadfog;
 	CUI*			m_miniunit_display;
 
 	TEXINFO*						m_curtex;

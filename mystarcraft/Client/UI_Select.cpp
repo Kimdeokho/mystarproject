@@ -40,9 +40,7 @@ void CUI_Select::Initialize(void)
 void CUI_Select::Update(void)
 {
 	if(GENERAL_SELECT == m_eflag)
-	{
 		m_brender = true;
-	}
 	else if(NONE_SELECT == m_eflag)
 	{
 		m_brender = false;

@@ -49,6 +49,9 @@ protected:
 	bool						m_banim_end;
 	bool						m_battack_sync;
 	bool						m_battack_end;
+
+	D3DCOLOR					m_color;
+	int							m_alpha;
 public:
 	void Dir_Initialize(void);
 	void DirIdxCalculation(void);

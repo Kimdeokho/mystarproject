@@ -355,14 +355,8 @@ void CComandcenter::Render(void)
 
 
 	CTerran_building::fire_eff_render();
+	m_com_production->Render();
 	//CLineMgr::GetInstance()->collisionbox_render(m_rect);
-
-	//if(m_is_rally) //모든건물 렐리 보려면
-	//	CLineMgr::GetInstance()->RallyLineRender(m_vPos , m_rallypoint);
-
-
-	//if(m_bSelect) //모든건물 렐리 보려면
-	//	CLineMgr::GetInstance()->RallyLineRender(m_vPos , m_rallypoint);
 }
 
 void CComandcenter::Inputkey_reaction(const int& nkey)
@@ -601,14 +595,23 @@ void CComandcenter::Update_Cmdbtn(void)
 		pcmd->Create_Cmdbtn(0 , L"BTN_SCV" , BTN_SCV , true);
 		pcmd->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
 
+		pcmd->set_shortkey(0 , L"S");
+		pcmd->set_shortkey(8 , L"L");
+
+
 		if( NULL == m_partbuilding )
 		{
-			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ACADEMY))
-				pcmd->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , true);
+			pcmd->set_shortkey(6 , L"C");
+			pcmd->set_shortkey(7 , L"N");
+
+			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ACADEMY ,m_eteamnumber))
+			{
+				pcmd->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , true);				
+			}
 			else
 				pcmd->Create_Cmdbtn(6 , L"BTN_COMSET" , BTN_COMSET , false);
 
-			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_GHOST_ADDON))
+			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_GHOST_ADDON ,m_eteamnumber))
 				pcmd->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , true);
 			else
 				pcmd->Create_Cmdbtn(7 , L"BTN_NC_PART" , BTN_NC_PART , false);
@@ -719,8 +722,6 @@ void CComandcenter::Dead(void)
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	if(NULL != m_partbuilding)
 	{

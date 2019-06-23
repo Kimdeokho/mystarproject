@@ -41,7 +41,16 @@ bool CCom_Weapon::GetFire(void)
 	return m_bfire;
 }
 
-void CCom_Weapon::SetAttackDelay(float delay)
+void CCom_Weapon::SetAttackTime(const float atttime)
+{
+	if(m_attack_time > m_attack_delay - 0.5f + atttime)
+		m_attack_time = m_attack_delay - 0.5f + atttime;
+
+	if(m_air_attack_time > m_air_attack_delay - 0.5f + atttime)
+		m_air_attack_time = m_air_attack_delay - 0.5f + atttime;
+
+}
+void CCom_Weapon::SetAttackDelay(const float delay)
 {
 	m_attack_delay = delay;
 }

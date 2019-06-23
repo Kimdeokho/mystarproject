@@ -1,0 +1,7 @@
+..\SoundResource\bgm\terran1.wav
+..\SoundResource\bgm\terran2.wav
+..\SoundResource\bgm\terran3.wav
+..\SoundResource\bgm\title.wav
+..\SoundResource\bgm\zerg1.wav
+..\SoundResource\bgm\zerg2.wav
+..\SoundResource\bgm\zerg3.wav

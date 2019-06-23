@@ -272,10 +272,6 @@ void CGasBuilding::Render(void)
 
 }
 
-void CGasBuilding::Release(void)
-{
-	area_release();
-}
 void CGasBuilding::area_release(void)
 {
 	size_t maxloop = m_areaidx_vec.size();
@@ -283,11 +279,6 @@ void CGasBuilding::area_release(void)
 	{
 		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_areaidx_vec[i] , this);
 	}
-}
-
-void CGasBuilding::Dead(void)
-{
-
 }
 CObj* CGasBuilding::Getworkman(void)
 {
@@ -303,4 +294,13 @@ void CGasBuilding::Setworkman(CObj* pobj)
 void CGasBuilding::Setgas_resource(CObj* pobj)
 {
 	m_pgas_resource = pobj;
+}
+void CGasBuilding::Dead(void)
+{
+
+}
+
+void CGasBuilding::Release(void)
+{
+	area_release();
 }

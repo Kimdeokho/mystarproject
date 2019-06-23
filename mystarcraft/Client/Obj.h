@@ -57,7 +57,7 @@ protected:
 
 protected:
 	bool			m_bdestroy;
-	bool			m_bSelect;
+	bool			m_isSelect;
 public:
 public:
 	virtual void Initialize(void);
@@ -108,6 +108,7 @@ public:
 	float					GetY(void);
 	SORT_ID					GetsortID(void);	
 	TEAM_NUMBER				GetTeamNumber(void);
+	bool					Getis_select(void);
 	bool					GetDestroy(void);
 	const MYRECT<float>&	GetMyRect(void);
 	const MYRECT<float>&	GetVertex(void);

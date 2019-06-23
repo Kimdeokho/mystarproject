@@ -66,6 +66,12 @@ void CCom_Guardsearch::Update(void)
 			m_ptarget = NULL;
 			m_target_objid = 0;
 		}
+
+		if(NULL != m_ptarget && m_obj_cnt != m_ptarget->GetObjCountNumber())
+		{
+			m_ptarget = NULL;
+			m_target_objid = 0;
+		}
 	}
 
 	if(ORDER_USINGSKILL == m_pobj->GetUnitinfo().order)
@@ -124,7 +130,10 @@ void CCom_Guardsearch::Update(void)
 			}
 
 			if(NULL != m_ptarget)
+			{
 				m_target_objid = m_ptarget->GetObjNumber();
+				m_obj_cnt = m_ptarget->GetObjCountNumber();
+			}
 			else
 			{
 				m_target_objid = 0;
@@ -169,8 +178,8 @@ void CCom_Guardsearch::Update(void)
 		else
 		{
 			//if(OBJ_TURRET == m_pobj->GetOBJNAME())
-			if(true == ((CCom_Animation*)m_com_anim)->GetAttack_end())
-				m_pobj->SetState(IDLE);
+			//if(true == ((CCom_Animation*)m_com_anim)->GetAttack_end())
+			//	m_pobj->SetState(IDLE);
 		}
 	}
 }

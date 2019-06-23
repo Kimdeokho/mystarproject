@@ -11,6 +11,7 @@
 #include "MyMath.h"
 #include "ObjMgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
@@ -271,13 +272,16 @@ bool CDefiler::Input_cmd(const int& firstkey , const int& secondkey)
 
 void CDefiler::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	pui->Create_Cmdbtn(6 , L"BTN_DARKSWARM" , BTN_DARKSWARM);
+	pui->Create_Cmdbtn(7 , L"BTN_Z_VF0" , BTN_Z_VF0);
 }
 
 void CDefiler::Update_Wireframe(void)
@@ -331,7 +335,12 @@ void CDefiler::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{

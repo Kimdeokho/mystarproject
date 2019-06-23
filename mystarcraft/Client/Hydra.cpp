@@ -11,6 +11,7 @@
 #include "MyMath.h"
 #include "ObjMgr.h"
 #include "LineMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_Pathfind.h"
@@ -201,6 +202,7 @@ void CHydra::Inputkey_reaction(const int& nkey)
 		pobj->SetTeamNumber(m_eteamnumber);
 		pobj->Initialize();
 
+		CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 		//CObj* pobj = new CLurker;
 		//CObjMgr::GetInstance()->AddObject(pobj , OBJ_LURKER);
 
@@ -237,7 +239,9 @@ void CHydra::Inputkey_reaction(const int& firstkey , const int& secondkey)
 bool CHydra::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('L' == nkey)
+	{
 		return true;
+	}
 	else if('A' == nkey)
 		waitkey[nkey] = true;
 
@@ -314,7 +318,12 @@ void CHydra::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{

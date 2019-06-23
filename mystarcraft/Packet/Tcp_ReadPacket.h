@@ -85,7 +85,7 @@ inline VOID READ_PT_ROOMLIST_RENEWAL_M(BYTE *buffer, S_PT_ROOMLIST_RENEWAL_M &pa
 
 	Stream->ReadWCHARs(parameter.TITLE, 32);
 	Stream->ReadDWORD_PTR(&parameter.MASTERSESSION_ID);
-	Stream->ReadUSHORT(&parameter.ROOM_IDX);
+	Stream->ReadInt32(&parameter.ROOM_IDX);
 }
 
 inline VOID READ_PT_ROOM_GET_MASTER_INFO(BYTE *buffer, S_PT_ROOM_GET_MASTER_INFO &parameter)
@@ -161,6 +161,8 @@ inline VOID READ_PT_ROOM_SENDCHAT(BYTE *buffer, S_PT_ROOM_SENDCHAT &parameter)
 	Stream->ReadWCHARs(parameter.USER_ID, 32);
 	Stream->ReadWCHARs(parameter.MESSAGE, 32);
 	Stream->ReadDWORD_PTR(&parameter.SESSION_ID);
+	Stream->ReadFloat(&parameter.CUR_TIME);
+	Stream->ReadFloat(&parameter.RETAIN_TIME);
 }
 
 inline VOID READ_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer, S_PT_ROOM_RECEIVE_CHAT_M &parameter)
@@ -171,6 +173,8 @@ inline VOID READ_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer, S_PT_ROOM_RECEIVE_CHAT_M &
 	Stream->ReadWCHARs(parameter.USER_ID, 32);
 	Stream->ReadWCHARs(parameter.MESSAGE, 128);
 	Stream->ReadDWORD_PTR(&parameter.SESSION_ID);
+	Stream->ReadFloat(&parameter.CUR_TIME);
+	Stream->ReadFloat(&parameter.RETAIN_TIME);
 }
 
 inline VOID READ_PT_ROOM_TRIBE_CHANGE(BYTE *buffer, S_PT_ROOM_TRIBE_CHANGE &parameter)

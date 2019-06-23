@@ -22,6 +22,7 @@
 #include "UI_Select.h"
 #include "UI_Energy_bar.h"
 #include "UI_Cmd_info.h"
+#include "UI_form.h"
 
 #include "GeneraEff.h"
 #include "Corpse.h"
@@ -130,13 +131,16 @@ void CHydraden::Update(void)
 			m_unitinfo.maxhp = m_unitinfo.maxhp;
 			m_unitinfo.state = STATE_NONE;
 
-			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_HYDRADEN , 1);
+			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_HYDRADEN , 1 , m_eteamnumber);
 		}
 	}
 
 	m_select_ui->Update();
 	m_energybar_ui->Update();
 	//CFontMgr::GetInstance()->Setnumber_combine_Font(L"%d" , 111 , 400 , 300);
+
+	for(int i = UPG_Z_BD0; i <= UPG_Z_BD3; ++i)
+		CZerg_building::upginfo_update((UPGRADE)i);
 }
 
 void CHydraden::Render(void)
@@ -155,19 +159,76 @@ void CHydraden::Render(void)
 
 void CHydraden::Inputkey_reaction(const int& nkey)
 {
+	if('Q' == nkey)
+	{
+		if( false == m_upg_info[UPG_Z_BD0].proceeding &&
+			m_upg_info[UPG_Z_BD0].upg_cnt < 1)
+		{
+			m_upg_info[UPG_Z_BD0].proceeding = true;
+			m_upg_info[UPG_Z_BD0].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
 
+		}
+	}
+	if('W' == nkey)
+	{
+		if( false == m_upg_info[UPG_Z_BD1].proceeding &&
+			m_upg_info[UPG_Z_BD1].upg_cnt < 1)
+		{
+			m_upg_info[UPG_Z_BD1].proceeding = true;
+			m_upg_info[UPG_Z_BD1].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
+	if('A' == nkey)
+	{
+		if( false == m_upg_info[UPG_Z_BD3].proceeding &&
+			m_upg_info[UPG_Z_BD3].upg_cnt < 1)
+		{
+			m_upg_info[UPG_Z_BD3].proceeding = true;
+			m_upg_info[UPG_Z_BD3].obj_num = m_obj_id;
+			m_unitinfo.state = DEVELOPING;
+		}
+	}
 }
 
 void CHydraden::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
+bool CHydraden::Input_cmd(const int& nkey , bool* waitkey)
+{
+	if('Q' == nkey)
+		return true;
+	if('W' == nkey)
+		return true;
+	if('A' == nkey)
+		return true;
 
+	return false;
+}
 void CHydraden::Update_Cmdbtn(void)
 {
+	CUI_Cmd_info* pcmd = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
+	if(IDLE == m_unitinfo.state )
+	{
+		if( !m_upg_info[UPG_Z_BD0].proceeding && m_upg_info[UPG_Z_BD0].upg_cnt == 0)
+		pcmd->Create_Cmdbtn(0 , L"BTN_Z_BD0" , BTN_Z_BD0 , true , L"Q");
+		if( !m_upg_info[UPG_Z_BD1].proceeding && m_upg_info[UPG_Z_BD1].upg_cnt == 0)
+		pcmd->Create_Cmdbtn(1 , L"BTN_Z_BD1" , BTN_Z_BD1 , true , L"W");
+
+		if( !m_upg_info[UPG_Z_BD3].proceeding && m_upg_info[UPG_Z_BD3].upg_cnt == 0)
+		{
+			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(Z_LAIR ,m_eteamnumber))
+				pcmd->Create_Cmdbtn(3 , L"BTN_Z_BD3" , BTN_Z_BD3 , true , L"A");
+			else
+				pcmd->Create_Cmdbtn(3 , L"BTN_Z_BD3" , BTN_Z_BD3 , false , L"A");
+		}
+	}
+	else if(DEVELOPING == m_unitinfo.state)
+		pcmd->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 }
-
 void CHydraden::Update_Wireframe(void)
 {
 	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
@@ -183,8 +244,32 @@ void CHydraden::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
 		if(BUILD == m_unitinfo.state)
-		{
 			CFontMgr::GetInstance()->SetInfomation_font(L"Under construction" , interface_pos.x + 320 , interface_pos.y + 415);
+		else if(DEVELOPING == m_unitinfo.state)
+		{
+			CFontMgr::GetInstance()->SetInfomation_font(L"Upgrading" , interface_pos.x + 330 , interface_pos.y + 415);
+
+			pui = new CUI_form(L"EDGE" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+			CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+			if(true == m_upg_info[UPG_Z_BD0].proceeding && 
+				m_upg_info[UPG_Z_BD0].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_Z_BD0" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_Z_BD1].proceeding && 
+				m_upg_info[UPG_Z_BD1].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_Z_BD1" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+			}
+			else if(true == m_upg_info[UPG_Z_BD3].proceeding && 
+				m_upg_info[UPG_Z_BD3].obj_num == m_obj_id)
+			{
+				pui = new CUI_form(L"BTN_Z_BD3" , D3DXVECTOR2(interface_pos.x + 258 , interface_pos.x + 410));
+				CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+			}
 		}
 	}
 
@@ -205,8 +290,16 @@ void CHydraden::Update_Wireframe(void)
 		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
 
 	if(BUILD == m_unitinfo.state)
-	{		
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_build_maxhp );
+
+
+	for(int i = BTN_Z_BD0; i <= BTN_Z_BD3; ++i)
+	{
+		if(true == m_upg_info[i].proceeding && m_upg_info[i].obj_num == m_obj_id)
+		{
+			CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[i].curtime / m_upg_info[i].maxtime );
+			break;
+		}
 	}
 }
 
@@ -221,7 +314,17 @@ void CHydraden::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+	for(int i = 0; i < UPG_END; ++i)
+	{
+		if( true == m_upg_info[i].proceeding &&
+			m_obj_id == m_upg_info[i].obj_num)
+		{
+			m_upg_info[i].proceeding = false;
+			m_upg_info[i].obj_num = 0;
+			m_upg_info[i].curtime = 0;
+			break;
+		}
+	}
 }
 
 void CHydraden::Release(void)

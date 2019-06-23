@@ -259,40 +259,9 @@ void CStarport::Render(void)
 	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	m_com_production->Render();
 }
 
-void CStarport::Release(void)
-{
-	CTerran_building::area_release();
-
-	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
-	Safe_Delete(m_com_pathfind);
-	if(iter != m_componentlist.end())
-	{
-		m_componentlist.erase(iter);
-	}
-}
-
-void CStarport::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	if(NULL != m_partbuilding)
-	{
-		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
-		m_partbuilding = NULL;
-	}
-}
 
 void CStarport::Inputkey_reaction(const int& nkey)
 {
@@ -439,7 +408,7 @@ bool CStarport::Input_cmd(const int& nkey, bool* waitkey)
 		{
 			//ÀÌ·ת
 			m_is_preview = true;
-			(m_main_preview)->SetPreviewInfo(L"T_FACTORY", T_FACTORY , 3 , 4 ,  m_vertex);			
+			(m_main_preview)->SetPreviewInfo(L"T_STARPORT", T_FACTORY , 3 , 4 ,  m_vertex);			
 		}
 		else
 			return true;
@@ -528,16 +497,16 @@ void CStarport::Update_Cmdbtn(void)
 	{
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_WRAITH" , BTN_WRAITH , true);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_STAR_ADDON))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_STAR_ADDON ,m_eteamnumber))
 		{
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_DROPSHIP" , BTN_DROPSHIP , true);
 
-			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE))
+			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber))
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_VESSEL" , BTN_VESSEL , true);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_VESSEL" , BTN_VESSEL , false);
 
-			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_BATTLE_ADDON))
+			if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_BATTLE_ADDON ,m_eteamnumber))
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_BATTLE" , BTN_BATTLE , true);
 			else
 				((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_BATTLE" , BTN_BATTLE , false);
@@ -635,5 +604,36 @@ void CStarport::Update_Wireframe(void)
 			UNITINFO temp = m_partbuilding->GetUnitinfo();
 			CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , temp.hp / (float)temp.maxhp );
 		}
+	}
+}
+void CStarport::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	if(NULL != m_partbuilding)
+	{
+		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
+		m_partbuilding = NULL;
+	}
+}
+void CStarport::Release(void)
+{
+	CTerran_building::area_release();
+
+	COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
+	Safe_Delete(m_com_pathfind);
+	if(iter != m_componentlist.end())
+	{
+		m_componentlist.erase(iter);
 	}
 }

@@ -100,6 +100,7 @@ void CWraith::Initialize(void)
 
 void CWraith::Update(void)
 {
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_obj_id , m_matWorld._41 , m_matWorld._42);
 	CObj::area_update();	
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -142,6 +143,32 @@ void CWraith::Inputkey_reaction(const int& nkey)
 		D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
 		m_com_air_pathfind->SetGoalPos(goalpos , m_bmagicbox);
 	}
+	else if('C' == nkey)
+	{
+		if(m_unitinfo.is_hide)
+		{
+			for(int i = 0; i < TEAM_END; ++i)
+			{
+				if(i != m_eteamnumber)
+					m_unitinfo.detect[i] += 1;
+			}
+
+			m_unitinfo.is_hide = false;
+
+			((CCom_WraithAnim*)m_com_anim)->Clocking_off();
+		}
+		else
+		{
+			for(int i = 0; i < TEAM_END; ++i)
+			{
+				if(i != m_eteamnumber)
+					m_unitinfo.detect[i] -= 1;
+			}
+			m_unitinfo.is_hide = true;
+
+			((CCom_WraithAnim*)m_com_anim)->Clocking_on();
+		}
+	}
 }
 
 void CWraith::Inputkey_reaction(const int& firstkey , const int& secondkey)
@@ -165,6 +192,8 @@ bool CWraith::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('A' == nkey)
 		waitkey[nkey] = true;
+	else if('C' == nkey)
+		return true;
 
 	return false;
 }
@@ -184,8 +213,13 @@ void CWraith::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 		else
 			tempdamage = float(idamage - shild); 
 	}
-	else	
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	else
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_AIR_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -219,13 +253,24 @@ void CWraith::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CWraith::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+
+	if(!m_unitinfo.is_hide)
+	{
+		if(m_upg_info[UPG_T_VSC0].upg_cnt != 0)
+			pui->Create_Cmdbtn(6 , L"BTN_T_VSC0" , BTN_T_VSC0 , true , L"C");
+		else
+			pui->Create_Cmdbtn(6 , L"BTN_T_VSC0" , BTN_T_VSC0 , false , L"C");
+	}
+	else
+		pui->Create_Cmdbtn(6 , L"BTN_CLOCKING_OFF" , BTN_CLOCKING_OFF, true , L"C");
 }
 void CWraith::Update_Wireframe(void)
 {
@@ -269,18 +314,16 @@ void CWraith::Update_Wireframe(void)
 	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_T_AIR_ARMOR].upg_cnt 
 		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
-void CWraith::Release(void)
-{
-	CObj::area_release();
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
-}
 
 void CWraith::Dead(void)
 {
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.0f ,1.0f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);
+}
+void CWraith::Release(void)
+{
+	CObj::area_release();
+
+	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-2 , m_eteamnumber);
 }

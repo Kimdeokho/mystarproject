@@ -7,6 +7,15 @@ class CCom_T_gasAnim :
 private:
 	const vector<TEXINFO*>*	m_bigbuild_tex;
 	float					m_fbuildtime;
+
+	bool					m_bsighton;
+	bool					m_isescape;
+
+	TEXINFO*				m_updateTex;
+	TEXINFO*				m_staticTex;
+
+	D3DXVECTOR2				m_staticPos;
+	D3DXMATRIX				m_curMat;
 public:
 	virtual void Initialize(CObj* pobj);
 	virtual void Update(void);

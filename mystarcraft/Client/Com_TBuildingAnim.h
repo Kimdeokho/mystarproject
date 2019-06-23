@@ -13,6 +13,14 @@ private:
 
 	bool					m_bsighton;
 	bool					m_isescape;
+
+	TEXINFO*				m_updateTex;
+	TEXINFO*				m_staticTex;
+
+	D3DXVECTOR2				m_staticPos;
+	D3DXMATRIX				m_curMat;
+
+	int						m_staticidx;
 public:
 	void SetAirpos(const D3DXVECTOR2& vpos);
 	void SetGroundpos(const D3DXVECTOR2& vpos);

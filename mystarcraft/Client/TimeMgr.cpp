@@ -29,7 +29,7 @@ HRESULT CTimeMgr::InitTime( void )
 
 float CTimeMgr::GetTime( void )
 {
-	//return m_fTime; //이걸 상수로 반환한다면?
+	//return m_fTime; 
 	return FIXTIME;
 }
 const int& CTimeMgr::GetFps(void)
@@ -42,9 +42,10 @@ void CTimeMgr::SetFps( const int* fps )
 }
 void CTimeMgr::SetTime( void )
 {
+	//고해상도 타이머의 현재 CPU의 클럭수를 얻는 함수입니다. 함수의 원형은 아래와 같습니다
 	QueryPerformanceCounter(&m_FrameTime);
 
-	if(m_FrameTime.QuadPart - m_LastTime.QuadPart > m_CpuTick.QuadPart) //1초가 지났다는소리
+	if(m_FrameTime.QuadPart - m_LastTime.QuadPart > m_CpuTick.QuadPart) // 1초가 지났다는소리
 	{
 		QueryPerformanceFrequency(&m_CpuTick); //CPU Tick을 갱신해준다
 
@@ -53,17 +54,19 @@ void CTimeMgr::SetTime( void )
 
 
 	m_fTime = float(m_FrameTime.QuadPart - m_FixTime.QuadPart) / m_CpuTick.QuadPart;
+
+
 	if(m_fTime < FIXTIME )
 	{
-		Sleep( DWORD( (FIXTIME - m_fTime) *1000 ));
+		Sleep( DWORD( (FIXTIME - m_fTime) *1000 ) ); //이거 정말 부정확하다..
 		//Sleep( (FIXTIME - (update~render까지 걸린시간)) *1000);
 	}
-	QueryPerformanceCounter(&m_FrameTime);
-	m_FixTime = m_FrameTime;
-	
-	//ex 30프레임 밑으로 내려가면 m_ftime을 강제로 30프레임에 대한 ms로 수정해보자
-}
 
+	QueryPerformanceCounter(&m_FrameTime);
+	m_FixTime = m_FrameTime; //이전 프레임의 시간 저장
+	
+
+}
 void CTimeMgr::FPS_fix(void)
 {
 	//m_fTime = float(m_FrameTime.QuadPart - m_FixTime.QuadPart) / m_CpuTick.QuadPart;
@@ -75,4 +78,4 @@ void CTimeMgr::FPS_fix(void)
 	//}	
 }
 
-const float CTimeMgr::FIXTIME = 1/60.f;
+const float CTimeMgr::FIXTIME = 1/30.f;

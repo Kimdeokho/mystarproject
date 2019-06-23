@@ -85,7 +85,7 @@ void CCom_WWraith::Update(void)
 	if(m_bfire)
 	{
 		m_attack_time += GETTIME;
-		if(m_attack_time > m_attack_delay) //½ºÆÀ»¡¸é ÀÌ°Ô ÁÙ°ÚÁö
+		if(m_attack_time > m_attack_delay)
 		{
 			m_attack_time = 0.f;
 			m_bfire = false;
@@ -95,7 +95,7 @@ void CCom_WWraith::Update(void)
 	if(m_bair_fire)
 	{
 		m_air_attack_time += GETTIME;
-		if(m_air_attack_time > m_air_attack_delay) //½ºÆÀ»¡¸é ÀÌ°Ô ÁÙ°ÚÁö
+		if(m_air_attack_time > m_air_attack_delay)
 		{
 			m_air_attack_time = 0.f;
 			m_bair_fire = false;

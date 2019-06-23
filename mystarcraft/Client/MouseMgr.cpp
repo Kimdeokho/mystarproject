@@ -11,6 +11,8 @@
 #include "FontMgr.h"
 #include "Device.h"
 #include "Session_Mgr.h"
+#include "TileManager.h"
+#include "Ingame_UIMgr.h"
 
 #include "Obj.h"
 IMPLEMENT_SINGLETON(CMouseMgr)
@@ -70,7 +72,8 @@ void CMouseMgr::Lobby_Update(void)
 
 void CMouseMgr::Update(void)
 {
-	if(GetFocus() == g_hWnd)
+	if(GetFocus() == g_hWnd ||
+		CIngame_UIMgr::GetInstance()->is_active_chat_ime())
 	{		
 		if(false == CKeyMgr::GetInstance()->GetTurboKeyDown_Check(VK_LBUTTON))
 		{
@@ -179,17 +182,12 @@ void CMouseMgr::SetMouseState(const MOUSE_STATE estate)
 		//mark on
 	}
 	else if(MS_AIM == estate)
-	{
 		SetMouseTexture(L"AIM");
-	}
 	else if(MS_IDLE == estate)
-	{
 		SetMouseTexture(L"IDLE");
-	}
 	else if(MS_DETECT == estate)
-	{
 		SetMouseTexture(L"ALLY_POINT");
-	}
+
 	m_cur_ms = estate;
 }
 void CMouseMgr::SetMouseTexture(const TCHAR* texkey)
@@ -214,7 +212,7 @@ const int CMouseMgr::GetMousePt_to_idx(const int& tilesize)
 	return CMyMath::Pos_to_index(m_vmousept , tilesize);
 }
 const D3DXVECTOR2& CMouseMgr::GetAddScrollvMousePt(void)
-{
+{	
 	/*화면 좌표에 스크롤값까지 더한거 범위 0~4096*/
 
 	GetCursorPos(&m_mousept);
@@ -271,6 +269,17 @@ void CMouseMgr::Init_clickpos(void)
 
 	m_click_pos.x = float(m_mousept.x) + CScrollMgr::m_fScrollX;
 	m_click_pos.y = float(m_mousept.y) + CScrollMgr::m_fScrollY;
+
+	if(m_click_pos.x <= 1)
+		m_click_pos.x = 1;
+	else if(m_click_pos.x >= 4095)
+		m_click_pos.x = 4095;
+
+	if(m_click_pos.y <= 1)
+		m_click_pos.y = 1;
+	else if(m_click_pos.y >= 4095)
+		m_click_pos.y = 4095;
+
 }
 const D3DXVECTOR2& CMouseMgr::GetClick_Pos(void)
 {
@@ -279,15 +288,20 @@ const D3DXVECTOR2& CMouseMgr::GetClick_Pos(void)
 
 bool CMouseMgr::Unitdetect(void)
 {
+
 	if(MS_AIM == m_cur_ms)
+		return false;
+
+	D3DXVECTOR2 vmouse_pos = GetAddScrollvMousePt();
+
+	if(CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(D3DXVECTOR2(vmouse_pos.x - CScrollMgr::m_fScrollX , vmouse_pos.y - CScrollMgr::m_fScrollY)))
 		return false;
 
 	list<CObj*>* arealist = CArea_Mgr::GetInstance()->GetArea64();
 
-	D3DXVECTOR2 vmouse_pos = GetAddScrollvMousePt();
-
 	int idxarr[ASTAR_DIR_END] = {0};
 	int idx = 0;
+	int fogidx = 0;
 	
 	CMyMath::Calculator_eight_idx(idxarr , vmouse_pos , 64);
 
@@ -297,6 +311,7 @@ bool CMouseMgr::Unitdetect(void)
 
 
 	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
+
 	for(int i = 0; i < ASTAR_DIR_END; ++i)
 	{
 		idx = idxarr[i];
@@ -311,20 +326,29 @@ bool CMouseMgr::Unitdetect(void)
 			if(OBJ_NONE == (*iter)->GetOBJNAME())
 				continue;
 
+			fogidx = CMyMath::Pos_to_index((*iter)->GetPos() , 32);
+			if(FOG_ALPHA != CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+				continue;
+
+			if( (*iter)->GetUnitinfo().detect[eteam] < 1)
+				continue;
+
 			if(MyPtInrect( vmouse_pos ,  &((*iter)->GetMyRect()) ))
 			{
 				//색변경
-				//if( (*iter)->GetTeamNumber() == eteam)
-				//	m_mouse_color = D3DCOLOR_ARGB(255,255,255,255);
-				//else
-				//	m_mouse_color = D3DCOLOR_ARGB(255,255,0,0);
+				if( (*iter)->GetTeamNumber() == eteam)
+					m_mouse_color = D3DCOLOR_ARGB(255,255,255,255);
+				else if( (*iter)->GetTeamNumber() == TEAM_NONE)
+					m_mouse_color = D3DCOLOR_ARGB(255,255,255,0);
+				else
+					m_mouse_color = D3DCOLOR_ARGB(255,255,0,0);
 
 				return true;
 			}
 		}
 	}
 
-	//m_mouse_color = D3DCOLOR_ARGB(255,255,255,255);
+	m_mouse_color = D3DCOLOR_ARGB(255,255,255,255);
 
 	return false;
 }

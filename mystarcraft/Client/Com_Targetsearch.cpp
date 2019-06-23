@@ -18,7 +18,10 @@ CCom_Targetsearch::CCom_Targetsearch(void)
 	m_pattack_range = NULL;
 	m_psearch_range = NULL;
 	m_bforced_target = false;
-	m_ptarget = NULL;
+	m_ptarget = NULL;	
+
+	m_obj_cnt = -1;
+	m_target_objid = -1;
 }
 CCom_Targetsearch::~CCom_Targetsearch(void)
 {
@@ -78,6 +81,7 @@ void CCom_Targetsearch::SetTarget(CObj* ptarget)
 	{
 		m_bforced_target = true;
 		m_target_objid = ptarget->GetObjNumber();
+		m_obj_cnt = ptarget->GetObjCountNumber();
 
 		CComponent* pcom = ptarget->GetComponent(COM_TRANSPORT);
 		if(NULL != pcom)

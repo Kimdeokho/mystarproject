@@ -12,6 +12,8 @@
 #include "ObjMgr.h"
 #include "LineMgr.h"
 #include "ObjMgr.h"
+#include "FontMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_LurkerEggAnim.h"
@@ -30,6 +32,7 @@
 
 #include "MyCmd_Building.h"
 #include "UI_Cmd_info.h"
+#include "UI_Wireframe.h"
 #include "Corpse.h"
 
 #include "Lurker.h"
@@ -103,6 +106,13 @@ void CLurker_egg::Initialize(void)
 	m_create_cnt = 1;
 	m_build_hp = 0;
 	m_build_maxhp = 10;
+
+
+	if(m_eteamnumber == CSession_Mgr::GetInstance()->GetTeamNumber())
+	{
+		CUnitMgr::GetInstance()->SetUnit(this);
+		SetSelect(GENERAL_SELECT );
+	}
 }
 
 void CLurker_egg::Update(void)
@@ -115,11 +125,11 @@ void CLurker_egg::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
+	m_build_hp += GETTIME;
+
 	if(IDLE == m_unitinfo.state)
 	{
-		//m_com_anim->SetAnimation(L"IDLE");
-
-		m_build_hp += GETTIME;	
+		//m_com_anim->SetAnimation(L"IDLE");			
 
 		if(m_build_hp >= m_build_maxhp)
 		{
@@ -182,7 +192,36 @@ void CLurker_egg::Update_Cmdbtn(void)
 
 void CLurker_egg::Update_Wireframe(void)
 {
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_LURKEGG" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg LurkerEgg" ,interface_pos.x + 320 , interface_pos.y + 390 );
+	}
+
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt 
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CLurker_egg::Dead(void)
@@ -204,8 +243,14 @@ void CLurker_egg::Release(void)
 		pobj->SetTeamNumber(m_eteamnumber);
 		pobj->Initialize();
 
+		if(CUnitMgr::GetInstance()->is_unit(this))
+		{			
+			CUnitMgr::GetInstance()->SetUnit(pobj);
+			pobj->SetSelect(GENERAL_SELECT);
+		}
 	}
 
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	CObj::area_release();
 }

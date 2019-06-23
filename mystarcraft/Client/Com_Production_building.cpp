@@ -8,6 +8,9 @@
 #include "TimeMgr.h"
 #include "ObjMgr.h"
 #include "Ingame_UIMgr.h"
+#include "LineMgr.h"
+#include "Session_Mgr.h"
+
 #include "UI_Resource.h"
 
 #include "Com_Pathfind.h"
@@ -309,7 +312,11 @@ void CCom_Production_building::add_production_info(const float maxtime ,const fl
 
 void CCom_Production_building::Render(void)
 {
-
+	if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_pobj->GetTeamNumber())
+	{
+		if(m_pobj->Getis_select() && m_is_rally)
+			CLineMgr::GetInstance()->PathLineRender(m_vPos , m_rallypoint , 2.0f);
+	}
 }
 
 void CCom_Production_building::Release(void)

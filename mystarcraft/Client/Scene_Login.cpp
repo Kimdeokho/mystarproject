@@ -8,6 +8,7 @@
 #include "FontMgr.h"
 #include "TimeMgr.h"
 #include "MouseMgr.h"
+#include "SoundDevice.h"
 
 CScene_Login::CScene_Login(void)
 {
@@ -33,6 +34,7 @@ HRESULT CScene_Login::Initialize(void)
 	CTimeMgr::GetInstance()->InitTime();
 
 	CMouseMgr::GetInstance()->Initialize();
+
 	return S_OK;
 }
 

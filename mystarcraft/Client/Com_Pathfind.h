@@ -55,13 +55,14 @@ private:
 	const int*				m_curobj_idx;
 	int						m_oldobj_idx;
 	
-	float					m_collisionmove_time;
+	float					m_collisionMove_time;
 	float					m_stoptime;
 	float					m_fchase_time;
 	float					m_refind_time; //어택땅할때 최종목표로 다시 길찾기하는 텀
 	float					m_timeoffset;;
 
 	int						m_oldcase;
+	float					m_stopTimeOffset;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

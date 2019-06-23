@@ -34,8 +34,6 @@ void CCom_WSunken::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
-		m_pobj->SetState(IDLE);
-
 		m_pobj->SetState(ATTACK);
 		m_bfire = true;
 
@@ -62,8 +60,6 @@ void CCom_WSunken::fire(CObj* ptarget)
 	}
 	else
 	{
-		if(MOVE == m_pobj->GetUnitinfo().state)
-			m_pobj->SetState(IDLE);
 	}
 }
 void CCom_WSunken::Update(void)

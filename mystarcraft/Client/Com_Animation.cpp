@@ -37,6 +37,9 @@ CCom_Animation::CCom_Animation(D3DXMATRIX& objmat)
 	m_curtex = NULL;
 	m_statkey = L"";
 	m_battack_end = true;
+
+	m_color = D3DCOLOR_ARGB(255,255,255,255);
+	m_alpha = 255;
 }
 
 CCom_Animation::~CCom_Animation(void)

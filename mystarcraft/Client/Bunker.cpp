@@ -148,55 +148,6 @@ void CBunker::Render(void)
 	CTerran_building::fire_eff_render();
 }
 
-void CBunker::Release(void)
-{
-	CTerran_building::area_release();
-}
-
-void CBunker::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	for(int i = 0; i < 4; ++i)
-	((CCom_Transport*)m_com_transport)->unit_landing();
-	//if(!m_unitlist.empty())
-	//{
-	//	list<CObj*>::iterator iter = m_unitlist.begin();
-	//	list<CObj*>::iterator iter_end = m_unitlist.end();
-
-	//	int icnt = 0;
-	//	for( ; iter != iter_end; ++iter)
-	//	{
-	//		(*iter)->unit_area_Initialize();
-	//		(*iter)->SetState(IDLE);
-	//		(*iter)->SetOrder(ORDER_NONE);
-
-	//		if(0 == icnt)
-	//			(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y - 16);
-	//		else if(1 == icnt)
-	//			(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y - 16);
-	//		else if(2 == icnt)
-	//			(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y + 16);
-	//		else if(3 == icnt)
-	//			(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y + 16);
-
-	//		++icnt;
-	//	}
-	//	m_unitlist.clear();
-	//}
-}
-
 void CBunker::Inputkey_reaction(const int& nkey)
 {
 	if( 'U' == nkey)
@@ -282,4 +233,48 @@ void CBunker::Update_Wireframe(void)
 	}
 
 	//-------------------------------------------
+}
+void CBunker::Dead(void)
+{
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	for(int i = 0; i < 4; ++i)
+		((CCom_Transport*)m_com_transport)->unit_landing();
+	//if(!m_unitlist.empty())
+	//{
+	//	list<CObj*>::iterator iter = m_unitlist.begin();
+	//	list<CObj*>::iterator iter_end = m_unitlist.end();
+
+	//	int icnt = 0;
+	//	for( ; iter != iter_end; ++iter)
+	//	{
+	//		(*iter)->unit_area_Initialize();
+	//		(*iter)->SetState(IDLE);
+	//		(*iter)->SetOrder(ORDER_NONE);
+
+	//		if(0 == icnt)
+	//			(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y - 16);
+	//		else if(1 == icnt)
+	//			(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y - 16);
+	//		else if(2 == icnt)
+	//			(*iter)->SetPos(m_vPos.x - 16 , m_vPos.y + 16);
+	//		else if(3 == icnt)
+	//			(*iter)->SetPos(m_vPos.x + 16 , m_vPos.y + 16);
+
+	//		++icnt;
+	//	}
+	//	m_unitlist.clear();
+	//}
+}
+void CBunker::Release(void)
+{
+	CTerran_building::area_release();
 }

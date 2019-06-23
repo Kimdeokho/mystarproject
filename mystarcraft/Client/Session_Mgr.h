@@ -13,8 +13,9 @@ public:
 		NS_NONE,
 		NS_PLAYING,
 		NS_DELAY,
+		NS_LEAVE,
 	};
-private:
+private:	
 	CTestSession*		m_TCPsession;
 	CTestSession*		m_UDPsession;
 
@@ -31,9 +32,13 @@ private:
 
 	bool				m_startstage;
 	NETWORK_STATE		m_estate;
+
+	bool				m_leave_sign;
 public:
 	TEAM_NUMBER	GetTeamNumber(void) {return m_eTeamNumber;}
+	NETWORK_STATE		GetNS_state(void) {return m_estate;}
 	void SetTeamNumber(TEAM_NUMBER eteamnum){ m_eTeamNumber = eteamnum; }
+	void Setleave_sign(const bool leavesign);
 public:
 	CTestSession* GetTCP_Session(void);
 	CTestSession* GetUDP_Session(void);

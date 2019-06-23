@@ -23,7 +23,7 @@ CWraith_Bullet::~CWraith_Bullet(void)
 
 void CWraith_Bullet::Initialize(void)
 {
-	m_sortID = SORT_AIR_EFF;
+	m_sortID = SORT_AIR;
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_ANIMATION , new CCom_dirBulletAnim( m_matWorld , L"WRAITH_BULLET" )));
 
 
@@ -38,11 +38,20 @@ void CWraith_Bullet::Initialize(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Initialize(this);
 
-
+	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
+	m_objcnt_num = m_ptarget->GetObjCountNumber();
 }
 
 void CWraith_Bullet::Update(void)
 {
+	//타겟을 쫓지말고 OBJID로 검사해야할듯...
+	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
+	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
+
+	for( ; iter != iter_end; ++iter)
+		iter->second->Update();
+
+
 	m_accel2 += GETTIME*6;
 	m_accel += GETTIME*800;
 	if(m_accel2 > 1)
@@ -58,7 +67,7 @@ void CWraith_Bullet::Update(void)
 	if(m_trail_time > 0.15f)
 	{
 		m_trail_time = 0.f;
-		CObj* peff = new CGeneraEff(L"TURRET_TRAIL" ,m_vPos , D3DXVECTOR2(1.3f , 1.3f), SORT_AIR_EFF);
+		CObj* peff = new CGeneraEff(L"TURRET_TRAIL" ,m_vPos , D3DXVECTOR2(1.3f , 1.3f), SORT_AIR);
 		peff->Initialize();
 		CObjMgr::GetInstance()->AddEffect(peff);
 	}
@@ -66,18 +75,21 @@ void CWraith_Bullet::Update(void)
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
 
-	//타겟을 쫓지말고 OBJID로 검사해야할듯...
-	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
-	COMPONENT_PAIR::iterator iter_end = m_componentlist.end();
-
-	for( ; iter != iter_end; ++iter)
-		iter->second->Update();
 
 
 	if(NULL != m_ptarget)
 	{
-		m_vdest_pos = m_ptarget->GetPos();
-		m_old_targetpos = m_vdest_pos;
+		if(m_objcnt_num == m_ptarget->GetObjCountNumber())
+		{
+			m_vdest_pos = m_ptarget->GetPos();
+			m_old_targetpos = m_vdest_pos;
+		}
+		else
+		{
+			m_ptarget = NULL;
+			m_target_id = 0;
+			m_vdest_pos = m_old_targetpos;
+		}
 	}
 	else
 	{
@@ -92,11 +104,13 @@ void CWraith_Bullet::Update(void)
 	
 	if( int(CMyMath::pos_distance(m_vPos , m_vdest_pos)) < m_ftick_distance*m_ftick_distance)
 	{
+		Dead();
+
 		if(NULL != m_ptarget)
 			m_ptarget->SetDamage(20 + m_upg_info[UPG_T_AIR_WEAPON].upg_cnt * 2, DAMAGE_BOOM);
 
 		m_bdestroy = true;
-		Dead();
+		
 	}	
 
 	m_vPos += m_vcurdir*m_ftick_distance;

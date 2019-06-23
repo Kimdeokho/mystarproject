@@ -68,6 +68,7 @@ void CComset::Initialize(void)
 	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.maxhp = 500;
+	m_unitinfo.hp = 1;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
@@ -166,17 +167,8 @@ void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	if('S' == firstkey && VK_LBUTTON == secondkey)
 	{
 		D3DXVECTOR2 vmousept;
-		vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
 
-		if(true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(vmousept))
-		{
-			CIngame_UIMgr::GetInstance()->Minimappos_to_screen(vmousept);
-			//어택땅을 미니맵에 클릭시 미니맵 위치를 화면위치로 바꿔준다
-		}
-		else
-		{
-			vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-		}	
+		vmousept = CUnitMgr::GetInstance()->GetUnitGoalPos();
 
 		CObj* pobj = NULL;
 		CComponent* pcom = new CCom_Detect;
@@ -184,7 +176,7 @@ void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 		pobj = new CFog_object(320*2 , 10.f , vmousept , MOVE_AIR , m_eteamnumber);
 		
 		pobj->AddComponent(COM_DETECTOR , pcom);
-		pcom->Initialize(this);
+
 		pobj->Initialize();		
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FOG);
 
@@ -275,8 +267,6 @@ void CComset::Dead(void)
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	if(NULL != m_mainbuilding)
 		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);

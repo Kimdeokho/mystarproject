@@ -24,6 +24,9 @@ void CCom_GhostAnim::Initialize(CObj* pobj)
 	m_rotation_speed = 90;
 
 	CCom_Animation::InitTexidx();
+
+	m_isclocikng = false;
+	m_discolor_time = 0.f;
 }
 
 void CCom_GhostAnim::SetAnimation(const TCHAR* statekey)
@@ -77,6 +80,41 @@ void CCom_GhostAnim::Update(void)
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
 		m_curtex = m_animtexture[m_texdiridx][ int(m_frame.fcurframe) ];
+
+
+
+	if(m_isclocikng)
+	{
+		m_discolor_time += GETTIME;
+		if(m_discolor_time > 0.07f)
+		{
+			m_discolor_time = 0.f;
+			m_alpha -= 8;
+
+			if(m_alpha <= 80)
+			{
+				m_alpha = 80;
+			}
+		}
+		m_color = D3DCOLOR_ARGB(m_alpha , 255,255,255);
+	}
+	else
+	{
+		if(m_alpha < 255)
+		{
+			m_discolor_time += GETTIME;
+			if(m_discolor_time > 0.07f)
+			{
+				m_discolor_time = 0.f;
+				m_alpha += 8;
+
+				if(m_alpha >= 255)
+					m_alpha = 255;
+			}
+
+			m_color = D3DCOLOR_ARGB(m_alpha , 255,255,255);
+		}
+	}
 }
 
 void CCom_GhostAnim::Render(void)
@@ -85,17 +123,26 @@ void CCom_GhostAnim::Render(void)
 	if(TEAM_1 == m_pobj->GetTeamNumber())
 	{
 		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-			, NULL , D3DCOLOR_ARGB(255,255,0,0));
+			, NULL , m_color);
 	}
 	else
 	{
 		m_pSprite->Draw(m_curtex->pTexture , NULL , &D3DXVECTOR3(float(m_curtex->ImgInfo.Width/2) , float(m_curtex->ImgInfo.Height/2 ) , 0)
-			, NULL , D3DCOLOR_ARGB(255,255,255,255));
+			, NULL , m_color);
 	}
 }
 
 void CCom_GhostAnim::Release(void)
 {
 
+}
+void CCom_GhostAnim::Clocking_on(void)
+{
+	m_isclocikng = true;
+}
+
+void CCom_GhostAnim::Clocking_off(void)
+{
+	m_isclocikng = false;
 }
 

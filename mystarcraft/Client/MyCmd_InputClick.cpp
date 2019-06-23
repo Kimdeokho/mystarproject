@@ -8,10 +8,11 @@
 #include "UnitMgr.h"
 #include "ObjMgr.h"
 #include "TileManager.h"
+#include "SoundDevice.h"
 
 CMyCmd_InputClick::CMyCmd_InputClick(void)
 {
-	m_unit_numlist.reserve(100);
+	m_unit_numlist.reserve(400);
 }
 
 CMyCmd_InputClick::~CMyCmd_InputClick(void)
@@ -57,6 +58,8 @@ void CMyCmd_InputClick::Progress(void)
 	list<CObj*>	unitlist;
 	D3DXVECTOR2	vdest = D3DXVECTOR2((float)m_x , (float)m_y);
 
+	//printf("Å©±â %d , ÁÂÇ¥ %f , %f\n" ,m_unitsize ,vdest.x , vdest.y);
+
 	for(USHORT i = 0; i < m_unitsize; ++i)
 	{
 		pobj = CObjMgr::GetInstance()->GetObj(m_unit_numlist[i]);
@@ -77,12 +80,21 @@ void CMyCmd_InputClick::Progress(void)
 		(*iter)->Inputkey_reaction(m_nkey, VK_LBUTTON);
 	}
 }
-CMyCmd_InputClick* CMyCmd_InputClick::StaticCreate(D3DXVECTOR2& vdest ,const USHORT& nkey)
+CMyCmd_InputClick* CMyCmd_InputClick::StaticCreate(const D3DXVECTOR2& vdest ,const USHORT nkey)
 {
+	list<CObj*>* unitlist = CUnitMgr::GetInstance()->Getcur_unitlist();
+
+	if(!unitlist->empty())
+	{
+		if(unitlist->front()->GetTeamNumber() != CSession_Mgr::GetInstance()->GetTeamNumber())
+			return NULL;
+		else
+			CSoundDevice::GetInstance()->SetUnitVoice(unitlist->front()->GetOBJNAME());
+	}
+
 	CMyCmd_InputClick*	pcmd = new CMyCmd_InputClick;
 	CObj*			ptarget = NULL;
-
-	list<CObj*>* unitlist = CUnitMgr::GetInstance()->Getcur_unitlist();
+	
 	pcmd->m_unitsize = unitlist->size();
 
 	ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();

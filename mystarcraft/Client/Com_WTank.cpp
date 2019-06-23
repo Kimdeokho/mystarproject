@@ -40,7 +40,7 @@ void CCom_WTank::Update(void)
 		m_attack_time += GETTIME;
 		if(m_attack_time > m_attack_delay) //스팀빨면 이게 줄겠지
 		{
-			m_attack_time = 0.f;
+			m_attack_time = GETTIME * float(rand()%5);
 			m_bfire = false;
 		}
 	}

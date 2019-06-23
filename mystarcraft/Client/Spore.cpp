@@ -129,7 +129,7 @@ void CSpore::Update(void)
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = STATE_NONE;
 
-			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_SPORE , 1);
+			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_SPORE , 1 , m_eteamnumber);
 		}
 	}
 

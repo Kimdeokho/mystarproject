@@ -103,7 +103,7 @@ inline DWORD WRITE_PT_ROOMLIST_RENEWAL_M(BYTE *buffer, S_PT_ROOMLIST_RENEWAL_M &
 
 	Stream->WriteWCHARs(parameter.TITLE, 32);
 	Stream->WriteDWORD_PTR(parameter.MASTERSESSION_ID);
-	Stream->WriteUSHORT(parameter.ROOM_IDX);
+	Stream->WriteInt32(parameter.ROOM_IDX);
 
 	return Stream->GetLength();
 }
@@ -195,6 +195,8 @@ inline DWORD WRITE_PT_ROOM_SENDCHAT(BYTE *buffer, S_PT_ROOM_SENDCHAT &parameter)
 	Stream->WriteWCHARs(parameter.USER_ID, 32);
 	Stream->WriteWCHARs(parameter.MESSAGE, 32);
 	Stream->WriteDWORD_PTR(parameter.SESSION_ID);
+	Stream->WriteFloat(parameter.CUR_TIME);
+	Stream->WriteFloat(parameter.RETAIN_TIME);
 
 	return Stream->GetLength();
 }
@@ -207,6 +209,8 @@ inline DWORD WRITE_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer, S_PT_ROOM_RECEIVE_CHAT_M
 	Stream->WriteWCHARs(parameter.USER_ID, 32);
 	Stream->WriteWCHARs(parameter.MESSAGE, 128);
 	Stream->WriteDWORD_PTR(parameter.SESSION_ID);
+	Stream->WriteFloat(parameter.CUR_TIME);
+	Stream->WriteFloat(parameter.RETAIN_TIME);
 
 	return Stream->GetLength();
 }
@@ -361,7 +365,7 @@ inline DWORD WRITE_PT_ROOMLIST_RENEWAL(BYTE *buffer)
 	return Stream->GetLength();
 }
 
-inline DWORD WRITE_PT_ROOMLIST_RENEWAL_M(BYTE *buffer,const WCHAR *title, DWORD_PTR mastersession_id, USHORT room_idx)
+inline DWORD WRITE_PT_ROOMLIST_RENEWAL_M(BYTE *buffer,const WCHAR *title, DWORD_PTR mastersession_id, INT room_idx)
 {
 	CStreamSP Stream;
 	Stream->SetBuffer(buffer);
@@ -370,7 +374,7 @@ inline DWORD WRITE_PT_ROOMLIST_RENEWAL_M(BYTE *buffer,const WCHAR *title, DWORD_
 	wcsncpy_s(_title , 32 , title, _TRUNCATE);
 	Stream->WriteWCHARs(_title, 32);
 	Stream->WriteDWORD_PTR(mastersession_id);
-	Stream->WriteUSHORT(room_idx);
+	Stream->WriteInt32(room_idx);
 
 	return Stream->GetLength();
 }
@@ -466,7 +470,7 @@ inline DWORD WRITE_PT_ROOM_USER_ENTRY_M(BYTE *buffer,const WCHAR *user_id, DWORD
 	return Stream->GetLength();
 }
 
-inline DWORD WRITE_PT_ROOM_SENDCHAT(BYTE *buffer,const WCHAR *user_id,const WCHAR *message, DWORD_PTR session_id)
+inline DWORD WRITE_PT_ROOM_SENDCHAT(BYTE *buffer,const WCHAR *user_id,const WCHAR *message, DWORD_PTR session_id, FLOAT cur_time, FLOAT retain_time)
 {
 	CStreamSP Stream;
 	Stream->SetBuffer(buffer);
@@ -478,11 +482,13 @@ inline DWORD WRITE_PT_ROOM_SENDCHAT(BYTE *buffer,const WCHAR *user_id,const WCHA
 	wcsncpy_s(_message , 32 , message, _TRUNCATE);
 	Stream->WriteWCHARs(_message, 32);
 	Stream->WriteDWORD_PTR(session_id);
+	Stream->WriteFloat(cur_time);
+	Stream->WriteFloat(retain_time);
 
 	return Stream->GetLength();
 }
 
-inline DWORD WRITE_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer,const WCHAR *user_id,const WCHAR *message, DWORD_PTR session_id)
+inline DWORD WRITE_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer,const WCHAR *user_id,const WCHAR *message, DWORD_PTR session_id, FLOAT cur_time, FLOAT retain_time)
 {
 	CStreamSP Stream;
 	Stream->SetBuffer(buffer);
@@ -494,6 +500,8 @@ inline DWORD WRITE_PT_ROOM_RECEIVE_CHAT_M(BYTE *buffer,const WCHAR *user_id,cons
 	wcsncpy_s(_message , 128 , message, _TRUNCATE);
 	Stream->WriteWCHARs(_message, 128);
 	Stream->WriteDWORD_PTR(session_id);
+	Stream->WriteFloat(cur_time);
+	Stream->WriteFloat(retain_time);
 
 	return Stream->GetLength();
 }

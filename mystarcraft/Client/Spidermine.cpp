@@ -168,7 +168,10 @@ void CSpidermine::Update(void)
 		m_sortID = SORT_GROUND;
 
 		for(int i = 0; i < TEAM_END; ++i)
-			m_unitinfo.detect[i] += 1;
+		{
+			if(i != m_eteamnumber)
+				m_unitinfo.detect[i] += 1;
+		}
 	}
 	else if(MOVE == m_unitinfo.state)
 	{

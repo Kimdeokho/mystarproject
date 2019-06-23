@@ -31,6 +31,14 @@ void CCom_fog::Initialize(CObj* pobj)
 	m_eteamnumber = m_pobj->GetTeamNumber();
 
 	m_Sightoff_List.reserve( (BACKBUFFER_SIZEX/SQ_TILESIZEX) * (BACKBUFFER_SIZEY/SQ_TILESIZEY)*2);
+
+
+	if(m_rcuridx32 != m_oldidx32)
+	{
+		m_sightoffsw = true;		
+		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , int(*m_iSightrange * 1.2f), m_Sightoff_List , m_fogsearch , m_pobj);
+		m_oldidx32 = m_rcuridx32;
+	}
 }
 void CCom_fog::Update(void)
 {
@@ -60,7 +68,7 @@ void CCom_fog::Update(void)
 			}
 			m_Sightoff_List.clear();
 		}
-		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , *m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj);
+		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , int(*m_iSightrange * 1.2f) , m_Sightoff_List , m_fogsearch , m_pobj);
 		m_fogtime = 0.f;
 		m_sightoffsw = false;
 	}
@@ -68,7 +76,7 @@ void CCom_fog::Update(void)
 	if(m_rcuridx32 != m_oldidx32)
 	{
 		m_sightoffsw = true;		
-		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , *m_iSightrange , m_Sightoff_List , m_fogsearch , m_pobj);
+		CTileManager::GetInstance()->SightOnRender(m_rcuridx32 , int(*m_iSightrange * 1.2f), m_Sightoff_List , m_fogsearch , m_pobj);
 		m_oldidx32 = m_rcuridx32;
 	}
 }

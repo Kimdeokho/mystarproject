@@ -69,9 +69,14 @@ void CMyCmd_InputKey::Read(CStreamSP& readstream)
 
 CMyCmd_InputKey* CMyCmd_InputKey::StaticCreate(const USHORT& nkey1 , const USHORT nkey2)
 {
+	list<CObj*>* unitlist = CUnitMgr::GetInstance()->Getcur_unitlist();
+
+	if(unitlist->front()->GetTeamNumber() != 
+		CSession_Mgr::GetInstance()->GetTeamNumber())
+		return NULL;
+
 	CMyCmd_InputKey* pcmd = new CMyCmd_InputKey;
 
-	list<CObj*>* unitlist = CUnitMgr::GetInstance()->Getcur_unitlist();
 	pcmd->m_unitsize = unitlist->size();
 
 	pcmd->m_ecmdtype = CMDTYPE_INPUTKEY;

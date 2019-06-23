@@ -20,12 +20,12 @@ void CUI_armyunitlist::Initialize(void)
 		for(int j = 0; j < 6; ++j)
 		{
 			m_backform[i][j] = new CUI_form;
-			((CUI_form*)m_backform[i][j])->set_texture(L"ARMY_EDGE" , D3DXVECTOR2(m_vpos.x + j*37 , m_vpos.y + i*37));
-			((CUI_form*)m_backform[i][j])->set_active(false);
+			m_backform[i][j]->set_texture(L"ARMY_EDGE" , D3DXVECTOR2(m_vpos.x + j*37 , m_vpos.y + i*37));
+			m_backform[i][j]->set_active(false);
 
 			m_unitform[i][j] = new CUI_form(D3DXVECTOR2(0.5f , 0.5f));
-			((CUI_form*)m_unitform[i][j])->set_texture(L"" , D3DXVECTOR2(m_vpos.x + j*37 + 1 , m_vpos.y + i*37 + 1));
-			((CUI_form*)m_unitform[i][j])->set_active(false);
+			m_unitform[i][j]->set_texture(L"" , D3DXVECTOR2(m_vpos.x + j*37 + 1 , m_vpos.y + i*37 + 1));
+			m_unitform[i][j]->set_active(false);
 		}
 	}
 }

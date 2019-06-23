@@ -39,7 +39,6 @@ CTerran_building::CTerran_building(void)
 	m_is_partinstall = false;
 	m_is_autoinstall = false;
 	m_is_fire_render = false;
-	//m_is_rally = false;
 
 	m_partbuilding = NULL;
 	m_upg_info = NULL;
@@ -155,49 +154,6 @@ void CTerran_building::Render(void)
 {
 
 }
-
-void CTerran_building::Release(void)
-{
-	if(NULL != m_select_ui)
-		m_select_ui->SetDestroy(true);
-
-	if(m_curidx64 != CMyMath::Pos_to_index(m_vPos , 64))
-		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
-	else
-		CArea_Mgr::GetInstance()->ReleaseObj_Area64(CMyMath::Pos_to_index(m_vPos , 64) , this);
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
-	m_areaidx_vec.clear();
-	m_old_areaidx_vec.clear();
-
-	vector<int>().swap(m_areaidx_vec);
-	vector<int>().swap(m_old_areaidx_vec);
-
-	CIngame_UIMgr::GetInstance()->ClearPreview();
-	Safe_Delete(m_main_preview);
-	Safe_Delete(m_sub_preview);
-
-	Safe_Delete(m_pfire_eff1);
-	Safe_Delete(m_pfire_eff2);
-	Safe_Delete(m_pfire_eff3);
-
-	if(NULL != m_select_ui)
-		Safe_Delete(m_select_ui);
-
-	if(NULL != m_energybar_ui)
-		Safe_Delete(m_energybar_ui);
-
-	if(NULL != m_miniunit_display)
-		m_miniunit_display->SetDestroy(true);
-
-	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , -1);
-}
-
-void CTerran_building::Dead(void)
-{
-
-}
-
 void CTerran_building::area_release(void)
 {
 	size_t maxloop = m_areaidx_vec.size();
@@ -281,13 +237,9 @@ void CTerran_building::fire_eff_update(void)
 		m_is_fire_render = true;
 	}
 	else if( fhp_ratio <= 0.7f )
-	{
 		m_is_fire_render = true;
-	}
 	else
-	{
 		m_is_fire_render = false;
-	}
 
 	if(true == m_is_fire_render)
 	{
@@ -313,10 +265,10 @@ void CTerran_building::fire_eff_render(void)
 
 void CTerran_building::Build_Complete(void)
 {
-	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , 1);
+	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , 1 , m_eteamnumber);
 }
 
-void CTerran_building::upginfo_update(const UPGRADE& eupg)
+void CTerran_building::upginfo_update(const UPGRADE eupg)
 {
 	if(true == m_upg_info[eupg].proceeding &&
 		m_upg_info[eupg].obj_num == m_obj_id)
@@ -340,4 +292,45 @@ void CTerran_building::SetPreview_info(const PREVIEW_INFO& maininfo , const PREV
 {
 	m_main_preview->SetPreviewInfo(maininfo);
 	m_sub_preview->SetPreviewInfo(subinfo);
+}
+void CTerran_building::Dead(void)
+{
+
+}
+void CTerran_building::Release(void)
+{
+	if(NULL != m_select_ui)
+		m_select_ui->SetDestroy(true);
+
+	if(m_curidx64 != CMyMath::Pos_to_index(m_vPos , 64))
+		CArea_Mgr::GetInstance()->ReleaseObj_Area64(m_curidx64 , this);
+	else
+		CArea_Mgr::GetInstance()->ReleaseObj_Area64(CMyMath::Pos_to_index(m_vPos , 64) , this);
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
+
+	m_areaidx_vec.clear();
+	m_old_areaidx_vec.clear();
+
+	vector<int>().swap(m_areaidx_vec);
+	vector<int>().swap(m_old_areaidx_vec);
+
+	CIngame_UIMgr::GetInstance()->ClearPreview();
+	Safe_Delete(m_main_preview);
+	Safe_Delete(m_sub_preview);
+
+	Safe_Delete(m_pfire_eff1);
+	Safe_Delete(m_pfire_eff2);
+	Safe_Delete(m_pfire_eff3);
+
+	if(NULL != m_select_ui)
+		Safe_Delete(m_select_ui);
+
+	if(NULL != m_energybar_ui)
+		Safe_Delete(m_energybar_ui);
+
+	if(NULL != m_miniunit_display)
+		m_miniunit_display->SetDestroy(true);
+
+	CIngame_UIMgr::GetInstance()->BuildTech_Update(m_ebuild_tech , -1 , m_eteamnumber);
 }

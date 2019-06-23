@@ -38,7 +38,7 @@ void CCom_WMutal::Update(void)
 		m_attack_time += GETTIME;
 		if(m_attack_time > m_attack_delay) 
 		{
-			m_attack_time = 0.f;
+			m_attack_time = GETTIME;// * float(rand()%5);
 			m_bfire = false;
 		}
 	}

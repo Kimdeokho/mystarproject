@@ -22,7 +22,7 @@ CScene_StagePre::~CScene_StagePre(void)
 HRESULT CScene_StagePre::Initialize(void)
 {	
 	CTileManager::GetInstance()->Initialize();
-	
+
 	LoadData();
 
 	return S_OK;
@@ -45,12 +45,10 @@ void CScene_StagePre::LoadData(void)
 		GENERIC_READ , FILE_SHARE_READ , NULL , OPEN_EXISTING , 0 , NULL);
 
 
-	ReadFile(hFile , &basecnt, sizeof(int), &dwbyte, NULL); //임시,
-	CloseHandle(hFile);
-
-
-	hFile = CreateFile(L"../Data/map/pyhon.dat" , 
-		GENERIC_READ , FILE_SHARE_READ , NULL , OPEN_EXISTING , 0 , NULL);
+	//ReadFile(hFile , &basecnt, sizeof(int), &dwbyte, NULL); //임시,
+	//CloseHandle(hFile);
+	//hFile = CreateFile(L"../Data/map/pyhon.dat" , 
+	//	GENERIC_READ , FILE_SHARE_READ , NULL , OPEN_EXISTING , 0 , NULL);
 
 	CTileManager::GetInstance()->LoadTileData(hFile);
 	//CObjMgr::GetInstance()->LoadObj(hFile);

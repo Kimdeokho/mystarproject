@@ -19,6 +19,12 @@ private:
 
 	bool					m_bsighton;
 	bool					m_isescape;
+
+	TEXINFO*				m_updateTex;
+	TEXINFO*				m_staticTex;
+
+	D3DXVECTOR2				m_staticPos;
+	D3DXMATRIX				m_curMat;
 public:
 	void sub_update(void);
 	void play_direction(const int& dir/*1¶Ç´Â -1*/);

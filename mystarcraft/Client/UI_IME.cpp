@@ -24,6 +24,7 @@ void CUI_IME::Initialize(void)
 		2000,2000,200,30,g_hWnd,(HMENU)100,g_hInst,NULL);
 
 	PostMessage(m_InputEdit, EM_LIMITTEXT, (WPARAM)30, 0);
+	//PostMessage(m_InputBufferEdit, EM_LIMITTEXT, (WPARAM)30, 0);
 
 	m_texinfo = CTextureMgr::GetInstance()->GetSingleTexture(L"DebugTile" , L"tile1x1");
 
@@ -52,15 +53,16 @@ void CUI_IME::Initialize(void)
 
 	g_hEdit1 = m_InputBufferEdit;
 	g_hEdit2 = m_InputEdit;
+	
 	g_OldEditProc1 = (WNDPROC)SetWindowLong(m_InputBufferEdit,GWL_WNDPROC,(LONG)EditSubProc1);//입력내용 저장
-	g_OldEditProc2 = g_OldEditProc1;
-	//(WNDPROC)SetWindowLong(m_InputEdit,GWL_WNDPROC,(LONG)EditSubProc2);//입력받는 프로시저
+	g_OldEditProc2 = (WNDPROC)SetWindowLong(m_InputEdit,GWL_WNDPROC,(LONG)EditSubProc2);//입력받는 프로시저
 }
 
 void CUI_IME::Update(void)
 {
 	if(GetFocus() == m_InputEdit) 
 		GetWindowTextW(m_InputEdit, m_text, 32); 
+
 
 	m_matworld._11 = m_vsize.x;
 	m_matworld._22 = m_vsize.y;
@@ -96,24 +98,16 @@ void CUI_IME::Render(void)
 		, D3DCOLOR_ARGB(255,0,255,0));
 
 
-	int Start_sel;  
-	int End_sel;  
-	SendMessage(m_InputEdit, EM_GETSEL, (WPARAM)&Start_sel, (LPARAM)&End_sel);  
-	m_text[End_sel] = L'\0'; 
-	// 0.5초마다 깜빡거리게! (채팅창이 활성화 되어있을 경우에만)  
-	if(GetFocus() == m_InputEdit)  
-	{  
-		// 채팅 좌표 + rt.right 위치에 Draw!  
+	//int Start_sel;  
+	//int End_sel;  
+	//SendMessage(m_InputEdit, EM_GETSEL, (WPARAM)&Start_sel, (LPARAM)&End_sel);  
+	//m_text[End_sel] = L'\0'; 
+	//// 0.5초마다 깜빡거리게! (채팅창이 활성화 되어있을 경우에만)  
+	//if(GetFocus() == m_InputEdit)  
+	//{  
+	//	// 채팅 좌표 + rt.right 위치에 Draw!  
 
-	} 
-}
-
-void CUI_IME::Release(void)
-{
-	lstrcpy(m_text , L"");
-
-	SetWindowLong(m_InputBufferEdit,GWL_WNDPROC,(LONG)g_OldEditProc1);
-	SetWindowLong(m_InputEdit,GWL_WNDPROC,(LONG)g_OldEditProc2);	
+	//} 
 }
 
 bool CUI_IME::UI_ptinrect(const D3DXVECTOR2 vpos)
@@ -164,4 +158,12 @@ void CUI_IME::TextClear(void)
 const TCHAR* CUI_IME::GetMessage(void)
 {
 	return m_text;
+}
+
+void CUI_IME::Release(void)
+{
+	lstrcpy(m_text , L"");
+
+	SetWindowLong(m_InputBufferEdit,GWL_WNDPROC,(LONG)g_OldEditProc1);
+	SetWindowLong(m_InputEdit,GWL_WNDPROC,(LONG)g_OldEditProc2);	
 }

@@ -85,6 +85,7 @@ void CCom_WSCV::fire(CObj* ptarget)
 				pfragment->Initialize();
 
 				((CWorkman*)m_pobj)->setmineral_fragment(pfragment);
+
 				((CWorkman*)m_pobj)->SetMineral_mark(NULL);
 				m_pobj->SetState(IDLE);
 

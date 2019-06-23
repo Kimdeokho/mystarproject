@@ -214,6 +214,7 @@ void CBarrack::Render(void)
 	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	m_com_production->Render();
 }
 
 void CBarrack::Inputkey_reaction(const int& nkey)
@@ -376,7 +377,7 @@ void CBarrack::Update_Cmdbtn(void)
 	{
 		pui->Create_Cmdbtn(0 , L"BTN_MARINE" , BTN_MARINE , true);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ACADEMY))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ACADEMY ,m_eteamnumber))
 		{
 			pui->Create_Cmdbtn(1 , L"BTN_FIREBAT" , BTN_FIREBAT , true);
 			pui->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , true);
@@ -387,7 +388,7 @@ void CBarrack::Update_Cmdbtn(void)
 			pui->Create_Cmdbtn(3 , L"BTN_MEDIC" , BTN_MEDIC , false);
 		}
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_GHOST_ADDON))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_GHOST_ADDON ,m_eteamnumber))
 			pui->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST , true);
 		else
 			pui->Create_Cmdbtn(2 , L"BTN_GHOST" , BTN_GHOST, false);
@@ -458,8 +459,6 @@ void CBarrack::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
-
 	if(NULL != m_partbuilding)
 	{
 		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
@@ -477,7 +476,5 @@ void CBarrack::Release(void)
 	{
 		m_componentlist.erase(iter);
 	}
-
-	CTerran_building::fire_eff_render();
 }
 

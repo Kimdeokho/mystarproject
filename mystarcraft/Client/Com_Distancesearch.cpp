@@ -64,11 +64,13 @@ void CCom_Distancesearch::Update(void)
 
 	if( NULL == m_ptarget)
 	{
-		//if(0 != m_target_objid)
-		//{
-		//	//공격하고 있던 유닛이 죽은거
-		//	m_search_time = 0.2f;
-		//}
+		if(0 != m_target_objid)
+		{
+			//공격하고 있던 유닛이 죽은거
+			m_search_time = 0.0f;
+			float atttime = 0.f;
+			((CCom_Weapon*)m_com_weapon)->SetAttackTime(atttime);
+		}
 		if(m_bforced_target)
 		{
 			m_pobj->SetOrder(ORDER_NONE);
@@ -83,6 +85,13 @@ void CCom_Distancesearch::Update(void)
 
 		if(false == m_ptarget->GetUnitinfo().is_active || 
 			m_ptarget->GetUnitinfo().detect[eteam] < 1)
+		{
+			m_ptarget = NULL;
+			m_target_objid = 0;
+			m_bforced_target = false;
+		}
+
+		if(NULL != m_ptarget && m_obj_cnt != m_ptarget->GetObjCountNumber())
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
@@ -262,18 +271,18 @@ void CCom_Distancesearch::Update(void)
 			m_search_time += GETTIME;
 
 			if(true == m_btarget_search &&
-				m_search_time > 0.2f)
+				m_search_time > 0.55f)
 			{				
 				m_search_time = 0.f;
 				int iattrange = max(*m_pattack_range , *m_pair_range);
 				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj , m_irange ,iattrange , m_search_type);			
-
-				//if(ATTACK == m_pobj->GetUnitinfo().state)
-				//	m_pobj->SetState(IDLE);
 			}
 
 			if(NULL != m_ptarget)
+			{
 				m_target_objid = m_ptarget->GetObjNumber();
+				m_obj_cnt = m_ptarget->GetObjCountNumber();
+			}
 			else
 			{
 				m_target_objid = 0;

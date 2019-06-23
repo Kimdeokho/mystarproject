@@ -33,7 +33,7 @@ CZ_gas::CZ_gas(CObj* resource_gas)
 CZ_gas::~CZ_gas(void)
 {
 	Release();
-	CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_GAS , -1);
+	CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_GAS , -1 , m_eteamnumber);
 }
 
 void CZ_gas::Initialize(void)
@@ -121,7 +121,7 @@ void CZ_gas::Update(void)
 			m_unitinfo.maxhp = m_unitinfo.maxhp;
 			m_unitinfo.state = STATE_NONE;
 
-			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_GAS , 1);
+			CIngame_UIMgr::GetInstance()->BuildTech_Update(Z_GAS , 1 , m_eteamnumber);
 		}
 	}
 

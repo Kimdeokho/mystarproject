@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "LineMgr.h"
 
+#include "Obj.h"
 #include "Device.h"
 #include "Area_Mgr.h"
 #include "ScrollMgr.h"
@@ -8,8 +9,9 @@
 #include "MouseMgr.h"
 #include "Ingame_UIMgr.h"
 #include "Debug_Mgr.h"
-
+#include "SoundDevice.h"
 #include "UnitMgr.h"
+
 IMPLEMENT_SINGLETON(CLineMgr)
 CLineMgr::CLineMgr(void)
 {
@@ -36,11 +38,6 @@ void CLineMgr::SetRectPoint(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend)
 	m_RectLine[3].y = vend.y;
 
 	m_RectLine[4] = vstart;
-}
-void CLineMgr::SetlinePoint(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend)
-{
-	m_Line[0] = vstart;
-	m_Line[1] = vend;
 }
 void CLineMgr::RectLineRender(void)
 {
@@ -118,7 +115,8 @@ void CLineMgr::Select_unit(void)
 
 	D3DXVECTOR2 vMousept;
 
-	vMousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+	//vMousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+	vMousept = CMouseMgr::GetInstance()->GetClick_Pos();
 	int idx = CMyMath::Pos_to_index(vMousept.x , vMousept.y , 64);
 
 
@@ -134,24 +132,24 @@ void CLineMgr::Select_unit(void)
 
 		if(m_RectLine[0].x < m_RectLine[2].x)
 		{
-			rc.left = m_RectLine[0].x + CScrollMgr::m_fScrollX - 0.5f;
-			rc.right = m_RectLine[2].x + CScrollMgr::m_fScrollX + 0.5f;
+			rc.left = m_RectLine[0].x + CScrollMgr::m_fScrollX - 1.0f;
+			rc.right = m_RectLine[2].x + CScrollMgr::m_fScrollX + 1.0f;
 		}
 		else
 		{
-			rc.left = m_RectLine[2].x + CScrollMgr::m_fScrollX - 0.5f;
-			rc.right = m_RectLine[0].x + CScrollMgr::m_fScrollX + 0.5f;
+			rc.left = m_RectLine[2].x + CScrollMgr::m_fScrollX - 1.0f;
+			rc.right = m_RectLine[0].x + CScrollMgr::m_fScrollX + 1.0f;
 		}
 
 		if(m_RectLine[0].y < m_RectLine[2].y)
 		{
-			rc.top = m_RectLine[0].y + CScrollMgr::m_fScrollY - 0.5f;
-			rc.bottom = m_RectLine[2].y + CScrollMgr::m_fScrollY + 0.5f;
+			rc.top = m_RectLine[0].y + CScrollMgr::m_fScrollY - 1.0f;
+			rc.bottom = m_RectLine[2].y + CScrollMgr::m_fScrollY + 1.0f;
 		}
 		else
 		{
-			rc.top = m_RectLine[2].y + CScrollMgr::m_fScrollY - 0.5f;
-			rc.bottom = m_RectLine[0].y + CScrollMgr::m_fScrollY + 0.5f;
+			rc.top = m_RectLine[2].y + CScrollMgr::m_fScrollY - 1.0f;
+			rc.bottom = m_RectLine[0].y + CScrollMgr::m_fScrollY + 1.0f;
 		}
 
 		CArea_Mgr::GetInstance()->DragCheck( rc);
@@ -159,6 +157,12 @@ void CLineMgr::Select_unit(void)
 
 	for(int i = 0; i < 5; ++i)
 		m_RectLine[i] = D3DXVECTOR2(0,0);
+
+	if(!CUnitMgr::GetInstance()->Getcur_unitlist()->empty())
+	{
+		OBJID id = CUnitMgr::GetInstance()->Getcur_unitlist()->front()->GetOBJNAME();
+		CSoundDevice::GetInstance()->SetUnitVoice(id);
+	}
 
 	//CUnitMgr::GetInstance()->Update_Cmdbtn();
 	//DragCheck()
@@ -182,7 +186,7 @@ void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
 	for(int j = 0; j < col; ++j)
 	{
 		int index = j + scrollX/tilesize;
-		vPoint[0] = D3DXVECTOR2( float(index*tilesize) - scrollX,0 - (float)scrollY);
+		vPoint[0] = D3DXVECTOR2( float(index*tilesize) - scrollX, 0 - (float)scrollY);
 		vPoint[1] = D3DXVECTOR2( float(index*tilesize) - scrollX, float(tilecnt*tilesize) - scrollY);
 
 		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
@@ -201,24 +205,41 @@ void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 }
-void CLineMgr::RallyLineRender(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend)
+void CLineMgr::PathLineRender(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend , const float fwidth)
 {
-	m_Line[0].x = vstart.x - CScrollMgr::m_fScrollX;
-	m_Line[0].y = vstart.y - CScrollMgr::m_fScrollY;
+	D3DXVECTOR2 vtemp[2];
 
-	m_Line[1].x = vend.x - CScrollMgr::m_fScrollX;
-	m_Line[1].y = vend.y - CScrollMgr::m_fScrollY;
+	vtemp[0].x = vstart.x - CScrollMgr::m_fScrollX;
+	vtemp[0].y = vstart.y - CScrollMgr::m_fScrollY;
+
+	vtemp[1].x = vend.x - CScrollMgr::m_fScrollX;
+	vtemp[1].y = vend.y - CScrollMgr::m_fScrollY;
 
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 
-	m_pLine->SetWidth(1.0f);
-	m_pLine->Draw(m_Line , 2 , D3DCOLOR_ARGB(255,0,255,0));
+	m_pLine->SetWidth(fwidth);
+	m_pLine->Draw(vtemp , 2 , D3DCOLOR_ARGB(255,0,255,0));
 
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 }
+void CLineMgr::RallyLineRender(void)
+{
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
 
+	m_pLine->SetWidth(2.0f);
+	m_pLine->Draw(m_Rally_Line , 2 , D3DCOLOR_ARGB(255,0,255,0));
+
+	CDevice::GetInstance()->Render_End();
+	CDevice::GetInstance()->Render_Begin();
+}
+void CLineMgr::SetRallyPoint(const D3DXVECTOR2& vstart , const D3DXVECTOR2& vend)
+{
+	m_Rally_Line[0] = vstart;
+	m_Rally_Line[1] = vend;
+}
 void CLineMgr::SetRenderSwitch(bool bswitch)
 {
 	m_bSwitch = bswitch;

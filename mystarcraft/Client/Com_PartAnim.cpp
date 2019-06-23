@@ -9,6 +9,8 @@
 
 #include "TileManager.h"
 #include "Session_Mgr.h"
+#include "ScrollMgr.h"
+
 CCom_PartAnim::CCom_PartAnim(const TCHAR* objkey , const TCHAR* linktexkey , D3DXMATRIX& objmat )
 :CCom_Animation(objmat)
 {
@@ -38,32 +40,41 @@ void CCom_PartAnim::Initialize(CObj* pobj)
 	SetAnimation(L"BUILD");
 
 	m_curtex = (*m_generaltex)[0];
-	//m_linktex = (*m_subgeneral_tex)[0];
+
 	m_bsighton = false;
 	m_isescape = false;
+
+	m_staticTex = NULL;
+	m_updateTex = NULL;
+
+	D3DXMatrixIdentity(&m_curMat);
+	m_staticPos = D3DXVECTOR2(0,0);
 }
 
 void CCom_PartAnim::Update(void)
 {
 	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
-	if(CTileManager::GetInstance()->GetFogLight(m_pobj->Getcuridx(32) , eteam))
+
+	if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight( m_pobj->Getcuridx(32) , eteam))
 	{
 		m_bsighton = true;
 		m_isescape = false;
 	}
 	else
 	{		
+		m_isescape = true;
 		if(m_bsighton)
 		{
 			//켜졌다가 꺼진상태
 			m_bsighton = false;
 			//마지막 상태 저장
-			m_isescape = true;
+
+
+			m_staticTex = (*m_generaltex)[int(m_frame.fcurframe)];
+			m_curMat = m_objmat;
+			m_staticPos = m_pobj->GetPos();
 		}
 	}
-
-	if(m_isescape)
-		return;
 
 	if(L"BUILD" == m_statkey)
 	{
@@ -87,7 +98,7 @@ void CCom_PartAnim::Update(void)
 
 
 	if( (int)(m_frame.fcurframe) <= m_frame.umax)
-		m_curtex = (*m_generaltex)[int(m_frame.fcurframe)];
+		m_updateTex = (*m_generaltex)[int(m_frame.fcurframe)];
 
 	sub_update();
 }
@@ -95,6 +106,7 @@ void CCom_PartAnim::sub_update(void)
 {
 	if(false == m_sub_on)
 		return;
+
 
 	m_subframe.fcurframe += GETTIME*m_subframe.fframespeed * m_playdir;
 	if(m_subframe.fcurframe >= m_subframe.umax)
@@ -112,7 +124,25 @@ void CCom_PartAnim::sub_update(void)
 
 void CCom_PartAnim::Render(void)
 {
-	m_pSprite->SetTransform(&m_objmat);
+	if(m_isescape)
+	{
+		m_curtex = m_staticTex;
+		m_curMat._41 = m_staticPos.x - CScrollMgr::m_fScrollX;
+		m_curMat._42 = m_staticPos.y - CScrollMgr::m_fScrollY;
+	}
+	else
+	{
+		m_curtex = m_updateTex;
+		m_curMat = m_objmat;
+	}
+
+	if(!CScrollMgr::inside_camera(m_curMat._41 + CScrollMgr::m_fScrollX , m_curMat._42 + CScrollMgr::m_fScrollY))
+		return;
+	if(NULL == m_curtex)
+		return;
+
+
+	m_pSprite->SetTransform(&m_curMat);
 
 	if(NULL != m_linktex)
 	{

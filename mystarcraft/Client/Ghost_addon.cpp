@@ -61,6 +61,7 @@ void CGhost_addon::Initialize(void)
 	m_unitinfo.order = ORDER_NONE;
 	m_unitinfo.eArmorType = ARMOR_LARGE;
 	m_unitinfo.maxhp = 750;
+	m_unitinfo.hp = 1;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
 	m_unitinfo.search_range = 0;
@@ -169,7 +170,6 @@ void CGhost_addon::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 	if(NULL != m_mainbuilding)
 		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);

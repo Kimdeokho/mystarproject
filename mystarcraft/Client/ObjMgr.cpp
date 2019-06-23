@@ -12,6 +12,9 @@
 #include "Debug_Mgr.h"
 #include "Session_Mgr.h"
 #include "Ingame_UIMgr.h"
+#include "FontMgr.h"
+#include "ScrollMgr.h"
+
 #include "UI_Resource.h"
 
 #include "UI.h"
@@ -53,8 +56,13 @@ void CObjMgr::Update(void)
 		iter = m_ObjList[i].begin();
 		iter_end = m_ObjList[i].end();
 
+		//D3DXVECTOR2 vtemp;
 		for( ; iter != iter_end; ++iter)
 		{
+			//vtemp = (*iter)->GetPos();
+			//vtemp.x -= CScrollMgr::m_fScrollX;
+			//vtemp.y -= CScrollMgr::m_fScrollY;
+			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , (*iter)->GetObjNumber() , vtemp.x , vtemp.y) ;
 			(*iter)->Update();
 				
 		}
@@ -64,6 +72,18 @@ void CObjMgr::Update(void)
 	{
 		iter = m_CorpseList.begin();
 		iter_end = m_CorpseList.end();
+
+		for( ; iter != iter_end; ++iter)
+		{
+			(*iter)->Update();
+
+		}
+	}
+
+	if(!m_bullet_list.empty())
+	{
+		iter = m_bullet_list.begin();
+		iter_end = m_bullet_list.end();
 
 		for( ; iter != iter_end; ++iter)
 		{
@@ -112,7 +132,8 @@ void CObjMgr::Destroy_Update(void)
 			{
 				fy = (*iter)->GetY();
 				sortid = (*iter)->GetsortID();
-				
+
+
 				if(true == (*iter)->Be_in_camera())
 				{ 
 					if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
@@ -152,7 +173,15 @@ void CObjMgr::Destroy_Update(void)
 						}
 					}
 				}
+				else
+				{
 
+					if( FOG_ALPHA != CTileManager::GetInstance()->GetFogLight((*iter)->Getcuridx(32), eteam) ||
+						CATEGORY_BUILDING == (*iter)->GetCategory())
+					{
+						m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					}
+				}
 				++iter;
 			}
 		}
@@ -184,6 +213,70 @@ void CObjMgr::Destroy_Update(void)
 					{
 						if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(idx32, eteam))
 							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					}
+				}
+
+				++iter;
+			}
+		}
+	}
+
+	if(!m_bullet_list.empty())
+	{
+		list<CObj*>::iterator iter = m_bullet_list.begin();
+		list<CObj*>::iterator iter_end = m_bullet_list.end();
+
+		for( ; iter != iter_end; )
+		{
+			if(true == (*iter)->GetDestroy() )
+			{
+				obj_leave( (*iter)->GetObjNumber() );
+
+				Safe_Delete(*iter);
+				iter = m_bullet_list.erase(iter);
+			}
+			else
+			{
+				fy = (*iter)->GetY();
+				sortid = (*iter)->GetsortID();
+
+				if(true == (*iter)->Be_in_camera())
+				{ 
+					if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
+					{
+						if(SORT_AIR == sortid)
+							m_air_rendersort.push_back( (*iter) );
+						else if(SORT_AIR_EFF == sortid)
+							m_aireff_renderlist.push_back( (*iter) );
+						else if(SORT_GROUND_EFF == sortid)
+							m_groundeff_renderlist.push_back( (*iter) );
+						else
+							m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+					}
+					else
+					{
+						if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight((*iter)->Getcuridx(32), eteam))
+						{
+							if( (*iter)->GetUnitinfo().detect[eteam] > 0)
+							{
+								if(SORT_AIR == sortid)
+									m_air_rendersort.push_back( (*iter) );
+								else if(SORT_AIR_EFF == sortid)
+									m_aireff_renderlist.push_back( (*iter) );
+								else if(SORT_GROUND_EFF == sortid)
+									m_groundeff_renderlist.push_back( (*iter) );
+								else
+									m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+							}
+						}
+						else
+						{
+							if(CATEGORY_BUILDING == (*iter)->GetCategory() ||
+								CATEGORY_RESOURCE == (*iter)->GetCategory())
+							{
+								m_rendersort[ sortid ].insert( make_pair( fy , (*iter)) );
+							}
+						}
 					}
 				}
 
@@ -367,8 +460,7 @@ void CObjMgr::LoadObj(HANDLE hFile)
 }
 bool CObjMgr::obj_place(CObj* pobj)
 {
-	int i = 1;
-	for( ; i < MAX_OBJCNT; ++i)
+	for(int i = 1 ; i < MAX_OBJCNT; ++i)
 	{
 		if(false == m_obj_alive[i])
 		{
@@ -402,10 +494,18 @@ void CObjMgr::AddObject(CObj* pObj , OBJID eid)
 	}
 	else
 	{
-		if( true == obj_place(pObj) )
+		if(OBJ_BULLET == eid)
 		{
 			pObj->SetObjName(eid);
-			m_ObjList[eid].push_back(pObj);
+			m_bullet_list.push_back(pObj);
+		}
+		else
+		{
+			if( true == obj_place(pObj) )
+			{
+				pObj->SetObjName(eid);
+				m_ObjList[eid].push_back(pObj);
+			}
 		}
 	}
 }
@@ -415,6 +515,7 @@ void CObjMgr::AddEffect(CObj* peff)
 }
 void CObjMgr::AddCorpse(CObj* pObj)
 {
+	pObj->Update();
 	m_CorpseList.push_back(pObj);
 }
 
@@ -593,6 +694,14 @@ void CObjMgr::Release()
 	for( ; iter != iter_end; ++iter)
 		Safe_Delete(*iter);
 	m_CorpseList.clear();
+
+
+	iter = m_bullet_list.begin();
+	iter_end = m_bullet_list.end();
+
+	for( ; iter != iter_end; ++iter)
+		Safe_Delete(*iter);
+	m_bullet_list.clear();
 
 
 	for(int i = 0; i < SORT_END; ++i)

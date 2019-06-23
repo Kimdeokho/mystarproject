@@ -83,6 +83,7 @@ void CMineral::Update(void)
 		list<CObj*>::iterator iter_end= m_workman_list.end();
 
 		MYRECT<float> rc;
+		float	collRange = 0;
 		for( ; iter != iter_end; )
 		{
 			if(true == (*iter)->GetDestroy() )
@@ -90,12 +91,14 @@ void CMineral::Update(void)
 				iter = m_workman_list.erase(iter);
 				continue;;
 			}
+			collRange = (*iter)->GetUnitinfo().fspeed * 3;
 
 			rc = (*iter)->GetMyRect();
-			rc.left -= 3;
-			rc.right += 3;
-			rc.top-= 3;
-			rc.bottom += 3;
+			rc.left -= collRange;
+			rc.right += collRange;
+			rc.top-= collRange;
+			rc.bottom += collRange;
+
 			if( false == MyIntersectrect(&m_rect , &rc) )
 			{
 				((CWorkman*)(*iter))->SetMineral_mark(NULL);

@@ -37,10 +37,10 @@ void CUI_Resource::Initialize(void)
 	for(int i = 0; i < TEAM_END; ++i)
 	{
 		m_population_maxval[i] = 800;
-		m_mineral_amount[i] = 100000;
+		m_mineral_amount[i] = 9000000;
 		m_cur_mineral[i] = m_mineral_amount[i];
 
-		m_gas_amount[i] = 100000;		
+		m_gas_amount[i] = 9000000;		
 		m_cur_gas[i] = m_gas_amount[i];
 	}
 
@@ -51,19 +51,36 @@ void CUI_Resource::Update(void)
 {
 	m_tick += GETTIME;
 
-	if(m_tick > 0.005f)
+	if(m_tick > 0.08f)
 	{
+		int resourceval = 5;
 		m_tick = 0.f;
 
 		if(m_mineral_amount[m_myteam] > m_cur_mineral[m_myteam])
-			m_cur_mineral[m_myteam] += 1;
+		{
+			m_cur_mineral[m_myteam] += resourceval;
+			if(m_mineral_amount[m_myteam] < m_cur_mineral[m_myteam])
+				m_cur_mineral[m_myteam] = m_mineral_amount[m_myteam];
+		}
 		else if(m_mineral_amount[m_myteam] < m_cur_mineral[m_myteam])
-			m_cur_mineral[m_myteam] -= 1;
+		{
+			m_cur_mineral[m_myteam] -= resourceval;
+			if(m_mineral_amount[m_myteam] > m_cur_mineral[m_myteam])
+				m_cur_mineral[m_myteam] = m_mineral_amount[m_myteam];
+		}
 
 		if(m_gas_amount[m_myteam] > m_cur_gas[m_myteam])
-			m_cur_gas[m_myteam] += 1;
+		{
+			m_cur_gas[m_myteam] += resourceval;
+			if(m_gas_amount[m_myteam] < m_cur_gas[m_myteam])
+				m_cur_gas[m_myteam] = m_gas_amount[m_myteam];
+		}
 		else if(m_gas_amount[m_myteam] < m_cur_gas[m_myteam])
-			m_cur_gas[m_myteam] -= 1;
+		{
+			m_cur_gas[m_myteam] -= resourceval;
+			if(m_gas_amount[m_myteam] > m_cur_gas[m_myteam])
+				m_cur_gas[m_myteam] = m_gas_amount[m_myteam];
+		}
 	}
 
 	CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_cur_mineral[m_myteam] , m_mineral_pos.x + 23, m_mineral_pos.y , D3DCOLOR_ARGB(255,255,255,255) , true);

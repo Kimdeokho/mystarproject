@@ -99,6 +99,7 @@ struct MYRECT
 
 typedef struct fontinfo
 {
+	float fcur_time;
 	float fnotice_time;
 	float fX;
 	float fY;
@@ -107,6 +108,7 @@ typedef struct fontinfo
 	bool  left_align;
 	fontinfo()
 	{
+		fcur_time = 0.f;
 		fnotice_time = 0.f;
 		fX = 0.f;
 		fY = 0.f;

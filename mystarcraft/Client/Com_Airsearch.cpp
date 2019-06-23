@@ -46,6 +46,10 @@ void CCom_Airsearch::Update(void)
 
 	if( NULL == m_ptarget)
 	{
+		if(0 != m_target_objid)
+		{
+			((CCom_Weapon*)m_com_weapon)->SetAttackTime(0.f);
+		}
 		m_bforced_target = false;
 		m_target_objid = 0;
 	}
@@ -55,6 +59,13 @@ void CCom_Airsearch::Update(void)
 
 		if(false == m_ptarget->GetUnitinfo().is_active || 
 			m_ptarget->GetUnitinfo().detect[eteam] < 1)
+		{
+			m_ptarget = NULL;
+			m_target_objid = 0;
+			m_bforced_target = false;
+		}
+
+		if(NULL != m_ptarget && m_obj_cnt != m_ptarget->GetObjCountNumber())
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
@@ -162,7 +173,10 @@ void CCom_Airsearch::Update(void)
 			}
 
 			if(NULL != m_ptarget)
+			{
 				m_target_objid = m_ptarget->GetObjNumber();
+				m_obj_cnt = m_ptarget->GetObjCountNumber();
+			}
 			else
 				m_target_objid = 0;
 		}

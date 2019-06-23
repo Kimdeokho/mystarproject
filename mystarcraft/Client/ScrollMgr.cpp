@@ -10,12 +10,15 @@ CScrollMgr::~CScrollMgr(void)
 {
 }
 
-bool CScrollMgr::inside_camera(const float& fx , const float& fy)
+bool CScrollMgr::inside_camera(const float fx , const float fy)
 {
-	/*fx , fy클라이언트 좌표여야 한다 0~800 , 0~600.*/
-
-	if(fx <= 5 || fx >= BACKBUFFER_SIZEX - 5 || fy <= 20 || fy >= BACKBUFFER_SIZEY - 20)
-		return false;
+	if( fx >= m_fScrollX - 100 && 
+		fx <= m_fScrollX + CLINETSIZE_X + 100 &&
+		fy >= m_fScrollY - 100 &&
+		fy <= m_fScrollY + CLINETSIZE_Y + 100)
+	{
+		return true;
+	}
 
 	return true;
 }

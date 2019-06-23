@@ -19,7 +19,7 @@ CNuclear_Bullet::CNuclear_Bullet(const D3DXVECTOR2& vdesetpos)
 
 CNuclear_Bullet::~CNuclear_Bullet(void)
 {
-	m_injurelist.clear();
+	Release();
 }
 
 void CNuclear_Bullet::Initialize(void)
@@ -74,6 +74,7 @@ void CNuclear_Bullet::Update(void)
 	{
 		CArea_Mgr::GetInstance()->Setsplash_damage(this , 500 , DAMAGE_BOOM , m_vdest_pos ,
 			m_splash_range, true, m_injurelist);
+
 		m_injurelist.clear();
 
 		m_bdestroy = true;
@@ -95,7 +96,7 @@ void CNuclear_Bullet::Render(void)
 
 void CNuclear_Bullet::Release(void)
 {
-
+	m_injurelist.clear();
 }
 
 void CNuclear_Bullet::Dead(void)

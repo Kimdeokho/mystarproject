@@ -254,6 +254,7 @@ LRESULT CALLBACK EditSubProc1(HWND hWnd,UINT iMessage,WPARAM wParam,LPARAM lPara
 		break;
 	}
 
+	//return CallWindowProc(g_hWnd,hWnd,iMessage,wParam,lParam);
 	return CallWindowProc(g_OldEditProc1,hWnd,iMessage,wParam,lParam);
 
 }

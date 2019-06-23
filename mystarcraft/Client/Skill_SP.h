@@ -14,7 +14,7 @@ public:
 	virtual void Initialize(void);
 public:
 	virtual void Update(void);
-	virtual void use(void);
+	void use_sp(void);
 public:
 	CSkill_SP(void);
 	CSkill_SP(CObj*	pobj , CComponent* pweapon);

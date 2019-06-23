@@ -4,10 +4,14 @@
 #include "MyCommandList.h"
 #include "MyCmd_Move.h"
 #include "MyCmd_InputKey.h"
+#include "MyCmd_Leave.h"
 #include "MyCmd_InputClick.h"
+#include "MyCmd_chat.h"
+
 #include "KeyMgr.h"
 #include "FontMgr.h"
 #include "ScrollMgr.h"
+#include "Session_Mgr.h"
 #include "TimeMgr.h"
 #include "Ingame_UIMgr.h"
 #include "MouseMgr.h"
@@ -36,7 +40,21 @@ void CInput_Stage::Initialize(void)
 void CInput_Stage::Update(void)
 {
 	//뭔가 입력하면 m_cmdlist에서 m_cmdlist->PushCommand() 쏼라쏼라
-	if(GetActiveWindow() != g_hWnd)
+	//if(GetActiveWindow() != g_hWnd)
+	//	return;
+
+	if(true == m_inst->GetOnceKeyDown_Check(VK_RETURN))
+	{
+		S_PT_ROOM_RECEIVE_CHAT_M temp_data;
+		if(CIngame_UIMgr::GetInstance()->ToggleChat(temp_data))
+		{			
+			CMyCommand* pcommand = CMyCmd_chat::StaticCreate(temp_data);
+			if(NULL != pcommand)
+				m_cmdlist->PushCommand(pcommand);
+		}
+	}
+
+	if(CIngame_UIMgr::GetInstance()->is_active_chat_ime())
 		return;
 
 	Intput_oncekey_reaction();
@@ -47,15 +65,33 @@ void CInput_Stage::Update(void)
 }
 void CInput_Stage::Intput_oncekey_reaction(void)
 {
+	if(true == m_inst->GetOnceKeyDown_Check(VK_ESCAPE))
+	{
+		CMyCommand* pcommand = CMyCmd_Leave::StaticCreate(CSession_Mgr::GetInstance()->GetSession_Info().SESSION_ID);
+		if(NULL != pcommand)
+			m_cmdlist->PushCommand(pcommand);
+
+		CSession_Mgr::GetInstance()->Setleave_sign(true);
+	}
+
 	if(true == m_inst->GetOnceKeyDown_Check(VK_RBUTTON))
 	{
+		CMouseMgr::GetInstance()->Init_clickpos();
 		//선택된 유닛이 있다면
 		//CMyCommand* pcommand = new CMyCmd_Move;
 		//pcommand 에 여러 정보를 넣은다음
 		//m_cmdlist->PushCommand(무브명령 관련 정보담기)
-		if(false == CUnitMgr::GetInstance()->GetUnitlistempty())
+
+		m_downpt = CMouseMgr::GetInstance()->GetClick_Pos();
+		D3DXVECTOR2 vmousept;
+		vmousept.x = m_downpt.x - CScrollMgr::m_fScrollX;
+		vmousept.y = m_downpt.y - CScrollMgr::m_fScrollY;
+		m_downpt = vmousept;		
+
+		if(!CUnitMgr::GetInstance()->GetUnitlistempty())
 		{
-			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+			//D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetScreenMousePt();
+
 			bool		bmouse_mark = false;
 
 			if(true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(vmousept))
@@ -68,7 +104,9 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 			else
 			{
 				//우클릭된 유닛을 구한다.
-				vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				//vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+				vmousept.x = m_downpt.x + CScrollMgr::m_fScrollX;
+				vmousept.y = m_downpt.y + CScrollMgr::m_fScrollY;
 				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
 
 				if(NULL == CArea_Mgr::GetInstance()->GetChoiceTarget())
@@ -85,21 +123,25 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 			CUnitMgr::GetInstance()->Input_cmd(VK_RBUTTON , m_clickwating);
 
 			CMyCommand* pcommand = CMyCmd_Move::StaticCreate(vmousept);
-			m_cmdlist->PushCommand(pcommand);
+			if(NULL != pcommand)
+				m_cmdlist->PushCommand(pcommand);
 
 			memset(m_clickwating , 0 , sizeof(m_clickwating));
 		}		
 	}
 	if( !m_inst->IS_CombineFirstKey(VK_CONTROL) && true == m_inst->GetOnceKeyDown_Check(VK_LBUTTON))
 	{
+		CMouseMgr::GetInstance()->Init_clickpos();
 
 		m_select = false;
-
 		//첫번째 키다운한 위치 저장
-		m_downpt = CMouseMgr::GetInstance()->GetScreenMousePt();
+		m_downpt = CMouseMgr::GetInstance()->GetClick_Pos();
+		D3DXVECTOR2 vmousept = m_downpt;
+		vmousept.x -= CScrollMgr::m_fScrollX;
+		vmousept.y -= CScrollMgr::m_fScrollY;
+		m_downpt = vmousept;
 
-		D3DXVECTOR2 vmousept;
-		vmousept = m_downpt;
+		CIngame_UIMgr::GetInstance()->UI_Reaction(m_downpt);
 
 		bool escape = false;
 
@@ -123,7 +165,10 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 					else
 					{
 						//클릭된 유닛을 구한다.
-						vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+						//vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
+						vmousept.x += CScrollMgr::m_fScrollX;
+						vmousept.y += CScrollMgr::m_fScrollY;
+
 						CArea_Mgr::GetInstance()->TargetChoice(vmousept);
 
 						if(NULL == CArea_Mgr::GetInstance()->GetChoiceTarget())
@@ -145,7 +190,9 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 					CUnitMgr::GetInstance()->Input_cmd(i , VK_LBUTTON);
 					//여기는 단축키 + 클릭 명령 생성
 					CMyCmd_InputClick* pcommand = CMyCmd_InputClick::StaticCreate(vmousept, i);
-					m_cmdlist->PushCommand(pcommand);
+
+					if(NULL != pcommand)
+						m_cmdlist->PushCommand(pcommand);
 
 					escape = true;
 					m_bwork = true;
@@ -182,7 +229,9 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 						if(CUnitMgr::GetInstance()->Input_cmd(b , a))
 						{
 							CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(b, a);
-							m_cmdlist->PushCommand(pcommand);
+
+							if(NULL != pcommand)
+								m_cmdlist->PushCommand(pcommand);
 						}
 						m_clickwating[a] = false;
 						m_clickwating[b] = false;
@@ -201,7 +250,9 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 							if(false == m_clickwating[a])
 							{
 								CMyCommand* pcommand = CMyCmd_InputKey::StaticCreate(a);
-								m_cmdlist->PushCommand(pcommand);
+								
+								if(NULL != pcommand)
+									m_cmdlist->PushCommand(pcommand);
 							}
 						}
 						else
@@ -220,24 +271,22 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 			}
 		}
 	}
+
+
 }
 
 void CInput_Stage::Intput_turbokey_reaction(void)
 {
 	float fspeed = 1500.f;
 
-	if(true == m_inst->GetTurboKeyDown_Check('1'))
+	for(int i = '0'; i <= '9'; ++i)
 	{
+		if(m_inst->GetTurboKeyDown_Check(i))
+		{
+			CUnitMgr::GetInstance()->Troop_call(i);
+		}
+	}
 
-	}
-	if(true == m_inst->GetTurboKeyDown_Check('2'))
-	{
-		CFontMgr::GetInstance()->Set_KeyInput_Font(L"터보 2 입력" );
-	}
-	if(true == m_inst->GetTurboKeyDown_Check('3'))
-	{
-		CFontMgr::GetInstance()->Set_KeyInput_Font(L"터보 3 입력" );
-	}
 	if( true == m_inst->GetTurboKeyDown_Check(VK_LEFT))
 	{
 		CScrollMgr::m_fScrollX -= GETTIME*fspeed;
@@ -254,15 +303,14 @@ void CInput_Stage::Intput_turbokey_reaction(void)
 	{
 		CScrollMgr::m_fScrollY += GETTIME*fspeed;
 	}
-	if( !m_inst->IS_CombineFirstKey(VK_CONTROL) &&
-		true == m_inst->GetTurboKeyDown_Check(VK_LBUTTON))
+	if( !m_inst->IS_CombineFirstKey(VK_CONTROL) && m_inst->GetTurboKeyDown_Check(VK_LBUTTON))
 	{
 		if(false == m_bwork && true == CIngame_UIMgr::GetInstance()->intersect_minimap_mousept(m_downpt))
 			CIngame_UIMgr::GetInstance()->SetMinimapCamPos(CMouseMgr::GetInstance()->GetScreenMousePt());
 
 		//지속적으로 엔드포인트 갱신
 		m_curpt = CMouseMgr::GetInstance()->GetScreenMousePt();
-		///*드래그 이미지에 관한 함수들이다.*/
+		///*드래그 이미지에 관한 함수.*/
 		CLineMgr::GetInstance()->SetRectPoint(m_downpt , m_curpt);
 		CLineMgr::GetInstance()->SetRenderSwitch(true);
 	}
@@ -295,9 +343,12 @@ void CInput_Stage::Intput_combine_reaction(void)
 		CArea_Mgr::GetInstance()->Choice_Same_unit(vpos);
 	}
 
-	if(m_inst->GetCombineKey_Check(VK_CONTROL , '1'))
+	for(int i = '0'; i <= '9'; ++i)
 	{
-		int a = 0;
+		if(m_inst->GetCombineKey_Check(VK_CONTROL , i))
+		{
+			CUnitMgr::GetInstance()->Assigned_troop(i);
+		}
 	}
 }
 

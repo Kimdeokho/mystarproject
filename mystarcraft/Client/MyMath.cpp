@@ -164,3 +164,11 @@ void CMyMath::Calculator_eight_idx(int* idxarr , const D3DXVECTOR2& vpos, const 
 	else
 		idxarr[LEFT]	= idxarr[CENTER] - 1;
 }
+
+bool CMyMath::FLT_compare(const float val1 , const float val2)
+{
+	if(fabsf(val1 - val2) <= FLT_EPSILON)
+		return true;
+	else
+		return false;
+}

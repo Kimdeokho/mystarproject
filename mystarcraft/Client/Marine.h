@@ -1,14 +1,14 @@
 #pragma once
 #include "unit.h"
 
-class CSkill;
+class CSkill_SP;
 class CMarine :
 	public CUnit
 {
 private:
 	CComponent*		m_com_weapon;
 
-	CSkill*			m_skill_sp;
+	CSkill_SP*			m_skill_sp;
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

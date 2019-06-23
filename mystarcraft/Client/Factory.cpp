@@ -267,6 +267,7 @@ void CFactory::Render(void)
 	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
+	m_com_production->Render();
 }
 
 void CFactory::Inputkey_reaction(const int& nkey)
@@ -505,12 +506,12 @@ void CFactory::Update_Cmdbtn(void)
 	{
 		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_VULTURE" , BTN_VULTURE , true);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_FAC_ADDON))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_FAC_ADDON ,m_eteamnumber))
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_SIEGETANK" , BTN_SIEGETANK , true);
 		else
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_SIEGETANK" , BTN_SIEGETANK , false);
 
-		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ARMOURY))
+		if(0 < CIngame_UIMgr::GetInstance()->Get_BuildTech(T_ARMOURY ,m_eteamnumber))
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GOLIATH" , BTN_GOLIATH , true);
 		else
 			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_GOLIATH" , BTN_GOLIATH, false);
@@ -615,7 +616,6 @@ void CFactory::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 	if(NULL != m_partbuilding)
 	{
 		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);

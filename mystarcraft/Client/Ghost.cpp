@@ -199,21 +199,31 @@ void CGhost::Inputkey_reaction(const int& nkey)
 			m_bmagicbox = false;
 		}
 	}
-	if('Q' == nkey)
+	else if('C' == nkey)
 	{
-		//m_fspeed = 30;
-		//m_eteamnumber = TEAM_0;
-	}
-	if('W' == nkey)
-	{
-		m_eteamnumber = TEAM_1;
-		//m_skill_sp->use();
-	}
-	if('A' == nkey)
-	{		
-	}
-	if('Z' == nkey)
-	{
+		if(m_unitinfo.is_hide)
+		{
+			for(int i = 0; i < TEAM_END; ++i)
+			{
+				if(i != m_eteamnumber)
+					m_unitinfo.detect[i] += 1;
+			}
+
+			m_unitinfo.is_hide = false;
+
+			((CCom_GhostAnim*)m_com_anim)->Clocking_off();
+		}
+		else
+		{
+			for(int i = 0; i < TEAM_END; ++i)
+			{
+				if(i != m_eteamnumber)
+					m_unitinfo.detect[i] -= 1;
+			}
+			m_unitinfo.is_hide = true;
+
+			((CCom_GhostAnim*)m_com_anim)->Clocking_on();
+		}
 	}
 }
 
@@ -264,6 +274,10 @@ bool CGhost::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('A' == nkey)
 		waitkey[nkey] = true;
+	else if('C' == nkey)
+		return true;
+	else if('N' == nkey)
+		waitkey[nkey] = true;
 
 	return false;
 }
@@ -284,7 +298,12 @@ void CGhost::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_T_BIO_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
@@ -319,28 +338,35 @@ void CGhost::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CGhost::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 
-	if(m_upg_info[UPG_T_VIC1].upg_cnt >= 1)
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_T_VIC1" , BTN_T_VIC1);
+	if(!m_unitinfo.is_hide)
+	{
+		if(m_upg_info[UPG_T_VIC1].upg_cnt >= 1)
+			pui->Create_Cmdbtn(6 , L"BTN_T_VIC1" , BTN_T_VIC1 , true , L"C");
+		else
+			pui->Create_Cmdbtn(6 , L"BTN_T_VIC1" , BTN_T_VIC1 , false , L"C");
+	}
 	else
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_T_VIC1" , BTN_T_VIC1 , false);
+		pui->Create_Cmdbtn(6 , L"BTN_CLOCKING_OFF" , BTN_CLOCKING_OFF, true , L"C");
+
 
 	if(m_upg_info[UPG_T_VIC0].upg_cnt >= 1)
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(7 , L"BTN_T_VIC0" , BTN_T_VIC0);
+		pui->Create_Cmdbtn(7 , L"BTN_T_VIC0" , BTN_T_VIC0);
 	else
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(7 , L"BTN_T_VIC0" , BTN_T_VIC0 , false);
+		pui->Create_Cmdbtn(7 , L"BTN_T_VIC0" , BTN_T_VIC0 , false);
+
 
 	if(m_upg_info[UPG_T_BCN0].upg_cnt >= 1)
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_GHOST_N" , BTN_GHOST_N);
+		pui->Create_Cmdbtn(8 , L"BTN_GHOST_N" , BTN_GHOST_N);
 	else
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_GHOST_N" , BTN_GHOST_N , false);
+		pui->Create_Cmdbtn(8 , L"BTN_GHOST_N" , BTN_GHOST_N , false);
 }
 
 void CGhost::Update_Wireframe(void)

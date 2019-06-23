@@ -379,6 +379,7 @@ VOID CGameIocp::OnIoRead(VOID *object, DWORD dataLength)
 				onPT_ROOM_USER_RENEWAL(ConnectedUser , Packet);
 			else if(Protocol == PT_LOAD_COMPLETE)
 				onPT_LOAD_COMPLETE(ConnectedUser , Packet);
+			// Ingame관련 패킷
 
 //#ifdef _INCLUDE_DATABASE
 //			else if (Protocol == PT_CHANNEL_NICKNAME)				// PROTOCOL : PT_CHANNEL_NICKNAME

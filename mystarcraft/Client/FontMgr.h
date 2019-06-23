@@ -32,8 +32,8 @@ public:
 	void	Set_KeyInput_Font(const TCHAR* szfont , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0));
 	void	SetFontInfo(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,0,255,0));	
 
-	void	SetNoticeFont(const TCHAR* szfont , float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,255,255,255));
-	void	SetNoticeFont(const TCHAR* szfont , const int& fontnumber, float posX , float posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,255,255,255));
+	void	SetNoticeFont(const TCHAR* szfont , float posX , float posY , const float notice_time , D3DCOLOR _color = D3DCOLOR_ARGB(255,255,255,255));
+	void	SetNoticeFont(const TCHAR* szfont , const int& fontnumber, float posX , float posY , const float notice_time, D3DCOLOR _color = D3DCOLOR_ARGB(255,255,255,255));
 
 	void	SetInfomation_font(const TCHAR* szfont , const int& number1, const int& number2, const float& posX , const float& posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,255,255,255));
 	void	SetInfomation_font(const TCHAR* szfont , const float& posX , const float& posY , D3DCOLOR _color = D3DCOLOR_ARGB(255,255,255,255));

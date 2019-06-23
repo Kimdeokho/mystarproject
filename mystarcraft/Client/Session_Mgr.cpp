@@ -6,7 +6,9 @@
 #include "Login_UIMgr.h"
 #include "Loby_UIMgr.h"
 #include "Room_UIMgr.h"
+#include "TimeMgr.h"
 #include "FontMgr.h"
+#include "Ingame_UIMgr.h"
 #include "RoomSession_Mgr.h"
 
 #include "KeyMgr.h"
@@ -14,6 +16,9 @@
 #include "Input_Stage.h"
 #include "TurnData.h"
 #include "MyCommandList.h"
+#include "MyCmd_Leave.h"
+
+#include "UI_Chat.h"
 
 IMPLEMENT_SINGLETON(CSession_Mgr)
 
@@ -39,6 +44,7 @@ void CSession_Mgr::Initialize(void)
 	m_subTurnNumber = 0;
 	m_TurnNumber = -2;
 	m_startstage = false;
+	m_leave_sign = false;
 
 	m_vecTurnData.resize(100000);
 
@@ -52,30 +58,35 @@ void CSession_Mgr::Update(void)
 }
 void CSession_Mgr::SendTurnPacket(void)
 {
-	if(NS_PLAYING != m_estate)
+	if(NS_PLAYING != m_estate &&
+		NS_LEAVE != m_estate)
 		return; //여기도 디스커넥트 일수도
 
+
 	m_subTurnNumber++;
-	if ( m_subTurnNumber == 8 )
+	if ( m_subTurnNumber == 5 )
 	{
-		CInput_Stage* pinput = ((CInput_Stage*)CKeyMgr::GetInstance()->GetInputDevice());
-		CMyCommandList* pcmdlist = pinput->GetCmdList();
+		if(NS_LEAVE != m_estate)
+		{
+			CInput_Stage* pinput = ((CInput_Stage*)CKeyMgr::GetInstance()->GetInputDevice());
+			CMyCommandList* pcmdlist = pinput->GetCmdList();
 
-		CTurnData* pturndata = new CTurnData(pcmdlist);				
+			CTurnData* pturndata = new CTurnData(pcmdlist);				
 
-		//TurnNumber | SessionID | CmdSize(커맨드 갯수) | CmdType | 커맨드 데이터들
-		CStreamSP packet;
-		packet->SetBuffer(WriteBuffer);
-		packet->WriteInt32(m_TurnNumber + 2);
-		packet->WriteDWORD_PTR(m_session_info.SESSION_ID);
+			//TurnNumber | SessionID | CmdSize(커맨드 갯수) | CmdType | 커맨드 데이터들
+			CStreamSP packet;
+			packet->SetBuffer(WriteBuffer);
+			packet->WriteInt32(m_TurnNumber + 2);
+			packet->WriteDWORD_PTR(m_session_info.SESSION_ID);
 
-		pturndata->Write(packet);
+			pturndata->Write(packet);
 
-		CRoomSession_Mgr::GetInstance()->WriteTurnData(PU_TURN_DATA ,WriteBuffer ,packet->GetLength());
-		//보내고
+			CRoomSession_Mgr::GetInstance()->WriteTurnData(PU_TURN_DATA ,WriteBuffer ,packet->GetLength());
+			//보내고
 
-		m_vecTurnData[m_TurnNumber + 2].insert(pair<DWORD_PTR , CTurnData*>(m_session_info.SESSION_ID , pturndata));
-		pinput->ClearCmdList();
+			m_vecTurnData[m_TurnNumber + 2].insert(pair<DWORD_PTR , CTurnData*>(m_session_info.SESSION_ID , pturndata));
+			pinput->ClearCmdList();
+		}
 
 		if(m_TurnNumber >= 0)
 		{
@@ -86,12 +97,22 @@ void CSession_Mgr::SendTurnPacket(void)
 			++m_TurnNumber;
 			m_subTurnNumber = 0;
 		}
+
+		if(m_leave_sign)
+			m_estate = NS_LEAVE;
 	}
 }
 void CSession_Mgr::TryAdvanceTurn(void)
 {
 	int playercnt = CRoomSession_Mgr::GetInstance()->GetPlayerCnt();
-	if(m_vecTurnData[m_TurnNumber + 1].size() == playercnt)
+
+	if(1 == playercnt)
+	{
+		//승리...
+		int a = 0;
+	}
+
+	if(m_vecTurnData[m_TurnNumber + 1].size() == playercnt) //@@@@여기 m_TurnNumbe + 1과
 	{
 		if(NS_DELAY == m_estate)
 		{
@@ -102,19 +123,18 @@ void CSession_Mgr::TryAdvanceTurn(void)
 			pcmdlist->ClearCommand();			
 
 			Sleep(100);
-			//여기가 디스커넥트인가
-
-			
+			//여기가 디스커넥트인가			
 		}
 		++m_TurnNumber;
 		m_subTurnNumber = 0;
 
-		map<DWORD_PTR , CTurnData*>::iterator iter = m_vecTurnData[m_TurnNumber].begin();
+		//@@@@여기 m_TurnNumber가 같은 수를 나타낸다.
+		map<DWORD_PTR , CTurnData*>::iterator iter = m_vecTurnData[m_TurnNumber].begin(); 
 		map<DWORD_PTR , CTurnData*>::iterator iter_end = m_vecTurnData[m_TurnNumber].end();
 
 		for( ; iter != iter_end; ++iter)
 		{
-			CTurnData* temp = iter->second;
+			//CTurnData* temp = iter->second;
 
 			iter->second->GetCmdList()->ProcessCmd();
 		}
@@ -123,7 +143,7 @@ void CSession_Mgr::TryAdvanceTurn(void)
 	else
 	{
 		m_estate = NS_DELAY; //여기가 디스커넥트인가
-		CFontMgr::GetInstance()->SetNoticeFont(L"디스커넥트다 씨발꺼" , 320, 240);
+		CFontMgr::GetInstance()->SetNoticeFont(L"상대로부터 턴이 도착하지 않음" , 320, 240 , 3.f);
 	}
 }
 void CSession_Mgr::Read_UDPPacket(void)
@@ -273,7 +293,8 @@ void CSession_Mgr::Read_TCPPacket(void)
 			{
 				READ_TCP_PACKET(PT_ROOM_RECEIVE_CHAT_M);
 				//채팅메시지 입수
-				CRoom_UIMgr::GetInstance()->Receive_Chat(Data);
+				if(SCENE_ROOM == CSceneMgr::GetInstance()->GetScene())
+					CRoom_UIMgr::GetInstance()->Receive_Chat(Data);
 			}
 			else if(PT_ROOM_TRIBE_CHANGE_M == dwProtocol)
 			{
@@ -304,6 +325,7 @@ void CSession_Mgr::HandlerTurnPacket(CStreamSP& readpacket)
 
 	turndata->Read(readpacket);
 	m_vecTurnData[turn_number].insert(pair<DWORD_PTR , CTurnData*>(session_id , turndata));
+
 }
 CTestSession* CSession_Mgr::GetTCP_Session(void)
 {
@@ -341,6 +363,10 @@ SESSION_INFO CSession_Mgr::GetSession_Info(void)
 	return m_session_info;
 }
 
+void CSession_Mgr::Setleave_sign(const bool leavesign)
+{
+	m_leave_sign = leavesign;
+}
 void CSession_Mgr::Release(void)
 {
 	if(NULL != m_TCPsession)
@@ -374,3 +400,4 @@ void CSession_Mgr::Release(void)
 	m_vecTurnData.clear();
 	vector<map<DWORD_PTR , CTurnData*>>().swap(m_vecTurnData);
 }
+

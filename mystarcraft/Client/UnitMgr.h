@@ -11,7 +11,7 @@ private:
 	list<CObj*>		m_curunitList;
 
 	//0~9번 부대를 관리할 컨테이너
-	vector<CObj*>	m_troops[10];
+	map<int , CObj*>	m_troops[10]; //<objcnt값 , obj값>
 
 	D3DXVECTOR2		m_vUnitcenterpt;
 	D3DXVECTOR2		m_vGoalPos;
@@ -20,7 +20,10 @@ private:
 
 	int				m_unitcnt;
 public:
+	void Troop_call(const int idx);
+	void Assigned_troop(const int idx);
 	void SetUnit(CObj* pobj);
+	bool is_unit(const CObj* const pobj);
 public:
 	int				GetSelectunit_size(void);
 	bool			GetUnitlistempty(void);

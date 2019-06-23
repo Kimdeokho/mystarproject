@@ -198,6 +198,7 @@ private:
 	VOID onPT_ROOM_READY(CConnectedUser *connectedUser, BYTE *packet);
 	VOID onPT_ROOM_START(CConnectedUser *connectedUser, BYTE *packet);
 	VOID onPT_GAME_LOAD_COMPLETE(CConnectedUser *connectedUser, BYTE *packet);
+
 //#ifdef _INCLUDE_DATABASE
 //	VOID onPT_CHANNEL_NICKNAME(CConnectedUser *connectedUser, BYTE *packet);
 //	VOID onPT_CHANNEL_REQ_USERINFO(CConnectedUser *connectedUser, BYTE *packet);

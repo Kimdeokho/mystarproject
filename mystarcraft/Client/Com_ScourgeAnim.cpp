@@ -19,7 +19,7 @@ void CCom_ScourgeAnim::Initialize(CObj* pobj)
 {
 	m_battack_end = true;
 
-	SetAnimation(L"IDLE");
+	SetAnimation(L"MOVE");
 	m_pobj = pobj;
 	m_rotation_speed = 80;
 

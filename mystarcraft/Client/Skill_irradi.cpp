@@ -67,7 +67,7 @@ void CSkill_irradi::Update(void)
 		m_damage_time = 0.f;
 
 		//뎀지주기
-		CArea_Mgr::GetInstance()->Setirradi_damage(m_pobj , 3 , DAMAGE_NOMAL , m_vPos , m_fsplash_range
+		CArea_Mgr::GetInstance()->Setirradi_damage(m_pobj , 3 , DAMAGE_MAGIC , m_vPos , m_fsplash_range
 			, true , m_injure_list);
 
 		m_injure_list.clear();

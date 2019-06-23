@@ -10,6 +10,7 @@
 #include "Ingame_UIMgr.h"
 #include "MyMath.h"
 #include "ObjMgr.h"
+#include "Session_Mgr.h"
 #include "LineMgr.h"
 
 #include "Com_fog.h"
@@ -291,7 +292,12 @@ void CZergling::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 			tempdamage = float(idamage - shild); 
 	}
 	else
-		tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt);
+	{
+		if(DAMAGE_MAGIC == edamagetype)
+			tempdamage = (float)idamage;
+		else
+			tempdamage = (float)idamage - (m_unitinfo.armor + m_upg_info[UPG_Z_GROUND_ARMOR].upg_cnt);
+	}
 
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{

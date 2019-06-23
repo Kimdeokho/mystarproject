@@ -37,6 +37,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packet", "Packet", "{7EA086
 		Packet\UdpProtocol.h = Packet\UdpProtocol.h
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoundPath", "SoundPath", "{D0F3A326-7AF7-4153-A57C-C51DC148BE86}"
+	ProjectSection(SolutionItems) = preProject
+		Data\sound\battle_soundpath.txt = Data\sound\battle_soundpath.txt
+		Data\sound\bgm_soundpath.txt = Data\sound\bgm_soundpath.txt
+		Data\sound\effect_soundpath.txt = Data\sound\effect_soundpath.txt
+		Data\sound\voice_soundpath.txt = Data\sound\voice_soundpath.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32

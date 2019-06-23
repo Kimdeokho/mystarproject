@@ -43,7 +43,7 @@ void CLurker_Thornfire::Update(void)
 {
 	m_thorn_delay += GETTIME;
 
-	if(m_thorn_delay > 0.08f)
+	if(m_thorn_delay > 0.06f) //가시 생성간격
 	{
 		++m_curcnt;
 		m_thorn_delay = 0.f;
@@ -51,7 +51,7 @@ void CLurker_Thornfire::Update(void)
 		CObj* pbullet = NULL;
 
 		D3DXVECTOR2 vpos;
-		vpos = m_vstart + m_vcurdir * (m_curcnt * 32 * 1.f); //1.25에서 바꿈
+		vpos = m_vstart + m_vcurdir * (m_curcnt * 32 * 1.f); 
 
 		pbullet = new CThorn_Bullet;
 
@@ -62,7 +62,7 @@ void CLurker_Thornfire::Update(void)
 
 		for(int i = 0; i < 3; ++i)
 		{
-			vpos = m_vstart + m_vcurdir * ((m_curcnt + i) * 32 * 1.f); //1.25에서 바꿈
+			vpos = m_vstart + m_vcurdir * ((m_curcnt + i) * 32 * 1.f);
 
 			CArea_Mgr::GetInstance()->Setsplash_damage(m_pobj, 
 				m_weapon_info.damage + m_upg_info[UPG_Z_MISSILE_ATT].upg_cnt*2,

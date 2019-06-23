@@ -4,6 +4,7 @@
 unsigned int APIENTRY	LodingStart(void* parg);
 
 
+class CSoundDevice;
 class CTextureMgr;
 class CLoding
 {
@@ -15,6 +16,7 @@ private:
 	HANDLE				m_Thread;
 	TCHAR				m_szPath[MAX_PATH];
 	CTextureMgr*		m_pTextureMgr;
+	CSoundDevice*		m_pSoundDevice;
 private:
 	bool				m_bLodingComplete;
 public:

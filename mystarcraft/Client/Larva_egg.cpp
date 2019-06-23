@@ -12,6 +12,8 @@
 #include "ObjMgr.h"
 #include "LineMgr.h"
 #include "ObjMgr.h"
+#include "FontMgr.h"
+#include "Session_Mgr.h"
 
 #include "Com_fog.h"
 #include "Com_LarvaEggAnim.h"
@@ -23,13 +25,15 @@
 
 #include "UI_Select.h"
 #include "UI_Energy_bar.h"
+#include "UI_Cmd_info.h"
+#include "UI_Wireframe.h"
+
 #include "Building_Preview.h"
 #include "GeneraEff.h"
 
 #include "Input_Interface.h"
 
 #include "MyCmd_Building.h"
-#include "UI_Cmd_info.h"
 #include "Corpse.h"
 
 #include "Zerg_building.h"
@@ -120,6 +124,13 @@ void CLarva_egg::Initialize(void)
 	m_energybar_ui->Initialize();
 
 	m_build_hp = 0;
+
+
+	if(m_eteamnumber == CSession_Mgr::GetInstance()->GetTeamNumber())
+	{
+		CUnitMgr::GetInstance()->SetUnit(this);
+		SetSelect(GENERAL_SELECT );
+	}
 }
 
 void CLarva_egg::Update(void)
@@ -199,7 +210,35 @@ void CLarva_egg::Update_Cmdbtn(void)
 
 void CLarva_egg::Update_Wireframe(void)
 {
+	D3DXVECTOR2 interface_pos = CIngame_UIMgr::GetInstance()->GetMainInterface_pos();
 
+	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
+	{		
+		CUI* pui = NULL;
+		pui = new CUI_Wireframe(L"WIRE_EGG" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui->Initialize();
+		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
+
+		CFontMgr::GetInstance()->SetInfomation_font(L"Zerg Egg" ,interface_pos.x + 320 , interface_pos.y + 390 );
+	}
+
+	D3DCOLOR font_color;
+
+	int iratio = m_unitinfo.maxhp / m_unitinfo.hp;
+
+	if( iratio <= 1)
+		font_color = D3DCOLOR_ARGB(255,0,255,0);
+	else if( 1 < iratio && iratio <= 2)
+		font_color = D3DCOLOR_ARGB(255,255,255,0);
+	else if( 2 < iratio)
+		font_color = D3DCOLOR_ARGB(255,255,0,0);
+
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"%d/%d" , m_unitinfo.hp , m_unitinfo.maxhp,
+		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
+
+	CFontMgr::GetInstance()->Setbatch_Font(L"¹æ¾î·Â:%d + %d",m_unitinfo.armor, 0
+		,interface_pos.x + 310 , interface_pos.y + 458 , D3DCOLOR_ARGB(255,255,255,255));
 }
 
 void CLarva_egg::Dead(void)
@@ -243,6 +282,12 @@ void CLarva_egg::Release(void)
 		pobj->SetPos(m_vPos);
 		pobj->Initialize();
 
+		if(CUnitMgr::GetInstance()->is_unit(this))
+		{			
+			CUnitMgr::GetInstance()->SetUnit(pobj);
+			pobj->SetSelect(GENERAL_SELECT);
+		}
+
 		if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
 			pobj->SetPos(m_vPos);
 		else
@@ -261,15 +306,17 @@ void CLarva_egg::Release(void)
 				if(true == isrally)
 				{
 					pobj->SetOrder(ORDER_MOVE);
-					pcom = pobj->GetComponent(COM_PATHFINDE);
+					
 
 					if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
 					{
+						pcom = pobj->GetComponent(COM_PATHFINDE);
 						((CCom_Pathfind*)pcom)->SetGoalPos(rallypoint , false);
 						((CCom_Pathfind*)pcom)->Setrally_path(rallypath);
 					}
 					else
 					{					
+						pcom = pobj->GetComponent(COM_AIR_PATHFIND);
 						((CCom_AirPathfind*)pcom)->SetGoalPos(rallypoint , false);
 					}
 				}
@@ -277,6 +324,8 @@ void CLarva_egg::Release(void)
 		}
 
 	}
+
+	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
 
 	CObj::area_release();

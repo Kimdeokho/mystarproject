@@ -244,39 +244,29 @@ bool CAcademy::Input_cmd(const int& firstkey , const int& secondkey)
 }
 void CAcademy::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
 	if(IDLE == m_unitinfo.state)
 	{
 		if( false == m_upg_info[UPG_T_BA0].proceeding && m_upg_info[UPG_T_BA0].upg_cnt < 1)
-		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_BA0" , BTN_T_BA0 , true);
-		}
+			pui->Create_Cmdbtn(0 , L"BTN_T_BA0" , BTN_T_BA0 , true , L"Q");
 		if( false == m_upg_info[UPG_T_STEAMPACK].proceeding && m_upg_info[UPG_T_STEAMPACK].upg_cnt < 1)
-		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STEAMPACK" , BTN_STEAMPACK , true);
-		}
+			pui->Create_Cmdbtn(1 , L"BTN_STEAMPACK" , BTN_STEAMPACK , true , L"W");
 		if( false == m_upg_info[UPG_T_BA3].proceeding && m_upg_info[UPG_T_BA3].upg_cnt < 1)
-		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_BA3" , BTN_T_BA3 , true);
-		}
+			pui->Create_Cmdbtn(3 , L"BTN_T_BA3" , BTN_T_BA3 , true , L"E");
 		if( false == m_upg_info[UPG_T_BA4].proceeding && m_upg_info[UPG_T_BA4].upg_cnt < 1)
-		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_T_BA4" , BTN_T_BA4 , true);
-		}
+			pui->Create_Cmdbtn(4 , L"BTN_T_BA4" , BTN_T_BA4 , true , L"A");
 		if( false == m_upg_info[UPG_T_BA5].proceeding && m_upg_info[UPG_T_BA5].upg_cnt < 1)
-		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(5 , L"BTN_T_BA5" , BTN_T_BA5 , true);
-		}
+			pui->Create_Cmdbtn(5 , L"BTN_T_BA5" , BTN_T_BA5 , true , L"S");
 	}
 	else if(DEVELOPING == m_unitinfo.state)
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 	else if(AIR_IDLE == m_unitinfo.state ||
 		TAKE_OFF == m_unitinfo.state)
 	{
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
+		pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
+		pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
+		pui->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
 	}
 
 }
@@ -383,46 +373,17 @@ void CAcademy::Dead(void)
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddCorpse(pobj);
 
-	CUnitMgr::GetInstance()->clear_destroy_unitlist(this);
 
-	if( true == m_upg_info[UPG_T_STEAMPACK].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_STEAMPACK].obj_num)
+	for(int i = 0; i < UPG_END; ++i)
 	{
-		m_upg_info[UPG_T_STEAMPACK].proceeding = false;
-		m_upg_info[UPG_T_STEAMPACK].obj_num = 0;
-		m_upg_info[UPG_T_STEAMPACK].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA0].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA0].obj_num)
-	{
-		m_upg_info[UPG_T_BA0].proceeding = false;
-		m_upg_info[UPG_T_BA0].obj_num = 0;
-		m_upg_info[UPG_T_BA0].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA3].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA3].obj_num)
-	{
-		m_upg_info[UPG_T_BA3].proceeding = false;
-		m_upg_info[UPG_T_BA3].obj_num = 0;
-		m_upg_info[UPG_T_BA3].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA4].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA4].obj_num)
-	{
-		m_upg_info[UPG_T_BA4].proceeding = false;
-		m_upg_info[UPG_T_BA4].obj_num = 0;
-		m_upg_info[UPG_T_BA4].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_BA5].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_BA5].obj_num)
-	{
-		m_upg_info[UPG_T_BA5].proceeding = false;
-		m_upg_info[UPG_T_BA5].obj_num = 0;
-		m_upg_info[UPG_T_BA5].curtime = 0;
+		if( true == m_upg_info[i].proceeding &&
+			m_obj_id == m_upg_info[i].obj_num)
+		{
+			m_upg_info[i].proceeding = false;
+			m_upg_info[i].obj_num = 0;
+			m_upg_info[i].curtime = 0;
+			break;
+		}
 	}
 }
 void CAcademy::Release(void)

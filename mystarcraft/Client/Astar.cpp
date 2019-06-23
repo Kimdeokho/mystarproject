@@ -259,7 +259,7 @@ void CAstar::Make_UnitNode( PATH_NODE* parent_node ,const D3DXVECTOR2& vpos , co
 
 	m_openlist->push_node(pnewnode);
 }
-void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const int& stepsize, const vector<D3DXVECTOR2>& terrain_path , const int& terrain_idx)
+void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos , const int& stepsize, const vector<D3DXVECTOR2>& terrain_path , const int terrain_idx)
 {	
 
 	memset(m_findidx , 0 , sizeof(m_findidx));
@@ -278,9 +278,9 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 		m_terrain_end = true;
 	
 
-	if( NULL != m_ptarget)
-		m_maxnodecnt = 75;
-	else
+	//if( NULL != m_ptarget)
+	//	m_maxnodecnt = 75;
+	//else
 		m_maxnodecnt = MAXPATH_IDX;
 
 	if(m_maxnodecnt > MAXPATH_IDX)
@@ -332,7 +332,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 	int accrue= 0; 
 	D3DXVECTOR2 tempv_center;
 	MYRECT<float> temprc_center;
-	while(accrue <= 5) //보류 조건
+	while(accrue <= 7) //보류 조건
 	{
 		++accrue;
 
@@ -350,6 +350,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if(NULL == pnode)
 		{
+			vecpath.clear();
 			while(NULL != m_dummynodeH)
 			{
 				vecpath.push_back(m_dummynodeH->vPos);
@@ -360,7 +361,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if( pnode->index == m_goalidx)
 		{
-			//m_maxnodecnt = MAXPATH_IDX;
+			vecpath.clear();
 			if( ORDER_MOVE_BUILD == m_pObj->GetUnitinfo().order)
 				pnode->vPos = m_vGoal_pos;
 
@@ -374,6 +375,7 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if( true == m_is_escape )
 		{
+			vecpath.clear();
 			m_is_escape = false;
 			m_pathpool_idx = 0;
 
@@ -395,33 +397,17 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if(m_pathpool_idx >= m_maxnodecnt - 1)
 		{
-
-			//dummyG
-			if(!m_terrain_end)
-			{
-				PATH_NODE* tempnode = m_dummynodeH;
-
-				while(NULL != tempnode)
-				{
-					vecpath.push_back(tempnode->vPos);
-					tempnode = tempnode->pParent;
-				}
-			}
-			else
-			{
-				//m_maxnodecnt = 100;
-				PATH_NODE* tempnode = NULL;
+			vecpath.clear();
+			PATH_NODE* tempnode = NULL;
+			if(NULL != m_ptarget)
 				tempnode = m_dummynodeH;
-				//if(NULL == m_ptarget)
-				//	tempnode = m_dummynodeX;
-				//else
-				//	tempnode = m_dummynodeH;
+			else
+				tempnode = m_dummynodeH;
 
-				while(NULL != tempnode)
-				{
-					vecpath.push_back(tempnode->vPos);
-					tempnode = tempnode->pParent;
-				}
+			while(NULL != tempnode)
+			{
+				vecpath.push_back(tempnode->vPos);
+				tempnode = tempnode->pParent;
 			}
 
 			//m_dummynode에 NULL이 들어가는이유 마지막에 NULL을 대입받은후
@@ -539,14 +525,7 @@ bool CAstar::Check_OpenList(const D3DXVECTOR2& idxpos , PATH_NODE* parentnode)
 	return true;
 }
 
-void CAstar::Release(void)
-{
-	Release_unit_closelist();
-	Release_unit_openlist();
 
-	delete[] m_unitpath_pool;
-	m_unitpath_pool = NULL;
-}
 void CAstar::Release_unit_closelist(void)
 {
 	m_pathpool_idx = 0;
@@ -626,4 +605,12 @@ void CAstar::Path_Render(void)
 
 		CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,255,255));
 	}
+}
+void CAstar::Release(void)
+{
+	Release_unit_closelist();
+	Release_unit_openlist();
+
+	delete[] m_unitpath_pool;
+	m_unitpath_pool = NULL;
 }

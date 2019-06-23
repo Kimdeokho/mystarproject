@@ -18,6 +18,7 @@ private:
 
 	PLACE_DATA		m_placedata[8];
 public:
+	void	quit_play(const DWORD sessionid);
 	void	Receive_NewUser(const S_PT_ROOM_USER_ENTRY_M& _info);
 	void	Init_RoomUserInfo(const S_PT_ROOM_USER_RENEWAL_SUCC_U& _info);
 	void	Exit_Others(const S_PT_ROOM_LEAVE_M& _info);

@@ -14,6 +14,7 @@
 #include "LineMgr.h"
 #include "Session_Mgr.h"
 #include "RoomSession_Mgr.h"
+#include "SoundDevice.h"
 
 
 CMaingame::CMaingame(void)
@@ -32,8 +33,8 @@ HRESULT CMaingame::Initialize(void)
 	_CrtSetBreakAlloc(250552);
 	_CrtMemDumpAllObjectsSince(0); */
 
-//	AllocConsole();
-//	freopen( "CONOUT$",  "wt", stdout);
+	//AllocConsole();
+	//freopen( "CONOUT$",  "wt", stdout);
 
 	WSADATA WsaData;
 	WSAStartup(MAKEWORD(2, 2), &WsaData);	// 2.2 버전을 로드합니다.
@@ -49,6 +50,7 @@ HRESULT CMaingame::Initialize(void)
 	CFontMgr::GetInstance()->Initialize();
 	CLineMgr::GetInstance()->Initialize();
 	CSession_Mgr::GetInstance()->Initialize();
+	CSoundDevice::GetInstance()->Init();
 	
 
 	m_pFont = CFontMgr::GetInstance();
@@ -84,6 +86,7 @@ void CMaingame::Render(void)
 	m_pDevice->Render_End();	
 	m_pDevice->GetDevice()->Present(NULL, NULL , NULL , NULL);
 	//장치가 소유하는 백 버퍼의 순서 중(안)에서, 다음의 버퍼의 컨텐츠를 제시한다.
+
 }
 void CMaingame::Release(void)
 {
@@ -100,7 +103,9 @@ void CMaingame::Release(void)
 	CArea_Mgr::DestroyInstance();
 	CLineMgr::DestroyInstance();
 	CRoomSession_Mgr::DestroyInstance();
+	CSoundDevice::DestroyInstance();
 
 	CStream::Extingtion_pointer();
+
 	//FreeConsole();
 }

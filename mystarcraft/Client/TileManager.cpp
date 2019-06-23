@@ -690,7 +690,7 @@ void CTileManager::SightOffRender(const int& idx ,const TEAM_NUMBER& eteam)
 			m_minifog_offidx.push_back(idx);
 	}
 }
-void CTileManager::SightOnRender(const int& idx ,const int& irange , vector<int>& sightoff_list , bool* fogsearch ,CObj* pobj)
+void CTileManager::SightOnRender(const int idx ,const int irange , vector<int>& sightoff_list , bool* fogsearch ,CObj* pobj)
 {
 	//range는 가급적 홀수
 

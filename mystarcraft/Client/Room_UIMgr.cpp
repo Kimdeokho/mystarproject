@@ -17,6 +17,7 @@
 #include "SceneMgr.h"
 #include "Session_Mgr.h"
 #include "RoomSession_Mgr.h"
+#include "SoundDevice.h"
 
 IMPLEMENT_SINGLETON(CRoom_UIMgr);
 CRoom_UIMgr::CRoom_UIMgr(void)
@@ -40,6 +41,8 @@ void CRoom_UIMgr::Initialize(void)
 	m_userlist->Initialize();
 	m_list.push_back(m_userlist);
 	m_rootlist.push_back(m_userlist);
+
+
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	m_chat = new CUIRoot;
 	m_chat->Set_texturekey(L"CHAT");
@@ -149,6 +152,7 @@ void CRoom_UIMgr::Initialize(void)
 	//어떻게 디자인하느냐에 따라 다르다 
 	
 
+	CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_JOIN , 0);
 }
 
 void CRoom_UIMgr::Update(void)
@@ -196,17 +200,6 @@ void CRoom_UIMgr::Render(void)
 		(*iter)->Render();
 }
 
-void CRoom_UIMgr::Release(void)
-{
-	UI_ITER iter = m_list.begin();
-	UI_ITER iter_end = m_list.end();
-
-	for( ; iter != iter_end; ++iter)
-		Safe_Delete((*iter));
-
-	m_list.clear();
-}
-
 void CRoom_UIMgr::Exit(EXIT_FLAG eflag)
 {
 	bool is_check = false;
@@ -223,6 +216,8 @@ void CRoom_UIMgr::Exit(EXIT_FLAG eflag)
 
 	if(!is_check)
 	{
+		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_EXIT , 0);
+
 		iter = m_rootlist.begin();
 		iter_end = m_rootlist.end();
 		for( ; iter != iter_end; ++iter)
@@ -276,9 +271,10 @@ void CRoom_UIMgr::SendChat(void)
 		WCHAR szmessage[32] = L"";
 		SESSION_INFO psession_info = CSession_Mgr::GetInstance()->GetSession_Info();
 		wcscpy_s(szmessage , m_chat_ime->GetMessage());
+
 		WRITE_TCP_PACKET(PT_ROOM_SENDCHAT , WriteBuffer,
 			WRITE_PT_ROOM_SENDCHAT(WriteBuffer,
-			psession_info.USER_ID ,szmessage , psession_info.SESSION_ID));
+			psession_info.USER_ID ,szmessage , psession_info.SESSION_ID , 0.f , -1.f));
 
 		m_chat_ime->TextClear();
 	}
@@ -292,4 +288,15 @@ void CRoom_UIMgr::Receive_Chat(const S_PT_ROOM_RECEIVE_CHAT_M& pinfo)
 void CRoom_UIMgr::SetCombobox_ChangeData(const WCHAR* _race, const int& slotidx)
 {
 	m_combobox[slotidx]->SetRepresentData(_race);
+}
+
+void CRoom_UIMgr::Release(void)
+{
+	UI_ITER iter = m_list.begin();
+	UI_ITER iter_end = m_list.end();
+
+	for( ; iter != iter_end; ++iter)
+		Safe_Delete((*iter));
+
+	m_list.clear();
 }

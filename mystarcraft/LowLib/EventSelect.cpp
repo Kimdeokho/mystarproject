@@ -20,6 +20,7 @@ VOID CEventSelect::SelectThreadCallback(VOID)
 	{
 		SetEvent(mStartupEventHandle);
 
+		//mSelectEventHandle I/O이벤트가 일어날때 signal 된다
 		EventID = ::WaitForMultipleObjects(2, ThreadEvents, FALSE, INFINITE);
 		switch (EventID)
 		{

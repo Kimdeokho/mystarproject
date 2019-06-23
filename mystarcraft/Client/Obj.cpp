@@ -35,7 +35,7 @@ CObj::CObj(void)
 
 
 	m_bdestroy = false;
-	m_bSelect = false;
+	m_isSelect = false;
 
 	m_globalobj_cnt += 1;
 	m_objcnt = m_globalobj_cnt;
@@ -227,7 +227,7 @@ void CObj::SetSelect(SELECT_FLAG eflag ,D3DCOLOR ecolor)
 
 	if(eflag == NONE_SELECT)
 	{
-		m_bSelect = false;
+		m_isSelect = false;
 		if(NULL != m_energybar_ui)
 			m_energybar_ui->SetActive(false);
 	}
@@ -235,7 +235,7 @@ void CObj::SetSelect(SELECT_FLAG eflag ,D3DCOLOR ecolor)
 	{
 		if(eflag != BLINK_SELECT)
 		{
-			m_bSelect = true;
+			m_isSelect = true;
 			if(NULL != m_energybar_ui)
 				m_energybar_ui->SetActive(true);		
 		}
@@ -245,7 +245,10 @@ void CObj::SetState(STATE state)
 {
 	m_unitinfo.state = state;
 }
-
+bool CObj::Getis_select(void)
+{
+	return m_isSelect;
+}
 CATEGORY CObj::GetCategory(void)
 {
 	return m_ecategory;
@@ -317,7 +320,13 @@ void CObj::SetSpeed(const float& fspeed)
 void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 {
 	//m_hp -= idamage;
-	float tempdamage = (float)idamage - m_unitinfo.armor;
+	float tempdamage = 0.f;
+	
+	if(DAMAGE_MAGIC == edamagetype)
+		tempdamage = (float)idamage;
+	else
+		tempdamage = (float)idamage - m_unitinfo.armor;
+
 	if( ARMOR_SMALL == m_unitinfo.eArmorType)
 	{
 		if(DAMAGE_BOOM == edamagetype)
@@ -337,6 +346,14 @@ void CObj::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 	}
 
 	m_unitinfo.hp -= (int)(tempdamage + 0.5f);
+
+	if((int)tempdamage <= 0)
+	{
+		if( 0 == rand()%2)
+			tempdamage = 1;
+		else
+			tempdamage = 0;
+	}
 
 	if(m_unitinfo.hp <= 0)
 	{

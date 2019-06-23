@@ -35,8 +35,11 @@ void CCom_Meleesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_target_objid = -1;
 	//m_bmelee_search = true;
 
-	m_meleerangeX = 4.5f;
-	m_meleerangeY = 4.5f;
+	m_meleerangeX = 5.0f;
+	m_meleerangeY = 5.0f;
+
+	//m_meleerangeX = GETTIME * m_pobj->GetUnitinfo().fspeed * 3.f;
+	//m_meleerangeY = GETTIME * m_pobj->GetUnitinfo().fspeed * 3.f;
 
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);
 
@@ -55,13 +58,6 @@ void CCom_Meleesearch::Update(void)
 
 	if( NULL != m_ptarget)
 	{
-		//갑작스레 팀이 바뀔때 예외처리인데 사실 지워도 상관없음
-		//if(m_pobj->GetTeamNumber() == m_ptarget->GetTeamNumber())
-		//{
-		//	m_ptarget = NULL; 
-		//	m_target_objid = 0;
-		//}
-
 		TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
 
 		if(false == m_ptarget->GetUnitinfo().is_active || 
@@ -70,6 +66,12 @@ void CCom_Meleesearch::Update(void)
 			m_ptarget = NULL;
 			m_target_objid = 0;
 			m_bforced_target = false;
+		}
+
+		if(NULL != m_ptarget && m_obj_cnt != m_ptarget->GetObjCountNumber())
+		{
+			m_ptarget = NULL;
+			m_target_objid = 0;
 		}
 	}
 	else
@@ -207,10 +209,11 @@ void CCom_Meleesearch::Update(void)
 			m_search_time += GETTIME;
 
 			if(true == m_btarget_search &&
-				m_search_time > 0.5f)
+				m_search_time > 0.65f)
 			{
+				int path_size = ((CCom_Pathfind*)m_com_pathfind)->GetTargetPath_size();
 				m_search_time = 0.f;
-				m_ptarget = CArea_Mgr::GetInstance()->Melee_explore_target(m_pobj , *m_psearch_range , m_search_type);							
+				m_ptarget = CArea_Mgr::GetInstance()->Melee_explore_target(m_pobj , *m_psearch_range , m_search_type , path_size);							
 			}
 
 			if(NULL != m_ptarget)
@@ -242,8 +245,9 @@ void CCom_Meleesearch::Update(void)
 			}
 			else
 			{
-				m_meleerangeX = 10.f;
-				m_meleerangeY = 10.f;
+				//m_meleerangeX = GETTIME * m_pobj->GetUnitinfo().fspeed * 3.f;
+				m_meleerangeX = 5.0f;
+				m_meleerangeY = m_meleerangeX;
 			}
 
 			m_myrc = m_pobj->GetMyRect();
@@ -260,6 +264,7 @@ void CCom_Meleesearch::Update(void)
 			}
 
 			m_target_objid = m_ptarget->GetObjNumber();
+			m_obj_cnt = m_ptarget->GetObjCountNumber();
 
 			if( MyIntersectrect( &m_myrc , &(m_ptarget->GetMyRect()) ) )
 			{
@@ -277,7 +282,7 @@ void CCom_Meleesearch::Update(void)
 			}
 			else
 			{				
-				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) > (*m_psearch_range)*(*m_psearch_range))
+				if(CMyMath::pos_distance( m_ptarget->GetPos() , m_pobj->GetPos()) > (*m_psearch_range)*(*m_psearch_range))
 				{
 					//추적범위 밖
 					m_pobj->SetState(IDLE);
@@ -305,11 +310,8 @@ void CCom_Meleesearch::Update(void)
 		{
 			m_btarget_search = true;
 
-			//if(!m_btarget_search)
-			{
-				m_search_time = 1.4f;
-				m_search_around_time = 0.2f;
-			}
+			m_search_time = 1.4f;
+			m_search_around_time = 1.2f;
 		}
 	}
 }

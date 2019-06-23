@@ -5,6 +5,9 @@ class CChamber :
 	public CZerg_building
 {
 private:
+
+public:
+	bool Input_cmd(const int& nkey , bool* waitkey);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
