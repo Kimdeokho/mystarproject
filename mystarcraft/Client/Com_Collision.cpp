@@ -103,7 +103,7 @@ void CCom_Collision::Update(void)
 		//MYRECT<float> temp;
 		if(/*NULL != m_collision_target &&*/
 			/*MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect())*/ 
-			m_nuckback_time <= 0.4f)
+			m_nuckback_time <= 0.5f)
 		{			
 			//юсюг
 			int idx32 = 0;

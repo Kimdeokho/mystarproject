@@ -293,7 +293,7 @@ void CHydraden::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_build_maxhp );
 
 
-	for(int i = BTN_Z_BD0; i <= BTN_Z_BD3; ++i)
+	for(int i = UPG_Z_BD0; i <= UPG_Z_BD3; ++i)
 	{
 		if(true == m_upg_info[i].proceeding && m_upg_info[i].obj_num == m_obj_id)
 		{

@@ -72,6 +72,8 @@ void CNuclear_Bullet::Update(void)
 
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_NUCLEAR_HIT , m_vdest_pos);
+
 		CArea_Mgr::GetInstance()->Setsplash_damage(this , 500 , DAMAGE_BOOM , m_vdest_pos ,
 			m_splash_range, true, m_injurelist);
 

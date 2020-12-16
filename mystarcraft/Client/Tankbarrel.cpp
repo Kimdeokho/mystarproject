@@ -174,7 +174,7 @@ void CTankbarrel::Inputkey_reaction(const int& nkey)
 			if(false == m_bsiegemode)
 			{
 				//m_vcurdir = CMyMath::dgree_to_dir(2*22.5f);
-				m_vcurdir = CMyMath::dgree_to_dir(4*11.25f);
+				m_vcurdir = CMyMath::dgree_to_dir(4*11.25f);				
 			}
 			else
 			{
@@ -211,6 +211,7 @@ void CTankbarrel::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	{
 		if(TRANSFORMING != m_unitinfo.state)
 		{
+			m_unitinfo.order = ORDER_MOVE_ATTACK;
 			((CCom_Targetsearch*)m_com_targetsearch)->SetTarget(CArea_Mgr::GetInstance()->GetChoiceTarget());
 		}
 	}

@@ -96,6 +96,7 @@ void CMutal_Bullet::Update(void)
 			{
 				int idx = m_ptarget->Getcuridx(32);
 
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MUTAL_HIT , m_ptarget->GetPos() , -5000);
 				if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType)
 				{
 					if(CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)

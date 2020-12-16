@@ -101,6 +101,7 @@ void CFactory::Initialize(void)
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
 }
 
 void CFactory::Update(void)
@@ -129,6 +130,11 @@ void CFactory::Update(void)
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
+
+			D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+			m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_FAC_ADDON);
+			if(NULL != m_partbuilding)
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
 		}
 	}
 	else if(TAKE_OFF == m_unitinfo.state)
@@ -175,12 +181,13 @@ void CFactory::Update(void)
 			}
 			else
 			{
-				int partidx = m_curidx32 + 3 + SQ_TILECNTX;
-				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_FAC_ADDON);
+				D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_FAC_ADDON);
 				if(NULL != m_partbuilding)
 					((CTerran_building*)m_partbuilding)->Setlink(true , this);
 			}
 
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LANDING , m_vPos);
 			m_is_take_off = false;
 			m_vPos.y = m_vgroundpos.y;
 			m_unitinfo.eMoveType = MOVE_GROUND;
@@ -210,6 +217,8 @@ void CFactory::Update(void)
 				}
 				else
 				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
 					m_unitinfo.state = AIR_IDLE;
 					m_unitinfo.order = ORDER_NONE;
 				}
@@ -223,6 +232,8 @@ void CFactory::Update(void)
 				}
 				else
 				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
 					m_unitinfo.state = AIR_IDLE;
 					m_unitinfo.order = ORDER_NONE;
 				}
@@ -313,7 +324,7 @@ void CFactory::Inputkey_reaction(const int& nkey)
 		((CBuilding_Preview*)m_main_preview)->SetActive(false);
 		((CBuilding_Preview*)m_sub_preview)->SetActive(false);
 
-		if(AIR_IDLE == m_unitinfo.state)
+		if(AIR_IDLE == m_unitinfo.state && m_is_take_off)
 		{
 			m_unitinfo.order = ORDER_MOVE;
 			D3DXVECTOR2 goalpos = CUnitMgr::GetInstance()->GetUnitGoalPos();
@@ -606,6 +617,8 @@ void CFactory::Update_Wireframe(void)
 }
 void CFactory::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBLARGE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

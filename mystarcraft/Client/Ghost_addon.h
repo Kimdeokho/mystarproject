@@ -12,6 +12,7 @@ public:
 	virtual void Dead(void);
 	virtual void Inputkey_reaction(const int& nkey);
 	virtual void Inputkey_reaction(const int& firstkey , const int& secondkey);
+	virtual bool Input_cmd(const int& nkey, bool* waitkey);
 	virtual void Setlink(bool blink , CObj* pobj);
 
 	virtual void Update_Wireframe(void);

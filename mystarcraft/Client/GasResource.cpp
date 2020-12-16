@@ -5,6 +5,7 @@
 #include "Device.h"
 #include "Com_Collision.h"
 
+#include "Ingame_UIMgr.h"
 #include "ScrollMgr.h"
 #include "TextureMgr.h"
 #include "LineMgr.h"
@@ -114,11 +115,10 @@ void CGasResource::Render(void)
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
-void CGasResource::Release(void)
-{
-	building_area_release();
 
-	Safe_Delete(m_select_ui);
+void CGasResource::Update_Wireframe(void)
+{
+	CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state);
 }
 
 void CGasResource::building_area_release(void)
@@ -144,4 +144,11 @@ void CGasResource::building_area_release(void)
 void CGasResource::setgas_amount(const int& iamount)
 {
 	m_gasa_mount += iamount;
+}
+
+void CGasResource::Release(void)
+{
+	building_area_release();
+
+	Safe_Delete(m_select_ui);
 }

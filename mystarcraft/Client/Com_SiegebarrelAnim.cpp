@@ -46,7 +46,8 @@ void CCom_SiegebarrelAnim::Update(void)
 	//}
 
 	if(true == m_btransforming)
-	{	//정변
+	{	//정변		
+
 		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 
 		if(false == m_bsiegemode)
@@ -94,7 +95,7 @@ void CCom_SiegebarrelAnim::Update(void)
 			m_objmat._22 = 1;
 
 			if(m_frame.fcurframe < 0)
-			{
+			{				
 				m_frame.fcurframe = float(m_frame.umax - 1);
 				m_banim_end = true;
 				m_bsiegemode = false;
@@ -150,7 +151,8 @@ void CCom_SiegebarrelAnim::SetAnimation(const TCHAR* statekey)
 			{
 				m_frame.umax = m_generaltex->size();
 				m_frame.fframespeed = float(m_frame.umax);
-				m_btransforming = true;
+				m_btransforming = true;	
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TANK_TRA0 , m_pobj->GetPos());
 			}
 			else
 			{

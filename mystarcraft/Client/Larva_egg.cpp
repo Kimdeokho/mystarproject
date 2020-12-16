@@ -15,6 +15,7 @@
 #include "FontMgr.h"
 #include "Session_Mgr.h"
 
+#include "SoundDevice.h"
 #include "Com_fog.h"
 #include "Com_LarvaEggAnim.h"
 #include "Com_CC.h"
@@ -160,6 +161,10 @@ void CLarva_egg::Update(void)
 	{
 		m_com_anim->SetAnimation(L"MUTATE");
 	}
+	else if(MOVE == m_unitinfo.state)
+	{
+		m_com_anim->SetAnimation(L"MUTATE");
+	}
 
 	m_select_ui->Update();
 	m_energybar_ui->Update();
@@ -250,37 +255,73 @@ void CLarva_egg::Release(void)
 {
 	CObj* pobj = NULL;
 
-	CObj* phatch = CObjMgr::GetInstance()->GetObj(m_hatch_num);
+	CObj* hatch = CObjMgr::GetInstance()->GetObj(m_hatch_num);
+	SOUND_VOICE unitVoice = SND_V_END;
 
 	for(int i = 0; i < m_create_cnt; ++i)
 	{
 		if(OBJ_ZERGLING == m_production_info.eid)
+		{
 			pobj = new CZergling;
+			unitVoice = SND_V_ZERGLING_RDY;
+		}
 		else if(OBJ_DRONE == m_production_info.eid)
+		{
 			pobj = new CDrone;
+			unitVoice = SND_V_DRONE_RDY;
+		}
 		else if(OBJ_HYDRA == m_production_info.eid)
+		{
 			pobj = new CHydra;
+			unitVoice = SND_V_HYDRA_RDY;
+		}
 		else if(OBJ_ULTRA == m_production_info.eid)
+		{
 			pobj = new CUltra;
+			unitVoice = SND_V_ULTRA_RDY;
+		}
 		else if(OBJ_OVERLOAD == m_production_info.eid)
+		{
 			pobj = new COverload;
+			unitVoice = SND_V_OVER_RDY;
+		}
 		else if(OBJ_MUTAL == m_production_info.eid)
+		{
 			pobj = new CMutal;
+			unitVoice = SND_V_MUTAL_RDY;
+		}
 		else if(OBJ_SCOURGE == m_production_info.eid)
+		{
 			pobj = new CScourge;
+			unitVoice = SND_V_SCOURGE_RDY;
+		}
 		else if(OBJ_QUEEN == m_production_info.eid)
+		{
 			pobj = new CQueen;
+			unitVoice = SND_V_QUEEN_RDY;
+		}
 		else if(OBJ_BROODLING == m_production_info.eid)
 			pobj = new CBrude;
 		else if(OBJ_DEFILER == m_production_info.eid)
+		{
 			pobj = new CDefiler;
+			unitVoice = SND_V_DEFILER_RDY;			
+		}
 
 		CObjMgr::GetInstance()->AddObject(pobj , m_production_info.eid);
+		
 
 		pobj->Setdir(D3DXVECTOR2(1,1));
 		pobj->SetTeamNumber(m_eteamnumber);
 		pobj->SetPos(m_vPos);
 		pobj->Initialize();
+
+		if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber &&
+			OBJ_BROODLING != m_production_info.eid)
+		{
+			CSoundDevice::GetInstance()->PlayVoiceSound(unitVoice , m_production_info.eid);
+		}
+
 
 		if(CUnitMgr::GetInstance()->is_unit(this))
 		{			
@@ -294,19 +335,18 @@ void CLarva_egg::Release(void)
 			pobj->SetPos( D3DXVECTOR2(m_vPos.x , m_vPos.y - 40.f));		
 
 
-		if(NULL != phatch)
+		if(NULL != hatch)
 		{
-			if(OBJ_HATCERY == phatch->GetOBJNAME())
+			if(OBJ_HATCERY == hatch->GetOBJNAME())
 			{
-				bool				isrally = ((CZerg_building*)phatch)->Get_Is_rally();
-				D3DXVECTOR2			rallypoint = ((CZerg_building*)phatch)->GetRallyPoint();
-				vector<D3DXVECTOR2> rallypath = ((CZerg_building*)phatch)->GetRally_Path();
+				bool				isrally = ((CZerg_building*)hatch)->Get_Is_rally();
+				D3DXVECTOR2			rallypoint = ((CZerg_building*)hatch)->GetRallyPoint();
+				vector<D3DXVECTOR2> rallypath = ((CZerg_building*)hatch)->GetRally_Path();
 
 				CComponent* pcom = NULL;
 				if(true == isrally)
 				{
-					pobj->SetOrder(ORDER_MOVE);
-					
+					pobj->SetOrder(ORDER_MOVE);					
 
 					if(MOVE_GROUND == pobj->GetUnitinfo().eMoveType)
 					{

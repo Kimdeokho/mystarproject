@@ -73,7 +73,10 @@ void CYama_bim::Update(void)
 	if(CMyMath::pos_distance(m_vPos , m_vdest_pos) < m_ftick_distance*m_ftick_distance)
 	{
 		if(NULL != m_ptarget)
+		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_YAMA_HIT , m_ptarget->GetPos());
 			m_ptarget->SetDamage(260, DAMAGE_BOOM);
+		}
 
 		m_bdestroy = true;
 		Dead();

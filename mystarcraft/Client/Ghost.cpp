@@ -142,11 +142,11 @@ void CGhost::Update(void)
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
 
-	if( false == m_upg_state[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
+	if( false == m_applyUpg[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
 	{
 		m_unitinfo.attack_range += 1*32;
 		m_unitinfo.air_attack_range += 1*32;
-		m_upg_state[UPG_T_BA0] = true;
+		m_applyUpg[UPG_T_BA0] = true;
 		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
 	}
 
@@ -411,6 +411,8 @@ void CGhost::Update_Wireframe(void)
 
 void CGhost::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_GHOST_DTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"GHOSTDEAD" , L"GHOSTWRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

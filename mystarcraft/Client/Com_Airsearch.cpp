@@ -4,6 +4,7 @@
 #include "Obj.h"
 #include "ObjMgr.h"
 #include "Area_Mgr.h"
+#include "TimeMgr.h"
 #include "MyMath.h"
 
 #include "Com_Weapon.h"
@@ -34,6 +35,8 @@ void CCom_Airsearch::Initialize(CObj* pobj /*= NULL*/)
 	m_pattack_range = &( m_pobj->GetUnitinfo().attack_range );
 	m_pair_range = &( m_pobj->GetUnitinfo().air_attack_range );
 	m_psearch_range = &(m_pobj->GetUnitinfo().search_range);
+
+	m_search_time = 0.f;
 }
 
 void CCom_Airsearch::Update(void)
@@ -69,6 +72,7 @@ void CCom_Airsearch::Update(void)
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
+			m_bforced_target = false;
 		}
 	}
 
@@ -166,8 +170,12 @@ void CCom_Airsearch::Update(void)
 	{
 		if(ORDER_MOVE != m_pobj->GetUnitinfo().order)
 		{
-			if(NULL == m_ptarget)
+			m_search_time += GETTIME;
+
+			if(NULL == m_ptarget &&
+				m_search_time > 0.5f)
 			{
+				m_search_time = 0.f;
 				int att_range = max(*m_pair_range , *m_pattack_range);
 				m_ptarget = CArea_Mgr::GetInstance()->Auto_explore_target(m_pobj, *m_psearch_range, att_range, m_search_type);			
 			}
@@ -241,6 +249,8 @@ void CCom_Airsearch::Update(void)
 				}
 			}
 		}
+		else
+			m_search_time = 0.6f;
 	}
 }
 

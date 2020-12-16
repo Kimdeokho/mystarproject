@@ -1,3 +1,7 @@
 ..\SoundResource\effect\uiclick.wav
 ..\SoundResource\effect\uiexit.wav
 ..\SoundResource\effect\uijoin.wav
+..\SoundResource\effect\input.wav
+..\SoundResource\effect\chat.wav
+..\SoundResource\effect\tbuild.wav
+..\SoundResource\effect\zbuild.wav

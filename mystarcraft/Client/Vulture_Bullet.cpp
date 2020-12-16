@@ -69,6 +69,7 @@ void CVulture_Bullet::Update(void)
 	{
 		if(NULL != m_ptarget)
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_VULTURE_HIT , m_ptarget->GetPos() , -5000);
 			int idx = m_ptarget->Getcuridx(32);
 			if(MOVE_GROUND == m_ptarget->GetUnitinfo().eMoveType && 
 				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)

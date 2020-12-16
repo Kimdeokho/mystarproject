@@ -115,7 +115,7 @@ void CCom_Minesearch::Update(void)
 
 		if( MyIntersectrect(&m_outrc , &m_myrc , &(m_ptarget->GetMyRect()) ) )
 		{
-			m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+			m_pobj->Setdir( m_ptarget->GetPos() - m_pobj->GetPos());
 
 			if(NULL != m_com_weapon)
 				((CCom_Weapon*)m_com_weapon)->fire(m_ptarget);

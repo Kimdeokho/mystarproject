@@ -6,6 +6,7 @@
 #include "TextureMgr.h"
 #include "RoomSession_Mgr.h"
 #include "Session_Mgr.h"
+#include "SoundDevice.h"
 
 CUI_Resource::CUI_Resource(void)
 {
@@ -51,9 +52,9 @@ void CUI_Resource::Update(void)
 {
 	m_tick += GETTIME;
 
-	if(m_tick > 0.08f)
+	//if(m_tick > 0.08f)
 	{
-		int resourceval = 5;
+		int resourceval = 2;
 		m_tick = 0.f;
 
 		if(m_mineral_amount[m_myteam] > m_cur_mineral[m_myteam])
@@ -115,10 +116,23 @@ void CUI_Resource::Render(void)
 }
 bool CUI_Resource::SetResource(const int _mineral ,const int _gas, const TEAM_NUMBER eteam)
 {
-	if( m_mineral_amount[eteam] + _mineral < 0 ||
-		m_gas_amount[eteam] + _gas < 0)
+	if( m_mineral_amount[eteam] + _mineral < 0 )
 	{
+		if(!wcscmp(L"Terran" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+			CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_TMINERA_ERR , OBJ_NONE);
+		else if(!wcscmp(L"Zerg" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+			CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_ZMINERA_ERR , OBJ_NONE);
+
 		return false;//자원부족
+	}
+	else if(m_gas_amount[eteam] + _gas < 0)
+	{
+		if(!wcscmp(L"Terran" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+			CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_TGAS_ERR , OBJ_NONE);
+		else if(!wcscmp(L"Zerg" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+			CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_ZGAS_ERR , OBJ_NONE);
+
+		return false;
 	}
 	else
 	{
@@ -131,6 +145,11 @@ bool CUI_Resource::is_excess_of_population(const float _popvalue , const TEAM_NU
 {
 	if( int(m_population_val[eteam] + _popvalue) > m_population_maxval[eteam])
 	{
+		if(!wcscmp(L"Terran" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+			CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_TPOPULATION_ERR , OBJ_NONE);
+		else if(!wcscmp(L"Zerg" ,CRoomSession_Mgr::GetInstance()->GetMyinfo()->TRIBE))
+			CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_ZPOPULATION_ERR , OBJ_NONE);
+
 		return false;
 	}
 	else
@@ -159,8 +178,10 @@ bool CUI_Resource::SetPopvalue(const float _popvalue , const TEAM_NUMBER eteam)
 void CUI_Resource::SetMaxPopvalue(const float _popvalue , const TEAM_NUMBER eteam)
 {
 	m_population_maxval[eteam] += _popvalue;
+
 	if(m_population_maxval[eteam] > 800)
 		m_population_maxval[eteam] = 800;
+
 	if(m_population_maxval[eteam] < 0)
 		m_population_maxval[eteam] = 0;
 }

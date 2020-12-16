@@ -319,7 +319,7 @@ typedef struct tag_upginfo
 		upg_cnt = 0;
 		obj_num = 0;
 		curtime = 0.f;
-		maxtime = 15.f;
+		maxtime = 7.f;
 	}
 }UPG_INFO;
 

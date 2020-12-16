@@ -5,13 +5,14 @@
 class CScrollMgr
 {
 public:
-	DECLARE_SINGLETON(CScrollMgr)
+//	DECLARE_SINGLETON(CScrollMgr)
 public:
 	static float	m_fScrollX;
 	static float	m_fScrollY;
 public:
-	static bool inside_camera(const float fx , const float fy);
-	static void update(void);
+	static float	posCameraDistance(const float fx , const float fy);
+	static bool		inside_camera(const float fx , const float fy);
+	static void		update(void);
 private:
 	CScrollMgr(void);
 public:

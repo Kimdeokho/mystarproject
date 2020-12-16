@@ -290,6 +290,8 @@ void CDropship::Update_Wireframe(void)
 }
 void CDropship::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_DROPSHIP_DTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.2f ,1.2f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

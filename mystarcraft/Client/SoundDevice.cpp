@@ -41,6 +41,10 @@ HRESULT CSoundDevice::Init(void)
 	}
 
 	m_bgmCnt = 0;
+	m_battleSndCnt = 0;
+
+	m_setplay = true;
+	m_curtime = 0.f;
 	return S_OK;
 }
 
@@ -111,8 +115,6 @@ LPDIRECTSOUNDBUFFER8 CSoundDevice::LoadWave(TCHAR* pFileName)
 
 	mmioClose(hFile, 0);
 
-	//m_vecSoundBuff.push_back(SoundBuff8);
-
 	return SoundBuff8;
 }
 
@@ -126,14 +128,13 @@ void CSoundDevice::PlayLoadingSound(const SOUND_BGM iIndex, DWORD dwFlag)
 	DWORD			dwFre;
 
 	m_vecSoundBuff[iIndex]->GetFrequency(&dwFre);
-	//m_vecSoundBuff[iIndex]->Play(0, 0, dwFlag);
 
 	/////중복 재생
 	LPDIRECTSOUNDBUFFER temp;
 	m_pSound->DuplicateSoundBuffer(m_vecSoundBuff[iIndex] , &temp);
 
 	temp->Play(0,0,dwFlag);
-	temp->SetVolume( volumeValue );
+	temp->SetVolume( defaultVolumeValue );
 
 	m_copyBgmSnd.push_back(temp);
 	/////중복 재생
@@ -145,31 +146,42 @@ bool CSoundDevice::PlayBgmSound(const SOUND_BGM iIndex , const DWORD flag)
 	LPDIRECTSOUNDBUFFER temp;
 	m_pSound->DuplicateSoundBuffer(m_vecBgmBuff[iIndex] , &temp);
 
-	temp->SetVolume( volumeValue );
+	temp->SetVolume( defaultVolumeValue );
 	temp->Play(0,0,flag);
 
 	m_copyBgmSnd.push_back(temp);
 
 	return true;
 }
-bool CSoundDevice::PlayBattleSound(const SOUND_BATTLE iIndex, const D3DXVECTOR2	vpos)
+bool CSoundDevice::PlayBattleSound(const SOUND_BATTLE iIndex, const D3DXVECTOR2	vpos , const int volval)
 {
-	if(m_battleSndInfo[iIndex].setPlay && m_battleSndInfo[iIndex].duplicatePlayCnt < 4)
+	if(!CScrollMgr::inside_camera(vpos.x , vpos.y))
+		return false;
+
+	m_battleSndInfo[iIndex].timeGap = 0.23f;
+	if(m_battleSndCnt > 4)
+		return false;
+
+	if(m_battleSndInfo[iIndex].setPlay && m_battleSndInfo[iIndex].duplicatePlayCnt < 1)
 	{
-		m_battleSndInfo[iIndex].duplicatePlayCnt += 1;
-		m_battleSndInfo[iIndex].curPlaycnt += 1;
+		if(m_battleSndInfo[iIndex].curPlaycnt <= 3)
+		{
+			m_battleSndInfo[iIndex].setPlay = false;
+			m_battleSndInfo[iIndex].duplicatePlayCnt += 1;
+			m_battleSndInfo[iIndex].curPlaycnt += 1;
 
-		LPDIRECTSOUNDBUFFER temp;
-		BATTLE_SOUND_INFO	info;
-		m_pSound->DuplicateSoundBuffer(m_vecBattleBuff[iIndex] , &temp);
+			LPDIRECTSOUNDBUFFER temp;
+			BATTLE_SOUND_INFO	info;
+			m_pSound->DuplicateSoundBuffer(m_vecBattleBuff[iIndex] , &temp);
 
-		temp->SetVolume( volumeValue );
-		temp->Play(0,0,0);
+			temp->SetVolume( volval );
+			temp->Play(0,0,0);
 
-		info.soundBuffer = temp;
-		info.vPos = vpos;
-		info.idx = iIndex;
-		m_copyBattleSnd.push_back(info);
+			info.soundBuffer = temp;
+			info.vPos = vpos;
+			info.idx = iIndex;
+			m_copyBattleSnd.push_back(info);
+		}
 	}
 
 	return true;
@@ -177,45 +189,33 @@ bool CSoundDevice::PlayBattleSound(const SOUND_BATTLE iIndex, const D3DXVECTOR2	
 
 bool CSoundDevice::PlayEffSound(const SOUND_EFF iIndex , const DWORD flag)
 {
+	if(!m_copyEffectSnd[iIndex].empty())
+		return false;
+
 	LPDIRECTSOUNDBUFFER temp;
 	m_pSound->DuplicateSoundBuffer(m_vecEffectBuff[iIndex] , &temp);
 
-	temp->SetVolume( -1500 );
+	temp->SetVolume( defaultVolumeValue );
 	temp->Play(0,0,0);
 
-	m_copyEffectSnd.push_back(temp);
+	m_copyEffectSnd[iIndex].push_back(temp);
 
 	return true;
 }
 
-bool CSoundDevice::PlayVoiceSound(const SOUND_VOICE iIndex , const OBJID id)
+bool CSoundDevice::PlayVoiceSound(const SOUND_VOICE iIndex , const OBJID id )
 {
-	//m_voiceSndInfo[iIndex].timeGap = 1;
-
-	//if(m_voiceSndInfo[iIndex].setPlay && m_voiceSndInfo[iIndex].duplicatePlayCnt < 1)
-	//{
-	//	m_voiceSndInfo[iIndex].duplicatePlayCnt += 1;
-	//	m_voiceSndInfo[iIndex].curPlaycnt += 1;
-
-	//	LPDIRECTSOUNDBUFFER temp;
-	//	m_pSound->DuplicateSoundBuffer(m_vecVoiceBuff[iIndex] , &temp);
-
-	//	temp->SetVolume( volumeValue );
-	//	temp->Play(0,0,0);
-
-	//	m_copyVoiceSnd[iIndex].push_back(temp);
-	//}
-
 	if(m_vecVoiceBuff.empty())
 		return false;
 
 
-	if(m_copyVoiceSnd[id].empty())
+	unsigned int idx = iIndex;
+	if(m_copyVoiceSnd[id].empty() &&  idx < m_vecVoiceBuff.size())
 	{
 		LPDIRECTSOUNDBUFFER temp;
-		m_pSound->DuplicateSoundBuffer(m_vecVoiceBuff[iIndex] , &temp);
+		m_pSound->DuplicateSoundBuffer(m_vecVoiceBuff[idx] , &temp);
 
-		temp->SetVolume( volumeValue );
+		temp->SetVolume( defaultVolumeValue );
 		temp->Play(0,0,0);
 
 		m_copyVoiceSnd[id].push_back(temp);
@@ -264,13 +264,7 @@ void CSoundDevice::StageUpdate(void)
 		DWORD dwStatus = 0;
 
 		for( ; iter != iter_end; )
-		{
-			if(CScrollMgr::GetInstance()->inside_camera((*iter).vPos.x , (*iter).vPos.y))
-				(*iter).soundBuffer->SetVolume(-10000);
-			else
-				(*iter).soundBuffer->SetVolume(volumeValue);
-
-						
+		{			
 			(*iter).soundBuffer->GetStatus(&dwStatus);
 			
 			if( dwStatus & DSBSTATUS_PLAYING )
@@ -278,6 +272,7 @@ void CSoundDevice::StageUpdate(void)
 			else
 			{
 				m_battleSndInfo[(*iter).idx].curPlaycnt -= 1;
+				//m_battleSndInfo.curPlaycnt -= 1;
 				(*iter).soundBuffer->Release();
 				iter = m_copyBattleSnd.erase(iter);
 			}
@@ -286,29 +281,25 @@ void CSoundDevice::StageUpdate(void)
 
 	for(int i = 0; i < SND_B_END; ++i)
 	{		
+		m_battleSndCnt = 0;
 		m_battleSndInfo[i].duplicatePlayCnt = 0;
 		if( m_battleSndInfo[i].curTime > m_battleSndInfo[i].timeGap)
 		{
 			m_battleSndInfo[i].curTime = 0.f;
 			m_battleSndInfo[i].setPlay = true;
 		}
-		else
-		{
-			if(!m_copyBattleSnd.empty())
-				m_battleSndInfo[i].setPlay = false;
-		}
 
 		if(m_battleSndInfo[i].curPlaycnt > 0)
+		{
+			m_battleSndCnt += 1;
 			m_battleSndInfo[i].curTime += GETTIME;
+		}
 		else
 		{
 			m_battleSndInfo[i].curTime = 0;
 			m_battleSndInfo[i].setPlay = true;
 		}
 	}
-
-
-
 
 
 	for(int i = 0; i < OBJ_END; ++i)
@@ -335,26 +326,30 @@ void CSoundDevice::StageUpdate(void)
 		}
 	}
 
-	if(!m_copyEffectSnd.empty())
+	for(int i = 0; i < SND_EFF_END; ++i)
 	{
-		list<LPDIRECTSOUNDBUFFER>::iterator iter = m_copyEffectSnd.begin();
-		list<LPDIRECTSOUNDBUFFER>::iterator iter_end = m_copyEffectSnd.end();
+		if(!m_copyEffectSnd[i].empty())
+		{
+			list<LPDIRECTSOUNDBUFFER>::iterator iter = m_copyEffectSnd[i].begin();
+			list<LPDIRECTSOUNDBUFFER>::iterator iter_end = m_copyEffectSnd[i].end();
 
-		DWORD dwStatus = 0;
+			DWORD dwStatus = 0;
 
-		for( ; iter != iter_end; )
-		{							
-			(*iter)->GetStatus(&dwStatus);
+			for( ; iter != iter_end; )
+			{							
+				(*iter)->GetStatus(&dwStatus);
 
-			if( dwStatus & DSBSTATUS_PLAYING )
-				++iter;
-			else
-			{
-				(*iter)->Release();
-				iter = m_copyEffectSnd.erase(iter);
+				if( dwStatus & DSBSTATUS_PLAYING )
+					++iter;
+				else
+				{
+					(*iter)->Release();
+					iter = m_copyEffectSnd[i].erase(iter);
+				}
 			}
 		}
 	}
+
 }
 bool CSoundDevice::ReadLodingSound(void)
 {
@@ -452,15 +447,18 @@ void CSoundDevice::ReleaseSound(void)
 		}
 	}
 
-	if(!m_copyEffectSnd.empty())
+	for(int i = 0; i < SND_EFF_END; ++i)
 	{
-		list<LPDIRECTSOUNDBUFFER>::iterator iter = m_copyEffectSnd.begin();
-		list<LPDIRECTSOUNDBUFFER>::iterator iter_end = m_copyEffectSnd.end();
+		if(!m_copyEffectSnd[i].empty())
+		{
+			list<LPDIRECTSOUNDBUFFER>::iterator iter = m_copyEffectSnd[i].begin();
+			list<LPDIRECTSOUNDBUFFER>::iterator iter_end = m_copyEffectSnd[i].end();
 
-		for( ; iter != iter_end; ++iter)
-			(*iter)->Release();
+			for( ; iter != iter_end; ++iter)
+				(*iter)->Release();
 
-		m_copyEffectSnd.clear();
+			m_copyEffectSnd[i].clear();
+		}
 	}
 
 	if(!m_copyBattleSnd.empty())
@@ -473,13 +471,10 @@ void CSoundDevice::ReleaseSound(void)
 
 		m_copyBattleSnd.clear();
 	}
-
-	memset(m_battleSndInfo , 0 , sizeof(m_battleSndInfo));
 }
 
 void CSoundDevice::SetUnitVoice(const OBJID id)
 {
-	//int voiceCnt = 0;
 	static int voiceCnt = 0;
 	++voiceCnt;
 	voiceCnt %= 4;
@@ -509,14 +504,14 @@ void CSoundDevice::SetUnitVoice(const OBJID id)
 	else if(OBJ_FIREBAT == id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_FB_0 + voiceCnt) , id);
 	else if(OBJ_GHOST == id)
-		PlayVoiceSound( SOUND_VOICE(SND_V_SCV_0 + voiceCnt) , id);
+		PlayVoiceSound( SOUND_VOICE(SND_V_GST_0 + voiceCnt) , id);
 	else if(OBJ_MEDIC == id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_MD_0 + voiceCnt) , id);
 	else if(OBJ_VULTURE == id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_VUL_0 + voiceCnt) , id);
 	else if(OBJ_TANK == id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_TANK_0 + voiceCnt) , id);
-	else if(OBJ_GHOLATH == id)
+	else if(OBJ_GOLIATH == id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_GOL_0 + voiceCnt) , id);
 	else if(OBJ_WRAITH == id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_WRAITH_0 + voiceCnt) , id);
@@ -526,20 +521,8 @@ void CSoundDevice::SetUnitVoice(const OBJID id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_BATTLE_0 + voiceCnt) , id);
 	else if(OBJ_VESSEL == id)
 		PlayVoiceSound( SOUND_VOICE(SND_V_VESSLE_0 + voiceCnt) , id);
-	else if(OBJ_COMMAND == id)
-	{
-	}
-	else if(OBJ_BARRACK == id)
-	{
-
-	}
-	else if(OBJ_FACTORY == id)
-	{
-
-	}
-	else if(OBJ_FAC_ADDON == id)
-	{
-
-	}
+	else if(OBJ_COMSET == id)
+		PlayVoiceSound( SOUND_VOICE(SND_V_TBC ) , id);
 }
 
+const int CSoundDevice::defaultVolumeValue = -3000;

@@ -66,10 +66,10 @@ void CGoliath::Initialize(void)
 	m_unitinfo.fspeed = 77;
 	m_unitinfo.fog_range = 512;
 
-	m_vertex.left = 16;
-	m_vertex.right = 16;
-	m_vertex.top =  16;
-	m_vertex.bottom = 16;
+	m_vertex.left = 16.f;
+	m_vertex.right = 16.f;
+	m_vertex.top =  16.f;
+	m_vertex.bottom = 16.f;
 
 	m_pgoliath_arm = new CGoliath_part(this);
 	m_pgoliath_arm->SetPos(D3DXVECTOR2(-100.f , -100.f));
@@ -289,13 +289,13 @@ void CGoliath::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CGoliath::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 
 }
 void CGoliath::Update_Wireframe(void)
@@ -340,6 +340,7 @@ void CGoliath::Update_Wireframe(void)
 }
 void CGoliath::Dead(void)
 {
+
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

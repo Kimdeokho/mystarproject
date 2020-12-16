@@ -332,6 +332,8 @@ void CBrude::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CBrude::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_BRDTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"" , L"BRUDE_WRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

@@ -212,6 +212,8 @@ void CLurker::Inputkey_reaction(const int& nkey)
 
 		if(m_unitinfo.is_hide)
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_BURROWUP , m_vPos);
+
 			for(int i = 0; i < TEAM_END; ++i)
 			{
 				if(i != m_eteamnumber)
@@ -235,6 +237,8 @@ void CLurker::Inputkey_reaction(const int& nkey)
 		}
 		else
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LURKER_BUR , m_vPos);
+
 			m_com_anim->SetAnimation(L"DIG");
 
 			COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_PATHFINDE);
@@ -414,6 +418,8 @@ void CLurker::Burrow_Complete(void)
 }
 void CLurker::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LURKER_DTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"LURKERDEAD" , L"LURKERWRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

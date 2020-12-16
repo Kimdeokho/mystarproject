@@ -1,7 +1,9 @@
 #include "StdAfx.h"
 #include "ScrollMgr.h"
 
-IMPLEMENT_SINGLETON(CScrollMgr)
+#include "MyMath.h"
+
+//IMPLEMENT_SINGLETON(CScrollMgr)
 CScrollMgr::CScrollMgr(void)
 {
 }
@@ -20,7 +22,19 @@ bool CScrollMgr::inside_camera(const float fx , const float fy)
 		return true;
 	}
 
-	return true;
+	return false;
+}
+float CScrollMgr::posCameraDistance(const float fx , const float fy)
+{
+	float fradian = CLINETSIZE_X / 2.f;
+	fradian *= fradian;
+
+	D3DXVECTOR2 unitpos = D3DXVECTOR2(fx , fy);
+	D3DXVECTOR2 campos = D3DXVECTOR2(m_fScrollX +  CLINETSIZE_X / 2.f, m_fScrollY + CLINETSIZE_Y / 2.f);
+
+	float fdis = CMyMath::pos_distance(campos , unitpos);
+
+	return (fdis / fradian) + 1.f; //0값은 피하려고 + 1 시켜줬다.
 }
 void CScrollMgr::update(void)
 {

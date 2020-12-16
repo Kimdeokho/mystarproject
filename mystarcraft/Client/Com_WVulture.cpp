@@ -39,6 +39,8 @@ void CCom_WVulture::fire(CObj* ptarget)
 
 		//if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_VULTURE_FIRE , m_pobj->GetPos());
+
 			m_pobj->SetState(ATTACK);
 			m_bfire = true;
 

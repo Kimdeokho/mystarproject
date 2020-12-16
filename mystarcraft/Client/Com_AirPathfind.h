@@ -19,10 +19,12 @@ private:
 	int				m_target_oldidx;
 	bool			m_is_moveupdate;
 	bool			m_is_arrive;
+
+	int				m_target_objcnt;
 public:
 	void Air_MovingUpdate(void);
 	void TargetChase(void);
-	void SetTargetObjID(const int& objid);
+	void SetTargetObjID(const int objid);
 	void SetDestPos(const D3DXVECTOR2& vgoalpos);
 	void SetGoalPos(const D3DXVECTOR2& vgoalpos , bool is_magicbox = false);
 	void SetAir_moveupdate(bool is_dupdate);

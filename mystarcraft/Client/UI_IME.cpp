@@ -84,12 +84,12 @@ void CUI_IME::Render(void)
 
 
 	RECT rc = {0};
-	if(NULL != m_texinfo)
-	{		
-		m_pSprite->SetTransform(&m_matworld);
-		m_pSprite->Draw(m_texinfo->pTexture
-			, NULL , &m_vcenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
-	}
+	//if(NULL != m_texinfo)
+	//{		
+	//	m_pSprite->SetTransform(&m_matworld);
+	//	m_pSprite->Draw(m_texinfo->pTexture
+	//		, NULL , &m_vcenter , NULL , D3DCOLOR_ARGB(255,255,255,255));
+	//}
 
 
 	m_pSprite->SetTransform(&m_matfont);
@@ -136,10 +136,10 @@ void CUI_IME::UI_Reaction(void)
 {
 	SetFocus(m_InputEdit);
 
-	g_hEdit1 = m_InputBufferEdit;
-	g_hEdit2 = m_InputEdit;
-	SetWindowLong(m_InputBufferEdit,GWL_WNDPROC,(LONG)EditSubProc1);//입력내용 저장
-	SetWindowLong(m_InputEdit,GWL_WNDPROC,(LONG)EditSubProc2);//입력받는 프로시저
+	//g_hEdit1 = m_InputBufferEdit;
+	//g_hEdit2 = m_InputEdit;
+	//SetWindowLong(m_InputBufferEdit,GWL_WNDPROC,(LONG)EditSubProc1);//입력내용 저장
+	//SetWindowLong(m_InputEdit,GWL_WNDPROC,(LONG)EditSubProc2);//입력받는 프로시저
 }
 void CUI_IME::Init_State(void)
 {

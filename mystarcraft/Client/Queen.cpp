@@ -323,6 +323,8 @@ void CQueen::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CQueen::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_QUDTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"ZFLY_S_DEAD" , m_vPos , D3DXVECTOR2(1.0f ,1.0f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

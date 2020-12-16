@@ -56,15 +56,9 @@ void CObjMgr::Update(void)
 		iter = m_ObjList[i].begin();
 		iter_end = m_ObjList[i].end();
 
-		//D3DXVECTOR2 vtemp;
 		for( ; iter != iter_end; ++iter)
 		{
-			//vtemp = (*iter)->GetPos();
-			//vtemp.x -= CScrollMgr::m_fScrollX;
-			//vtemp.y -= CScrollMgr::m_fScrollY;
-			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , (*iter)->GetObjNumber() , vtemp.x , vtemp.y) ;
-			(*iter)->Update();
-				
+			(*iter)->Update();				
 		}
 	}
 
@@ -352,24 +346,6 @@ void CObjMgr::Render(void)
 		m_rendersort[SORT_CORPSE].clear();
 	}
 
-
-	//if(!m_SelectUI_List.empty())
-	//{
-	//	list<CUI*>::iterator iter = m_SelectUI_List.begin();
-	//	list<CUI*>::iterator iter_end = m_SelectUI_List.end();
-
-	//	for( ; iter != iter_end; ++iter)
-	//		(*iter)->Render();
-	//}
-	//if(!m_energybar_list.empty())
-	//{
-	//	list<CUI*>::iterator iter = m_energybar_list.begin();
-	//	list<CUI*>::iterator iter_end = m_energybar_list.end();
-
-	//	for( ; iter != iter_end; ++iter)
-	//		(*iter)->Render();
-	//}
-
 	for(int i = SORT_GROUND; i < SORT_END; ++i)
 	{
 		if(true == m_rendersort[i].empty())
@@ -619,7 +595,6 @@ void CObjMgr::Place_Terran(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)
 		pscv->Initialize();
 		AddObject(pscv , OBJ_SCV);
 		CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(1 , eteam);
-		//pscv->Initialize();
 	}
 }
 void CObjMgr::Place_Zerg(D3DXVECTOR2 vpos , TEAM_NUMBER eteam)

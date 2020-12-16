@@ -19,11 +19,11 @@ CCom_LurkerEggAnim::~CCom_LurkerEggAnim(void)
 
 void CCom_LurkerEggAnim::Initialize(CObj* pobj)
 {
-	m_battack_sync = false;
-	SetAnimation(L"MUTATE");
-
 	m_pobj = pobj;
+	m_battack_sync = false;
+	SetAnimation(L"MUTATE");	
 
+	m_pobj->SetState(MUTATE);
 	m_rotation_speed = 80.f;
 }
 
@@ -39,10 +39,6 @@ void CCom_LurkerEggAnim::Update(void)
 			m_pobj->SetState(IDLE);
 			SetAnimation(L"IDLE");
 		}
-		//else if(L"READY" == m_statkey)
-		//{			
-		//	SetAnimation(m_birthkey);
-		//}
 		else if(StrStrW(m_statkey , L"BIRTH"))
 		{
 			m_pobj->SetDestroy(true);

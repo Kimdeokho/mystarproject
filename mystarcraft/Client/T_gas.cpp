@@ -118,11 +118,6 @@ void CT_gas::Update(void)
 	}
 
 
-	D3DXVECTOR2 vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
-	vpos.x -= CScrollMgr::m_fScrollX;
-	vpos.y -= CScrollMgr::m_fScrollY;
-	CFontMgr::GetInstance()->Setbatch_Font(L"@" , vpos.x , vpos.y);
-
 	m_select_ui->Update();
 	m_energybar_ui->Update();
 }
@@ -181,6 +176,8 @@ void CT_gas::Update_Wireframe(void)
 }
 void CT_gas::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBMIDDLE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

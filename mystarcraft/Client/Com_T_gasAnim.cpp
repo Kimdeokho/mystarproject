@@ -27,30 +27,53 @@ void CCom_T_gasAnim::Initialize(CObj* pobj)
 	m_pobj = pobj;
 
 	SetAnimation(L"BUILD");
+
+	m_bsighton = false;
+	m_isescape = false;
+
+	m_staticTex = NULL;
+	m_updateTex = NULL;
+
+	D3DXMatrixIdentity(&m_curMat);
+
+	m_staticidx = m_pobj->Getcuridx(32);
+	m_staticPos = m_pobj->GetPos();
 }
 
 void CCom_T_gasAnim::Update(void)
 {
 	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
-	if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(m_pobj->Getcuridx(32) , eteam))
-	{
-		m_bsighton = true;
-		m_isescape = false;
-	}
-	else
-	{		
-		m_isescape = true;
-		if(m_bsighton)
-		{
-			//켜졌다가 꺼진상태
-			m_bsighton = false;
-			//마지막 상태 저장
 
-			m_staticTex = (*m_generaltex)[int(m_frame.fcurframe)];
-			m_curMat = m_objmat;
-			m_staticPos = m_pobj->GetPos();
+	if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
+		m_isescape = false;
+	else
+	{
+		if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight( m_staticidx , eteam) ||
+			FOG_ALPHA == CTileManager::GetInstance()->GetFogLight( m_pobj->Getcuridx(32) , eteam))
+		{
+			m_bsighton = true;
+			m_isescape = false;
+		}
+		else
+		{		
+			m_isescape = true;
+			if(m_bsighton)
+			{
+				//켜졌다가 꺼진상태
+				m_bsighton = false;
+				//마지막 상태 저장
+
+
+				m_staticTex = (*m_generaltex)[int(m_frame.fcurframe)];
+				m_curMat = m_objmat;
+				m_staticPos = m_pobj->GetPos();
+				m_staticidx = m_pobj->Getcuridx(32);
+			}
 		}
 	}
+
+
+
 
 	if(L"BUILD" == m_statkey)
 	{
@@ -62,9 +85,7 @@ void CCom_T_gasAnim::Update(void)
 		m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 
 	if(m_frame.fcurframe >= m_frame.umax)
-	{
 		m_frame.fcurframe = 0.f;
-	}
 	//m_frame.fcurframe += GETTIME*m_frame.fframespeed;
 	//if(m_frame.fcurframe >= m_frame.umax)
 	//{
@@ -94,6 +115,9 @@ void CCom_T_gasAnim::Render(void)
 		m_curtex = m_updateTex;
 		m_curMat = m_objmat;
 	}
+
+	//if(!CScrollMgr::inside_camera(m_curMat._41 + CScrollMgr::m_fScrollX , m_curMat._42 + CScrollMgr::m_fScrollY))
+	//	return;
 	if(!CScrollMgr::inside_camera(m_curMat._41 + CScrollMgr::m_fScrollX , m_curMat._42 + CScrollMgr::m_fScrollY))
 		return;
 	if(NULL == m_curtex)
@@ -128,7 +152,7 @@ void CCom_T_gasAnim::SetAnimation(const TCHAR* statekey)
 
 		m_frame.umax = m_generaltex->size();
 
-	
+
 		m_frame.fframespeed = (float)m_frame.umax;
 	}
 }

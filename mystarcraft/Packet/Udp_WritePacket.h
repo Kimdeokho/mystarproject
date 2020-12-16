@@ -90,6 +90,15 @@ inline DWORD WRITE_PU_TURN_DATA(BYTE *buffer, S_PU_TURN_DATA &parameter)
 	return Stream->GetLength();
 }
 
+inline DWORD WRITE_PU_TURN_DELAY(BYTE *buffer, S_PU_TURN_DELAY &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+
+	return Stream->GetLength();
+}
+
 inline DWORD WRITE_PU_C2S_TUNNELING(BYTE *buffer, DWORD_PTR session_id,const WCHAR *remote_address, USHORT remote_port)
 {
 	CStreamSP Stream;
@@ -174,6 +183,15 @@ inline DWORD WRITE_PU_INIT_GAME(BYTE *buffer, USHORT seed, USHORT player_cnt)
 }
 
 inline DWORD WRITE_PU_TURN_DATA(BYTE *buffer)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+
+	return Stream->GetLength();
+}
+
+inline DWORD WRITE_PU_TURN_DELAY(BYTE *buffer)
 {
 	CStreamSP Stream;
 	Stream->SetBuffer(buffer);

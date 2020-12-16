@@ -171,7 +171,7 @@ void CUltra_cave::Inputkey_reaction(const int& nkey)
 	}
 	if('W' == nkey)
 	{
-		upg = UPG_Z_VU0;
+		upg = UPG_Z_VU1;
 		if( !m_upg_info[upg].proceeding &&
 			m_upg_info[upg].upg_cnt < 1)
 		{

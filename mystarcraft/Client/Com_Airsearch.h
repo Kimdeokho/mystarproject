@@ -4,6 +4,8 @@
 class CCom_Airsearch :
 	public CCom_Targetsearch
 {
+private:
+	float		m_search_time;
 public:
 	virtual void Initialize(CObj* pobj = NULL);
 	virtual void Update(void);

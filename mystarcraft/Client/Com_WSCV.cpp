@@ -125,6 +125,8 @@ void CCom_WSCV::fire(CObj* ptarget)
 
 				if(true == ((CCom_Animation*)m_animation)->GetAttackSync())
 				{
+					CSoundDevice::GetInstance()->PlayBattleSound(SND_B_SCVATT , m_pobj->GetPos());
+
 					m_bfire = true;
 					CObj* peff = new CGeneraEff(L"SCV_EFF" , m_targetpos , D3DXVECTOR2(1.f , 1.f), SORT_GROUND_EFF , 2.f);
 					peff->Initialize();

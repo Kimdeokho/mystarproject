@@ -97,12 +97,12 @@ void CNuclear_part::Initialize(void)
 
 void CNuclear_part::Update(void)
 {
-	D3DXVECTOR2 vpos;
-	vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
-	vpos.x -= CScrollMgr::m_fScrollX;
-	vpos.y -= CScrollMgr::m_fScrollY;
-	CFontMgr::GetInstance()->Setbatch_Font(L"%d", m_upg_info[UPG_T_BCN0].upg_cnt, m_vPos.x - CScrollMgr::m_fScrollX, 
-		m_vPos.y - CScrollMgr::m_fScrollY);
+	//D3DXVECTOR2 vpos;
+	//vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
+	//vpos.x -= CScrollMgr::m_fScrollX;
+	//vpos.y -= CScrollMgr::m_fScrollY;
+	//CFontMgr::GetInstance()->Setbatch_Font(L"%d", m_upg_info[UPG_T_BCN0].upg_cnt, m_vPos.x - CScrollMgr::m_fScrollX, 
+	//	m_vPos.y - CScrollMgr::m_fScrollY);
 
 
 	COMPONENT_PAIR::iterator iter = m_componentlist.begin();
@@ -173,6 +173,8 @@ void CNuclear_part::Release(void)
 
 void CNuclear_part::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBMIDDLE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

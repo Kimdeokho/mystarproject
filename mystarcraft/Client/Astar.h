@@ -2,7 +2,7 @@
 
 #include "Include.h"
 
-const int MAXPATH_IDX = 250;
+const int MAXPATH_IDX = 200;
 template<typename T> class CMyHeapSort;
 class CObj;
 class CArea_Mgr;
@@ -13,22 +13,17 @@ private: //유닛사이 이동 AStar
 	//boost::unordered_map<int , PATH_NODE*>	m_idxopenlist; //검색용
 	//boost::unordered_map<int , PATH_NODE*>	m_closelist;   //검색용
 
-	//bool										m_idxfind[128*128];
-	//unsigned char 비트연산으로 해볼수도있겠다
-
 	bool									m_is_escape;
 	bool									m_terrain_end;
 	D3DXVECTOR2								m_destdir;
 
 	//마스크는 256으로 나누고, 
 	//인덱스는 맵크기 0~4096이므로, 4096/n
+	boost::unordered_set<int>				m_findSet;   //검색용
 	unsigned int							m_findidx[256*8];
 	//unsigned int							m_findidx[128*4];
 	unsigned int							m_mask[32];
-
-	int										m_irow;
-	int										m_icol;
-	int										m_maskidx;
+	
 	int										m_widthcnt;
 private:
 	PATH_NODE*					m_unitpath_pool;
@@ -70,8 +65,7 @@ public:
 	void Init_eightidx(const int& idx);
 	void Init_eightpos_rect(const D3DXVECTOR2& vpos , const MYRECT<float>& rc, const int& stepsize);
 public:
-	//void TerrainPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos);
-	//void TerrainPath_calculation_Update(const D3DXVECTOR2& goalpos);
+	void node_check(const D3DXVECTOR2& vpos);
 	void UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DXVECTOR2& goalpos, const int& stepsize, const vector<D3DXVECTOR2>& terrain_path , const int terrain_idx);
 	void UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* ptarget);
 	void Path_Render(void);

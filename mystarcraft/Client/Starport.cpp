@@ -99,6 +99,7 @@ void CStarport::Initialize(void)
 
 	m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 	CTerran_building::fire_eff_initialize();
+
 }
 
 void CStarport::Update(void)
@@ -128,6 +129,11 @@ void CStarport::Update(void)
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
+
+			D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+			m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_STAR_ADDON);
+			if(NULL != m_partbuilding)
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
 		}
 	}
 	else if(TAKE_OFF == m_unitinfo.state)
@@ -174,12 +180,13 @@ void CStarport::Update(void)
 			}
 			else
 			{
-				int partidx = m_curidx32 + 3 + SQ_TILECNTX;
-				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_STAR_ADDON);
+				D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_STAR_ADDON);
 				if(NULL != m_partbuilding)
 					((CTerran_building*)m_partbuilding)->Setlink(true , this);
 			}
 
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LANDING , m_vPos);
 			m_is_take_off = false;
 			m_vPos.y = m_vgroundpos.y;
 			m_unitinfo.eMoveType = MOVE_GROUND;
@@ -208,6 +215,8 @@ void CStarport::Update(void)
 				}
 				else
 				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
 					m_unitinfo.state = AIR_IDLE;
 					m_unitinfo.order = ORDER_NONE;
 				}
@@ -221,6 +230,8 @@ void CStarport::Update(void)
 				}
 				else
 				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
 					m_unitinfo.state = AIR_IDLE;
 					m_unitinfo.order = ORDER_NONE;
 				}
@@ -349,7 +360,7 @@ void CStarport::Inputkey_reaction(const int& nkey)
 					pobj = new CStar_addon(this/*아니면 오브젝트 아이디*/);
 					pobj->SetPos((m_main_preview)->GetPreviewInfo().vpos);
 					pobj->Initialize();				
-					CObjMgr::GetInstance()->AddObject(pobj , OBJ_STARPORT);
+					CObjMgr::GetInstance()->AddObject(pobj , OBJ_STAR_ADDON);
 
 				}
 				m_partbuilding = pobj;
@@ -608,6 +619,8 @@ void CStarport::Update_Wireframe(void)
 }
 void CStarport::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBLARGE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

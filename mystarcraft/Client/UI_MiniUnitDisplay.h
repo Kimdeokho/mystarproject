@@ -8,6 +8,9 @@ class CUI_MiniUnitDisplay :
 	D3DXVECTOR2			m_vweight;
 	TEAM_NUMBER*		m_eteam;
 	TEAM_NUMBER			m_myteam;
+	CATEGORY			m_category;
+public:
+	CATEGORY	GetCategory(void);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);
@@ -15,6 +18,6 @@ public:
 	virtual void Render(void);
 	virtual void Release(void);
 public:
-	CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER* eteam);
+	CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER* eteam , const CATEGORY ecategory);
 	~CUI_MiniUnitDisplay(void);
 };

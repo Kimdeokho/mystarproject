@@ -71,7 +71,7 @@ void CVulture::Initialize(void)
 	m_unitinfo.maxhp = m_unitinfo.hp;
 	m_unitinfo.mp = 0;
 	m_unitinfo.maxmp = 0;
-	m_unitinfo.fspeed = 155;
+	m_unitinfo.fspeed = 109;
 	m_unitinfo.attack_range = 5*32;
 	m_unitinfo.air_attack_range = 0*32;
 	m_unitinfo.search_range = 255;
@@ -167,6 +167,12 @@ void CVulture::Update(void)
 
 	m_select_ui->Update();
 	m_energybar_ui->Update();
+
+	if( false == m_applyUpg[UPG_T_VFC0] && m_upg_info[UPG_T_VFC0].upg_cnt >= 1)
+	{
+		m_unitinfo.fspeed = 155;
+		m_applyUpg[UPG_T_VFC0] = true;
+	}
 }
 
 void CVulture::Render(void)
@@ -401,6 +407,8 @@ void CVulture::Update_Wireframe(void)
 
 void CVulture::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_VULTURE_DTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND ,1.4f);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

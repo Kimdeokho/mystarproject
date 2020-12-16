@@ -51,7 +51,7 @@ void CTileManager::Initialize(void)
 
 
 	D3DXCreateTexture(pdevice , 128, 128, D3DX_DEFAULT, D3DUSAGE_RENDERTARGET
-		,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_MinimapTexture);
+		,D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_minimapTexture);
 
 	m_MinifogTexture = CTextureMgr::GetInstance()->GetSingleTexture(L"UI" , L"minifogmap")->pTexture;
 
@@ -148,32 +148,10 @@ void CTileManager::RenderTile(void)
 	}
 
 
-
-
-	//TCHAR sz[32] = L"";
-	//for(int i = 0; i < 20; ++i)
-	//{
-	//	for(int j = 0; j < 26; ++j)
-	//	{
-	//		idx = (istartY+i) * SQ_TILECNTX + (istartX + j);
-	//		if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
-	//			continue;
-
-	//		m_matWorld._41 = float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
-	//		m_matWorld._42 = float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
-
-	//		fog_option = m_fogTile[idx]->fog_sequence;
-
-	//		wsprintf(sz , L"%d" , m_sqTile[idx]->byFloor);
-	//		CFontMgr::GetInstance()->FontRender(sz , m_matWorld._41+16 , m_matWorld._42+8 , D3DCOLOR_ARGB(255,0,255,0));
-	//	}
-	//}
 }
 void CTileManager::RenderFog(void)
 {
 	//여기가 안개 렌더
-	//TEXINFO**	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
-	//const vector<TEXINFO*>*	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Fog");
 
 	if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
 		return;
@@ -200,7 +178,6 @@ void CTileManager::RenderFog(void)
 			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;
 			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;
 
-			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_fogTile[idx]->bLight[eteam] , m_sqTile[idx]->vPos.x  , m_sqTile[idx]->vPos.y);
 
 			if(FOG_ALPHA == m_fogTile[idx]->eSight[eteam])
 			{
@@ -211,21 +188,10 @@ void CTileManager::RenderFog(void)
 			{
 				ifogsquence = 1;
 			}
-			//ifogsquence = m_fogTile[idx]->fog_sequence[eteam];
-
-			//if(0 == ifogsquence ||
-				//2 == ifogsquence)
-				//continue;
 
 			m_pSprite->SetTransform(&m_matWorld);
 			m_pSprite->Draw( (*m_fogtexvec)[ifogsquence]->pTexture , NULL , &D3DXVECTOR3(48, 48, 0), NULL
 				,m_fogTile[idx]->fog_color[eteam]);
-
-			//TCHAR temp[32];
-			//RECT rc = {0};
-			//wsprintf(temp , L"%d" , m_fogTile[idx]->overlap_cnt);
-			//CDevice::GetInstance()->GetFont()->DrawTextW(m_pSprite , temp , lstrlen(temp) , &rc , DT_NOCLIP
-			//	,D3DCOLOR_ARGB(255,0,255,0));
 		}
 	}
 }
@@ -233,7 +199,6 @@ void CTileManager::RenderFog(void)
 void CTileManager::RenderCreep(void)
 {
 	const vector<TEXINFO*>*	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Creep");
-	//TEXINFO**	ptemp = CTextureMgr::GetInstance()->GetGeneralTexture(L"Creep");
 	int icreep_squence = 0;
 
 	int istartX = (int)CScrollMgr::m_fScrollX/SQ_TILESIZEX;
@@ -254,14 +219,8 @@ void CTileManager::RenderCreep(void)
 			if(idx < 0 || idx>= SQ_TILECNTY*SQ_TILECNTX)
 				continue;
 
-			//if(FOG_BLACK == m_fogTile[idx]->eSight) //이게 뜬금없이 왜있지??
-			//	continue;
-
-			//if(false == m_creepTile[idx]->bcreep_install)
-				//continue;
-
-			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;//float((istartX + j)*SQ_TILESIZEX) - CScrollMgr::m_fScrollX;
-			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;//float((istartY + i)*SQ_TILESIZEY) - CScrollMgr::m_fScrollY;
+			m_matWorld._41 = m_sqTile[idx]->vPos.x - CScrollMgr::m_fScrollX;
+			m_matWorld._42 = m_sqTile[idx]->vPos.y - CScrollMgr::m_fScrollY;
 
 
 			pCreepbit = m_creepTile[idx]->creep_bit;
@@ -269,7 +228,6 @@ void CTileManager::RenderCreep(void)
 			if(0 == pCreepbit)
 				continue;
 
-			//if(0xFFFFFFFF == pCreepbit)
 			m_creepTile[idx]->creep_sequence = 12;
 
 			if(0x33333333 == pCreepbit /*||
@@ -417,11 +375,7 @@ void CTileManager::RenderCreep(void)
 				m_creepTile[idx]->creep_sequence = 4;
 
 			else
-			{
-				//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_creepTile[idx]->creep_cnt ,
-				//	m_sqTile[idx]->vPos.x , m_sqTile[idx]->vPos.y);
 				continue;
-			}
 
 
 			icreep_squence = m_creepTile[idx]->creep_sequence;
@@ -429,9 +383,6 @@ void CTileManager::RenderCreep(void)
 			m_pSprite->SetTransform(&m_matWorld);
 			m_pSprite->Draw( (*ptemp)[icreep_squence]->pTexture , NULL , &D3DXVECTOR3(16, 16,0), NULL
 				,D3DCOLOR_ARGB(255,255,255,255));
-
-			//CFontMgr::GetInstance()->Setbatch_Font(L"%d" , m_creepTile[idx]->creep_cnt ,
-			//	m_sqTile[idx]->vPos.x , m_sqTile[idx]->vPos.y);
 		}
 	}
 
@@ -487,16 +438,6 @@ void CTileManager::Creep_Autotile(const int& idx)
 	그다음 두 자리는 L , R
 	그 다음 세자리는 LD , DOWN , RD 이다.
 	*/
-
-	//m_creepTile[UP_idx]->creep_bit		+= 0x00000111;
-	//m_creepTile[DOWN_idx]->creep_bit	+= 0x11100000;
-	//m_creepTile[LU_idx]->creep_bit		+= 0x00000001;
-	//m_creepTile[RU_idx]->creep_bit		+= 0x00000100;
-	//m_creepTile[L_idx]->creep_bit		+= 0x00101001;
-	//m_creepTile[R_idx]->creep_bit		+= 0x10010100;
-	//m_creepTile[DL_idx]->creep_bit		+= 0x00100000;
-	//m_creepTile[DR_idx]->creep_bit		+= 0x10000000;
-
 	
 	m_creepTile[idx]->creep_cnt += 1;
 
@@ -693,8 +634,6 @@ void CTileManager::SightOffRender(const int& idx ,const TEAM_NUMBER& eteam)
 void CTileManager::SightOnRender(const int idx ,const int irange , vector<int>& sightoff_list , bool* fogsearch ,CObj* pobj)
 {
 	//range는 가급적 홀수
-
-	//int fradius = irange/2*32; irange는 픽셀
 	int fradius = (irange/2);
 
 	int half_range = fradius / SQ_TILESIZEX; //halfrange는 타일갯수차이
@@ -714,39 +653,24 @@ void CTileManager::SightOnRender(const int idx ,const int irange , vector<int>& 
 		SetFogLight(idx , eteam);
 	}
 
-
-	int LUvtx_idx;// = idx - SQ_TILECNTX*half_range - half_range;
-	int RUvtx_idx;// = idx - SQ_TILECNTX*half_range + half_range;
-	int LDvtx_idx;// = idx + SQ_TILECNTX*half_range - half_range;
-	int RDvtx_idx;// = idx + SQ_TILECNTX*half_range + half_range;
-
-
 	int topidx = (idx - half_range*SQ_TILECNTX)/SQ_TILECNTX;
 	int bottomidx = (idx + half_range*SQ_TILECNTX)/SQ_TILECNTX;
 	int leftidx = (idx - half_range)%SQ_TILECNTX;
 	int rightidx = (idx + half_range)%SQ_TILECNTX;
 
 	if( idx / SQ_TILECNTX <= half_range) //인덱스가 위쪽을 초과할때
-	{
 		topidx = (idx -  (idx / SQ_TILECNTX) * SQ_TILECNTX)/ SQ_TILECNTX; //위쪽끝으로 붙인다
-	}
 	if( SQ_TILECNTX - idx / SQ_TILECNTX <= half_range ) //아래를 초과할때
-	{
 		bottomidx = (idx + (SQ_TILECNTX - 1 - (idx / SQ_TILECNTX)) * SQ_TILECNTX) / SQ_TILECNTX;
-	}
 	if( idx % SQ_TILECNTX <= half_range) //인덱스가 왼쪽을 넘어갈때
-	{
 		leftidx = (idx - (idx % SQ_TILECNTX)) % SQ_TILECNTX;
-	}
 	if( SQ_TILECNTX - (idx % SQ_TILECNTX) <= half_range)//인덱스가 오른쪽을 넘어갈때
-	{
 		rightidx = (idx + ( SQ_TILECNTX - 1 - (idx % SQ_TILECNTX) ) ) % SQ_TILECNTX;
-	}
 
-	LUvtx_idx = topidx * SQ_TILECNTX + leftidx;
-	LDvtx_idx = bottomidx * SQ_TILECNTX + leftidx;
-	RUvtx_idx = topidx * SQ_TILECNTX + rightidx;
-	RDvtx_idx = bottomidx * SQ_TILECNTX + rightidx;
+	int LUvtx_idx = topidx * SQ_TILECNTX + leftidx;
+	int LDvtx_idx = bottomidx * SQ_TILECNTX + leftidx;
+	int RUvtx_idx = topidx * SQ_TILECNTX + rightidx;
+	int RDvtx_idx = bottomidx * SQ_TILECNTX + rightidx;
 
 
 	for(int j = LUvtx_idx; j <= RUvtx_idx; ++j) //윗줄 
@@ -776,16 +700,6 @@ void CTileManager::SightOnRender(const int idx ,const int irange , vector<int>& 
 
 void CTileManager::MinifogUpdate(void)
 {
-	//m_fogmat._11 = 1;
-	//m_fogmat._22 = 1;
-	//m_fogmat._41 = 85;
-	//m_fogmat._42 = 470;
-	//m_pSprite->SetTransform(&m_fogmat);
-
-	//m_pSprite->Draw(m_MinifogTexture , NULL , &D3DXVECTOR3(0,0,0), NULL
-	//	, D3DCOLOR_ARGB(255,255,255,255));
-
-
 	D3DLOCKED_RECT	lrect;
 	LPDIRECT3DSURFACE9	psurface;
 	size_t maxloop;
@@ -801,7 +715,7 @@ void CTileManager::MinifogUpdate(void)
 
 		for(size_t i = 0; i < maxloop; ++i)
 		{
-			pcolor[ m_minifog_offidx[i] ] = 0x88000000;
+			pcolor[ m_minifog_offidx[i] ] = 0x88000000; //반투명
 		}
 		psurface->UnlockRect();
 		psurface->Release();
@@ -819,7 +733,7 @@ void CTileManager::MinifogUpdate(void)
 
 		for(size_t i = 0; i < maxloop; ++i)
 		{
-			pcolor[ m_minifog_onidx[i] ] = 0x00ffffff;
+			pcolor[ m_minifog_onidx[i] ] = 0x00ffffff; //투명
 		}
 		psurface->UnlockRect();
 		psurface->Release();
@@ -833,16 +747,11 @@ void CTileManager::SetFogSquence(int idx , unsigned short sequence)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
 		return;
-
-	//m_fogTile[idx]->fog_sequence		 = sequence;
 }
 void CTileManager::SetFogLight(int idx , const TEAM_NUMBER& eteam)
 {
 	if(idx < 0 || idx >= SQ_TILECNTX*SQ_TILECNTY)
 		return;
-
-	//if(false == m_fogTile[idx]->bLight[eteam])
-	//	m_fogTile[idx]->bLight[eteam] = true;
 
 	if(FOG_BLACK == m_fogTile[idx]->eSight[eteam] ||
 		FOG_GREY == m_fogTile[idx]->eSight[eteam])
@@ -860,10 +769,6 @@ void CTileManager::SetFogLight(int idx , const TEAM_NUMBER& eteam)
 void CTileManager::SetCreepInstall(const int& idx , bool binstall)
 {
 	m_creepTile[idx]->bcreep_install = binstall;
-}
-void CTileManager::SetFogColor(const int& idx , D3DCOLOR color)
-{
-	//m_fogTile[idx]->fog_color = color;
 }
 bool CTileManager::CheckFogFloor(int myidx , int destidx)
 {
@@ -953,10 +858,12 @@ void CTileManager::LoadTileData(HANDLE hFile)
 	int idx64 = 0;
 	MYRECT<float> temprc;
 	MYRECT<float> tempvtx;
-	tempvtx.left = 16;
-	tempvtx.right = 16;
-	tempvtx.top = 16;
-	tempvtx.bottom = 16;
+
+	const float vtxrange = 15.f;
+	tempvtx.left = vtxrange;
+	tempvtx.right = vtxrange;
+	tempvtx.top = vtxrange;
+	tempvtx.bottom = vtxrange;
 
 	for(int i = 0; i < mapsize; ++i)
 	{
@@ -968,10 +875,10 @@ void CTileManager::LoadTileData(HANDLE hFile)
 		if(MOVE_NONE == m_sqTile[i]->byOption)
 		{
 			idx64 = CMyMath::Pos_to_index(m_sqTile[i]->vPos , 64);
-			temprc.left = m_sqTile[i]->vPos.x - 16;
-			temprc.right = m_sqTile[i]->vPos.x + 16;
-			temprc.top = m_sqTile[i]->vPos.y - 16;
-			temprc.bottom = m_sqTile[i]->vPos.y + 16;
+			temprc.left = m_sqTile[i]->vPos.x - vtxrange;
+			temprc.right = m_sqTile[i]->vPos.x + vtxrange;
+			temprc.top = m_sqTile[i]->vPos.y - vtxrange;
+			temprc.bottom = m_sqTile[i]->vPos.y + vtxrange;
 
 			CObj* tempobj = new CObj;		
 			tempobj->SetPos(m_sqTile[i]->vPos);
@@ -1101,7 +1008,7 @@ void CTileManager::ReadyMiniMap(void)
 	list<TERRAIN_INFO*>::iterator iter;
 	list<TERRAIN_INFO*>::iterator iter_end;
 
-	LPDIRECT3DTEXTURE9 pTexture;
+	
 	BYTE byTerrain_ID = 0;
 	BYTE byGroup_ID = 0;
 	BYTE byGroup_sequence = 0;
@@ -1111,27 +1018,15 @@ void CTileManager::ReadyMiniMap(void)
 	D3DXMATRIX tempmat;
 	D3DXMatrixIdentity(&tempmat);
 
-	//CDevice::GetInstance()->GetDevice()->Clear(0 , NULL
-	//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
-	//	, D3DCOLOR_XRGB(0,0,255), 1.f , 0);
-
+	float ratioX = BACKBUFFER_SIZEX / (SQ_TILECNTX * SQ_TILESIZEX);
+	float ratioY = BACKBUFFER_SIZEY / (SQ_TILECNTY * SQ_TILESIZEY);	
+	LPDIRECT3DTEXTURE9 pTexture;
 	CDevice::GetInstance()->Render_Begin();
-
-	float ratioX = BACKBUFFER_SIZEX / 4096.f;
-	float ratioY = BACKBUFFER_SIZEY / 4096.f;
-
 	for(int i = 0; i < SQ_TILECNTY; ++i)
 	{
 		for(int j = 0; j < SQ_TILECNTX; ++j)
 		{
-			//CDevice::GetInstance()->Render_Begin();
-
 			idx = i * SQ_TILECNTX + j;
-
-			//tempmat._11 = 0.2f;
-			//tempmat._22 = 0.15f;
-			//tempmat._41 = m_sqTile[idx]->vPos.x * 0.2f;
-			//tempmat._42 = m_sqTile[idx]->vPos.y * 0.15f;
 
 			tempmat._11 = ratioX;
 			tempmat._22 = ratioY;
@@ -1160,19 +1055,14 @@ void CTileManager::ReadyMiniMap(void)
 					pTexture = (*m_HillTex[byGroup_ID])[byGroup_sequence]->pTexture;
 
 				m_pSprite->Draw(pTexture , NULL , &D3DXVECTOR3(16, 16 , 0) , NULL ,
-					m_TileColor); //백버퍼크기에 그려넣는 작업이다..
+					m_TileColor); //백버퍼에 그려넣는 작업
 				
 			}
-			//CDevice::GetInstance()->Render_End();
-
-			//CopySurface(m_MinimapTexture);
 		}
 
 	}
-
 	CDevice::GetInstance()->Render_End();
-
-	CopySurface(m_MinimapTexture);
+	CopySurface(m_minimapTexture);
 
 	CDevice::GetInstance()->GetDevice()->Clear(0 , NULL
 		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL
@@ -1357,7 +1247,6 @@ void CTileManager::Bresenham_fog(const D3DXVECTOR2& vStart ,const D3DXVECTOR2& v
 
 					m_fogTile[idx]->eSight[eteam] = FOG_ALPHA;
 					SetFogLight(idx , eteam);
-					//}
 				}
 				else if(MOVE_GROUND == etype)
 				{
@@ -1788,7 +1677,7 @@ void CTileManager::Release(void)
 			m_MapTexture[i][j]->Release();
 		}
 	}
-	m_MinimapTexture->Release();
+	m_minimapTexture->Release();
 
 	vector<int> temp1 , temp2;
 	temp1.swap(m_minifog_offidx);
@@ -1797,7 +1686,7 @@ void CTileManager::Release(void)
 
 LPDIRECT3DTEXTURE9 CTileManager::GetMiniampTexture(void)
 {
-	return m_MinimapTexture;
+	return m_minimapTexture;
 }
 
 LPDIRECT3DTEXTURE9 CTileManager::GetMiniFogmapTexture(void)

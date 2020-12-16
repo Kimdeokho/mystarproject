@@ -151,8 +151,8 @@ void CAcademy::Inputkey_reaction(const int& nkey)
 
 	if( VK_LBUTTON == nkey )
 	{
-		const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
-		CMD_BTN eclicked_btn = ((CUI_Cmd_info*)pui)->Get_clicked_btn();
+		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+		CMD_BTN eclicked_btn = pui->Get_clicked_btn();
 
 		if(BTN_STEAMPACK == eclicked_btn)
 			Inputkey_reaction('W');
@@ -253,11 +253,11 @@ void CAcademy::Update_Cmdbtn(void)
 		if( false == m_upg_info[UPG_T_STEAMPACK].proceeding && m_upg_info[UPG_T_STEAMPACK].upg_cnt < 1)
 			pui->Create_Cmdbtn(1 , L"BTN_STEAMPACK" , BTN_STEAMPACK , true , L"W");
 		if( false == m_upg_info[UPG_T_BA3].proceeding && m_upg_info[UPG_T_BA3].upg_cnt < 1)
-			pui->Create_Cmdbtn(3 , L"BTN_T_BA3" , BTN_T_BA3 , true , L"E");
+			pui->Create_Cmdbtn(3 , L"BTN_T_BA3" , BTN_T_BA3 , true , L"A");
 		if( false == m_upg_info[UPG_T_BA4].proceeding && m_upg_info[UPG_T_BA4].upg_cnt < 1)
-			pui->Create_Cmdbtn(4 , L"BTN_T_BA4" , BTN_T_BA4 , true , L"A");
+			pui->Create_Cmdbtn(4 , L"BTN_T_BA4" , BTN_T_BA4 , true , L"S");
 		if( false == m_upg_info[UPG_T_BA5].proceeding && m_upg_info[UPG_T_BA5].upg_cnt < 1)
-			pui->Create_Cmdbtn(5 , L"BTN_T_BA5" , BTN_T_BA5 , true , L"S");
+			pui->Create_Cmdbtn(5 , L"BTN_T_BA5" , BTN_T_BA5 , true , L"D");
 	}
 	else if(DEVELOPING == m_unitinfo.state)
 		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
@@ -385,6 +385,8 @@ void CAcademy::Dead(void)
 			break;
 		}
 	}
+
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBMIDDLE_BOOM , m_vPos);
 }
 void CAcademy::Release(void)
 {

@@ -4,6 +4,8 @@
 #include "KeyMgr.h"
 #include "MouseMgr.h"
 #include "Room_UIMgr.h"
+#include "SoundDevice.h"
+
 CInput_Room::CInput_Room(void)
 {
 }
@@ -27,7 +29,10 @@ void CInput_Room::Update(void)
 	else if(CKeyMgr::GetInstance()->GetOnceKeyDown_Check(VK_RETURN))
 	{
 		CRoom_UIMgr::GetInstance()->SendChat();
+		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_CHAT , 0);
 	}
+
+	CSoundDevice::GetInstance()->StageUpdate();
 }
 
 void CInput_Room::Reelase(void)

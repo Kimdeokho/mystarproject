@@ -43,7 +43,7 @@ void CBattle_addon::Initialize(void)
 	CTerran_building::building_area_Initialize(2 , 2);
 	CTerran_building::building_pos_Initialize(2 , 2);
 
-	m_vertex.left = 32.f;//원래 37이던데 이유는 흠...
+	m_vertex.left = 32.f;
 	m_vertex.right = 29.f;
 	m_vertex.top =  24.f;
 	m_vertex.bottom = 23.f;
@@ -121,13 +121,6 @@ void CBattle_addon::Update(void)
 		}
 	}
 
-	D3DXVECTOR2 vpos;
-	vpos = CMyMath::index_to_Pos(m_curidx32 , 128 , 32);
-	vpos.x -= CScrollMgr::m_fScrollX;
-	vpos.y -= CScrollMgr::m_fScrollY;
-	CFontMgr::GetInstance()->Setbatch_Font(L"@" , m_vPos.x - CScrollMgr::m_fScrollX, 
-		m_vPos.y - CScrollMgr::m_fScrollY);
-
 	CTerran_building::fire_eff_update();
 
 	CTerran_building::upginfo_update(UPG_T_VIP0);
@@ -149,26 +142,6 @@ void CBattle_addon::Render(void)
 	CTerran_building::fire_eff_render();
 
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
-}
-
-void CBattle_addon::Release(void)
-{
-	CTerran_building::area_release();
-}
-
-void CBattle_addon::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	if(NULL != m_mainbuilding)
-		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
 }
 
 void CBattle_addon::Inputkey_reaction(const int& nkey)
@@ -213,7 +186,15 @@ void CBattle_addon::Inputkey_reaction(const int& firstkey , const int& secondkey
 {
 
 }
+bool CBattle_addon::Input_cmd(const int& nkey, bool* waitkey)
+{
+	if( 'Q' == nkey )
+		return true;
+	if( 'W' == nkey )
+		return true;
 
+	return false;
+}
 void CBattle_addon::Setlink(bool blink , CObj* pobj)
 {
 	if(true == blink)
@@ -229,19 +210,15 @@ void CBattle_addon::Setlink(bool blink , CObj* pobj)
 }
 void CBattle_addon::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state )
 	{			
 		if(NULL != m_mainbuilding)
 		{
 			if( false == m_upg_info[UPG_T_VIP0].proceeding && m_upg_info[UPG_T_VIP0].upg_cnt < 1)
-			{
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VIP0" , BTN_T_VIP0 , true);
-			}
+				pui->Create_Cmdbtn(0 , L"BTN_T_VIP0" , BTN_T_VIP0 , true , L"Q");
 			if( false == m_upg_info[UPG_T_VIP1].proceeding && m_upg_info[UPG_T_VIP1].upg_cnt < 1)
-			{
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VIP1" , BTN_T_VIP1 , true);
-			}
+				pui->Create_Cmdbtn(1 , L"BTN_T_VIP1" , BTN_T_VIP1 , true , L"W");
 		}
 
 	}
@@ -314,4 +291,36 @@ void CBattle_addon::Update_Wireframe(void)
 	else if(true == m_upg_info[UPG_T_VIP1].proceeding && m_upg_info[UPG_T_VIP1].obj_num == m_obj_id)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VIP1].curtime / m_upg_info[UPG_T_VIP1].maxtime );
 	//-------------------------------------------
+}
+void CBattle_addon::Dead(void)
+{
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBMIDDLE_BOOM , m_vPos);
+
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	if(NULL != m_mainbuilding)
+		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
+
+	for(int i = 0; i < UPG_END; ++i)
+	{
+		if( true == m_upg_info[i].proceeding &&
+			m_obj_id == m_upg_info[i].obj_num)
+		{
+			m_upg_info[i].proceeding = false;
+			m_upg_info[i].obj_num = 0;
+			m_upg_info[i].curtime = 0;
+			break;
+		}
+	}
+}
+void CBattle_addon::Release(void)
+{
+	CTerran_building::area_release();
 }

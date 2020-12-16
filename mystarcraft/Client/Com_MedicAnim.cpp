@@ -30,7 +30,12 @@ void CCom_MedicAnim::SetAnimation(const TCHAR* statekey)
 	if(m_statkey != statekey)
 	{
 		if(false == m_battack_end)
-			return;
+		{
+			if(L"MOVE" != statekey)
+				return;
+			else
+				m_battack_end = true;
+		}
 
 		m_statkey = statekey;
 		m_frame.fcurframe = 0;	
@@ -66,7 +71,9 @@ void CCom_MedicAnim::Update(void)
 	if( int(m_frame.fcurframe) >= m_frame.umax)
 	{
 		if(L"HEAL" == m_statkey)
+		{
 			m_battack_end = true;
+		}
 
 		m_frame.fcurframe = 0;
 	}

@@ -33,6 +33,7 @@ void CCom_WLurker::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LURKER_FIRE , m_pobj->GetPos());
 		m_pobj->SetState(BURROW);
 		m_bfire = true;
 

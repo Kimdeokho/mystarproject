@@ -13,11 +13,11 @@
 
 #include "Include.h"
 
-const int volumeValue = -2500;
-
 class CSoundDevice
 {
 	DECLARE_SINGLETON(CSoundDevice);
+private:
+	static const int defaultVolumeValue;
 public:
 	typedef struct tagSound
 	{
@@ -66,12 +66,15 @@ private:
 	list<BATTLE_SOUND_INFO>			m_copyBattleSnd;
 	list<LPDIRECTSOUNDBUFFER>		m_copyBgmSnd;
 	list<LPDIRECTSOUNDBUFFER>		m_copyVoiceSnd[OBJ_END];
-	list<LPDIRECTSOUNDBUFFER>		m_copyEffectSnd;
+	list<LPDIRECTSOUNDBUFFER>		m_copyEffectSnd[SND_EFF_END];
 
 	SOUND_INFO						m_battleSndInfo[SND_B_END];
 	SOUND_INFO						m_voiceSndInfo[SND_V_END];
 
+	float							m_curtime;
+	bool							m_setplay;
 	int								m_bgmCnt;
+	int								m_battleSndCnt;
 public:
 	HRESULT					Init(void);	// 장치를 초기화 하는역활.
 	LPDIRECTSOUNDBUFFER8	LoadWave(TCHAR* pFileName);	//파일경로를 통해 파일을 읽어 들이겠다.
@@ -81,7 +84,7 @@ public:
 
 	void PlayLoadingSound(const SOUND_BGM iIndex /*몇번째 파일을 재생할래?*/, DWORD dwFlag/*무한루프, 한번*/); //파일을 재생 하겠다.
 
-	bool PlayBattleSound(const SOUND_BATTLE iIndex , const D3DXVECTOR2	vpos);	// 현재 iIndex번째 사운드가 재생되고있는지 아닌지.
+	bool PlayBattleSound(const SOUND_BATTLE iIndex , const D3DXVECTOR2	vpos , const int volval = defaultVolumeValue);	// 현재 iIndex번째 사운드가 재생되고있는지 아닌지.
 	bool PlayBgmSound(const SOUND_BGM iIndex , const DWORD flag);	// 현재 iIndex번째 사운드가 재생되고있는지 아닌지.
 	bool PlayEffSound(const SOUND_EFF iIndex , const DWORD flag);
 	bool PlayVoiceSound(const SOUND_VOICE iIndex , const OBJID id);

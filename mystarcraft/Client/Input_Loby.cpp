@@ -28,6 +28,8 @@ void CInput_Loby::Update(void)
 
 		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_CLICK , 0);
 	}
+
+	CSoundDevice::GetInstance()->StageUpdate();
 }
 
 void CInput_Loby::Reelase(void)

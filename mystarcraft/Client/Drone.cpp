@@ -28,6 +28,9 @@
 #include "Building_Preview.h"
 #include "GeneraEff.h"
 
+#include "SoundDevice.h"
+#include "Session_Mgr.h"
+
 #include "Input_Interface.h"
 
 #include "MyCmd_Building.h"
@@ -211,6 +214,9 @@ void CDrone::Create_Building(void)
 	{
 		if(false == m_main_preview->Install_check(m_preview_info))
 		{
+			if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+				CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_DRONE_ERR , OBJ_DRONE);
+
 			m_unitinfo.order = ORDER_NONE;
 			m_unitinfo.state = IDLE;
 			m_ecmd_state = CMD_BASIC;
@@ -281,12 +287,15 @@ void CDrone::Create_Building(void)
 	}
 	else
 	{
-		if(false == m_main_preview->Install_check(m_preview_info))
-		{
-			m_unitinfo.order = ORDER_NONE;
-			m_unitinfo.state = IDLE;
-			m_ecmd_state = CMD_BASIC;
-		}
+		//if(false == m_main_preview->Install_check(m_preview_info))
+		//{
+		//	if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+		//		CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_DRONE_ERR , OBJ_DRONE);
+
+		//	m_unitinfo.order = ORDER_NONE;
+		//	m_unitinfo.state = IDLE;
+		//	m_ecmd_state = CMD_BASIC;
+		//}
 	}
 }
 
@@ -334,7 +343,7 @@ void CDrone::Inputkey_reaction(const int& nkey)
 	{
 		//m_ecmd_state = CMD_BASIC;		
 
-		if(true == m_main_preview->Install_check(m_preview_info))
+		//if(true == m_main_preview->Install_check(m_preview_info))
 		{				
 			CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 			COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_TARGET_SEARCH);
@@ -351,11 +360,11 @@ void CDrone::Inputkey_reaction(const int& nkey)
 
 			//위치에 도착하면 건물생성
 		}
-		else
-		{
-			m_unitinfo.order = ORDER_NONE;
-			m_main_preview->SetActive(false);
-		}
+		//else
+		//{
+		//	m_unitinfo.order = ORDER_NONE;
+		//	m_main_preview->SetActive(false);
+		//}
 		m_is_preview = false;
 	}
 
@@ -472,15 +481,26 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 	else if(VK_LBUTTON == nkey)
 	{
 		//여기서 명령을 입력하고
-		if(true == m_is_preview && true == m_main_preview->Install_check())
+		if(true == m_is_preview)
 		{			
-			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetClick_Pos();
-			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+			if(true == m_main_preview->Install_check())
+			{
+				if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+					CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_ZBUILD , 0);
 
-			m_main_preview->SetActive(false);
-			m_is_preview = false;
-			m_preview_info = m_main_preview->GetPreviewInfo();
-			CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_Building::StaticCreate(m_preview_info));
+				D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetClick_Pos();
+				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+
+				m_main_preview->SetActive(false);
+				m_is_preview = false;
+				m_preview_info = m_main_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_Building::StaticCreate(m_preview_info));
+			}
+			else
+			{
+				if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+					CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_DRONE_ERR , OBJ_DRONE);
+			}
 		}		
 	}
 
@@ -504,7 +524,7 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 		}
 	}
 
-	if(VK_ESCAPE == nkey)
+	else if(VK_ESCAPE == nkey)
 		m_ecmd_state = CMD_BASIC;
 
 	else if(CMD_B_VIEW == m_ecmd_state || CMD_V_VIEW == m_ecmd_state)
@@ -545,6 +565,8 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 					MYRECT<float> vtx(48-8 , 48-7 , 32 , 32-7);
 					SetPreview_info(L"Z_HYDRADEN" , Z_HYDRADEN , 2 , 3 , vtx);
 				}
+				else
+					m_is_preview = false;
 			}
 			else if(CMD_V_VIEW == m_ecmd_state)
 			{
@@ -569,6 +591,8 @@ bool CDrone::Input_cmd(const int& nkey , bool* waitkey)
 					MYRECT<float> vtx(64-16 , 64-15 , 32 , 32-27);
 					SetPreview_info(L"Z_DEFILER_MOUND" , Z_DEFILER_MOUND , 2 , 4 , vtx);
 				}
+				else
+					m_is_preview = false;
 			}
 		}
 	}
@@ -712,6 +736,8 @@ void CDrone::Update_Wireframe(void)
 
 void CDrone::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_DRDTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"DRONEDEAD" , L"DRONEWRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

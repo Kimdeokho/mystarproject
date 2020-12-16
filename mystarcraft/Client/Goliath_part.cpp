@@ -35,7 +35,7 @@ void CGoliath_part::Initialize(void)
 	m_unitinfo.hp = 0;
 	m_unitinfo.mp = 0;
 	m_unitinfo.fspeed = 0;
-	m_unitinfo.search_range = 255;
+	m_unitinfo.search_range = 9*32;
 	m_unitinfo.attack_range = 6*32;
 	m_unitinfo.air_attack_range = 5*32;
 
@@ -93,10 +93,10 @@ void CGoliath_part::Update(void)
 	}
 
 
-	if( false == m_upg_state[UPG_T_VFC3] && m_upg_info[UPG_T_VFC3].upg_cnt >= 1)
+	if( false == m_applyUpg[UPG_T_VFC3] && m_upg_info[UPG_T_VFC3].upg_cnt >= 1)
 	{
 		m_unitinfo.air_attack_range += 3*32;
-		m_upg_state[UPG_T_VFC3] = true;
+		m_applyUpg[UPG_T_VFC3] = true;
 		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
 	}
 }

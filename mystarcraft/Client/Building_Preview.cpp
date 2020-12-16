@@ -301,6 +301,7 @@ bool CBuilding_Preview::Install_check(void)
 						{
 							CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
 							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
+							return false;
 						}
 					}
 					else if(TRIBE_ZERG == etribe)
@@ -312,6 +313,7 @@ bool CBuilding_Preview::Install_check(void)
 							{
 								CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
 									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
+								return false;
 							}
 						}
 					}
@@ -353,13 +355,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 		{
 			vtemp.x = cur_info.vpos.x + j*32;
 			idx32 = CMyMath::Pos_to_index(vtemp  , 32);
-			//idx64 = CMyMath::Pos_to_index(vtemp , 64);
 
-/*
-			temprc.left = vtemp.x - 16;
-			temprc.right = vtemp.x + 16;
-			temprc.top = vtemp.y - 16;
-			temprc.bottom = vtemp.y + 16;*/
 
 			BYTE			op = CTileManager::GetInstance()->GetTileOption(idx32);
 			FOGSIGHT_OPTION fog_sight = CTileManager::GetInstance()->GetFogLight(idx32 , eteam);
@@ -390,6 +386,7 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 						{
 							CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
 								, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
+							return false;
 						}
 					}
 					else if(TRIBE_ZERG == etribe)
@@ -401,14 +398,18 @@ bool CBuilding_Preview::Install_check(const PREVIEW_INFO& cur_info)
 							{
 								CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
 									, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
+								return false;
 							}
 						}
 					}
 				}
 				else
 				{
-					CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
-						, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
+					if(Player_team == eteam)
+					{
+						CFontMgr::GetInstance()->SetNoticeFont(L"그곳엔 설치 할 수 없습니다."
+							, BACKBUFFER_SIZEX/2 , BACKBUFFER_SIZEY/1.5f , 3.f);
+					}
 					return false;
 				}
 			}

@@ -4,6 +4,8 @@
 #include "TextureMgr.h"
 #include "TimeMgr.h"
 #include "Obj.h"
+#include "Spidermine.h"
+
 CCom_MineAnim::CCom_MineAnim(D3DXMATRIX& objmat)
 :CCom_Animation(objmat)
 {
@@ -33,6 +35,7 @@ void CCom_MineAnim::Update(void)
 		{
 			SetAnimation(L"BURROW");
 			m_pobj->SetState(BURROW);
+			((CSpidermine*)m_pobj)->BurrowInit();
 		}
 		else if(L"PULL" == m_statkey)
 		{

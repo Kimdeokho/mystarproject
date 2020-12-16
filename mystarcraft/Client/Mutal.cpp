@@ -66,7 +66,7 @@ void CMutal::Initialize(void)
 	m_unitinfo.fspeed = 113;
 	m_unitinfo.attack_range = 4*32;
 	m_unitinfo.air_attack_range = 4*32;
-	m_unitinfo.search_range = 255;
+	m_unitinfo.search_range = 8*32;
 	m_unitinfo.fog_range = 512;
 
 	m_vertex.left = 22.f;
@@ -291,6 +291,8 @@ void CMutal::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CMutal::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MUDTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"ZFLY_S_DEAD" , m_vPos , D3DXVECTOR2(1.1f ,1.1f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

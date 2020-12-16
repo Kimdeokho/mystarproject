@@ -4,6 +4,7 @@
 class CCom_ZBuildingAnim;
 class CCom_Creep;
 class CUI;
+
 class CZerg_building :
 	public CObj
 {

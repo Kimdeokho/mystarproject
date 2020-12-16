@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Session_Mgr.h"
 
+#include "SoundDevice.h"
 #include "TestSession.h"
 #include "SceneMgr.h"
 #include "Login_UIMgr.h"
@@ -54,14 +55,12 @@ void CSession_Mgr::Update(void)
 {
 	Read_UDPPacket();
 	Read_TCPPacket();
-	SendTurnPacket();
 }
 void CSession_Mgr::SendTurnPacket(void)
 {
 	if(NS_PLAYING != m_estate &&
 		NS_LEAVE != m_estate)
-		return; //여기도 디스커넥트 일수도
-
+		return; 
 
 	m_subTurnNumber++;
 	if ( m_subTurnNumber == 5 )
@@ -73,7 +72,7 @@ void CSession_Mgr::SendTurnPacket(void)
 
 			CTurnData* pturndata = new CTurnData(pcmdlist);				
 
-			//TurnNumber | SessionID | CmdSize(커맨드 갯수) | CmdType | 커맨드 데이터들
+			/*TurnNumber | SessionID | CmdSize(커맨드 갯수) | CmdType | 커맨드 데이터들*/
 			CStreamSP packet;
 			packet->SetBuffer(WriteBuffer);
 			packet->WriteInt32(m_TurnNumber + 2);
@@ -82,16 +81,16 @@ void CSession_Mgr::SendTurnPacket(void)
 			pturndata->Write(packet);
 
 			CRoomSession_Mgr::GetInstance()->WriteTurnData(PU_TURN_DATA ,WriteBuffer ,packet->GetLength());
-			//보내고
+			/*상대에게 실행할 명령데이터를 보낸다*/
 
 			m_vecTurnData[m_TurnNumber + 2].insert(pair<DWORD_PTR , CTurnData*>(m_session_info.SESSION_ID , pturndata));
+			/*나에게 실행할 명령데이터를 보낸다*/
+
 			pinput->ClearCmdList();
 		}
 
 		if(m_TurnNumber >= 0)
-		{
 			TryAdvanceTurn();
-		}
 		else
 		{
 			++m_TurnNumber;
@@ -106,13 +105,7 @@ void CSession_Mgr::TryAdvanceTurn(void)
 {
 	int playercnt = CRoomSession_Mgr::GetInstance()->GetPlayerCnt();
 
-	if(1 == playercnt)
-	{
-		//승리...
-		int a = 0;
-	}
-
-	if(m_vecTurnData[m_TurnNumber + 1].size() == playercnt) //@@@@여기 m_TurnNumbe + 1과
+	if(m_vecTurnData[m_TurnNumber + 1].size() == playercnt) /*상대들의 턴 데이터가 나에게 도착했는지*/
 	{
 		if(NS_DELAY == m_estate)
 		{
@@ -122,27 +115,22 @@ void CSession_Mgr::TryAdvanceTurn(void)
 			CMyCommandList* pcmdlist = pinput->GetCmdList();
 			pcmdlist->ClearCommand();			
 
-			Sleep(100);
-			//여기가 디스커넥트인가			
+			Sleep(100); //잠시 기다려준다
 		}
 		++m_TurnNumber;
 		m_subTurnNumber = 0;
 
-		//@@@@여기 m_TurnNumber가 같은 수를 나타낸다.
 		map<DWORD_PTR , CTurnData*>::iterator iter = m_vecTurnData[m_TurnNumber].begin(); 
 		map<DWORD_PTR , CTurnData*>::iterator iter_end = m_vecTurnData[m_TurnNumber].end();
 
 		for( ; iter != iter_end; ++iter)
-		{
-			//CTurnData* temp = iter->second;
-
 			iter->second->GetCmdList()->ProcessCmd();
-		}
-		//동기화 전, 승패가 결정났는지 한번 보자.
+
+		/*받은 턴 패킷을 수행합시다.*/		
 	}
 	else
 	{
-		m_estate = NS_DELAY; //여기가 디스커넥트인가
+		m_estate = NS_DELAY;
 		CFontMgr::GetInstance()->SetNoticeFont(L"상대로부터 턴이 도착하지 않음" , 320, 240 , 3.f);
 	}
 }
@@ -160,11 +148,7 @@ void CSession_Mgr::Read_UDPPacket(void)
 
 	if(m_UDPsession->ReadFromPacket(dwProtocol , tempaddres , tempport ,m_Read_UDPBuf , dwPacketLength ))
 	{
-		if(PU_TEST == dwProtocol)
-		{
-			int a = 0;
-		}
-		else if(PU_START_ARRANGEMENT == dwProtocol)
+		if(PU_START_ARRANGEMENT == dwProtocol)
 		{
 			READ_UDP_PACKET(PU_START_ARRANGEMENT);
 			CRoomSession_Mgr::GetInstance()->SetPlaceData(Data.PLACE_INFO);
@@ -176,12 +160,11 @@ void CSession_Mgr::Read_UDPPacket(void)
 			
 			srand(unsigned(Data.SEED));
 			CRoomSession_Mgr::GetInstance()->SetPlayerCnt(Data.PLAYER_CNT);
+			CSoundDevice::GetInstance()->ReleaseSound();
 			//방에서 스타트버튼을 눌렀다.
 		}
 		else if(PU_TURN_DATA == dwProtocol)
 		{
-			//READ_UDP_PACKET(PU_TURN_DATA);
-
 			CStreamSP readstream;
 			readstream->SetBuffer(m_Read_UDPBuf);
 
@@ -399,5 +382,15 @@ void CSession_Mgr::Release(void)
 	}
 	m_vecTurnData.clear();
 	vector<map<DWORD_PTR , CTurnData*>>().swap(m_vecTurnData);
+}
+
+CSession_Mgr::NETWORK_STATE CSession_Mgr::GetSessionState(void)
+{
+	return m_estate;
+}
+
+void CSession_Mgr::UpdateDelay(void)
+{
+
 }
 

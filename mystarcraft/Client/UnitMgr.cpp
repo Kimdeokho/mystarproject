@@ -9,6 +9,7 @@
 #include "MyMath.h"
 #include "MouseMgr.h"
 #include "ScrollMgr.h"
+#include "Area_Mgr.h"
 
 #include "Com_Targetsearch.h"
 #include "Ingame_UIMgr.h"
@@ -36,7 +37,6 @@ void CUnitMgr::Initialize(void)
 }
 void CUnitMgr::SetUnit(CObj* pobj)
 {
-	//pobj->SetSelect(GENERAL_SELECT);
 	m_curunitList.push_back(pobj);
 }
 bool CUnitMgr::is_unit(const CObj* const pobj)
@@ -195,15 +195,13 @@ void CUnitMgr::Calculate_UnitCenterPt(list<CObj*>& unitlist, const D3DXVECTOR2& 
 	iter = unitlist.begin();
 	m_magicbox_unitcnt = 0;
 
+
 	for( ; iter != iter_end; ++iter)
 	{
 		vpos = (*iter)->GetPos();
-
-		if(magicbox.right - magicbox.left <= BACKBUFFER_SIZEX / 2 &&
-			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY )
+		if(magicbox.right - magicbox.left <= 192 &&
+			magicbox.bottom - magicbox.top <= 192 )
 		{
-			//++m_magicbox_unitcnt;
-			//m_vUnitcenterpt += vpos;
 			(*iter)->SetMagicBox(true);
 		}
 		else
@@ -267,11 +265,9 @@ void CUnitMgr::Calculate_UnitCenterPt(const D3DXVECTOR2& vgoalpos /*, CObj* ptar
 	{
 		vpos = (*iter)->GetPos();
 
-		if(magicbox.right - magicbox.left <= BACKBUFFER_SIZEX / 2 &&
-			magicbox.bottom - magicbox.top <= BACKBUFFER_SIZEY )
+		if(magicbox.right - magicbox.left <= 192 &&
+			magicbox.bottom - magicbox.top <= 192 )
 		{
-			//++m_magicbox_unitcnt;
-			//m_vUnitcenterpt += vpos;
 			(*iter)->SetMagicBox(true);
 		}
 		else
@@ -309,17 +305,6 @@ bool CUnitMgr::GetUnitlistempty(void)
 {
 	if(m_curunitList.empty())
 		return true;
-	else
-	{
-		//list<CObj*>::iterator iter = m_curunitList.begin();
-		//list<CObj*>::iterator iter_end = m_curunitList.end();
-
-		//for( ; iter != iter_end; ++iter)
-		//{
-		//	if(BUILDING == (*iter)->GetCategory())
-		//		return true;
-		//}
-	}
 
 	return false;
 }
@@ -378,10 +363,9 @@ void CUnitMgr::Update_UI_Infomation(void)
 	}
 	else
 	{
-		//명렁 버튼을 비운다
+		//명령 버튼을 비운다
 		CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 		(pui)->clear_btn();
-		//CIngame_UIMgr::GetInstance()->clear_cmdbtn();
 	}
 }
 

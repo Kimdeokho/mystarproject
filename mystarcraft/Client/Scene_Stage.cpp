@@ -12,6 +12,7 @@
 #include "Debug_Mgr.h"
 #include "RoomSession_Mgr.h"
 #include "UnitMgr.h"
+#include "Session_Mgr.h"
 
 #include "ScrollMgr.h"
 #include "Area_Mgr.h"
@@ -79,16 +80,21 @@ HRESULT CScene_Stage::Initialize(void)
 void CScene_Stage::Update(void)
 {
 	CTimeMgr::GetInstance()->SetTime();
-
 	CKeyMgr::GetInstance()->Update();
 	CMouseMgr::GetInstance()->Update();
-	CScrollMgr::update();
-	CIngame_UIMgr::GetInstance()->Update();
-	
-	CObjMgr::GetInstance()->Update();	
 
-	//CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
+
+	if(CSession_Mgr::NS_DELAY != CSession_Mgr::GetInstance()->GetSessionState())
+	{
+		CScrollMgr::update();
+		CIngame_UIMgr::GetInstance()->Update();	
+		CObjMgr::GetInstance()->Update();	
+		CSession_Mgr::GetInstance()->SendTurnPacket();
+	}
+
+	CArea_Mgr::GetInstance()->Areasize_debugrender(64 , 64);
 	CDebug_Mgr::GetInstance()->Update();
+
 
 	CSoundDevice::GetInstance()->StageUpdate();
 	m_fTime += GETTIME;
@@ -101,7 +107,8 @@ void CScene_Stage::Render(void)
 	CTileManager::GetInstance()->RenderFog();
 	CTileManager::GetInstance()->Render_Flowfield();	
 	
-	//CLineMgr::GetInstance()->RenderGrid(64/*Å©±â*/, 64/*°¹¼ö*/);
+	CLineMgr::GetInstance()->RenderGrid(32/*Å©±â*/, 128/*°¹¼ö*/);
+
 	CLineMgr::GetInstance()->RectLineRender();
 
 	CIngame_UIMgr::GetInstance()->Render();
@@ -110,7 +117,7 @@ void CScene_Stage::Render(void)
 
 
 	CMouseMgr::GetInstance()->Render();
-	RenderFPS();
+	//RenderFPS();
 }
 void CScene_Stage::RenderFPS(void)
 {

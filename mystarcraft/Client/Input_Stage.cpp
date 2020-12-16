@@ -8,6 +8,7 @@
 #include "MyCmd_InputClick.h"
 #include "MyCmd_chat.h"
 
+#include "SoundDevice.h"
 #include "KeyMgr.h"
 #include "FontMgr.h"
 #include "ScrollMgr.h"
@@ -39,15 +40,19 @@ void CInput_Stage::Initialize(void)
 
 void CInput_Stage::Update(void)
 {
+	if(CSession_Mgr::NS_DELAY == CSession_Mgr::GetInstance()->GetSessionState())
+		return;
+
 	//뭔가 입력하면 m_cmdlist에서 m_cmdlist->PushCommand() 쏼라쏼라
-	//if(GetActiveWindow() != g_hWnd)
-	//	return;
 
 	if(true == m_inst->GetOnceKeyDown_Check(VK_RETURN))
 	{
 		S_PT_ROOM_RECEIVE_CHAT_M temp_data;
+		memset(&temp_data , 0 ,sizeof(S_PT_ROOM_RECEIVE_CHAT_M));
+
 		if(CIngame_UIMgr::GetInstance()->ToggleChat(temp_data))
 		{			
+			CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_CHAT , 0);
 			CMyCommand* pcommand = CMyCmd_chat::StaticCreate(temp_data);
 			if(NULL != pcommand)
 				m_cmdlist->PushCommand(pcommand);
@@ -55,6 +60,8 @@ void CInput_Stage::Update(void)
 	}
 
 	if(CIngame_UIMgr::GetInstance()->is_active_chat_ime())
+		return;
+	if(GetActiveWindow() != g_hWnd)
 		return;
 
 	Intput_oncekey_reaction();
@@ -221,6 +228,8 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 		{
 			if(!CUnitMgr::GetInstance()->GetUnitlistempty())
 			{
+				CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_INPUT , 0);
+
 				bool escape = false;
 				for(char b = 'A'; b <= 'Z'; ++b)
 				{
@@ -240,9 +249,9 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 						break;
 					}
 				}
-				if(!escape)
-				{
 
+				if(!escape)
+				{					
 					if(true == CUnitMgr::GetInstance()->Unit_Unification())
 					{
 						if(CUnitMgr::GetInstance()->Input_cmd(a , m_clickwating))
@@ -261,7 +270,7 @@ void CInput_Stage::Intput_oncekey_reaction(void)
 								CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);
 						}
 					}
-					else if('A' == a) //야매...
+					else if('A' == a)
 					{
 						m_clickwating[a] = true;
 						CMouseMgr::GetInstance()->SetMouseState(CMouseMgr::MS_AIM);

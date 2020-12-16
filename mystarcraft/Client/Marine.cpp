@@ -70,7 +70,7 @@ void CMarine::Initialize(void)
 	m_unitinfo.fspeed = 68;
 	m_unitinfo.attack_range = 4*32;
 	m_unitinfo.air_attack_range = 4*32;
-	m_unitinfo.search_range = 6*32;
+	m_unitinfo.search_range = 8*32;
 	m_unitinfo.fog_range = 512;
 
 
@@ -136,11 +136,11 @@ void CMarine::Update(void)
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
 
-	if( false == m_upg_state[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
+	if( false == m_applyUpg[UPG_T_BA0] && m_upg_info[UPG_T_BA0].upg_cnt >= 1)
 	{
 		m_unitinfo.attack_range += 1*32;
 		m_unitinfo.air_attack_range += 1*32;
-		m_upg_state[UPG_T_BA0] = true;
+		m_applyUpg[UPG_T_BA0] = true;
 		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
 	}
 
@@ -199,6 +199,7 @@ void CMarine::Inputkey_reaction(const int& nkey)
 	}
 	if('T' == nkey)
 	{
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_STIMPACK , m_vPos);
 		m_skill_sp->use_sp();
 	}
 	if('Q' == nkey)
@@ -315,18 +316,18 @@ void CMarine::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CMarine::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
 
 	if( 0 == CIngame_UIMgr::GetInstance()->GetUpginfo()->upg_cnt )
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, false);
+		pui->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, false);
 	else
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, true);
+		pui->Create_Cmdbtn(6 , L"BTN_STEAMPACK" , BTN_STEAMPACK, true);
 }
 
 void CMarine::Update_Wireframe(void)
@@ -367,6 +368,8 @@ void CMarine::Update_Wireframe(void)
 }
 void CMarine::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MARINE_DTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"MARINEDEAD" , L"MARINEWRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

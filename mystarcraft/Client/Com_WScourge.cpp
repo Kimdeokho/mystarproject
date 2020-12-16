@@ -46,6 +46,8 @@ void CCom_WScourge::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_SCATT , m_pobj->GetPos());
+
 		m_pobj->SetState(ATTACK);
 		m_bfire = true;
 

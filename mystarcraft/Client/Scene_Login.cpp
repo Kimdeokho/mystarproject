@@ -59,7 +59,6 @@ void CScene_Login::Render(void)
 
 	CMouseMgr::GetInstance()->Render();
 
-	CTimeMgr::GetInstance()->FPS_fix();
 }
 
 void CScene_Login::Release(void)

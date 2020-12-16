@@ -68,6 +68,7 @@ void CCom_WUltra::fire(CObj* ptarget)
 		{
 			if(true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 			{				
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_UTATT , m_pobj->GetPos());
 				m_pobj->SetState(ATTACK);
 				m_attack_time = 0.f;			
 

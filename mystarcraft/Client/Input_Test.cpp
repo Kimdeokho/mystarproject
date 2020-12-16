@@ -465,7 +465,7 @@ void CInput_Test::Intput_oncekey_reaction(void)
 				vpos.x += rand()%50 - 25;
 				vpos.y += rand()%50 - 25;
 				pObj = new CGoliath;
-				CObjMgr::GetInstance()->AddObject(pObj , OBJ_GHOLATH);
+				CObjMgr::GetInstance()->AddObject(pObj , OBJ_GOLIATH);
 				pObj->SetPos(vpos);
 				pObj->Initialize();
 				objcnt += 1;

@@ -15,6 +15,7 @@ class CUI_IME;
 class CUI_Chat;
 class CMinimap;
 class CUI_Notice;
+class CUI_MiniUnitDisplay;
 
 class CIngame_UIMgr
 {
@@ -78,7 +79,7 @@ public:
 	bool	ToggleChat(S_PT_ROOM_RECEIVE_CHAT_M& temp_data);
 	void	UI_Reaction(const D3DXVECTOR2 vpt);
 public:
-	void	SetMiniUnit_display(CUI* pui);
+	void	SetMiniUnit_display(CUI_MiniUnitDisplay* pui);
 	void	SetMinimapCamPos(const D3DXVECTOR2& vmousepos);
 	void    SetMineral(const int& amount);
 	void    SetGas(const int& amount);

@@ -161,7 +161,7 @@ void CIngame_UIMgr::Render(void)
 	m_notice->Render();
 }
 
-void CIngame_UIMgr::SetMiniUnit_display(CUI* pui)
+void CIngame_UIMgr::SetMiniUnit_display(CUI_MiniUnitDisplay* pui)
 {
 	m_minimap->Setminiunit(pui);
 }
@@ -316,7 +316,7 @@ bool CIngame_UIMgr::ToggleChat(S_PT_ROOM_RECEIVE_CHAT_M& temp_data)
 			m_is_chat = false;
 			m_chat_ime->Init_State();
 
-			WCHAR szmessage[32] = L"";
+			WCHAR szmessage[128] = L"";
 			wcscpy_s(szmessage , m_chat_ime->GetMessage());
 
 

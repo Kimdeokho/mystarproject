@@ -268,8 +268,15 @@ void CSpwaning::Update_Wireframe(void)
 		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
 
 	if(BUILD == m_unitinfo.state)
-	{		
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_build_maxhp );
+
+	for(int i = UPG_Z_BS0; i <= UPG_Z_BS1; ++i)
+	{
+		if(true == m_upg_info[i].proceeding && m_upg_info[i].obj_num == m_obj_id)
+		{
+			CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[i].curtime / m_upg_info[i].maxtime );
+			break;
+		}
 	}
 }
 

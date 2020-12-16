@@ -156,6 +156,7 @@ void CWraith::Inputkey_reaction(const int& nkey)
 			m_unitinfo.is_hide = false;
 
 			((CCom_WraithAnim*)m_com_anim)->Clocking_off();
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_WRAITH_CLO0 , m_vPos);
 		}
 		else
 		{
@@ -167,6 +168,7 @@ void CWraith::Inputkey_reaction(const int& nkey)
 			m_unitinfo.is_hide = true;
 
 			((CCom_WraithAnim*)m_com_anim)->Clocking_on();
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_WRAITH_CLO1 , m_vPos);
 		}
 	}
 }
@@ -317,6 +319,8 @@ void CWraith::Update_Wireframe(void)
 
 void CWraith::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_WRAITH_DTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.0f ,1.0f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

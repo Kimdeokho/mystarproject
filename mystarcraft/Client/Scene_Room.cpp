@@ -66,12 +66,11 @@ void CScene_Room::Render(void)
 
 	CMouseMgr::GetInstance()->Render();
 
-	CTimeMgr::GetInstance()->FPS_fix();
 }
 
 void CScene_Room::Release(void)
 {
 	CRoom_UIMgr::DestroyInstance();
-	CSoundDevice::GetInstance()->ReleaseSound();
+	//CSoundDevice::GetInstance()->ReleaseSound();
 	//CRoomSession_Mgr::DestroyInstance();
 }

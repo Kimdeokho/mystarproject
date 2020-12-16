@@ -72,3 +72,10 @@ inline VOID READ_PU_TURN_DATA(BYTE *buffer, S_PU_TURN_DATA &parameter)
 
 }
 
+inline VOID READ_PU_TURN_DELAY(BYTE *buffer, S_PU_TURN_DELAY &parameter)
+{
+	CStreamSP Stream;
+	Stream->SetBuffer(buffer);
+
+}
+

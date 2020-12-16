@@ -1,5 +1,6 @@
 #pragma once
 #include "Include.h"
+#include "Debug_Mgr.h"
 
 class CObj;
 class CComponent

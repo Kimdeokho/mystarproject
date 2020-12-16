@@ -15,7 +15,7 @@ public:
 	virtual void Write(CStreamSP& writestream);
 	virtual void Read(CStreamSP& readstream);
 public:
-	static CMyCmd_InputKey* StaticCreate(const USHORT& nkey1 , const USHORT nkey2 = 0);
+	static CMyCmd_InputKey* StaticCreate(const USHORT nkey1 , const USHORT nkey2 = 0);
 public:
 	CMyCmd_InputKey(void);
 	~CMyCmd_InputKey(void);

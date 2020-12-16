@@ -221,7 +221,7 @@ void CLarva::Inputkey_reaction(const int& nkey)
 			pui->SetResource(-75 , -25,  m_eteamnumber))
 		{
 			pui->SetPopvalue(1.f , m_eteamnumber);
-			pobj = new CLarva_egg(1.f , OBJ_HYDRA , m_hatch_num , 10 , L"HYDRA_BIRTH");
+			pobj = new CLarva_egg(1.f , OBJ_HYDRA , m_hatch_num , 1 , L"HYDRA_BIRTH");
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
@@ -232,7 +232,7 @@ void CLarva::Inputkey_reaction(const int& nkey)
 			pui->SetResource(-50 , 0,  m_eteamnumber))
 		{
 			pui->SetPopvalue(1.f , m_eteamnumber);
-			pobj = new CLarva_egg(1.f , OBJ_ZERGLING , m_hatch_num , 10 , L"ZERGLING_BIRTH");
+			pobj = new CLarva_egg(1.f , OBJ_ZERGLING , m_hatch_num , 2 , L"ZERGLING_BIRTH");
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}
@@ -264,7 +264,7 @@ void CLarva::Inputkey_reaction(const int& nkey)
 			pui->SetResource(-100 , -100,  m_eteamnumber))
 		{
 			pui->SetPopvalue(2.f , m_eteamnumber);
-			pobj = new CLarva_egg(1.f , OBJ_MUTAL , m_hatch_num , 10 , L"MUTAL_BIRTH");
+			pobj = new CLarva_egg(1.f , OBJ_MUTAL , m_hatch_num , 1 , L"MUTAL_BIRTH");
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_LARVA_EGG);
 		}
 	}

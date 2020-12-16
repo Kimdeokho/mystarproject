@@ -53,6 +53,7 @@ void CCom_WTurret::fire(CObj* ptarget)
 
 		//if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{			
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TURRET_FIRE , m_pobj->GetPos());
 			m_bfire = true;
 
 			m_attack_time = 0.f;

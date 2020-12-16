@@ -43,6 +43,8 @@ public:
 	CTestSession* GetTCP_Session(void);
 	CTestSession* GetUDP_Session(void);
 	SESSION_INFO  GetSession_Info(void);
+	NETWORK_STATE GetSessionState(void);
+
 	bool	BeginTCP(void);
 	bool	BeginUDP(void);
 
@@ -56,6 +58,7 @@ public:
 public:
 	void	Initialize(void);
 	void	Update(void);
+	void	UpdateDelay(void);
 	void	Release(void);
 public:
 	CSession_Mgr(void);

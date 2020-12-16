@@ -8,6 +8,7 @@
 #include "MyMath.h"
 #include "Area_Mgr.h"
 #include "TileManager.h"
+#include "SoundDevice.h"
 
 #include "Com_Pathfind.h"
 CCom_Transport::CCom_Transport(const int& icapacity , const float& timeoffset)
@@ -132,6 +133,11 @@ bool CCom_Transport::setunit(CObj* pobj)
 
 	if( m_curcapacity >= info.icol * info.irow )
 	{
+		if(TRIBE_ZERG == m_pobj->GetUnitinfo().etribe)
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_Z_LOAD , m_pobj->GetPos());
+		else if(TRIBE_TERRAN == m_pobj->GetUnitinfo().etribe)
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_T_LOAD , m_pobj->GetPos());
+
 		m_curcapacity -= info.icol*info.irow;
 		m_boarding_unit.insert(make_pair(info.icol*info.irow , info));
 		return true;
@@ -162,6 +168,11 @@ bool CCom_Transport::unit_landing(void)
 	BOARDING_INFO temp;
 	if(m_collocate_time >= m_timeoffset)
 	{
+		if(TRIBE_ZERG == m_pobj->GetUnitinfo().etribe)
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_Z_UNLOAD , m_pobj->GetPos());
+		else if(TRIBE_TERRAN == m_pobj->GetUnitinfo().etribe)
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_T_UNLOAD , m_pobj->GetPos());
+
 		CObj* pobj = NULL;
 		m_collocate_time = 0.f;
 

@@ -42,9 +42,9 @@ CWorkman::~CWorkman(void)
 
 void CWorkman::Initialize(void)
 {
-	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber , m_ecategory);
 	m_miniunit_display->Initialize();
-	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display((CUI_MiniUnitDisplay*)m_miniunit_display);
 }
 
 void CWorkman::Update(void)

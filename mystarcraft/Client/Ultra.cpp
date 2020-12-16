@@ -73,7 +73,7 @@ void CUltra::Initialize(void)
 	m_unitinfo.hp = 400;
 	m_unitinfo.mp = 0;
 	//m_unitinfo.fspeed = 93;
-	m_unitinfo.fspeed = 133; //속업 133
+	m_unitinfo.fspeed = 93; //속업 133
 	m_unitinfo.attack_range = 1*32;
 	m_unitinfo.air_attack_range = 1*32;
 	m_unitinfo.search_range = 8*32;
@@ -144,6 +144,18 @@ void CUltra::Update(void)
 
 	m_select_ui->Update();
 	m_energybar_ui->Update();
+
+	if( false == m_applyUpg[UPG_Z_VU0] && m_upg_info[UPG_Z_VU0].upg_cnt >= 1)
+	{
+		m_unitinfo.fspeed = 133;
+		m_applyUpg[UPG_Z_VU0] = true;
+	}
+	if( false == m_applyUpg[UPG_Z_VU1] && m_upg_info[UPG_Z_VU1].upg_cnt >= 1)
+	{
+		m_unitinfo.armor += 2;
+		m_applyUpg[UPG_Z_VU1] = true;
+	}
+
 }
 
 void CUltra::Render(void)
@@ -343,6 +355,8 @@ void CUltra::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CUltra::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_UTDTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"ULTRADEAD" , L"ULTRAWRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

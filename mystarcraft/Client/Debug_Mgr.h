@@ -13,6 +13,8 @@ public:
 		DBG_TILEPOP,
 		DBG_PATHFIND,
 		DBG_FLOWPATH,
+		DBG_GRID32,
+		DBG_AREAGRID,
 		DBG_END,
 	};
 	static	bool	m_dbglist[DBG_END];

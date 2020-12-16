@@ -113,9 +113,7 @@ void CComandcenter::Initialize(void)
 	m_is_take_off = false;
 
 	if(fabsf(m_unitinfo.fbuildtime) < FLT_EPSILON)
-	{
 		m_build_hp = (float)m_unitinfo.maxhp;
-	}
 	else
 		m_fbuild_tick = float(m_unitinfo.maxhp)/m_unitinfo.fbuildtime;
 
@@ -161,6 +159,30 @@ void CComandcenter::Update(void)
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
+
+			D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+			CObj* partObj1 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_COMSET);
+			CObj* partObj2 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_NC_PART);
+
+			if(NULL != partObj1 && NULL != partObj2)
+			{
+				float fdist1 = CMyMath::pos_distance(partObj1->GetPos() , partPos);
+				float fdist2 = CMyMath::pos_distance(partObj2->GetPos() , partPos);
+
+				if(fdist1 < fdist2)
+					m_partbuilding = partObj1;
+				else
+					m_partbuilding = partObj2;
+			}
+			else if(NULL != partObj1)
+				m_partbuilding = partObj1;
+			else if(NULL != partObj2)
+				m_partbuilding = partObj2;
+			else
+				m_partbuilding = NULL;
+
+			if(NULL != m_partbuilding)
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
 		}
 	}
 	else if(TAKE_OFF == m_unitinfo.state)
@@ -203,10 +225,10 @@ void CComandcenter::Update(void)
 					pobj->Initialize();				
 					CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMSET);
 				}
-				else if(T_NC_PART == (m_main_preview)->GetPreviewInfo().ebuild)
+				else if(T_NC_PART == m_main_preview->GetPreviewInfo().ebuild)
 				{
 					pobj = new CNuclear_part(this/*아니면 오브젝트 아이디*/);
-					pobj->SetPos( (m_main_preview)->GetPreviewInfo().vpos );
+					pobj->SetPos( m_main_preview->GetPreviewInfo().vpos );
 					pobj->Initialize();				
 					CObjMgr::GetInstance()->AddObject(pobj , OBJ_NC_PART);
 
@@ -216,18 +238,33 @@ void CComandcenter::Update(void)
 			}
 			else
 			{
-				int partidx = m_curidx32 + 3 + SQ_TILECNTX;
-				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_COMSET);
+				D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+
+				CObj* partObj1 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_COMSET);
+				CObj* partObj2 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_NC_PART);
+
+				if(NULL != partObj1 && NULL != partObj2)
+				{
+					float fdist1 = CMyMath::pos_distance(partObj1->GetPos() , partPos);
+					float fdist2 = CMyMath::pos_distance(partObj2->GetPos() , partPos);
+
+					if(fdist1 < fdist2)
+						m_partbuilding = partObj1;
+					else
+						m_partbuilding = partObj2;
+				}
+				else if(NULL != partObj1)
+					m_partbuilding = partObj1;
+				else if(NULL != partObj2)
+					m_partbuilding = partObj2;
+				else
+					m_partbuilding = NULL;
+
 				if(NULL != m_partbuilding)
 					((CTerran_building*)m_partbuilding)->Setlink(true , this);
-				else
-				{
-					m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_NC_PART);
-					if(NULL != m_partbuilding)
-						((CTerran_building*)m_partbuilding)->Setlink(true , this);
-				}
 			}
 
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LANDING , m_vPos);
 			m_is_take_off = false;
 			m_vPos.y = m_vgroundpos.y;
 			m_unitinfo.eMoveType = MOVE_GROUND;
@@ -275,8 +312,8 @@ void CComandcenter::Update(void)
 		{
 			if(true == m_is_partinstall)
 			{
-				if(true == (m_main_preview)->Install_check() &&
-					true == (m_sub_preview)->Install_check())
+				if(true == m_main_preview->Install_check() &&
+					true == m_sub_preview->Install_check())
 				{
 					m_unitinfo.state = LANDING;
 					m_unitinfo.order = ORDER_NONE;
@@ -291,7 +328,7 @@ void CComandcenter::Update(void)
 			}
 			else
 			{
-				if(true == (m_main_preview)->Install_check())
+				if(true == m_main_preview->Install_check())
 				{
 					m_unitinfo.state = LANDING;
 					m_unitinfo.order = ORDER_NONE;
@@ -312,7 +349,7 @@ void CComandcenter::Update(void)
 	if(true == m_is_preview)
 	{
 		D3DXVECTOR2 vpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-		(m_main_preview)->SetPos(vpos);
+		m_main_preview->SetPos(vpos);
 		vpos.x -= m_irow*32;
 		vpos.y -= m_weight.y;
 		((CBuilding_Preview*)m_sub_preview)->SetPos(vpos);
@@ -344,7 +381,7 @@ void CComandcenter::Render(void)
 
 	if(true == m_bactive)
 	{
-		if(CTileManager::GetInstance()->GetFogLight(m_curidx32 , CSession_Mgr::GetInstance()->GetTeamNumber()))
+		if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(m_curidx32 , CSession_Mgr::GetInstance()->GetTeamNumber()))
 		{
 			m_pSprite->SetTransform(&m_matWorld);
 			m_pSprite->Draw( (*m_production_tex)[0]->pTexture , NULL , 
@@ -367,7 +404,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 		if(false == m_is_take_off)
 		{
 			//이륙
-			CTerran_building::TakeOff();
+			CTerran_building::TakeOff();			
 		}	
 	}
 	if('S' == nkey)
@@ -422,7 +459,6 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 	if(9998 == nkey)
 	{
 		m_unitinfo.order = ORDER_LANDING_MOVE;
-		//D3DXVECTOR2 vclickpos = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 		D3DXVECTOR2 vclickpos = m_main_preview->GetPreviewInfo().vpos;
 		int idx32 = CMyMath::Pos_to_index(vclickpos , 32);
 		vclickpos = CMyMath::index_to_Pos(idx32 , 128 , 32);
@@ -435,8 +471,6 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 			//공중에서 부속품 설치
 			m_is_partinstall = true;
 			CTerran_building::Landing_move( (m_sub_preview)->GetPreviewInfo().vpos);
-
-			//m_preview_info = preview_info;
 		}
 		else
 		{
@@ -459,7 +493,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 				if(T_COMSET == ebuild)
 				{
 					pobj = new CComset(this/*아니면 오브젝트 아이디*/);
-					pobj->SetPos((m_main_preview)->GetPreviewInfo().vpos);
+					pobj->SetPos(m_main_preview->GetPreviewInfo().vpos);
 					pobj->SetTeamNumber(m_eteamnumber);
 					pobj->Initialize();				
 					CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMSET);
@@ -468,7 +502,7 @@ void CComandcenter::Inputkey_reaction(const int& nkey)
 				else if(T_NC_PART == ebuild)
 				{
 					pobj = new CNuclear_part(this/*아니면 오브젝트 아이디*/);
-					pobj->SetPos((m_main_preview)->GetPreviewInfo().vpos);
+					pobj->SetPos(m_main_preview->GetPreviewInfo().vpos);
 					pobj->SetTeamNumber(m_eteamnumber);
 					pobj->Initialize();				
 					CObjMgr::GetInstance()->AddObject(pobj , OBJ_NC_PART);
@@ -511,15 +545,15 @@ bool CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
 			//return;
 		}
 
-		if(true == (m_main_preview)->GetActive() &&
-			true == (m_sub_preview)->GetActive())
+		if(true == m_main_preview->GetActive() &&
+			true == m_sub_preview->GetActive())
 		{
-			if(true == (m_main_preview)->Install_check() &&
-				true == (m_sub_preview)->Install_check())
+			if(true == m_main_preview->Install_check() &&
+				true == m_sub_preview->Install_check())
 			{
 				m_is_preview = false;
-				(m_main_preview)->SetActive(false);
-				(m_sub_preview)->SetActive(false);
+				m_main_preview->SetActive(false);
+				m_sub_preview->SetActive(false);
 
 				PREVIEW_INFO maininfo , subinfo;
 				maininfo = m_main_preview->GetPreviewInfo();
@@ -531,14 +565,14 @@ bool CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
 				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
 			}
 		}
-		else if(true == (m_main_preview)->GetActive())
+		else if(true == m_main_preview->GetActive())
 		{
 			//착륙 분기
 			if(true == (m_main_preview)->Install_check())
 			{
 				m_is_preview = false;
-				(m_main_preview)->SetActive(false);
-				(m_sub_preview)->SetActive(false);
+				m_main_preview->SetActive(false);
+				m_sub_preview->SetActive(false);
 
 				PREVIEW_INFO maininfo , subinfo;
 				maininfo = m_main_preview->GetPreviewInfo();
@@ -556,15 +590,15 @@ bool CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
 	if('C' == nkey)
 	{
 		m_is_preview = true;
-		(m_main_preview)->SetPreviewInfo(L"T_COMSET", T_COMSET , 2 , 2 , tempvtx);
-		(m_sub_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , m_vertex);
+		m_main_preview->SetPreviewInfo(L"T_COMSET", T_COMSET , 2 , 2 , tempvtx);
+		m_sub_preview->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 , m_vertex);
 		waitkey[nkey] = false;
 	}
 	if('N' == nkey)
 	{
 		m_is_preview = true;
-		(m_main_preview)->SetPreviewInfo(L"T_NC_PART", T_NC_PART , 2 , 2 ,  tempvtx);
-		(m_sub_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 ,  m_vertex);
+		m_main_preview->SetPreviewInfo(L"T_NC_PART", T_NC_PART , 2 , 2 ,  tempvtx);
+		m_sub_preview->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 ,  m_vertex);
 		waitkey[nkey] = false;
 	}
 
@@ -574,7 +608,7 @@ bool CComandcenter::Input_cmd(const int& nkey, bool* waitkey)
 		{
 			//이륙
 			m_is_preview = true;
-			(m_main_preview)->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 ,  m_vertex);
+			m_main_preview->SetPreviewInfo(L"COMMANDCENTER", T_COMMANDCENTER , 3 , 4 ,  m_vertex);
 		}
 		else
 			return true;
@@ -713,6 +747,8 @@ void CComandcenter::Update_Wireframe(void)
 }
 void CComandcenter::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBLARGE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

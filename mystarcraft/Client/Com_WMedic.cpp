@@ -29,7 +29,7 @@ void CCom_WMedic::Initialize(CObj* pobj /*= NULL*/)
 void CCom_WMedic::fire(CObj* ptarget)
 {
 
-	if(ptarget->GetUnitinfo().maxhp == ptarget->GetUnitinfo().hp)
+	if(ptarget->GetUnitinfo().maxhp <= ptarget->GetUnitinfo().hp)
 	{
 		m_pobj->SetState(IDLE);
 		ptarget = NULL;
@@ -38,6 +38,8 @@ void CCom_WMedic::fire(CObj* ptarget)
 	{
 		if(false == m_bfire)
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MEDIC_HEAL , m_pobj->GetPos());
+
 			m_pobj->SetState(HEALING);
 			m_bfire = true;
 			m_attack_time = 0.f;

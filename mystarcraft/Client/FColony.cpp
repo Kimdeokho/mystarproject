@@ -253,6 +253,8 @@ void CFColony::Update_Wireframe(void)
 
 void CFColony::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_ZBUILD_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"BLOOD_BOOM" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

@@ -7,6 +7,7 @@
 #include "Session_Mgr.h"
 #include "UnitMgr.h"
 #include "ObjMgr.h"
+#include "SoundDevice.h"
 
 CMyCmd_InputKey::CMyCmd_InputKey(void)
 {
@@ -67,7 +68,7 @@ void CMyCmd_InputKey::Read(CStreamSP& readstream)
 	readstream->ReadUSHORT(&m_nkey2);
 }
 
-CMyCmd_InputKey* CMyCmd_InputKey::StaticCreate(const USHORT& nkey1 , const USHORT nkey2)
+CMyCmd_InputKey* CMyCmd_InputKey::StaticCreate(const USHORT nkey1 , const USHORT nkey2)
 {
 	list<CObj*>* unitlist = CUnitMgr::GetInstance()->Getcur_unitlist();
 

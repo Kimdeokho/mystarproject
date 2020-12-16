@@ -49,7 +49,7 @@ void CSkill_SP::Update(void)
 }
 void CSkill_SP::use_sp(void)
 {
-	if( m_pobj->GetUnitinfo().hp - 10 > 10)
+	if( m_pobj->GetUnitinfo().hp - 10 > 0)
 	{
 		m_pobj->SetHP(-10);
 		m_bonce = true;

@@ -330,6 +330,8 @@ void CVessle::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CVessle::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_VESSEL_DTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.95f,0.95f) , SORT_GROUND );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

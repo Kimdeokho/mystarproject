@@ -99,6 +99,8 @@ void CSience::Initialize(void)
 	CTerran_building::fire_eff_initialize();
 
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
+
+
 }
 
 void CSience::Update(void)
@@ -128,6 +130,30 @@ void CSience::Update(void)
 			m_unitinfo.hp = m_unitinfo.maxhp;
 			m_unitinfo.state = IDLE;
 			CTerran_building::Build_Complete();
+
+			D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+			CObj* partObj1 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_BATTLE_ADDON);
+			CObj* partObj2 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_GHOST_ADDON);
+
+			if(NULL != partObj1 && NULL != partObj2)
+			{
+				float fdist1 = CMyMath::pos_distance(partObj1->GetPos() , partPos);
+				float fdist2 = CMyMath::pos_distance(partObj2->GetPos() , partPos);
+
+				if(fdist1 < fdist2)
+					m_partbuilding = partObj1;
+				else
+					m_partbuilding = partObj2;
+			}
+			else if(NULL != partObj1)
+				m_partbuilding = partObj1;
+			else if(NULL != partObj2)
+				m_partbuilding = partObj2;
+			else
+				m_partbuilding = NULL;
+
+			if(NULL != m_partbuilding)
+				((CTerran_building*)m_partbuilding)->Setlink(true , this);
 		}
 	}
 	else if(TAKE_OFF == m_unitinfo.state)
@@ -181,18 +207,43 @@ void CSience::Update(void)
 			}
 			else
 			{
-				int partidx = m_curidx32 + 3 + SQ_TILECNTX;
-				m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_GHOST_ADDON);
+				D3DXVECTOR2 partPos = D3DXVECTOR2(m_vPos.x + 3*32 , m_vPos.y + 32);
+
+				CObj* partObj1 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_GHOST_ADDON);
+				CObj* partObj2 = CArea_Mgr::GetInstance()->Search_Partbuilding(m_vPos , partPos , OBJ_BATTLE_ADDON);
+
+				if(NULL != partObj1 && NULL != partObj2)
+				{
+					float fdist1 = CMyMath::pos_distance(partObj1->GetPos() , partPos);
+					float fdist2 = CMyMath::pos_distance(partObj2->GetPos() , partPos);
+
+					if(fdist1 < fdist2)
+						m_partbuilding = partObj1;
+					else
+						m_partbuilding = partObj2;
+				}
+				else if(NULL != partObj1)
+					m_partbuilding = partObj1;
+				else if(NULL != partObj2)
+					m_partbuilding = partObj2;
+				else
+					m_partbuilding = NULL;
+
 				if(NULL != m_partbuilding)
 					((CTerran_building*)m_partbuilding)->Setlink(true , this);
-				else
-				{
-					m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partidx , OBJ_BATTLE_ADDON);
-					if(NULL != m_partbuilding)
-						((CTerran_building*)m_partbuilding)->Setlink(true , this);
-				}
+
+				//m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partPos , OBJ_GHOST_ADDON);
+				//if(NULL != m_partbuilding)
+				//	((CTerran_building*)m_partbuilding)->Setlink(true , this);
+				//else
+				//{
+				//	m_partbuilding = CArea_Mgr::GetInstance()->Search_Partbuilding(m_curidx64 , partPos , OBJ_BATTLE_ADDON);
+				//	if(NULL != m_partbuilding)
+				//		((CTerran_building*)m_partbuilding)->Setlink(true , this);
+				//}
 			}
 
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LANDING , m_vPos);
 			m_is_take_off = false;
 			m_vPos.y = m_vgroundpos.y;
 			m_unitinfo.eMoveType = MOVE_GROUND;
@@ -222,6 +273,8 @@ void CSience::Update(void)
 				}
 				else
 				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
 					m_unitinfo.state = AIR_IDLE;
 					m_unitinfo.order = ORDER_NONE;
 				}
@@ -235,6 +288,8 @@ void CSience::Update(void)
 				}
 				else
 				{
+					m_is_autoinstall = false;
+					m_is_partinstall = false;
 					m_unitinfo.state = AIR_IDLE;
 					m_unitinfo.order = ORDER_NONE;
 				}
@@ -425,15 +480,15 @@ bool CSience::Input_cmd(const int& nkey, bool* waitkey)
 			return false;
 		}
 
-		if(true == (m_main_preview)->GetActive() &&
-			true == (m_sub_preview)->GetActive())
+		if(true == m_main_preview->GetActive() &&
+			true == m_sub_preview->GetActive())
 		{
-			if(true == (m_main_preview)->Install_check() &&
-				true == (m_sub_preview)->Install_check())
+			if(true == m_main_preview->Install_check() &&
+				true == m_sub_preview->Install_check())
 			{
 				m_is_preview = false;
-				(m_main_preview)->SetActive(false);
-				(m_sub_preview)->SetActive(false);
+				m_main_preview->SetActive(false);
+				m_sub_preview->SetActive(false);
 
 				PREVIEW_INFO maininfo , subinfo;
 				maininfo = m_main_preview->GetPreviewInfo();
@@ -441,18 +496,16 @@ bool CSience::Input_cmd(const int& nkey, bool* waitkey)
 				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_PartBuilding::StaticCreate(maininfo , subinfo , 9999));
 			}
 			else
-			{
 				m_is_preview = true; //설치에 실패하면 프리뷰를 계속 본다.
-			}
 		}
-		else if(true == (m_main_preview)->GetActive())
+		else if(true == m_main_preview->GetActive())
 		{
 			//착륙 분기
-			if(true == (m_main_preview)->Install_check())
+			if(true == m_main_preview->Install_check())
 			{
 				m_is_preview = false;
-				(m_main_preview)->SetActive(false);
-				(m_sub_preview)->SetActive(false);
+				m_main_preview->SetActive(false);
+				m_sub_preview->SetActive(false);
 
 				PREVIEW_INFO maininfo , subinfo;
 				maininfo = m_main_preview->GetPreviewInfo();
@@ -502,40 +555,40 @@ bool CSience::Input_cmd(const int& firstkey , const int& secondkey)
 }
 void CSience::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	
 	if(IDLE == m_unitinfo.state)
 	{
 		if( NULL == m_partbuilding )
 		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_GHOST_ADDON" , BTN_GHOST_ADDON , true);
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(7 , L"BTN_BATTLE_ADDON" , BTN_BATTLE_ADDON , true);
+			pui->Create_Cmdbtn(6 , L"BTN_GHOST_ADDON" , BTN_GHOST_ADDON , true);
+			pui->Create_Cmdbtn(7 , L"BTN_BATTLE_ADDON" , BTN_BATTLE_ADDON , true);
 		}
 	
 		if( false == m_upg_info[UPG_T_VI0].proceeding && m_upg_info[UPG_T_VI0].upg_cnt < 1)
 		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VI0" , BTN_T_VI0 , true);
+			pui->Create_Cmdbtn(0 , L"BTN_T_VI0" , BTN_T_VI0 , true);
 		}
 		if( false == m_upg_info[UPG_T_VI1].proceeding && m_upg_info[UPG_T_VI1].upg_cnt < 1)
 		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VI1" , BTN_T_VI1 , true);
+			pui->Create_Cmdbtn(1 , L"BTN_T_VI1" , BTN_T_VI1 , true);
 		}
 		if( false == m_upg_info[UPG_T_VI2].proceeding && m_upg_info[UPG_T_VI2].upg_cnt < 1)
 		{
-			((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_T_VI2" , BTN_T_VI2 , true);
+			pui->Create_Cmdbtn(2 , L"BTN_T_VI2" , BTN_T_VI2 , true);
 		}
 
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
+		pui->Create_Cmdbtn(8 , L"BTN_TAKE_OFF" , BTN_TAKE_OFF , true);
 	}
 	else if(AIR_IDLE == m_unitinfo.state ||
 		TAKE_OFF == m_unitinfo.state)
 	{
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
+		pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE , true);
+		pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP , true);
+		pui->Create_Cmdbtn(8 , L"BTN_LANDING" , BTN_LANDING , true);
 	}
 	else if(DEVELOPING == m_unitinfo.state)
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 }
 void CSience::Update_Wireframe(void)
 {
@@ -657,6 +710,8 @@ void CSience::Release(void)
 
 void CSience::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBLARGE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

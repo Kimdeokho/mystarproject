@@ -3,8 +3,8 @@
 
 #include "TextureMgr.h"
 #include "Session_Mgr.h"
-CUI_MiniUnitDisplay::CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER* eteam)
-:m_vminipos(vobjpos) , m_eteam(eteam)
+CUI_MiniUnitDisplay::CUI_MiniUnitDisplay(const D3DXVECTOR2& vobjpos , TEAM_NUMBER* eteam , const CATEGORY ecategory)
+:m_vminipos(vobjpos) , m_eteam(eteam) , m_category(ecategory)
 {
 	m_statekey = L"DebugTile";
 }
@@ -51,4 +51,9 @@ void CUI_MiniUnitDisplay::Render(void)
 void CUI_MiniUnitDisplay::Release(void)
 {
 
+}
+
+CATEGORY CUI_MiniUnitDisplay::GetCategory(void)
+{
+	return m_category;
 }

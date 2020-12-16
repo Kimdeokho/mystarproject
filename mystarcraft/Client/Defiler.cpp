@@ -291,7 +291,7 @@ void CDefiler::Update_Wireframe(void)
 	if(true == CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state))
 	{
 		CUI* pui = NULL;
-		pui = new CUI_Wireframe(L"WIRE_ZERGLING" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
+		pui = new CUI_Wireframe(L"WIRE_DEFILER" , D3DXVECTOR2(interface_pos.x + 165, interface_pos.y + 390 ));
 		pui->Initialize();
 		CIngame_UIMgr::GetInstance()->add_wireframe_ui(pui);
 
@@ -375,6 +375,8 @@ void CDefiler::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CDefiler::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_DFDTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"DEFILER_DEAD" , L"DEFILER_WRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

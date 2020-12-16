@@ -95,6 +95,7 @@ void CCom_Distancesearch::Update(void)
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
+			m_bforced_target = false;
 		}
 	}
 
@@ -157,11 +158,11 @@ void CCom_Distancesearch::Update(void)
 				}
 				else if(NULL != m_com_transport)
 				{
-					if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 32*32)
+					if(CMyMath::pos_distance( m_ptarget->GetPos() , m_pobj->GetPos()) < 32*32)
 					{			
 						//범위에 들어오면
 
-						m_pobj->Setdir( (m_ptarget)->GetPos() - m_pobj->GetPos());
+						m_pobj->Setdir( m_ptarget->GetPos() - m_pobj->GetPos());
 
 						CObj* pobj = NULL;
 						if(NULL != m_otherobj)
@@ -203,10 +204,10 @@ void CCom_Distancesearch::Update(void)
 				else
 				{
 					m_myrc= m_pobj->GetMyRect();
-					m_myrc.left -= 2;
-					m_myrc.right += 2;
-					m_myrc.top -= 2;
-					m_myrc.bottom += 2;
+					m_myrc.left -= 6;
+					m_myrc.right += 6;
+					m_myrc.top -= 6;
+					m_myrc.bottom += 6;
 
 					if(NULL != m_com_pathfind)
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
@@ -223,6 +224,7 @@ void CCom_Distancesearch::Update(void)
 			}
 			else if(ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
 			{
+
 				if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < 
 					(*m_pattack_range)*(*m_pattack_range))
 				{			

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Include.h"
+#include "SoundDevice.h"
 
 class CComponent;
 

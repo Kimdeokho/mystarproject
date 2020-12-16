@@ -44,6 +44,12 @@ void CSkill_Plague::Initialize(void)
 	m_plague_time = 0.f;
 	m_damage_tick = 1.f;
 
+
+	for(int i = 0; i < TEAM_END; ++i)
+	{
+		if(i != m_ptarget->GetTeamNumber())
+			m_ptarget->Get_ref_Unitinfo().detect[i] += 1;
+	}
 }
 
 void CSkill_Plague::Update(void)
@@ -99,5 +105,9 @@ void CSkill_Plague::Render(void)
 
 void CSkill_Plague::Release(void)
 {
-
+	for(int i = 0; i < TEAM_END; ++i)
+	{
+		if(i != m_ptarget->GetTeamNumber())
+			m_ptarget->Get_ref_Unitinfo().detect[i] -= 1;
+	}
 }

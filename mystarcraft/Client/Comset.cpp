@@ -165,10 +165,11 @@ void CComset::Inputkey_reaction(const int& nkey)
 void CComset::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 	if('S' == firstkey && VK_LBUTTON == secondkey)
-	{
-		D3DXVECTOR2 vmousept;
+	{		
 
+		D3DXVECTOR2 vmousept;
 		vmousept = CUnitMgr::GetInstance()->GetUnitGoalPos();
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_SCAN , vmousept);
 
 		CObj* pobj = NULL;
 		CComponent* pcom = new CCom_Detect;
@@ -259,6 +260,8 @@ void CComset::Update_Wireframe(void)
 
 void CComset::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBMIDDLE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

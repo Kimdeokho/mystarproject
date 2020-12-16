@@ -31,7 +31,7 @@ private:
 	LPD3DXSPRITE				m_pSprite;
 	D3DCOLOR					m_TileColor;
 	LPDIRECT3DTEXTURE9			m_MapTexture[MAP_TEXTURECNTY][MAP_TEXTURECNTX];
-	LPDIRECT3DTEXTURE9			m_MinimapTexture;
+	LPDIRECT3DTEXTURE9			m_minimapTexture;
 	LPDIRECT3DTEXTURE9			m_MinifogTexture;
 
 
@@ -77,7 +77,6 @@ public:
 public:
 	void MinifogUpdate(void);
 public:
-	//FOGSIGHT_OPTION		GetFogSightOp(const int& idx);
 	FOGSIGHT_OPTION		GetFogLight(const int& idx, const TEAM_NUMBER& eteam);
 	int					GetTileOption(const int& idx);
 	int					GetTileFloor(const int& idx);
@@ -89,26 +88,21 @@ public:
 	short*				Get_flowfield_node(void);
 	LPDIRECT3DTEXTURE9	GetMiniampTexture(void);
 	LPDIRECT3DTEXTURE9	GetMiniFogmapTexture(void);
-	//int				GetFlowFiled_Goalidx(void);
-	//D3DXVECTOR2		GetFlowFiled_GoalPos(void);
 public:
 	void SetFogSquence(int idx , unsigned short sequence);
-	//void SetFogLight(int idx, float fdistance , float fradius, const TEAM_NUMBER& eteam);
 	void SetFogLight(int idx , const TEAM_NUMBER& eteam);
-	void SetFogColor(const int& idx , D3DCOLOR color);
 	void SetCreepInstall(const int& idx , bool binstall);
 
 	void SetFogoverlap_cnt(const int& idx, const TEAM_NUMBER& eteam);
 public:
 	bool CheckFogFloor(int myidx , int destidx);
 	bool CheckCreepFloor(int myidx , int destidx);
-public:
-	//void CreepAlgorithm(void);
+
 public:	
 	void SightOffRender(const int& idx,const TEAM_NUMBER& eteam);
 	void SightOnRender(const int idx ,const int irange , vector<int>& sightoff_list , bool* fogsearch , CObj* pobj);
 
-	//void Creep_increase(const D3DXVECTOR2& vPos/*À¯´ÖÀÇ À§Ä¡*/ , int irange);
+
 	void Creep_decrease_autotile(const int& idx);
 	void Creep_Autotile(const int& idx);
 public:

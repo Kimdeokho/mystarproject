@@ -236,6 +236,8 @@ void CBunker::Update_Wireframe(void)
 }
 void CBunker::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBSMALL_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

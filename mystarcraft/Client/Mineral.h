@@ -27,6 +27,8 @@ public:
 	virtual void Render(void);	
 	virtual void Release(void);
 public:
+	virtual void Update_Wireframe(void);
+public:
 	CMineral(void);
 	~CMineral(void);
 };

@@ -14,6 +14,7 @@
 #include "ObjMgr.h"
 #include "FontMgr.h"
 #include "Session_Mgr.h"
+#include "SoundDevice.h"
 
 #include "Com_fog.h"
 #include "Com_LurkerEggAnim.h"
@@ -136,10 +137,18 @@ void CLurker_egg::Update(void)
 			m_com_anim->SetAnimation(L"LURKER_BIRTH");
 			m_unitinfo.state = STATE_NONE;
 			//생산 아이디
+
+			if(m_eteamnumber == CSession_Mgr::GetInstance()->GetTeamNumber())
+				CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_LURKER_RDY , OBJ_LURKER);
 		}
 	}
 	else if(MUTATE == m_unitinfo.state)
 	{
+		m_com_anim->SetAnimation(L"MUTATE");
+	}
+	else if(MOVE == m_unitinfo.state)
+	{
+		m_unitinfo.state = MUTATE;
 		m_com_anim->SetAnimation(L"MUTATE");
 	}
 

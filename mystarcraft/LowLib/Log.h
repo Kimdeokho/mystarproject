@@ -47,6 +47,7 @@ public:
 
 		OutputDebugString(DebugLog);
 		_tprintf(_T("%s"), DebugLog);
+		//wprintf(L"%s", DebugLog);
 
 		return TRUE;
 	}

@@ -288,6 +288,8 @@ void CScourge::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CScourge::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_SCDTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"ZFLY_S_DEAD" , m_vPos , D3DXVECTOR2(0.7f ,0.7f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

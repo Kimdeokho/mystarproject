@@ -49,7 +49,7 @@ void CCom_Worksearch::Initialize(CObj* pobj /*= NULL*/)
 
 	m_fsearch_time = 0.f;
 
-	m_collRange = GETTIME * m_pobj->GetUnitinfo().fspeed * 3;
+	m_collRange = GETTIME * m_pobj->GetUnitinfo().fspeed * 4;
 }
 
 void CCom_Worksearch::Update(void)
@@ -119,10 +119,6 @@ void CCom_Worksearch::Update(void)
 						else
 							m_pobj->SetOrder(ORDER_RETURN_CARGO);
 					}
-				}
-				else
-				{
-					//CFontMgr::GetInstance()->Setbatch_Font(L"X%d" , 0 , m_pobj->GetPos().x ,m_pobj->GetPos().y );
 				}
 
 			}
@@ -256,6 +252,11 @@ void CCom_Worksearch::Update(void)
 		{
 			((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(m_ptarget->GetObjNumber());
 			((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
+		}
+		else
+		{
+			((CCom_Pathfind*)m_com_pathfind)->SetTargetObjID(0);
+			//((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 		}
 	}
 	else if(ORDER_MOVE_BUILD == order) 

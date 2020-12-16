@@ -95,7 +95,7 @@ void CCom_TankbodyAnim::SetAnimation(const TCHAR* statekey)
 		if(NULL != m_animtexture)
 		{
 			m_frame.umax = m_animtexture[0].size();
-			m_frame.fframespeed = (float)m_frame.umax*2;
+			m_frame.fframespeed = (float)m_frame.umax*2.0f;
 			m_curtex = m_animtexture[m_texdiridx][0];
 		}
 	}

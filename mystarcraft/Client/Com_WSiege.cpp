@@ -44,6 +44,8 @@ void CCom_WSiege::fire(CObj* ptarget)
 	{
 		if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_SIEGE_FIRE , m_pobj->GetPos());
+
 			m_bfire = true;
 			m_pobj->SetState(ATTACK);
 			m_attack_time = 0.f;
@@ -71,13 +73,13 @@ void CCom_WSiege::fire(CObj* ptarget)
 			{
 				vdir = ptarget->GetPos() - m_pobj->GetPos();
 				D3DXVec2Normalize(&vdir , &vdir);
-				m_targetpos -= vdir*30;
+				m_targetpos -= vdir*40;
 			}
 			else if(0 == CSkill_DarkSwarm::m_darkswarm_cnt[idx])
 			{
 				vdir = ptarget->GetPos() - m_pobj->GetPos();
 				D3DXVec2Normalize(&vdir , &vdir);
-				m_targetpos -= vdir*7;
+				m_targetpos -= vdir*8;
 			}
 
 			peff = new CGeneraEff(L"SIEGEBOOM" ,m_targetpos , D3DXVECTOR2(1,1), SORT_GROUND_EFF , 1.2f);

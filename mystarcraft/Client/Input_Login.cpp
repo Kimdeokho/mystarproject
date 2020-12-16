@@ -29,6 +29,8 @@ void CInput_Login::Update(void)
 
 		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_CLICK , 0);
 	}
+
+	CSoundDevice::GetInstance()->StageUpdate();
 }
 
 void CInput_Login::Reelase(void)

@@ -4,9 +4,11 @@
 
 #include "ObjMgr.h"
 #include "TimeMgr.h"
+#include "FontMgr.h"
 
 #include "Com_AirPathfind.h"
 #include "Com_Pathfind.h"
+#include "SoundDevice.h"
 
 #include "MyMath.h"
 #include "Spidermine.h"
@@ -78,6 +80,8 @@ void CCom_UsingSkill::Update(void)
 		{
 			if(CMyMath::pos_distance( m_using_pos, (*m_objpos)) <= 320*320)
 			{
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_BATTLE_YCHARGE , m_pobj->GetPos());
+
 				D3DXVECTOR2 vdir = m_using_pos - (*m_objpos);
 				D3DXVec2Normalize(&vdir , &vdir);
 				m_pobj->Setdir(vdir);
@@ -160,6 +164,8 @@ void CCom_UsingSkill::Update(void)
 	{
 		if(CMyMath::pos_distance(m_using_pos , (*m_objpos)) <= 288*288)
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_PLAGUE , m_using_pos);
+
 			D3DXVECTOR2 vdir = m_using_pos - (*m_objpos);
 			D3DXVec2Normalize(&vdir , &vdir);
 			m_pobj->Setdir(vdir);
@@ -217,6 +223,12 @@ void CCom_UsingSkill::Update(void)
 	{
 		if(CMyMath::pos_distance(m_using_pos , (*m_objpos)) <= 352*352)
 		{
+			D3DXVECTOR2 vpos = m_pobj->GetPos();
+			CFontMgr::GetInstance()->SetNoticeFont(L"핵 발사가 감지 되었습니다." , vpos.x , vpos.y, 4.f);
+			CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_T_NUDETECT , OBJ_NONE);
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_GHOST_AIM , m_pobj->GetPos());
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_NUCLEAR_FIRE , m_pobj->GetPos());
+
 			D3DXVECTOR2 vdir = m_using_pos - (*m_objpos);
 			D3DXVec2Normalize(&vdir , &vdir);
 			m_pobj->Setdir(vdir);
@@ -238,6 +250,7 @@ void CCom_UsingSkill::Update(void)
 		{
 			if(CMyMath::pos_distance(m_using_pos , (*m_objpos)) <= 9*32*9*32)
 			{
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_VESSEL_IRR , m_pobj->GetPos());
 				CSkill*	pskill = new CSkill_irradi(m_pobj , m_ptarget);			
 				pskill->Initialize();
 				
@@ -264,6 +277,8 @@ void CCom_UsingSkill::Update(void)
 		{
 			if(CMyMath::pos_distance(m_using_pos , (*m_objpos)) <= 320*320)
 			{
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_VESSEL_DEF , m_pobj->GetPos());
+
 				CSkill*	pskill = new CSkill_Defensive(m_pobj , m_ptarget);			
 				pskill->Initialize();
 

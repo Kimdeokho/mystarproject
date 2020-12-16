@@ -119,7 +119,7 @@ void CCom_WDrone::fire(CObj* ptarget)
 		{		
 			m_pobj->SetState(IDLE);
 			if(true == ((CCom_Animation*)m_animation)->GetRotationComplete())
-			{				
+			{	
 				m_pobj->SetState(ATTACK);
 				m_attack_time = 0.f;			
 
@@ -127,6 +127,8 @@ void CCom_WDrone::fire(CObj* ptarget)
 
 				if(true == ((CCom_Animation*)m_animation)->GetAttackSync())
 				{
+					CSoundDevice::GetInstance()->PlayBattleSound(SND_B_HYD_FIRE , m_pobj->GetPos());
+
 					D3DXVECTOR2 vpos = m_pobj->GetPos();
 					D3DXVECTOR2 vdir = m_pobj->GetcurDir();
 					vpos = vpos + vdir * 12;

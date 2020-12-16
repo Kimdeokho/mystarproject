@@ -92,60 +92,6 @@ void CKeyMgr::OnceKeyDown(const int& nkey)
 void CKeyMgr::CombineKey(const int& firstkey ,const int& secondkey)
 {
 
-	//if(GetAsyncKeyState(firstkey) & 0x8000)
-	//{
-	//	m_bCombine = true;
-	//	if(false == m_bcombinefirst[firstkey])
-	//	{
-	//		m_bcombinefirst[firstkey] = true;
-	//		m_combine_ready[m_combineidx] = firstkey;
-	//		++m_combineidx;
-	//	}
-	//}
-	//else
-	//{
-	//	m_combineidx = 0;
-	//	m_bcombinefirst[firstkey] = false;
-	//	m_bCombine = false;
-	//}
-
-
-	//if(GetAsyncKeyState(secondkey) & 0x8000)
-	//{
-	//	if(false == m_bcombinesecond[secondkey])
-	//	{
-	//		m_bcombinesecond[secondkey] = true;
-	//		m_combine_ready[m_combineidx] = secondkey;
-	//		++m_combineidx;
-	//	}
-	//}
-	//else
-	//	m_bcombinesecond[secondkey] = false;
-
-
-
-	//if(m_combineidx >= 2)
-	//{
-	//	m_combineidx = 0;
-
-	//	if(firstkey == m_combine_ready[0] &&
-	//		secondkey == m_combine_ready[1] )
-	//	{
-	//		m_combinekey[firstkey] = true;
-	//		m_combinekey[secondkey] = true;
-	//	}
-
-	//	m_bcombinefirst[firstkey] = false;
-	//	m_bcombinesecond[secondkey] = false; //보류
-	//}
-	//else
-	//{
-	//	m_combinekey[firstkey] = false;
-	//	m_combinekey[secondkey] = false;
-	//}
-
-
-
 	if(GetAsyncKeyState(firstkey) & 0x8000)
 	{
 		m_bCombine = true;
@@ -204,7 +150,6 @@ void CKeyMgr::MouseOnceKeyDown(const int& nkey)
 		if(false == m_KeyPress[nkey])
 		{
 			m_KeyPress[nkey] = true;
-			//m_DbClick_ready[nkey] = true;
 			m_bKeyUp_ready[nkey] = true;
 
 			++m_clickCnt[nkey];
@@ -212,7 +157,6 @@ void CKeyMgr::MouseOnceKeyDown(const int& nkey)
 			m_bOnceKeyDown_complete[nkey] = true;
 
 			//첫번째 키다운한 위치 저장
-			//m_downpt = CMouseMgr::GetInstance()->GetScreenMousePt();
 		}
 		else
 		{
@@ -231,7 +175,6 @@ void CKeyMgr::MouseKeyUp(const int& nkey)
 	if(true == m_bKeyUp_ready[nkey] && false == m_KeyPress[nkey])
 	{
 		m_bKeyUp_ready[nkey] = false;
-		//CLineMgr::GetInstance()->SetRenderSwitch(false);
 
 		if(true == m_DbClick_ready[nkey])
 		{
@@ -251,9 +194,7 @@ void CKeyMgr::MouseKeyUp(const int& nkey)
 }
 void CKeyMgr::DbClick(const int& nkey)
 {
-	//if(true == m_DbClick_ready[nkey]) // m_clickcnt == 1로도 대응가능
-
-	if(1 <= m_clickCnt[nkey]) // m_clickcnt == 1로도 대응가능
+	if(1 <= m_clickCnt[nkey])
 	{
 		m_dbClick_Timer[nkey] += GETTIME;
 
@@ -325,11 +266,6 @@ void CKeyMgr::Update(void)
 	m_input->Update();
 }
 
-
-//bool CKeyMgr::GetLbdraging(void)
-//{
-//	return m_TurboKeyPress[VK_LBUTTON];
-//}
 bool CKeyMgr::IS_CombineFirstKey(const int firstkey)
 {
 	return m_combinekey[firstkey];

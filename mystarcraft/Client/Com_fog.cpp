@@ -43,18 +43,10 @@ void CCom_fog::Initialize(CObj* pobj)
 void CCom_fog::Update(void)
 {
 	/*m_iSightrange는 픽셀단위 범위, 32배수*/
-
-/*
-	if( m_pobj->GetTeamNumber() != CSession_Mgr::GetInstance()->GetTeamNumber())
-	{
-		//임시용 조건이다
-		return;
-	}*/
-
 	if(true == m_sightoffsw)
 		m_fogtime += GETTIME;
 
-	if(m_fogtime >3.0f)
+	if(m_fogtime > 3.0f)
 	{
 		if(!m_Sightoff_List.empty())
 		{

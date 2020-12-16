@@ -24,9 +24,9 @@ CZerg_building::CZerg_building(void)
 
 	m_unitinfo.etribe = TRIBE_ZERG;
 
-	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber , CATEGORY_BUILDING);
 	m_miniunit_display->Initialize();
-	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display((CUI_MiniUnitDisplay*)m_miniunit_display);
 
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 }
@@ -138,6 +138,9 @@ void CZerg_building::Build_Complete(void)
 
 void CZerg_building::Release(void)
 {
+	if(OBJ_FCOLONY != m_eOBJ_NAME)
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_ZBUILD_BOOM , m_vPos);
+
 	size_t maxloop = m_areaidx_vec.size();
 	for(size_t i = 0; i < maxloop; ++i)
 	{

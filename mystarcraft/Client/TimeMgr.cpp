@@ -24,14 +24,18 @@ HRESULT CTimeMgr::InitTime( void )
 	//QueryPerformanceCounter Output 파라미터에는 현재 count가 설정된다.
 	//QueryPerformanceFrequency Output 파라미터에는 초당 count 가 설정된다.
 
+
+	LARGE_INTEGER perfFreq;
+	QueryPerformanceFrequency( &perfFreq );
+	mPerfCountDuration = 1.0 / perfFreq.QuadPart;
+
+	QueryPerformanceCounter( &sStartTime );
+
+	mLastFrameStartTime = GetTime2();
+
 	return S_OK;
 }
 
-float CTimeMgr::GetTime( void )
-{
-	//return m_fTime; 
-	return FIXTIME;
-}
 const int& CTimeMgr::GetFps(void)
 {
 	return *m_fps;
@@ -42,40 +46,41 @@ void CTimeMgr::SetFps( const int* fps )
 }
 void CTimeMgr::SetTime( void )
 {
-	//고해상도 타이머의 현재 CPU의 클럭수를 얻는 함수입니다. 함수의 원형은 아래와 같습니다
-	QueryPerformanceCounter(&m_FrameTime);
+	double currentTime = GetTime2();
 
-	if(m_FrameTime.QuadPart - m_LastTime.QuadPart > m_CpuTick.QuadPart) // 1초가 지났다는소리
+	mDeltaTime = ( float ) ( currentTime - mLastFrameStartTime );
+
+
+	//sleep함수로 프레임을 제어하면 가끔가다 락스텝동기화가 깨진다.
+
+	//frame lock at 30fps
+	while( mDeltaTime < FIXTIME ) 
 	{
-		QueryPerformanceFrequency(&m_CpuTick); //CPU Tick을 갱신해준다
+		currentTime = GetTime2();
 
-		m_LastTime.QuadPart = m_FrameTime.QuadPart;
+		mDeltaTime = (float)( currentTime - mLastFrameStartTime );
 	}
 
+	mDeltaTime = FIXTIME;
 
-	m_fTime = float(m_FrameTime.QuadPart - m_FixTime.QuadPart) / m_CpuTick.QuadPart;
-
-
-	if(m_fTime < FIXTIME )
-	{
-		Sleep( DWORD( (FIXTIME - m_fTime) *1000 ) ); //이거 정말 부정확하다..
-		//Sleep( (FIXTIME - (update~render까지 걸린시간)) *1000);
-	}
-
-	QueryPerformanceCounter(&m_FrameTime);
-	m_FixTime = m_FrameTime; //이전 프레임의 시간 저장
-	
+	mLastFrameStartTime = currentTime;
+	mFrameStartTimef = static_cast< float > ( mLastFrameStartTime );
 
 }
-void CTimeMgr::FPS_fix(void)
+
+float CTimeMgr::GetTime( void )
 {
-	//m_fTime = float(m_FrameTime.QuadPart - m_FixTime.QuadPart) / m_CpuTick.QuadPart;
-	//m_FixTime = m_FrameTime;
-	//if(m_fTime < 0.03333f )
-	//{
-	//	Sleep( DWORD((0.03333f - m_fTime) *1000));
-	//	//Sleep( (0.0167 - (update~render까지 걸린시간)) *1000);
-	//}	
+	return FIXTIME;
+}
+double CTimeMgr::GetTime2(void)
+{
+	LARGE_INTEGER curTime, timeSinceStart;
+	QueryPerformanceCounter( &curTime );
+
+	timeSinceStart.QuadPart = curTime.QuadPart - sStartTime.QuadPart;
+
+	//시작후 몇초가 지났는지 반환한다
+	return timeSinceStart.QuadPart * mPerfCountDuration;
 }
 
 const float CTimeMgr::FIXTIME = 1/30.f;

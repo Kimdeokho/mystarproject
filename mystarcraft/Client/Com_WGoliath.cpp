@@ -53,6 +53,7 @@ void CCom_WGoliath::fire(CObj* ptarget)
 
 			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType)
 			{
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_GOLIATH_FIRE , m_pobj->GetPos());
 				CObj* peff = NULL;
 
 				peff = new CGeneraEff(L"GaussGun" ,ptarget->GetPos() , D3DXVECTOR2(1.2f,1.2f), SORT_GROUND_EFF , 1.4f);
@@ -69,6 +70,8 @@ void CCom_WGoliath::fire(CObj* ptarget)
 			else
 			{
 				//ÃÑ¾Ë »ý¼º
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TURRET_FIRE , m_pobj->GetPos());
+
 				D3DXVECTOR2 vdir = D3DXVECTOR2(ptarget->GetPos() - m_pobj->GetPos());
 				D3DXVec2Normalize(&vdir , &vdir);
 

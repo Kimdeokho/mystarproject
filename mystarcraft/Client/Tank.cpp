@@ -73,10 +73,10 @@ void CTank::Initialize(void)
 	m_unitinfo.fspeed = 68;
 	m_unitinfo.fog_range = 512;
 
-	m_vertex.left = 16;
-	m_vertex.right = 16;
-	m_vertex.top =  16;
-	m_vertex.bottom = 16;
+	m_vertex.left = 16.f;
+	m_vertex.right = 16.f;
+	m_vertex.top =  16.f;
+	m_vertex.bottom = 16.f;
 
 
 	m_bsiegemode = false;
@@ -184,7 +184,7 @@ void CTank::Update(void)
 			{				
 				if( true == ((CCom_Animation*)m_com_anim)->GetRotationComplete() /*&&
 				//	true == ((CTankbarrel*)m_tankbarrel)->GetTransformReady()*/)
-				{				
+				{						
 					m_btransform_ready = true; // 변신 준비완료
 					Transform_Siegebody();
 				}
@@ -311,7 +311,10 @@ void CTank::Inputkey_reaction(const int& nkey)
 			if(false == m_bsiegemode)
 			{				
 				m_vcurdir = CMyMath::dgree_to_dir(5*11.25f);
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TANK_TRA1 , m_vPos);
 			}
+			else
+				CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TANK_TRA1 , m_vPos);
 		}
 
 		((CCom_Pathfind*)m_com_pathfind)->SetMultithread(false);
@@ -320,11 +323,6 @@ void CTank::Inputkey_reaction(const int& nkey)
 		if( iter != m_componentlist.end())
 			m_componentlist.erase(iter);
 
-	}
-	if( 'W' == nkey)
-	{
-		m_eteamnumber = TEAM_1;
-		m_tankbarrel->SetTeamNumber(TEAM_1);
 	}
 	if(VK_RBUTTON == nkey)
 	{
@@ -372,7 +370,10 @@ void CTank::Inputkey_reaction(const int& firstkey , const int& secondkey)
 	{
 		if(true == m_bsiegemode)
 		{
-
+			m_unitinfo.order = ORDER_MOVE_ATTACK;
+			m_unitinfo.state = IDLE;			
+			m_tankbarrel->SetOrder(ORDER_MOVE_ATTACK);
+			m_tankbarrel->SetState(IDLE);
 		}
 		else
 		{
@@ -475,21 +476,26 @@ void CTank::SetTransformReady(bool btransform_ready)
 }
 void CTank::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	bool active = false;
+
+	if(m_upg_info[UPG_T_VFC2].upg_cnt >= 1)
+		active = true;
 
 	if(true == m_bsiegemode)
 	{
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_SIEGETANK" , BTN_SIEGETANK);
+		pui->Create_Cmdbtn(6 , L"BTN_SIEGETANK" , BTN_SIEGETANK , active);
 	}
 	else
 	{
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(6 , L"BTN_SIEGEMODE" , BTN_SIEGEMODE);
+		pui->Create_Cmdbtn(6 , L"BTN_SIEGEMODE" , BTN_SIEGEMODE , active);
 	}
 }
 void CTank::Update_Wireframe(void)
@@ -541,6 +547,8 @@ void CTank::Update_Wireframe(void)
 }
 void CTank::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TANK_DTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(0.85f,0.85f) , SORT_GROUND );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

@@ -22,6 +22,9 @@
 #include "MyCmd_Building.h"
 #include "Input_Interface.h"
 
+#include "SoundDevice.h"
+#include "Session_Mgr.h"
+
 #include "MyMath.h"
 #include "Ingame_UIMgr.h"
 
@@ -238,6 +241,8 @@ void CSCV::Update(void)
 
 			if(IDLE == m_charge_building->GetUnitinfo().state)
 			{
+				if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+					CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_SCV_COMPL , OBJ_SCV);
 				//건물 완성
 				m_sortID = SORT_GROUND;
 				m_unitinfo.state = IDLE;
@@ -287,8 +292,9 @@ void CSCV::Inputkey_reaction(const int& nkey)
 	{
 		//m_ecmd_state = CMD_BASIC;		
 
-		if(true == m_main_preview->Install_check(m_preview_info))
+		//if(true == m_main_preview->Install_check(m_preview_info))
 		{				
+
 			CObj* ptarget = CArea_Mgr::GetInstance()->GetChoiceTarget();
 			COMPONENT_PAIR::iterator iter = m_componentlist.find(COM_TARGET_SEARCH);
 			iter->second = m_com_worksearch;
@@ -305,12 +311,14 @@ void CSCV::Inputkey_reaction(const int& nkey)
 
 			//위치에 도착하면 건물생성
 		}
-		else
-		{
-			m_unitinfo.order = ORDER_NONE;
-			m_main_preview->SetActive(false);
-			m_is_preview = false;
-		}
+		//else
+		//{
+		//	//지을 수 없다는 보이스
+
+		//	m_unitinfo.order = ORDER_NONE;
+		//	m_main_preview->SetActive(false);
+		//	m_is_preview = false;
+		//}
 	}
 
 
@@ -428,17 +436,28 @@ bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 	if(VK_LBUTTON == nkey)
 	{
 		//여기서 명령을 입력하고
-		if(true == m_is_preview && true == m_main_preview->Install_check())
+		if(true == m_is_preview )
 		{
-			//D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
-			D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetClick_Pos();
-			CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+			if(true == m_main_preview->Install_check())
+			{
+				//건물설치하는 사운드 추가
+				if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+					CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_TBUILD , 0);
 
-			m_main_preview->SetActive(false);
-			m_is_preview = false;
-			m_preview_info = m_main_preview->GetPreviewInfo();
-			CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_Building::StaticCreate(m_preview_info));
-		}		
+				D3DXVECTOR2 vmousept = CMouseMgr::GetInstance()->GetClick_Pos();
+				CArea_Mgr::GetInstance()->TargetChoice(vmousept);
+
+				m_main_preview->SetActive(false);
+				m_is_preview = false;
+				m_preview_info = m_main_preview->GetPreviewInfo();
+				CKeyMgr::GetInstance()->GetInputDevice()->PushCommand(CMyCmd_Building::StaticCreate(m_preview_info));
+			}
+			else
+			{
+				if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+					CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_SCV_ERR , OBJ_SCV);
+			}
+		}
 	}
 
 	else if('B' == nkey && CMD_BASIC == m_ecmd_state)
@@ -511,6 +530,8 @@ bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 					MYRECT<float> vtx(32.f , 33.f , 24.f , 17.f);
 					SetPreview_info(L"T_BUNKER" , T_BUNKER , 2 , 3 , vtx);
 				}
+				else
+					m_is_preview = false;
 			}
 			else if(CMD_V_VIEW == m_ecmd_state)
 			{
@@ -536,6 +557,8 @@ bool CSCV::Input_cmd(const int& nkey , bool* waitkey)
 					MYRECT<float> vtx(48.f , 49.f , 40.f , 39.f);
 					SetPreview_info(L"T_STARPORT" , T_STARPORT , 3 , 4 , vtx);
 				}
+				else
+					m_is_preview = false;
 			}
 		}
 	}
@@ -617,12 +640,21 @@ bool CSCV::Input_cmd(const int& firstkey , const int& secondkey)
 
 void CSCV::Create_Building(void)
 {
+	//if(CMyMath::Pos_to_index(m_vPos , 32) == 
+	//	CMyMath::Pos_to_index(m_preview_info.vcenter_pos , 32))
+
 	CObj* pobj = NULL;
-	if(CMyMath::Pos_to_index(m_vPos , 32) == 
-		CMyMath::Pos_to_index(m_preview_info.vcenter_pos , 32))
+
+	float fdistance = CMyMath::pos_distance(m_vPos , m_preview_info.vcenter_pos);
+	float onestep = GETTIME*m_unitinfo.fspeed;
+
+	if( fdistance < 32*32)
 	{
 		if(false == (m_main_preview)->Install_check(m_preview_info))
 		{
+			if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+				CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_SCV_ERR , OBJ_SCV);
+
 			m_unitinfo.order = ORDER_NONE;
 			m_unitinfo.state = IDLE;
 			m_ecmd_state = CMD_BASIC;		
@@ -634,7 +666,7 @@ void CSCV::Create_Building(void)
 		m_unitinfo.state = BUILD;
 		if(T_COMMANDCENTER == m_preview_info.ebuild)
 		{
-			pobj = new CComandcenter;
+			pobj = new CComandcenter(6.0f);
 			CObjMgr::GetInstance()->AddObject(pobj , OBJ_COMMAND);			
 		}
 		else if(T_FACTORY == m_preview_info.ebuild)
@@ -703,12 +735,15 @@ void CSCV::Create_Building(void)
 	}
 	else
 	{
-		if(false == (m_main_preview)->Install_check(m_preview_info))
-		{
-			m_unitinfo.order = ORDER_NONE;
-			m_unitinfo.state = IDLE;
-			m_ecmd_state = CMD_BASIC;
-		}
+		//if(false == m_main_preview->Install_check(m_preview_info))
+		//{
+		//	if(CSession_Mgr::GetInstance()->GetTeamNumber() == m_eteamnumber)
+		//		CSoundDevice::GetInstance()->PlayVoiceSound(SND_V_SCV_ERR , OBJ_SCV);
+
+		//	m_unitinfo.order = ORDER_NONE;
+		//	m_unitinfo.state = IDLE;
+		//	m_ecmd_state = CMD_BASIC;
+		//}
 	}
 }
 
@@ -866,6 +901,8 @@ void CSCV::Update_Wireframe(void)
 
 void CSCV::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_SCVDTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND ,1.4f);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

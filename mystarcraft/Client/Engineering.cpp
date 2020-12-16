@@ -96,6 +96,7 @@ void CEngineering::Initialize(void)
 	CTerran_building::fire_eff_initialize();
 
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
+
 }
 
 void CEngineering::Update(void)
@@ -149,6 +150,7 @@ void CEngineering::Update(void)
 
 		if(m_vgroundpos.y <= m_vPos.y)
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_LANDING , m_vPos);
 			m_is_take_off = false;
 			m_vPos.y = m_vgroundpos.y;
 			m_unitinfo.eMoveType = MOVE_GROUND;
@@ -442,6 +444,8 @@ void CEngineering::Update_Wireframe(void)
 }
 void CEngineering::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBLARGE_BOOM , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

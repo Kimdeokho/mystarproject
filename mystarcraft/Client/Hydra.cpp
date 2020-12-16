@@ -71,10 +71,10 @@ void CHydra::Initialize(void)
 	m_unitinfo.maxhp = 80;
 	m_unitinfo.hp = 80;
 	m_unitinfo.mp = 0;
-	m_unitinfo.fspeed = 93;//64; //속업 93
+	m_unitinfo.fspeed = 64;//64; //속업 93
 	m_unitinfo.attack_range = 5*32; //사업 5
 	m_unitinfo.air_attack_range = 4*32;
-	m_unitinfo.search_range = 6*32;
+	m_unitinfo.search_range = 8*32;
 	m_unitinfo.fog_range = 32*8*2;
 	m_unitinfo.armor = 0;
 
@@ -143,6 +143,19 @@ void CHydra::Update(void)
 
 	m_select_ui->Update();
 	m_energybar_ui->Update();
+
+	if( false == m_applyUpg[UPG_Z_BD0] && m_upg_info[UPG_Z_BD0].upg_cnt >= 1)
+	{
+		m_unitinfo.fspeed = 93;
+		m_applyUpg[UPG_Z_BD0] = true;
+	}
+	if( false == m_applyUpg[UPG_Z_BD1] && m_upg_info[UPG_Z_BD1].upg_cnt >= 1)
+	{
+		m_unitinfo.attack_range += 1*32;
+		m_unitinfo.air_attack_range += 1*32;
+		m_applyUpg[UPG_Z_BD1] = true;
+		((CCom_Distancesearch*)m_com_targetsearch)->Range_update();
+	}
 }
 
 void CHydra::Render(void)
@@ -358,6 +371,8 @@ void CHydra::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void CHydra::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_HYDTH , m_vPos);
+
 	CObj* pobj = new CCorpse(L"HYDRADEAD" , L"HYDRAWRECKAGE");
 	pobj->SetPos(m_vPos.x , m_vPos.y);
 	pobj->Initialize();

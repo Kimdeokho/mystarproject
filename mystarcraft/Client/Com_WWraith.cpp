@@ -38,6 +38,8 @@ void CCom_WWraith::fire(CObj* ptarget)
 	{
 		if(false == m_bfire)
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_WRAITH_FIRE , m_pobj->GetPos());
+
 			m_attack_time = 0.f;
 
 			m_pobj->SetState(ATTACK);
@@ -63,6 +65,7 @@ void CCom_WWraith::fire(CObj* ptarget)
 	{
 		if(false == m_bair_fire)
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_WRAITH_AFIRE , m_pobj->GetPos());
 			m_attack_time = 0.f;
 
 			m_pobj->SetState(ATTACK);

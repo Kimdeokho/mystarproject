@@ -75,9 +75,11 @@ void CCom_AirCollision::Update(void)
 					//m_collision_vnormal = OFFSET_DIRVEC;
 					m_collision_vnormal = D3DXVECTOR2( float(rand()%10 - 5) , float(rand()%10 - 5) );
 
+/*
 					if( CMyMath::FLT_compare(m_collision_vnormal.x , 0.f) && 
 						CMyMath::FLT_compare(m_collision_vnormal.y , 0.f))
 						m_collision_vnormal.x = 1.f;
+						*/
 
 					D3DXVec2Normalize(&m_collision_vnormal , &m_collision_vnormal);
 				}
@@ -104,8 +106,21 @@ void CCom_AirCollision::Update(void)
 			MyIntersectrect(&temp , &m_rect , &m_collision_target->GetMyRect()) )
 		{
 			/*타겟과 충돌이 일어나는 중이라면*/
+			D3DXVECTOR2 vtemp = GETTIME * m_collision_vnormal * 10;
 
-			m_vPos -= GETTIME * m_collision_vnormal * 10;
+			if(m_vPos.x - vtemp.x <= 5)
+				m_vPos.x = 5.f;
+			else if(m_vPos.x - vtemp.x >= 4090)
+				m_vPos.x = 4090;
+			else
+				m_vPos.x -= vtemp.x;
+
+			if(m_vPos.y - vtemp.y <= 5)
+				m_vPos.y = 5.f;
+			else if(m_vPos.y - vtemp.y >= 4090)
+				m_vPos.y = 4090;
+			else
+				m_vPos.y -= vtemp.y;
 
 		}
 		else

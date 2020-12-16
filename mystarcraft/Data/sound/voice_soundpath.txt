@@ -1,6 +1,6 @@
 ..\SoundResource\terran\scv\tscrdy00.wav
 ..\SoundResource\terran\scv\tscerr00.wav
-..\SoundResource\terran\scv\tscrdy00.wav
+..\SoundResource\terran\scv\tscupd00.wav
 ..\SoundResource\terran\scv\tscyes00.wav
 ..\SoundResource\terran\scv\tscyes01.wav
 ..\SoundResource\terran\scv\tscyes02.wav
@@ -61,6 +61,7 @@
 ..\SoundResource\terran\battle\tbayes02.wav
 ..\SoundResource\terran\battle\tbayes03.wav
 ..\SoundResource\zerg\drone\zdrrdy00.wav
+..\SoundResource\zerg\drone\zdrerr00.wav
 ..\SoundResource\zerg\drone\zdryes00.wav
 ..\SoundResource\zerg\drone\zdryes01.wav
 ..\SoundResource\zerg\drone\zdryes02.wav
@@ -110,3 +111,17 @@
 ..\SoundResource\zerg\ultra\zulyes01.wav
 ..\SoundResource\zerg\ultra\zulyes02.wav
 ..\SoundResource\zerg\ultra\zulyes03.wav
+..\SoundResource\zerg\advisor\zaderr00.wav
+..\SoundResource\zerg\advisor\zaderr01.wav
+..\SoundResource\zerg\advisor\zaderr02.wav
+..\SoundResource\zerg\advisor\zadupd02.wav
+..\SoundResource\zerg\advisor\zadupd04.wav
+..\SoundResource\terran\advisor\mierr.wav
+..\SoundResource\terran\advisor\gaserr.wav
+..\SoundResource\terran\advisor\poperr.wav
+..\SoundResource\terran\advisor\tadupd06.wav
+..\SoundResource\terran\advisor\tadupd04.wav
+..\SoundResource\terran\building\comsat.wav
+..\SoundResource\terran\building\tba.wav
+..\SoundResource\terran\building\tbe.wav
+..\SoundResource\terran\building\tvfc.wav

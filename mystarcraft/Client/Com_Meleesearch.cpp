@@ -35,8 +35,8 @@ void CCom_Meleesearch::Initialize(CObj* pobj /*= NULL*/)
 	m_target_objid = -1;
 	//m_bmelee_search = true;
 
-	m_meleerangeX = 5.0f;
-	m_meleerangeY = 5.0f;
+	m_meleerangeX = m_pobj->GetUnitinfo().fspeed * 0.2f;
+	m_meleerangeY = m_meleerangeX;
 
 	//m_meleerangeX = GETTIME * m_pobj->GetUnitinfo().fspeed * 3.f;
 	//m_meleerangeY = GETTIME * m_pobj->GetUnitinfo().fspeed * 3.f;
@@ -56,7 +56,12 @@ void CCom_Meleesearch::Update(void)
 
 	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
 
-	if( NULL != m_ptarget)
+	if( NULL == m_ptarget )
+	{
+		m_bforced_target = false;
+		m_target_objid = 0;
+	}
+	else
 	{
 		TEAM_NUMBER eteam = m_pobj->GetTeamNumber();
 
@@ -72,12 +77,8 @@ void CCom_Meleesearch::Update(void)
 		{
 			m_ptarget = NULL;
 			m_target_objid = 0;
+			m_bforced_target = false;
 		}
-	}
-	else
-	{
-		m_bforced_target = false;
-		m_target_objid = 0;
 	}
 
 	if(NULL != m_com_pathfind)
@@ -192,8 +193,8 @@ void CCom_Meleesearch::Update(void)
 					//공격범위 밖, 추적범위 안이면
 					if(NULL != m_com_pathfind)
 					{
-						if(ATTACK == m_pobj->GetUnitinfo().state)
-							m_pobj->SetState(MOVE);
+						//if(ATTACK == m_pobj->GetUnitinfo().state)
+							//m_pobj->SetState(MOVE);
 
 						((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(false);
 					}
@@ -246,7 +247,8 @@ void CCom_Meleesearch::Update(void)
 			else
 			{
 				//m_meleerangeX = GETTIME * m_pobj->GetUnitinfo().fspeed * 3.f;
-				m_meleerangeX = 5.0f;
+				//m_meleerangeX = m_pobj->GetUnitinfo().fspeed * GETTIME * 3;
+				m_meleerangeX = m_pobj->GetUnitinfo().fspeed * 0.2f;
 				m_meleerangeY = m_meleerangeX;
 			}
 

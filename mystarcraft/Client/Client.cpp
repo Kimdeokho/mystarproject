@@ -279,7 +279,7 @@ LRESULT CALLBACK EditSubProc2(HWND hWnd,UINT iMessage,WPARAM wParam,LPARAM lPara
 			// nLen1과 nLen2변수에 저장합니다.
 
 			nLen1=GetWindowTextLength(g_hEdit1);
-			nLen2=GetWindowTextLength(hWnd); // 이 함수내에서 hWnd는 hEdit2값과 같습니다.
+			nLen2=GetWindowTextLength(hWnd); // 이 함수내에서 hWnd는 g_hEdit2값과 같습니다.
 
 			// 입력윈도우에 입력된 문자열을  szStr변수에 저장합니다.
 			GetWindowText(hWnd, szStr, 1024);

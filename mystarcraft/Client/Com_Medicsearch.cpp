@@ -187,7 +187,7 @@ void CCom_Medicsearch::Update(void)
 		if(NULL != m_ptarget)
 		{
 			//원거리
-			if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
+			if(CMyMath::pos_distance( m_ptarget->GetPos() , m_pobj->GetPos()) < (*m_pattack_range)*(*m_pattack_range))
 			{			
 				//공격 범위에 들어오면
 				m_pobj->Setdir( m_ptarget->GetPos() - m_pobj->GetPos());
@@ -202,7 +202,7 @@ void CCom_Medicsearch::Update(void)
 					((CCom_Pathfind*)m_com_pathfind)->SetPathfindPause(true);
 				}
 			}
-			else if(CMyMath::pos_distance( (m_ptarget)->GetPos() , m_pobj->GetPos()) > (*m_psearch_range)*(*m_psearch_range))
+			else if(CMyMath::pos_distance( m_ptarget->GetPos() , m_pobj->GetPos()) > (*m_psearch_range)*(*m_psearch_range))
 			{
 				//추적범위 밖이면
 				m_pobj->SetState(IDLE);

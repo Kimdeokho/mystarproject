@@ -22,6 +22,7 @@ CCom_Targetsearch::CCom_Targetsearch(void)
 
 	m_obj_cnt = -1;
 	m_target_objid = -1;
+	m_com_transport = NULL;
 }
 CCom_Targetsearch::~CCom_Targetsearch(void)
 {
@@ -79,13 +80,19 @@ void CCom_Targetsearch::SetTarget(CObj* ptarget)
 {
 	if(NULL != ptarget)
 	{
-		m_bforced_target = true;
-		m_target_objid = ptarget->GetObjNumber();
-		m_obj_cnt = ptarget->GetObjCountNumber();
+		if(m_pobj != ptarget)
+		{
+			m_bforced_target = true;
+			m_target_objid = ptarget->GetObjNumber();
+			m_obj_cnt = ptarget->GetObjCountNumber();
 
-		CComponent* pcom = ptarget->GetComponent(COM_TRANSPORT);
-		if(NULL != pcom)
-			m_com_transport = ((CCom_Transport*)pcom);
+			CComponent* pcom = ptarget->GetComponent(COM_TRANSPORT);
+			if(NULL != pcom)
+				m_com_transport = ((CCom_Transport*)pcom);
+
+			m_target_objid = ptarget->GetObjNumber();
+			m_obj_cnt = ptarget->GetObjCountNumber();
+		}
 	}
 	else
 	{

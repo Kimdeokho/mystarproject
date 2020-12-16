@@ -10,6 +10,7 @@
 #include "Ingame_UIMgr.h"
 #include "LineMgr.h"
 #include "Session_Mgr.h"
+#include "SoundDevice.h"
 
 #include "UI_Resource.h"
 
@@ -328,66 +329,79 @@ void CCom_Production_building::create_unit(OBJID eid)
 {
 	CComponent* pcom = NULL;
 	CObj* pobj = NULL;
+	SOUND_VOICE	unitVoice = SND_V_SCV_RDY;
 
 	if(OBJ_SCV == eid)
 	{
 		pobj = new CSCV(m_vPos);
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);	
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_SCV);
+		unitVoice = SND_V_SCV_RDY;
 	}
 	else if(OBJ_TANK == eid)
 	{	
 		pobj = new CTank;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_TANK);		
+		unitVoice = SND_V_TANK_RDY;
 	}
 	else if(OBJ_MARINE == eid)
 	{
 		pobj = new CMarine;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MARINE);
+		unitVoice = SND_V_MARINE_RDY;
 	}
 	else if(OBJ_MEDIC == eid)
 	{
 		pobj = new CMedic;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_MEDIC);
+		unitVoice = SND_V_MD_RDY;
 	}
 	else if(OBJ_FIREBAT == eid)
 	{
 		pobj = new CFirebat;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);	
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_FIREBAT);
+		unitVoice = SND_V_FB_RDY;
 	}
 	else if(OBJ_GHOST == eid)
 	{
 		pobj = new CGhost;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GHOST);
+		unitVoice = SND_V_GST_RDY;
 	}
 	else if(OBJ_GOLIATH == eid)
 	{
 		pobj = new CGoliath;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);	
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_GOLIATH);
+		unitVoice = SND_V_GOL_RDY;
 	}
 	else if(OBJ_VULTURE == eid)
 	{	
 		pobj = new CVulture;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VULTURE);
+		unitVoice = SND_V_VUL_RDY;
 	}
 	else if(OBJ_WRAITH == eid)
 	{
 		pobj = new CWraith;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_WRAITH);	
+		unitVoice = SND_V_WRAITH_RDY;
 	}
 	else if(OBJ_DROPSHIP == eid)
 	{
 		pobj = new CDropship;
 		CObjMgr::GetInstance()->AddObject(pobj , OBJ_DROPSHIP);
+		unitVoice = SND_V_DROPSHIP_RDY;
 	}
 	else if(OBJ_VESSEL == eid)
 	{
 		pobj = new CVessle;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);		
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_VESSEL);
+		unitVoice = SND_V_VESSLE_RDY;
 	}
 	else if(OBJ_BATTLE == eid)
 	{
 		pobj = new CBattleCruiser;
-		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);		
+		CObjMgr::GetInstance()->AddObject(pobj , OBJ_BATTLE);
+		unitVoice = SND_V_BATTLE_RDY;		
 	}
 
 	if(NULL != pobj)
@@ -396,6 +410,9 @@ void CCom_Production_building::create_unit(OBJID eid)
 		pobj->SetTeamNumber(m_pobj->GetTeamNumber());
 		pobj->Initialize();
 		unit_collocate(pobj);
+
+		if(m_pobj->GetTeamNumber() == CSession_Mgr::GetInstance()->GetTeamNumber())
+			CSoundDevice::GetInstance()->PlayVoiceSound(unitVoice, eid);
 	}
 
 	if(true == m_is_rally)

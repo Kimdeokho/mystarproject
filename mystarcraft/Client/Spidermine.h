@@ -7,6 +7,9 @@ class CSpidermine :
 private:
 	bool	m_bplant_init;
 	float	m_plant_time;
+	float	m_moveTime;
+public:
+	void BurrowInit(void);
 public:
 	virtual void Initialize(void);
 	virtual void Update(void);

@@ -78,18 +78,6 @@ bool CMyMath::linecross_check(const MYLINE& line1 , const MYLINE& line2)
 			return false;
 	}
 	return false;
-
-	//float den, ua, ub;
-
-	//den = (line2.fy2 -  line2.fy1)*(line1.fx2 - line1.fx1) - (line2.fx2 - line2.fx1)*(line1.fy2 - line1.fy1);
-	////ua , ub 둘다 0~1사이라면 선분교차이다
-	//ua = (line2.fx2 - line2.fx1)*(line1.fy1 - line2.fy1) - (line2.fy2 - line2.fy1)*(line1.fx1 - line2.fx1) / den;
-	//ub = (line1.fx2 - line1.fx1)*(line1.fy1 - line2.fy1) - (line1.fy2 - line1.fy1)*(line1.fx1 - line2.fx1) / den;
-
-	//if(ua*ub <= 1)
-	//	return true;
-	//else
-	//	return false;
 }
 
 D3DXVECTOR2 CMyMath::dgree_to_dir(const float& dgree)

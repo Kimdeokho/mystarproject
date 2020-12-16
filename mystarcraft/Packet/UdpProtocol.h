@@ -55,5 +55,8 @@ typedef enum UDP_PROTOCOL
 	PU_TURN_DATA,
 	/*
 	*/
+	PU_TURN_DELAY,
+	/*
+	*/
 	PU_END
 };

@@ -88,6 +88,8 @@ void CSpore_Bullet::Render(void)
 }
 void CSpore_Bullet::Dead(void)
 {
+	m_ptarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_id);
+
 	CObj* peff = NULL;
 	if(NULL != m_ptarget)
 		peff = new CGeneraEff(L"MUTAL_HIT" ,m_ptarget->GetPos()  , D3DXVECTOR2(1.1f , 1.1f), SORT_AIR_EFF );

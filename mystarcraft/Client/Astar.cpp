@@ -13,13 +13,11 @@
 #include "ScrollMgr.h"
 #include "Obj.h"
 #include "ObjMgr.h"
-//IMPLEMENT_SINGLETON(CAstar);
 CAstar::CAstar(void)
 {
 	m_ptarget = NULL;
 
 	m_openlist = new CMyHeapSort<PATH_NODE*>(512);
-	//m_RVopenlist = new CMyHeapSort<PATH_NODE*>;
 	m_unitpath_pool = new PATH_NODE[MAXPATH_IDX];
 
 	m_pObj = NULL;
@@ -52,22 +50,20 @@ CAstar::CAstar(void)
 
 	m_maxnodecnt = MAXPATH_IDX;
 
-	//memset(m_idxfind , 0 , sizeof(m_idxfind));
 }
 CAstar::~CAstar(void)
 {
 	m_pObj = NULL;
 	Release();
 	Safe_Delete(m_openlist);
-	//Safe_Delete(m_RVopenlist);
 }
 void CAstar::Initialize(CObj* pobj)
 {
 	m_pObj = pobj;
 	m_vertex = m_pObj->GetVertex();
 	m_range = max(m_pObj->GetUnitinfo().attack_range , m_pObj->GetUnitinfo().air_attack_range) - 32;
-	if(m_range < 0)
-		m_range = 32;
+	if(m_range <= 0)
+		m_range = 0;
 	m_terrain_end = false;
 
 	memset(m_findidx , 0 , sizeof(m_findidx));
@@ -231,31 +227,13 @@ void CAstar::Make_UnitNode( PATH_NODE* parent_node ,const D3DXVECTOR2& vpos , co
 	pnewnode->vPos = vpos;	
 
 	
-	//D3DXVECTOR2 vtemp;
-	//D3DXVec2Normalize(&vtemp , &(pnewnode->vPos - parent_node->vPos));
-	//float fdot = D3DXVec2Dot(&m_destdir , &vtemp);
-	//if( fdot >= 0.1f) //0보다 크다면 90도보다 작다
-	//	pnewnode->X = parent_node->X + g_distance*fdot;
-	//else
-	//	pnewnode->X = parent_node->X + g_distance*fdot/2;
-
-	//pnewnode->G = parent_node->G + g_distance*g_distance;
 	pnewnode->G = parent_node->G + CMyMath::pos_distance(pnewnode->vPos , parent_node->vPos);
 	pnewnode->H = CMyMath::pos_distance(vpos , m_vGoal_pos);
-
-	//int idx1 , idx2;
-	//idx1 = CMyMath::Pos_to_index(vpos , 32);
-	//idx2 = CMyMath::Pos_to_index(m_vGoal_pos , 32);
-	//pnewnode->G += 1;
-	//pnewnode->H = CMyMath::idx_distance(idx1 , idx2 , 128 , 32);
 
 	pnewnode->iCost = (int)(pnewnode->G + pnewnode->H);
 
 
-	m_irow = int(pnewnode->vPos.x / (4096 / m_widthcnt) );
-	m_icol = int(pnewnode->vPos.y / m_unit_stepsize);
-	m_maskidx = int(pnewnode->vPos.x / m_unit_stepsize) % 32;
-	m_findidx[m_icol * m_widthcnt + m_irow] |= m_mask[m_maskidx];
+	node_check(pnewnode->vPos);
 
 	m_openlist->push_node(pnewnode);
 }
@@ -263,7 +241,8 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 {	
 
 	memset(m_findidx , 0 , sizeof(m_findidx));
-	//memset(m_idxfind , 0 , sizeof(m_idxfind));
+	m_findSet.clear();
+
 	Release_unit_closelist();
 	Release_unit_openlist();
 
@@ -278,9 +257,9 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 		m_terrain_end = true;
 	
 
-	//if( NULL != m_ptarget)
-	//	m_maxnodecnt = 75;
-	//else
+	if(m_terrain_end)
+		m_maxnodecnt = MAXPATH_IDX/2;
+	else
 		m_maxnodecnt = MAXPATH_IDX;
 
 	if(m_maxnodecnt > MAXPATH_IDX)
@@ -289,7 +268,6 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 	m_is_escape = false;
 
 
-	//m_unit_stepsize = 16;
 	m_unit_stepsize = stepsize;
 	m_tilecnt = int(SQ_TILECNTX*(float)SQ_TILESIZEX/(float)m_unit_stepsize);
 
@@ -317,6 +295,8 @@ void CAstar::UnitPath_calculation_Start(const D3DXVECTOR2& startpos , const D3DX
 	m_dummynodeX = pnode;
 
 	m_destdir = goalpos - startpos;
+
+	node_check(pnode->vPos);
 }
 void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* ptarget)
 {
@@ -324,15 +304,13 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 	PATH_NODE* pnode;
 
 	MYRECT<float> temprect;
-	//float gdistance = 0;
-	//int range = 0;
 
 	m_ptarget = ptarget;
 
 	int accrue= 0; 
 	D3DXVECTOR2 tempv_center;
 	MYRECT<float> temprc_center;
-	while(accrue <= 7) //보류 조건
+	while(accrue <= 10) //보류 조건
 	{
 		++accrue;
 
@@ -340,9 +318,11 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 
 		if(NULL != pnode)
 		{
-			//비트연산으로 스텝사이즈 트루 펄스여부,,,
-			if(m_dummynodeX->G <= pnode->G) //도착점에서 먼곳으로
-				m_dummynodeX = pnode;
+			if(m_dummynodeX->G <= pnode->G) //출발점에서 먼곳으로
+			{
+				if(CMyMath::pos_distance(pnode->vPos , m_vGoal_pos) < 250*250)
+					m_dummynodeX = pnode;
+			}
 
 			if(m_dummynodeH->H >= pnode->H)// 도착점과 가까운곳으로
 				m_dummynodeH = pnode;
@@ -351,10 +331,12 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 		if(NULL == pnode)
 		{
 			vecpath.clear();
-			while(NULL != m_dummynodeH)
+			PATH_NODE* tempnode = m_dummynodeX;
+
+			while(NULL != tempnode)
 			{
-				vecpath.push_back(m_dummynodeH->vPos);
-				m_dummynodeH = m_dummynodeH->pParent;
+				vecpath.push_back(tempnode->vPos);
+				tempnode = tempnode->pParent;
 			}
 			break;
 		}	
@@ -382,10 +364,6 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			PATH_NODE* tempnode = NULL;
 
 			tempnode = m_dummynodeH;
-			//if(NULL == m_ptarget)
-			//	tempnode = m_dummynodeH;
-			//else
-			//	tempnode = m_dummynodeX;
 
 			while(NULL != tempnode)
 			{
@@ -402,7 +380,12 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			if(NULL != m_ptarget)
 				tempnode = m_dummynodeH;
 			else
-				tempnode = m_dummynodeH;
+			{
+				if(m_terrain_end)
+					tempnode = m_dummynodeH;
+				else
+					tempnode = m_dummynodeX;
+			}
 
 			while(NULL != tempnode)
 			{
@@ -414,7 +397,6 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 			//다시 start를 거칠경우 m_dummynode에 NULL로 시작하기때문에 오류가 난다
 			break;
 		}			
-
 
 		temprect.left = pnode->vPos.x - m_vertex.left;
 		temprect.right = pnode->vPos.x + m_vertex.right;
@@ -428,11 +410,6 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 		temprc_center = m_eight_rect[CENTER];
 		for(int i = 0; i < ASTAR_DIR_END; ++i)
 		{
-			//if( i == RIGHT_DOWN ||	i == LEFT_DOWN ||
-			//	i == RIGHT_UP || i == LEFT_UP)
-			//	gdistance = m_unit_diagonalstep;
-			//else
-			//	gdistance = (float)m_unit_stepsize;
 
 			if( Check_TileOption(m_eight_vpos[i]) &&
 				/*Check_CloseList(m_eight_vpos[i]) &&
@@ -453,12 +430,8 @@ void CAstar::UnitPath_calculation_Update(vector<D3DXVECTOR2>& vecpath , CObj* pt
 				} 
 			}
 		}
+		node_check(pnode->vPos);
 
-
-		m_irow = int(pnode->vPos.x / (4096 / m_widthcnt));
-		m_icol = int(pnode->vPos.y / m_unit_stepsize);
-		m_maskidx = int(pnode->vPos.x / m_unit_stepsize) % 32;
-		m_findidx[m_icol * m_widthcnt + m_irow] |= m_mask[m_maskidx];
 	}
 }
 bool CAstar::Check_TileOption(const int& idx)
@@ -487,28 +460,23 @@ bool CAstar::Check_TileOption(const D3DXVECTOR2& vpos)
 }
 bool CAstar::Check_idx(const D3DXVECTOR2& vpos)
 {
-	//int idx = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
-
-	//if( true == m_idxfind[idx])
-	//	return false;
-
-	//return true;
-
-	m_irow = int(vpos.x / (4096 / m_widthcnt));
-	m_icol = int(vpos.y / m_unit_stepsize);
-	m_maskidx = int(vpos.x / m_unit_stepsize) % 32;
-
-	if(m_findidx[m_icol * m_widthcnt + m_irow] & m_mask[m_maskidx])
-		return false;
+	int idx = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
+	if(m_findSet.find(idx) != m_findSet.end())
+		return false; //이미 갔던곳
 	else
 		return true;
-	;
 }
+
+void CAstar::node_check(const D3DXVECTOR2& vpos)
+{
+	int idx = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
+	m_findSet.emplace(idx);
+}
+
 bool CAstar::Check_CloseList(const D3DXVECTOR2& vpos)
 {
 	int idx = CMyMath::Pos_to_index(vpos , m_unit_stepsize);
 
-	//if( m_closelist.end() != m_closelist.find(idx) )
 	return false;
 
 
@@ -519,7 +487,6 @@ bool CAstar::Check_OpenList(const D3DXVECTOR2& idxpos , PATH_NODE* parentnode)
 
 	int idx = CMyMath::Pos_to_index( idxpos , m_unit_stepsize );
 
-	//if(m_idxopenlist.end() != m_idxopenlist.find(idx))
 	return false;
 
 	return true;
@@ -529,15 +496,10 @@ bool CAstar::Check_OpenList(const D3DXVECTOR2& idxpos , PATH_NODE* parentnode)
 void CAstar::Release_unit_closelist(void)
 {
 	m_pathpool_idx = 0;
-	//if(!m_closelist.empty())
-	//m_closelist.clear();
 }
 void CAstar::Release_unit_openlist(void)
 {
 	m_openlist->Release();
-
-	//if(!m_idxopenlist.empty())
-	//m_idxopenlist.clear();
 
 }
 
@@ -548,45 +510,6 @@ void CAstar::Path_Render(void)
 
 	D3DXMATRIX	tempmat;
 	D3DXMatrixIdentity(&tempmat);
-
-	//if(!m_unit_path.empty())
-	//{
-	//	for(size_t i = 0; i < m_unit_path.size(); ++i)
-	//	{
-	//		tempmat._41 = m_unit_path[i].x - CScrollMgr::m_fScrollX;
-	//		tempmat._42 = m_unit_path[i].y - CScrollMgr::m_fScrollY;
-
-	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-
-	//		if(0 == i)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-	//		else if( i == m_unit_path.size() - 1)
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-	//		else
-	//			CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	//	}
-
-	//	//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
-	//	//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
-	//	//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-	//	//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
-	//}
-
-	//if(!m_closelist.empty())
-	//{
-	//	boost::unordered_map<int , PATH_NODE*>::iterator iter = m_closelist.begin();
-	//	boost::unordered_map<int , PATH_NODE*>::iterator iter_end = m_closelist.end();
-
-	//	for( ; iter != iter_end; ++iter)
-	//	{
-	//		tempmat._41 = iter->second->vPos.x - CScrollMgr::m_fScrollX;
-	//		tempmat._42 = iter->second->vPos.y - CScrollMgr::m_fScrollY;
-
-	//		CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-
-	//		CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,0));
-	//	}
-	//}
 
 	PATH_NODE* pnode = NULL;
 	int idx = 0;

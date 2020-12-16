@@ -51,9 +51,9 @@ CTerran_building::CTerran_building(void)
 
 	m_unitinfo.etribe = TRIBE_TERRAN;
 
-	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber , CATEGORY_BUILDING);
 	m_miniunit_display->Initialize();
-	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display((CUI_MiniUnitDisplay*)m_miniunit_display);
 }
 
 CTerran_building::~CTerran_building(void)
@@ -180,6 +180,8 @@ void CTerran_building::Setlink(bool blink , CObj* pobj)
 
 void CTerran_building::TakeOff(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TAKEOFF , m_vPos);
+
 	m_is_take_off = true;
 	m_vairpos = m_vPos; //이륙하기전 기존 위치 저장
 	((CCom_TBuildingAnim*)m_com_anim)->SetAirpos(m_vairpos);
@@ -194,6 +196,7 @@ void CTerran_building::TakeOff(void)
 	if(NULL != m_partbuilding)
 	{
 		((CTerran_building*)m_partbuilding)->Setlink(false , NULL);
+		m_partbuilding = NULL;
 	}
 }
 void CTerran_building::Landing_move(D3DXVECTOR2 vpos)

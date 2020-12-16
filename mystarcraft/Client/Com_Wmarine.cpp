@@ -42,6 +42,8 @@ void CCom_Wmarine::fire(CObj*	ptarget )
 		
 		if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MARINE_FIRE , m_pobj->GetPos());
+
 			m_pobj->SetState(ATTACK);
 			m_bfire = true;
 			

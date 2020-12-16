@@ -29,7 +29,7 @@ CUnit::CUnit(void)
 	m_select_ui = NULL;
 	m_miniunit_display = NULL;
 	m_upg_info = NULL;
-	memset(m_upg_state , 0 , sizeof(m_upg_state));
+	memset(m_applyUpg , 0 , sizeof(m_applyUpg));
 	m_upg_info = CIngame_UIMgr::GetInstance()->GetUpginfo();
 
 	m_deadfog = NULL;
@@ -44,9 +44,9 @@ CUnit::~CUnit(void)
 
 void CUnit::Initialize(void)
 {
-	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber);
+	m_miniunit_display = new CUI_MiniUnitDisplay(m_vPos , &m_eteamnumber , m_ecategory);
 	m_miniunit_display->Initialize();
-	CIngame_UIMgr::GetInstance()->SetMiniUnit_display(m_miniunit_display);	
+	CIngame_UIMgr::GetInstance()->SetMiniUnit_display((CUI_MiniUnitDisplay*)m_miniunit_display);	
 }
 
 void CUnit::Update(void)

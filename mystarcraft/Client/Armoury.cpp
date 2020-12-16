@@ -142,56 +142,6 @@ void CArmoury::Render(void)
 	CTerran_building::fire_eff_render();
 }
 
-void CArmoury::Release(void)
-{
-	CTerran_building::area_release();
-}
-
-void CArmoury::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	if( true == m_upg_info[UPG_T_MECHANIC_WEAPON].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_MECHANIC_WEAPON].obj_num)
-	{
-		m_upg_info[UPG_T_MECHANIC_WEAPON].proceeding = false;
-		m_upg_info[UPG_T_MECHANIC_WEAPON].obj_num = 0;
-		m_upg_info[UPG_T_MECHANIC_WEAPON].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_MECHANIC_ARMOR].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_MECHANIC_ARMOR].obj_num)
-	{
-		m_upg_info[UPG_T_MECHANIC_ARMOR].proceeding = false;
-		m_upg_info[UPG_T_MECHANIC_ARMOR].obj_num = 0;
-		m_upg_info[UPG_T_MECHANIC_ARMOR].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_AIR_WEAPON].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_AIR_WEAPON].obj_num)
-	{
-		m_upg_info[UPG_T_AIR_WEAPON].proceeding = false;
-		m_upg_info[UPG_T_AIR_WEAPON].obj_num = 0;
-		m_upg_info[UPG_T_AIR_WEAPON].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_AIR_ARMOR].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_AIR_ARMOR].obj_num)
-	{
-		m_upg_info[UPG_T_AIR_ARMOR].proceeding = false;
-		m_upg_info[UPG_T_AIR_ARMOR].obj_num = 0;
-		m_upg_info[UPG_T_AIR_ARMOR].curtime = 0;
-	}
-
-}
 
 void CArmoury::Inputkey_reaction(const int& nkey)
 {
@@ -278,9 +228,26 @@ void CArmoury::Inputkey_reaction(const int& firstkey , const int& secondkey)
 {
 
 }
+bool CArmoury::Input_cmd(const int& nkey, bool* waitkey)
+{
+	if( 'W' == nkey )
+		return true;
+	if( 'S' == nkey )
+		return true;
+	if( 'P' == nkey )
+		return true;
+	if( 'H' == nkey )
+		return true;
+
+	return false;
+}
+bool CArmoury::Input_cmd(const int& firstkey , const int& secondkey)
+{
+	return false;
+}
 void CArmoury::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
 	if(IDLE == m_unitinfo.state)
 	{
@@ -288,38 +255,38 @@ void CArmoury::Update_Cmdbtn(void)
 		{
 			if( 1 == m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt &&
 				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VAW" , BTN_T_VAW , false);
+				pui->Create_Cmdbtn(0 , L"BTN_T_VAW" , BTN_T_VAW , false , L"W");
 			else
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VAW" , BTN_T_VAW , true);
+				pui->Create_Cmdbtn(0 , L"BTN_T_VAW" , BTN_T_VAW , true , L"W");
 		}
 		if( false == m_upg_info[UPG_T_MECHANIC_ARMOR].proceeding && m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_MECHANIC_ARMOR].upg_cnt &&
 				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_VAP" , BTN_T_VAP , false);
+				pui->Create_Cmdbtn(3 , L"BTN_T_VAP" , BTN_T_VAP , false , L"P");
 			else
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_VAP" , BTN_T_VAP , true);
+				pui->Create_Cmdbtn(3 , L"BTN_T_VAP" , BTN_T_VAP , true , L"P");
 		}
 
 		if( false == m_upg_info[UPG_T_AIR_WEAPON].proceeding && m_upg_info[UPG_T_AIR_WEAPON].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_AIR_WEAPON].upg_cnt &&
 				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VAS" , BTN_T_VAS , false);
+				pui->Create_Cmdbtn(1 , L"BTN_T_VAS" , BTN_T_VAS , false , L"S");
 			else
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_T_VAS" , BTN_T_VAS , true);
+				pui->Create_Cmdbtn(1 , L"BTN_T_VAS" , BTN_T_VAS , true , L"S");
 		}
 		if( false == m_upg_info[UPG_T_AIR_ARMOR].proceeding && m_upg_info[UPG_T_AIR_ARMOR].upg_cnt < 3)
 		{
 			if( 1 == m_upg_info[UPG_T_AIR_ARMOR].upg_cnt &&
 				CIngame_UIMgr::GetInstance()->Get_BuildTech(T_SIENCE ,m_eteamnumber) == 0)
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_T_VAH" , BTN_T_VAH , false);
+				pui->Create_Cmdbtn(4 , L"BTN_T_VAH" , BTN_T_VAH , false , L"H");
 			else
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_T_VAH" , BTN_T_VAH , true);
+				pui->Create_Cmdbtn(4 , L"BTN_T_VAH" , BTN_T_VAH , true , L"H");
 		}
 	}
 	else if(DEVELOPING == m_unitinfo.state)
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 }
 
 void CArmoury::Update_Wireframe(void)
@@ -405,12 +372,54 @@ void CArmoury::Update_Wireframe(void)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_AIR_ARMOR].curtime / m_upg_info[UPG_T_AIR_ARMOR].maxtime );
 }
 
-bool CArmoury::Input_cmd(const int& nkey, bool* waitkey)
+void CArmoury::Dead(void)
 {
-	return false;
-}
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBMIDDLE_BOOM , m_vPos);
 
-bool CArmoury::Input_cmd(const int& firstkey , const int& secondkey)
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	if( true == m_upg_info[UPG_T_MECHANIC_WEAPON].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_MECHANIC_WEAPON].obj_num)
+	{
+		m_upg_info[UPG_T_MECHANIC_WEAPON].proceeding = false;
+		m_upg_info[UPG_T_MECHANIC_WEAPON].obj_num = 0;
+		m_upg_info[UPG_T_MECHANIC_WEAPON].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_MECHANIC_ARMOR].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_MECHANIC_ARMOR].obj_num)
+	{
+		m_upg_info[UPG_T_MECHANIC_ARMOR].proceeding = false;
+		m_upg_info[UPG_T_MECHANIC_ARMOR].obj_num = 0;
+		m_upg_info[UPG_T_MECHANIC_ARMOR].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_AIR_WEAPON].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_AIR_WEAPON].obj_num)
+	{
+		m_upg_info[UPG_T_AIR_WEAPON].proceeding = false;
+		m_upg_info[UPG_T_AIR_WEAPON].obj_num = 0;
+		m_upg_info[UPG_T_AIR_WEAPON].curtime = 0;
+	}
+
+	if( true == m_upg_info[UPG_T_AIR_ARMOR].proceeding &&
+		m_obj_id == m_upg_info[UPG_T_AIR_ARMOR].obj_num)
+	{
+		m_upg_info[UPG_T_AIR_ARMOR].proceeding = false;
+		m_upg_info[UPG_T_AIR_ARMOR].obj_num = 0;
+		m_upg_info[UPG_T_AIR_ARMOR].curtime = 0;
+	}
+
+}
+void CArmoury::Release(void)
 {
-	return false;
+	CTerran_building::area_release();
 }

@@ -8,6 +8,7 @@ private:
 	const vector<TEXINFO*>*	m_bigbuild_tex;
 	float					m_fbuildtime;
 
+
 	bool					m_bsighton;
 	bool					m_isescape;
 
@@ -16,6 +17,8 @@ private:
 
 	D3DXVECTOR2				m_staticPos;
 	D3DXMATRIX				m_curMat;
+
+	int						m_staticidx;
 public:
 	virtual void Initialize(CObj* pobj);
 	virtual void Update(void);

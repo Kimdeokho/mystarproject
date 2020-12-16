@@ -4,6 +4,7 @@
 #include "TextureMgr.h"
 #include "Device.h"
 #include "ScrollMgr.h"
+#include "Ingame_UIMgr.h"
 
 #include "Com_Collision.h"
 #include "TextureMgr.h"
@@ -11,6 +12,7 @@
 #include "UI_Select.h"
 #include "ObjMgr.h"
 #include "FontMgr.h"
+#include "TimeMgr.h"
 
 #include "Workman.h"
 CMineral::CMineral(void)
@@ -89,17 +91,25 @@ void CMineral::Update(void)
 			if(true == (*iter)->GetDestroy() )
 			{
 				iter = m_workman_list.erase(iter);
-				continue;;
+				continue;
 			}
-			collRange = (*iter)->GetUnitinfo().fspeed * 3;
+			//collRange = (*iter)->GetUnitinfo().fspeed * 3 * GETTIME ;
 
-			rc = (*iter)->GetMyRect();
-			rc.left -= collRange;
-			rc.right += collRange;
-			rc.top-= collRange;
-			rc.bottom += collRange;
+			//rc = (*iter)->GetMyRect();
+			//rc.left -= collRange;
+			//rc.right += collRange;
+			//rc.top-= collRange;
+			//rc.bottom += collRange;
 
-			if( false == MyIntersectrect(&m_rect , &rc) )
+			//if( false == MyIntersectrect(&m_rect , &rc) )
+			//{
+			//	((CWorkman*)(*iter))->SetMineral_mark(NULL);
+			//	iter = m_workman_list.erase(iter);
+			//}
+			//else
+			//	++iter;
+
+			if(ORDER_RETURN_CARGO == (*iter)->GetUnitinfo().order)
 			{
 				((CWorkman*)(*iter))->SetMineral_mark(NULL);
 				iter = m_workman_list.erase(iter);
@@ -204,6 +214,14 @@ bool CMineral::Check_workman(CObj* pworkman)
 	}
 	return false;
 }
+void CMineral::Update_Wireframe(void)
+{
+	CIngame_UIMgr::GetInstance()->renewal_wireframe_ui(this , m_unitinfo.state);
+}
+void CMineral::SetMineral_amount(const int& iamount)
+{
+	m_mineral_amount += iamount;
+}
 void CMineral::Release(void)
 {
 	if(!m_workman_list.empty())
@@ -220,9 +238,3 @@ void CMineral::Release(void)
 
 	Safe_Delete(m_select_ui);
 }
-
-void CMineral::SetMineral_amount(const int& iamount)
-{
-	m_mineral_amount += iamount;
-}
-

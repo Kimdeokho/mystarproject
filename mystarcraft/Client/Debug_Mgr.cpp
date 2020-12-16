@@ -53,6 +53,20 @@ void CDebug_Mgr::Update(void)
 		else
 			m_dbglist[DBG_FLOWPATH] = false;
 	}
+	if(CKeyMgr::GetInstance()->GetOnceKeyDown_Check(VK_F6))
+	{
+		if(false == m_dbglist[DBG_GRID32])
+			m_dbglist[DBG_GRID32] = true;
+		else
+			m_dbglist[DBG_GRID32] = false;
+	}
+	if(CKeyMgr::GetInstance()->GetOnceKeyDown_Check(VK_F7))
+	{
+		if(false == m_dbglist[DBG_AREAGRID])
+			m_dbglist[DBG_AREAGRID] = true;
+		else
+			m_dbglist[DBG_AREAGRID] = false;
+	}
 }
 
 void CDebug_Mgr::DBG_Fog_on(void)

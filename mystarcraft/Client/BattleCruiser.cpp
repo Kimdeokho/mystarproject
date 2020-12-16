@@ -272,13 +272,20 @@ void CBattleCruiser::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 }
 void CBattleCruiser::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
-	((CUI_Cmd_info*)pui)->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+	pui->Create_Cmdbtn(0 , L"BTN_MOVE" , BTN_MOVE);
+	pui->Create_Cmdbtn(1 , L"BTN_STOP" , BTN_STOP);
+	pui->Create_Cmdbtn(2 , L"BTN_ATTACK" , BTN_ATTACK);
+	pui->Create_Cmdbtn(3 , L"BTN_PATROL" , BTN_PATROL);
+	pui->Create_Cmdbtn(4 , L"BTN_HOLD" , BTN_HOLD);
+
+	bool active = false;
+	if(m_upg_info[UPG_T_VIP0].upg_cnt >= 1)
+		active = true;
+
+	pui->Create_Cmdbtn(6 , L"BTN_T_VIP0" , BTN_T_VIP0 , active);
+
 }
 void CBattleCruiser::Update_Wireframe(void)
 {
@@ -325,6 +332,8 @@ void CBattleCruiser::Update_Wireframe(void)
 
 void CBattleCruiser::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_BATTLE_DTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"LARGEBANG" , m_vPos , D3DXVECTOR2(1.0f ,1.0f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

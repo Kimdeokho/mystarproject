@@ -17,8 +17,8 @@ CMinimap::CMinimap(void)
 
 CMinimap::~CMinimap(void)
 {
-	list<CUI*>::iterator iter		= m_miniunit_display.begin();
-	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
+	list<CUI_MiniUnitDisplay*>::iterator iter		= m_miniunit_display.begin();
+	list<CUI_MiniUnitDisplay*>::iterator iter_end	= m_miniunit_display.end();
 
 	for( ; iter != iter_end; ++iter)
 		Safe_Delete(*iter);
@@ -47,8 +47,8 @@ void CMinimap::Update(void)
 {
 	m_fupdatetime += GETTIME;
 
-	list<CUI*>::iterator iter		= m_miniunit_display.begin();
-	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
+	list<CUI_MiniUnitDisplay*>::iterator iter		= m_miniunit_display.begin();
+	list<CUI_MiniUnitDisplay*>::iterator iter_end	= m_miniunit_display.end();
 
 	for( ; iter != iter_end; )
 	{
@@ -96,23 +96,39 @@ void CMinimap::Render(void)
 			, D3DCOLOR_ARGB(255,255,255,255));
 	}
 
-	list<CUI*>::iterator iter		= m_miniunit_display.begin();
-	list<CUI*>::iterator iter_end	= m_miniunit_display.end();
+	list<CUI_MiniUnitDisplay*>::iterator iter		= m_miniunit_display.begin();
+	list<CUI_MiniUnitDisplay*>::iterator iter_end	= m_miniunit_display.end();
 
 	int fogidx = 0;
 	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
 	D3DXVECTOR2 vpos;
-	for( ; iter != iter_end; ++iter)
+	for( ; iter != iter_end; )
 	{
-		vpos = (*iter)->GetPos();
-		fogidx = CMyMath::Pos_to_index(vpos , 32);
-
-		if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
-			(*iter)->Render();
+		if( true == (*iter)->GetDestroy() )
+		{
+			Safe_Delete((*iter));
+			iter = m_miniunit_display.erase(iter);
+		}
 		else
 		{
-			if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+			vpos = (*iter)->GetPos();
+			fogidx = CMyMath::Pos_to_index(vpos , 32);
+
+			if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
 				(*iter)->Render();
+			else
+			{
+				if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+					(*iter)->Render();
+				else if(FOG_GREY == CTileManager::GetInstance()->GetFogLight(fogidx , eteam))
+				{
+					if(CATEGORY_BUILDING == (*iter)->GetCategory())
+						(*iter)->Render();
+				}
+
+			}
+
+			++iter;
 		}
 	}
 
@@ -125,7 +141,7 @@ void CMinimap::Render(void)
 
 }
 
-void CMinimap::Setminiunit(CUI* pui)
+void CMinimap::Setminiunit(CUI_MiniUnitDisplay* pui)
 {
 	m_miniunit_display.push_back(pui);
 }

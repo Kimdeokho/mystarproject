@@ -105,8 +105,6 @@ void CScene_Test::Render(void)
 
 	CFontMgr::GetInstance()->FontRender();
 
-
-	CTimeMgr::GetInstance()->FPS_fix();
 	RenderFPS();
 }
 

@@ -153,58 +153,6 @@ void CFactory_addon::Render(void)
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
-void CFactory_addon::Release(void)
-{
-	CTerran_building::area_release();
-}
-
-void CFactory_addon::Dead(void)
-{
-	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddEffect(pobj);
-
-	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
-	pobj->SetPos(m_vPos.x , m_vPos.y);
-	pobj->Initialize();
-	CObjMgr::GetInstance()->AddCorpse(pobj);
-
-	if(NULL != m_mainbuilding)
-		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
-
-	if( true == m_upg_info[UPG_T_VFC0].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_VFC0].obj_num)
-	{
-		m_upg_info[UPG_T_VFC0].proceeding = false;
-		m_upg_info[UPG_T_VFC0].obj_num = 0;
-		m_upg_info[UPG_T_VFC0].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_VFC1].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_VFC1].obj_num)
-	{
-		m_upg_info[UPG_T_VFC1].proceeding = false;
-		m_upg_info[UPG_T_VFC1].obj_num = 0;
-		m_upg_info[UPG_T_VFC1].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_VFC2].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_VFC2].obj_num)
-	{
-		m_upg_info[UPG_T_VFC2].proceeding = false;
-		m_upg_info[UPG_T_VFC2].obj_num = 0;
-		m_upg_info[UPG_T_VFC2].curtime = 0;
-	}
-
-	if( true == m_upg_info[UPG_T_VFC3].proceeding &&
-		m_obj_id == m_upg_info[UPG_T_VFC3].obj_num)
-	{
-		m_upg_info[UPG_T_VFC3].proceeding = false;
-		m_upg_info[UPG_T_VFC3].obj_num = 0;
-		m_upg_info[UPG_T_VFC3].curtime = 0;
-	}
-}
-
 void CFactory_addon::Inputkey_reaction(const int& nkey)
 {
 	if(DEVELOPING == m_unitinfo.state)
@@ -271,34 +219,39 @@ void CFactory_addon::Inputkey_reaction(const int& firstkey , const int& secondke
 {
 
 }
+bool CFactory_addon::Input_cmd(const int& nkey, bool* waitkey)
+{
+	if( 'Q' == nkey )
+		return true;
+	if( 'W' == nkey )
+		return true;
+	if( 'E' == nkey )
+		return true;
+	if( 'A' == nkey )
+		return true;
+
+	return false;
+}
 void CFactory_addon::Update_Cmdbtn(void)
 {
-	const CUI* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
+	CUI_Cmd_info* pui = CIngame_UIMgr::GetInstance()->GetCmd_info();
 	if(IDLE == m_unitinfo.state )
 	{			
 		if(NULL != m_mainbuilding)
 		{
 			if( false == m_upg_info[UPG_T_VFC0].proceeding && m_upg_info[UPG_T_VFC0].upg_cnt < 1)
-			{
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(0 , L"BTN_T_VFC0" , BTN_T_VFC0 , true);
-			}
+				pui->Create_Cmdbtn(0 , L"BTN_T_VFC0" , BTN_T_VFC0 , true , L"Q");
 			if( false == m_upg_info[UPG_T_VFC1].proceeding && m_upg_info[UPG_T_VFC1].upg_cnt < 1)
-			{
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(1 , L"BTN_SPIDERMINE" , BTN_SPIDERMINE , true);
-			}
+				pui->Create_Cmdbtn(1 , L"BTN_SPIDERMINE" , BTN_SPIDERMINE , true , L"W");
 			if( false == m_upg_info[UPG_T_VFC2].proceeding && m_upg_info[UPG_T_VFC2].upg_cnt < 1)
-			{
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(2 , L"BTN_SIEGEMODE" , BTN_SIEGEMODE , true);
-			}
+				pui->Create_Cmdbtn(2 , L"BTN_SIEGEMODE" , BTN_SIEGEMODE , true , L"E");
 			if( false == m_upg_info[UPG_T_VFC3].proceeding && m_upg_info[UPG_T_VFC3].upg_cnt < 1)
-			{
-				((CUI_Cmd_info*)pui)->Create_Cmdbtn(3 , L"BTN_T_VFC3" , BTN_T_VFC3 , true);
-			}
+				pui->Create_Cmdbtn(3 , L"BTN_T_VFC3" , BTN_T_VFC3 , true , L"A");
 		}
 
 	}
 	else if(DEVELOPING == m_unitinfo.state)
-		((CUI_Cmd_info*)pui)->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
+		pui->Create_Cmdbtn(8 , L"BTN_CANCLE" , BTN_CANCLE , true);
 }
 
 void CFactory_addon::Update_Wireframe(void)
@@ -368,9 +321,7 @@ void CFactory_addon::Update_Wireframe(void)
 		interface_pos.x + 195 , interface_pos.y + 460 , font_color);
 
 	if(BUILD == m_unitinfo.state)
-	{		
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 260 , interface_pos.y + 435) , m_build_hp / (float)m_unitinfo.maxhp );
-	}
 
 	if(true == m_upg_info[UPG_T_VFC0].proceeding && m_upg_info[UPG_T_VFC0].obj_num == m_obj_id)
 		CIngame_UIMgr::GetInstance()->SetProduction_info(D3DXVECTOR2(interface_pos.x + 293 , interface_pos.y + 435) , m_upg_info[UPG_T_VFC0].curtime / m_upg_info[UPG_T_VFC0].maxtime );
@@ -394,4 +345,38 @@ void CFactory_addon::Setlink(bool blink , CObj* pobj)
 		m_mainbuilding = NULL;
 		((CCom_PartAnim*)m_com_anim)->play_direction(-1);
 	}
+}
+void CFactory_addon::Dead(void)
+{
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TBMIDDLE_BOOM , m_vPos);
+
+	CObj* pobj = new CGeneraEff(L"XLARGEBANG" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddEffect(pobj);
+
+	pobj = new CCorpse(L"" , L"TBDSMALL_WRECKAGE");
+	pobj->SetPos(m_vPos.x , m_vPos.y);
+	pobj->Initialize();
+	CObjMgr::GetInstance()->AddCorpse(pobj);
+
+	if(NULL != m_mainbuilding)
+		((CTerran_building*)m_mainbuilding)->SetPartBuilding(NULL);
+
+
+	for(int i = 0; i < UPG_END; ++i)
+	{
+		if( true == m_upg_info[i].proceeding &&
+			m_obj_id == m_upg_info[i].obj_num)
+		{
+			m_upg_info[i].proceeding = false;
+			m_upg_info[i].obj_num = 0;
+			m_upg_info[i].curtime = 0;
+			break;
+		}
+	}
+}
+
+void CFactory_addon::Release(void)
+{
+	CTerran_building::area_release();
 }

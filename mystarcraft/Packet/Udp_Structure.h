@@ -45,3 +45,7 @@ typedef struct _S_PU_TURN_DATA
 {
 } S_PU_TURN_DATA;
 
+typedef struct _S_PU_TURN_DELAY
+{
+} S_PU_TURN_DELAY;
+

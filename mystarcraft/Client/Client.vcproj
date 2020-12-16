@@ -1590,6 +1590,14 @@
 						Name="Building"
 						>
 						<File
+							RelativePath=".\Com_SunkenAnim.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Com_SunkenAnim.h"
+							>
+						</File>
+						<File
 							RelativePath=".\Com_T_gasAnim.cpp"
 							>
 						</File>
@@ -1883,14 +1891,6 @@
 						</File>
 						<File
 							RelativePath=".\Com_ScourgeAnim.h"
-							>
-						</File>
-						<File
-							RelativePath=".\Com_SunkenAnim.cpp"
-							>
-						</File>
-						<File
-							RelativePath=".\Com_SunkenAnim.h"
 							>
 						</File>
 						<File

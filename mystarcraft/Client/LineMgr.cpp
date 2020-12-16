@@ -115,7 +115,6 @@ void CLineMgr::Select_unit(void)
 
 	D3DXVECTOR2 vMousept;
 
-	//vMousept = CMouseMgr::GetInstance()->GetAddScrollvMousePt();
 	vMousept = CMouseMgr::GetInstance()->GetClick_Pos();
 	int idx = CMyMath::Pos_to_index(vMousept.x , vMousept.y , 64);
 
@@ -160,20 +159,32 @@ void CLineMgr::Select_unit(void)
 
 	if(!CUnitMgr::GetInstance()->Getcur_unitlist()->empty())
 	{
-		OBJID id = CUnitMgr::GetInstance()->Getcur_unitlist()->front()->GetOBJNAME();
-		CSoundDevice::GetInstance()->SetUnitVoice(id);
+		CATEGORY ecategory = CUnitMgr::GetInstance()->Getcur_unitlist()->front()->GetCategory();
+
+		if(CATEGORY_BUILDING == ecategory)
+		CSoundDevice::GetInstance()->PlayEffSound(SND_EFF_INPUT , 0);
 	}
-
-	//CUnitMgr::GetInstance()->Update_Cmdbtn();
-	//DragCheck()
 }
-void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
+void CLineMgr::RenderGrid(int tilesize , int tilecnt)
 {
-	const int iwidth = 1000;
-	const int iheight = 800;
+	if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_GRID32])
+	{
+		tilecnt = 128;
+		tilesize = 43;
+	}
+	else if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_AREAGRID])
+	{
+		tilecnt = 64;
+		tilesize = 64;
+	}
+	else
+		return;
 
-	int col = iwidth / tilesize + 2;
-	int row = iheight / tilesize + 2;
+	const int iwidth = BACKBUFFER_SIZEX;
+	const int iheight = BACKBUFFER_SIZEY;
+
+	int rowCnt = iwidth / tilesize + 2;
+	int colCnt = iheight / tilesize + 2;
 	
 	D3DXVECTOR2	vPoint[2];
 
@@ -183,23 +194,23 @@ void CLineMgr::RenderGrid(const int& tilesize , const int& tilecnt)
 	CDevice::GetInstance()->Render_End();
 	CDevice::GetInstance()->Render_Begin();
 
-	for(int j = 0; j < col; ++j)
-	{
-		int index = j + scrollX/tilesize;
-		vPoint[0] = D3DXVECTOR2( float(index*tilesize) - scrollX, 0 - (float)scrollY);
-		vPoint[1] = D3DXVECTOR2( float(index*tilesize) - scrollX, float(tilecnt*tilesize) - scrollY);
-
-		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
-		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,0,0));
-	}
-	for(int j = 0; j < row; ++j)
+	for(int j = 0; j < colCnt; ++j) //행 개수
 	{
 		int index = j + scrollY/tilesize;
-		vPoint[0] = D3DXVECTOR2(0 - (float)scrollX ,float(index*tilesize) - scrollY );
+		vPoint[0] = D3DXVECTOR2(0 /*- (float)scrollX*/ , float(index*tilesize) - scrollY );
 		vPoint[1] = D3DXVECTOR2(float (tilecnt*tilesize) - scrollX, float(index*tilesize) - scrollY);
 
 		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
-		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,0,0,0));
+		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,255,0,255));
+	}
+	for(int j = 0; j < rowCnt; ++j) //열 개수
+	{
+		int index = j + scrollX/tilesize;
+		vPoint[0] = D3DXVECTOR2( float(index*tilesize) - scrollX, 0 /*- (float)scrollY*/);
+		vPoint[1] = D3DXVECTOR2( float(index*tilesize) - scrollX, float(tilecnt*tilesize) - scrollY);
+
+		CDevice::GetInstance()->GetLine()->SetWidth(1.0f);
+		CDevice::GetInstance()->GetLine()->Draw(vPoint , 2 , D3DCOLOR_ARGB(255,255,0,255));
 	}
 
 	CDevice::GetInstance()->Render_End();

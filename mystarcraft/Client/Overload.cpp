@@ -297,6 +297,8 @@ void COverload::SetDamage(const int& idamage , DAMAGE_TYPE edamagetype)
 
 void COverload::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_OVDTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"ZFLY_L_DEAD" , m_vPos , D3DXVECTOR2(1.1f ,1.1f) , SORT_AIR );
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

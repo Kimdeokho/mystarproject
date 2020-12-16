@@ -5,6 +5,7 @@ class CCom_MedicAnim :
 	public CCom_Animation
 {
 private:
+	const TCHAR*	m_tempstate;
 public:
 	virtual void Initialize(CObj* pobj);
 	virtual void Update(void);

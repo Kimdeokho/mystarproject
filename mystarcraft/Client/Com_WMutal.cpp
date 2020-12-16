@@ -52,6 +52,8 @@ void CCom_WMutal::fire(CObj* ptarget)
 {
 	if(false == m_bfire)
 	{
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MUTAL_FIRE , m_pobj->GetPos());
+
 		m_pobj->SetState(ATTACK);
 		m_bfire = true;
 

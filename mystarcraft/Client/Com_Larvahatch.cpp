@@ -32,7 +32,7 @@ void CCom_Larvahatch::Update(void)
 {
 	m_hatchtimer += GETTIME;
 
-	if( 6 < m_hatchtimer)
+	if( 2 < m_hatchtimer)
 	{
 		m_hatchtimer = 0.f;
 		//ºÎÈ­

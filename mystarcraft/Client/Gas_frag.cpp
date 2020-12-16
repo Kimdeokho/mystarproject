@@ -15,8 +15,9 @@ CGas_frag::~CGas_frag(void)
 
 void CGas_frag::Initialize(void)
 {
-	m_eOBJ_NAME = OBJ_NONE;
+	m_eOBJ_NAME = OBJ_FRAGMENT;
 	m_sortID = SORT_GROUND;
+	m_ecategory = CATEGORY_NONE;
 
 	if(OBJ_SCV == m_pobj->GetOBJNAME())
 		m_vecTex = CTextureMgr::GetInstance()->GetGeneralTexture(L"T_GAS_FRAG");

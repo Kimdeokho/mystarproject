@@ -52,6 +52,8 @@ void CCom_WTank::fire(CObj* ptarget)
 	{
 		if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_TANK_FIRE , m_pobj->GetPos());
+
 			m_bfire = true;
 			m_pobj->SetState(ATTACK);
 			m_attack_time = 0.f;
@@ -72,6 +74,7 @@ void CCom_WTank::fire(CObj* ptarget)
 			
 
 			int idx = ptarget->Getcuridx(32);
+
 			if(MOVE_GROUND == ptarget->GetUnitinfo().eMoveType && 
 				CSkill_DarkSwarm::m_darkswarm_cnt[idx] == 0)
 				ptarget->SetDamage( m_weapon_info.damage + m_upg_info[UPG_T_MECHANIC_WEAPON].upg_cnt*3,

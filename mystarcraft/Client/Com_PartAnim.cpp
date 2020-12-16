@@ -55,26 +55,32 @@ void CCom_PartAnim::Update(void)
 {
 	TEAM_NUMBER eteam = CSession_Mgr::GetInstance()->GetTeamNumber();
 
-	if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight( m_pobj->Getcuridx(32) , eteam))
-	{
-		m_bsighton = true;
+	if(CDebug_Mgr::m_dbglist[CDebug_Mgr::DBG_FOG])
 		m_isescape = false;
-	}
 	else
-	{		
-		m_isescape = true;
-		if(m_bsighton)
+	{
+		if(FOG_ALPHA == CTileManager::GetInstance()->GetFogLight( m_pobj->Getcuridx(32) , eteam))
 		{
-			//켜졌다가 꺼진상태
-			m_bsighton = false;
-			//마지막 상태 저장
+			m_bsighton = true;
+			m_isescape = false;
+		}
+		else
+		{		
+			m_isescape = true;
+			if(m_bsighton)
+			{
+				//켜졌다가 꺼진상태
+				m_bsighton = false;
+				//마지막 상태 저장
 
 
-			m_staticTex = (*m_generaltex)[int(m_frame.fcurframe)];
-			m_curMat = m_objmat;
-			m_staticPos = m_pobj->GetPos();
+				m_staticTex = (*m_generaltex)[int(m_frame.fcurframe)];
+				m_curMat = m_objmat;
+				m_staticPos = m_pobj->GetPos();
+			}
 		}
 	}
+
 
 	if(L"BUILD" == m_statkey)
 	{

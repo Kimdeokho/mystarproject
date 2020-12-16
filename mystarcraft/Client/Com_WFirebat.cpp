@@ -66,6 +66,7 @@ void CCom_WFirebat::fire(CObj* ptarget)
 
 		//if( true == ((CCom_Animation*)m_animation)->GetRotationComplete())
 		{
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_FIREBAT_ATT , m_pobj->GetPos());
 			m_pobj->SetState(ATTACK);
 			m_bfire = true;
 

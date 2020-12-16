@@ -30,8 +30,7 @@ void CCom_AirPathfind::Initialize(CObj* pobj /*= NULL*/)
 
 	m_fspeed = &(m_pobj->GetUnitinfo().fspeed);
 
-
-	
+	m_target_objcnt = 0;
 }
 
 void CCom_AirPathfind::Update(void)
@@ -40,6 +39,19 @@ void CCom_AirPathfind::Update(void)
 		return;
 
 	m_pTarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
+
+	if(NULL != m_pTarget)
+	{
+		if(m_pTarget->GetObjCountNumber() != m_target_objcnt)
+		{
+			m_pTarget = NULL;
+			m_target_objid = 0;
+		}
+	}
+	else
+	{
+		m_target_objid = 0;
+	}
 
 	TargetChase();
 	Air_MovingUpdate();
@@ -51,7 +63,7 @@ void CCom_AirPathfind::TargetChase(void)
 	{
 		m_fchase_time += GETTIME;
 
-		if(m_fchase_time >= 0.2f)
+		if(m_fchase_time >= 0.8f)
 		{
 			m_fchase_time = 0.f;
 
@@ -66,11 +78,11 @@ void CCom_AirPathfind::TargetChase(void)
 	else
 	{
 		m_target_oldidx = -1;
-		m_fchase_time = 0.f;
+		m_fchase_time = 0.8f;
 		if( ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
 		{
 			//명령이 어택무브 중이었다면 다시 지형을 찾는다.
-			SetDestPos(m_vgoalpos);
+			SetGoalPos(m_vgoalpos);
 		}
 		else if(ORDER_NONE == m_pobj->GetUnitinfo().order)
 		{
@@ -89,20 +101,41 @@ void CCom_AirPathfind::Air_MovingUpdate(void)
 
 	float onestep = GETTIME*(*m_fspeed);
 	
-	m_vpos += m_vcurdir* onestep ;
-	if(CMyMath::pos_distance(m_vpos , m_vgoalpos) <= onestep*onestep)
-	{
-		//m_vpos = m_vgoalpos;
-		
+
+	D3DXVECTOR2 vtemp = m_vcurdir * onestep;
+
+	if(m_vpos.x + vtemp.x <= 5)
+		m_vpos.x = 5.f;
+	else if(m_vpos.x + vtemp.x >= 4090)
+		m_vpos.x = 4090;
+	else
+		m_vpos.x += vtemp.x;
+
+	if(m_vpos.y + vtemp.y <= 5)
+		m_vpos.y = 5.f;
+	else if(m_vpos.y + vtemp.y >= 4090)
+		m_vpos.y = 4090;
+	else
+		m_vpos.y += vtemp.y;
+
+	//m_vpos += m_vcurdir * onestep ;
+
+
+	if(CMyMath::pos_distance(m_vpos , m_vcurdest_pos) <= onestep*onestep * 4)
+	{		
 		m_is_arrive = true;
 		m_is_moveupdate = false;
 
-		m_vpos = m_vgoalpos;
+		//m_vpos = m_vgoalpos;
 
 		if(ORDER_MOVE == m_pobj->GetUnitinfo().order || 
 			ORDER_MOVE_ATTACK == m_pobj->GetUnitinfo().order)
 		{
-			m_pobj->SetOrder(ORDER_NONE);
+			if(AIR_IDLE != m_pobj->GetUnitinfo().state)
+			{
+				m_pobj->SetOrder(ORDER_NONE);
+				m_pobj->SetState(IDLE);
+			}
 		}
 		else if(ORDER_GET_OFF == m_pobj->GetUnitinfo().order)
 		{
@@ -147,9 +180,16 @@ void CCom_AirPathfind::SetGoalPos(const D3DXVECTOR2& vgoalpos , bool is_magicbox
 	m_vcurdest_pos = vgoalpos + m_vgap; 
 }
 
-void CCom_AirPathfind::SetTargetObjID(const int& objid)
+void CCom_AirPathfind::SetTargetObjID(const int objid)
 {
 	m_target_objid = objid;
+
+	m_pTarget = CObjMgr::GetInstance()->obj_alivecheck(m_target_objid);
+
+	if(NULL != m_pTarget)
+	{
+		m_target_objcnt = m_pTarget->GetObjCountNumber();
+	}
 }
 
 bool CCom_AirPathfind::Getarrive(void)

@@ -28,7 +28,7 @@ protected:
 	CCom_CC*			m_com_cc;
 protected:
 	UPG_INFO*		m_upg_info;
-	bool			m_upg_state[UPG_END];
+	bool			m_applyUpg[UPG_END];
 protected:
 	//D3DXMATRIX		m_matshadow;
 protected:

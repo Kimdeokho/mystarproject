@@ -8,6 +8,7 @@
 #include "ObjMgr.h"
 #include "Yama_bim.h"
 #include "Device.h"
+#include "SoundDevice.h"
 CYamaeff::CYamaeff(CObj* pobj , CObj* ptarget)
 {
 	m_pobj = pobj;
@@ -76,6 +77,7 @@ void CYamaeff::Update(void)
 				//m_targetid != 0 이면 야마토빔 생성
 				if(NULL != m_ptarget)
 				{
+					CSoundDevice::GetInstance()->PlayBattleSound(SND_B_BATTLE_YFIRE , m_pobj->GetPos());
 					CObj* pbullet = new CYama_bim(m_ptarget->GetObjNumber() , m_ptarget->GetPos());
 					pbullet->SetPos(m_pobj->GetPos());
 					pbullet->Initialize();

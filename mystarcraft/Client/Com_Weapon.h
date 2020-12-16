@@ -1,5 +1,6 @@
 #pragma once
 #include "component.h"
+#include "SoundDevice.h"
 
 class CCom_Animation;
 class CCom_Weapon :

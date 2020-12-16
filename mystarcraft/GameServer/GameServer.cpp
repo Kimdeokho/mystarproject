@@ -19,6 +19,7 @@
 #include "ConnectedUserManager.h"
 #include "GameIocp.h"
 #include "GameUdpIocp.h"
+#include "locale.h"
 
 DWORD	DEFAULT_GAMETIME					= 300;
 DWORD	DEFAULT_MAX_HP						= 50;
@@ -49,10 +50,13 @@ FLOAT	DOGS007_ADVANTAGE					= 1.0F;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	_wsetlocale( LC_ALL, L"korean" );
 	//구조체 or 클래스크기가 스택크기보다 커서 오류난다
 	//해결방법은 new 할당
 
-	CLog::WriteLog(_T("# XoguPigu Game Server Startup #\n\n"));
+	CLog::WriteLog(_T("# MyStarcraft Game Server Startup #\n\n"));
+
+	CLog::WriteLog(_T("나의 스타크래프트 #\n\n"));
 
 	CLog::WriteLogNoDate(_T("+ Prepare Startup\n"));
 	CLog::WriteLogNoDate(_T("	- Winsock2 DLL loading		: "));

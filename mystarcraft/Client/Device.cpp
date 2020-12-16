@@ -81,32 +81,9 @@ HRESULT CDevice::InitDevice( void )
 		return E_FAIL;
 	}
 
-
-	//m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE,true);	    //alpha blending enabled
-	//m_pDevice->SetRenderState(D3DRS_SRCBLEND,D3DBLEND_SRCALPHA);	//source blend factor
-	//m_pDevice->SetRenderState(D3DRS_DESTBLEND,D3DBLEND_INVSRCALPHA);	//dest blend factor
-	//m_pDevice->SetTextureStageState(0,D3DTSS_ALPHAARG1,D3DTA_TEXTURE);	//alpha from texture
-
-	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE); 
-	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE); 
-	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
-	//m_pDevice->SetRenderState( D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB( 255, 0, 0, 0 ) );
-
-	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE); 
-	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE); 
-	//m_pDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-
 	return S_OK;
 }
 
-void CDevice::Release( void )
-{
-	m_pSprite->Release();
-	m_pFont->Release();
-	m_pDevice->Release();
-	
-	m_p3D->Release();
-}
 
 void CDevice::SetParameters( D3DPRESENT_PARAMETERS& d3dpp )
 {
@@ -167,4 +144,13 @@ LPD3DXFONT CDevice::GetFont(void)
 LPD3DXLINE CDevice::GetLine(void)
 {
 	return m_pLine;
+}
+
+void CDevice::Release( void )
+{
+	m_pSprite->Release();
+	m_pFont->Release();
+	m_pDevice->Release();
+
+	m_p3D->Release();
 }

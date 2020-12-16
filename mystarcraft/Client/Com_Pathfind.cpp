@@ -70,7 +70,7 @@ void CCom_Pathfind::Initialize(CObj* pobj)
 	m_stoptime = 0.f;
 
 	m_igoalidx = 0;
-	m_fchase_time = 0.f;
+	m_fchase_time = 1.0f;
 
 	m_terrain_step = 8;
 
@@ -93,7 +93,7 @@ void CCom_Pathfind::Target_chase(void)
 		m_refind_time = 0.4f - GETTIME*4;
 		m_fchase_time += GETTIME;
 
-		if(m_fchase_time >= 1.0f )
+		if(m_fchase_time >= 0.8f )
 		{
 			m_fchase_time = 0.f;
 			if( true == ((CCom_Animation*)m_com_animation)->GetAttack_end())
@@ -103,19 +103,17 @@ void CCom_Pathfind::Target_chase(void)
 					if(ATTACK != m_pobj->GetUnitinfo().state)
 					{
 						int target_curidx = CMyMath::Pos_to_index(m_pTarget->GetPos() , m_substep);
-						if(target_curidx != m_target_oldidx)
-						{
-							m_target_oldidx = target_curidx;
-							//ClearPath();
-							if(!m_terrainpath.empty())
-								m_terrainpath.clear();
-							
-							//공격 대상도 탐색에 제외
-							D3DXVECTOR2 target_pos = m_pTarget->GetPos();
+						m_target_oldidx = target_curidx;
 
-							m_Astar->UnitPath_calculation_Start(m_vPos , target_pos , m_substep, m_terrainpath , m_curterrain_pathidx);//스텝사이즈 주의
-							m_multithread = true;
-						}
+						if(!m_terrainpath.empty())
+							m_terrainpath.clear();
+
+						//공격 대상도 탐색에 제외
+						D3DXVECTOR2 target_pos = m_pTarget->GetPos();
+
+						m_Astar->UnitPath_calculation_Start(m_vPos , target_pos , m_substep, m_terrainpath , m_curterrain_pathidx);//스텝사이즈 주의
+
+						m_multithread = true;
 					}
 				}
 			}
@@ -182,31 +180,76 @@ void CCom_Pathfind::Update(void)
 
 	if(true == m_multithread)
 	{
-		bool pathType = false;
-		if(!m_realpath.empty()) //기존 경로가 있는 상태에서 길구하기
-			pathType = true;
+		vector<D3DXVECTOR2> vtemp;
+		m_Astar->UnitPath_calculation_Update(vtemp , m_pTarget);
 
-		m_Astar->UnitPath_calculation_Update(m_realpath , m_pTarget);
-		if(!m_realpath.empty())
+		if(!vtemp.empty())
 		{
 			m_multithread = false;
-			m_realpathidx = m_realpath.size() - 1;
+			m_realpathidx = vtemp.size() - 1;
 
-			if(pathType)
+			float fdist = CMyMath::pos_distance(vtemp[m_realpathidx] , m_vPos);
+			bool distCheck = false;
+			for(int i = m_realpathidx; i > 0; --i)
 			{
-				D3DXVECTOR2 vtemp1 , vtemp2;
-				for(int i = m_realpathidx; i > 0; --i)
-				{
-					vtemp1 = m_realpath[i] - m_vPos;
-					vtemp2 = m_realpath[i - 1] - m_realpath[i];
 
-					if(0.0f <= D3DXVec2Dot(&vtemp1 , &vtemp2)) //90도보다 작다
-					{
-						m_realpathidx = i + 1;
-						break;
-					}
+				fdist += CMyMath::pos_distance(vtemp[i-1] , vtemp[i]);
+
+				if(fdist > 4*4)
+				{
+					distCheck = true;
+					break;
 				}
 			}
+
+			if(!distCheck)
+			{
+				m_pobj->SetState(IDLE);
+				m_realpath.clear();
+				m_multithread = true;
+
+				if(!m_terrainpath.empty())
+				{
+					if((unsigned int)m_curterrain_pathidx >= m_terrainpath.size() - 1 &&
+						CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx]) < m_arrivalrange*m_arrivalrange)
+					{
+						m_terrainpath.clear();
+						if(ORDER_MOVE_BUILD != m_pobj->GetUnitinfo().order)
+						{
+							m_pobj->SetOrder(ORDER_NONE);
+							m_pobj->SetState(IDLE);
+						}
+
+						m_multithread = false;
+						m_Astar->Release_unit_closelist();
+						m_Astar->Release_unit_openlist();
+					}
+					else
+						m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
+				}
+				else if( NULL != m_pTarget )
+					m_Astar->UnitPath_calculation_Start(m_vPos , m_pTarget->GetPos() , m_substep, m_terrainpath , m_curterrain_pathidx);
+
+			}
+			else
+			{
+				if(!m_realpath.empty())
+				{
+					D3DXVECTOR2 vtemp1 , vtemp2;
+					for(int i = m_realpathidx; i > 0; --i)
+					{
+						vtemp1 = vtemp[i] - m_vPos;
+						vtemp2 = vtemp[i - 1] - vtemp[i];
+
+						if(0.0f <= D3DXVec2Dot(&vtemp1 , &vtemp2)) //90도보다 작다
+						{
+							m_realpathidx = i + 1;
+							break;
+						}
+					}
+				}
+				vtemp.swap(m_realpath);
+			}			
 		}
 	}
 	UnitMoving_update();
@@ -251,12 +294,12 @@ void CCom_Pathfind::UnitMoving_update()
 				m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
 			}
 			else //이동경로를 다 소진했으나 도착점에 도착하지 못했을때
-			{
-				m_arrivalrange += 96;
-				if(m_curterrain_pathidx < (int)m_terrainpath.size() - 1)
+			{				
+				if(m_curterrain_pathidx >= (int)m_terrainpath.size() - 1)
 				{
-					if(m_arrivalrange >= 320)
-						m_arrivalrange = 320;
+					m_arrivalrange += 64;
+					if(m_arrivalrange >= 270)
+						m_arrivalrange = 270;
 				}
 
 				m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
@@ -270,7 +313,7 @@ void CCom_Pathfind::UnitMoving_update()
 			if(	*m_curobj_idx != m_oldobj_idx )
 			{
 				m_oldobj_idx = *m_curobj_idx;
-				float frange = (float)m_terrain_step/2.f*(float)SQ_TILESIZEX;
+				float frange = (float)m_terrain_step/1.5f*(float)SQ_TILESIZEX;
 
 				if( m_curterrain_pathidx < (int)m_terrainpath.size() - 1 &&
 					(CMyMath::pos_distance(m_vPos , m_terrainpath[m_curterrain_pathidx])) < frange*frange)
@@ -278,7 +321,7 @@ void CCom_Pathfind::UnitMoving_update()
 					if(!CTileManager::GetInstance()->Bresenham_Tilecheck(m_vPos , m_terrainpath[m_curterrain_pathidx]))
 					{
 						m_arrivalrange = 64;
-						m_realpath.clear();
+						//m_realpath.clear(); 보류
 						++m_curterrain_pathidx;
 
 						m_Astar->UnitPath_calculation_Start(m_vPos , m_terrainpath[m_curterrain_pathidx] , m_mainstep, m_terrainpath , m_curterrain_pathidx);
@@ -310,7 +353,7 @@ void CCom_Pathfind::UnitMoving_update()
 	}
 
 	float onestep = GETTIME*(*m_fspeed);	
-	if( (CMyMath::pos_distance( m_vprepos ,m_realpath[m_realpathidx - 1]) <= onestep*onestep*1.5f) )
+	if( (CMyMath::pos_distance( m_vprepos ,m_realpath[m_realpathidx - 1]) <= onestep*onestep) )
 	{
 		--m_realpathidx;
 		if( 0 == m_realpathidx)
@@ -337,7 +380,7 @@ void CCom_Pathfind::UnitMoving_update()
 		m_prerect.bottom = m_vprepos.y + m_obj_vertex.bottom;
 	}
 
-	int icase = 0;
+	int icase = PATHFIND_OPTION::NONE;
 	icase = CArea_Mgr::GetInstance()->overlap_prevention(m_prerect ,m_rect, m_vprepos, m_vPos , m_pobj , m_pTarget);
 
 	if(icase != m_oldcase)
@@ -348,7 +391,7 @@ void CCom_Pathfind::UnitMoving_update()
 		if(m_collisionMove_time < 0 )
 			m_collisionMove_time = 0.f;
 	}
-	if( 1 == icase)
+	if( PATHFIND_OPTION::WAIT == icase)
 	{		
 		m_collisionMove_time += GETTIME;
 		m_pobj->SetState(IDLE);
@@ -359,18 +402,15 @@ void CCom_Pathfind::UnitMoving_update()
 		else
 			m_timeoffset = 0.37f;
 	}
-	else if( 2 == icase)
+	else if( PATHFIND_OPTION::IMMEDIATE_PATHFIND == icase)
 	{
 		//곧바로 길찾기
 		m_collisionMove_time += GETTIME;
 		m_pobj->SetState(IDLE);
-		m_timeoffset = 0.1f;
+		m_timeoffset = 0.2f;
 	}
-	else if( 0 == icase)
+	else if( PATHFIND_OPTION::NONE == icase)
 	{
-		//m_collisionmove_time = 0.f;
-		//m_collisionmove_time -= GETTIME;
-		//if(m_collisionmove_time < 0)
 		m_collisionMove_time = 0.f;
 
 		if(true == m_is_stop)
@@ -424,8 +464,6 @@ void CCom_Pathfind::UnitMoving_update()
 
 void CCom_Pathfind::StartPathfinding(void)
 {
-	//m_refindcnt = 0;
-
 	m_fchase_time = 0.f;
 	m_pathfind_pause = true;
 	m_realpathidx = 0;
@@ -596,18 +634,7 @@ void CCom_Pathfind::Render(void)
 
 			if( i < m_realpath.size() - 1 )
 				CLineMgr::GetInstance()->PathLineRender(m_realpath[i] , m_realpath[i + 1] , 1.0f);
-			//if(0 == i)
-			//	CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,255,0,255));
-			//else if( i == m_realpath.size() - 1)
-			//	CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,0,255));
-			//else
-			//	CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(4,4,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
 		}
-
-		//tempmat._41 = m_terrain_path[0].x - CScrollMgr::m_fScrollX;
-		//tempmat._42 = m_terrain_path[0].y - CScrollMgr::m_fScrollY;
-		//CDevice::GetInstance()->GetSprite()->SetTransform(&tempmat);
-		//CDevice::GetInstance()->GetSprite()->Draw( ptex->pTexture , NULL , &D3DXVECTOR3(16,16,0) , NULL , D3DCOLOR_ARGB(255,0,255,0));
 	}
 
 	if(!m_terrainpath.empty())
@@ -632,7 +659,6 @@ void CCom_Pathfind::gap_initialize(bool bmagicbox)
 		m_vgap = m_pobj->GetPos() - CUnitMgr::GetInstance()->GetUnitCentterPt();
 	else
 	{
-		//m_vgap = (m_pobj->GetPos() - CUnitMgr::GetInstance()->GetUnitCentterPt() );//D3DXVECTOR2(0.f, 0.f);
 		m_vgap = D3DXVECTOR2(0.f, 0.f);
 	}
 }

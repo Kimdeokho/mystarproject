@@ -65,7 +65,6 @@ void CScene_Loby::Render(void)
 	CFontMgr::GetInstance()->FontRender();
 
 	CMouseMgr::GetInstance()->Render();
-	CTimeMgr::GetInstance()->FPS_fix();
 }
 
 void CScene_Loby::Release(void)

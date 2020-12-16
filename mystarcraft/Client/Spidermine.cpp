@@ -101,41 +101,44 @@ void CSpidermine::Initialize(void)
 	m_bplant_init = true;
 	m_unitinfo.is_active = false;
 	m_unitinfo.is_hide = false;
+
+	m_moveTime = 0.5f;
 }
 
+void CSpidermine::BurrowInit(void)
+{
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MINE_BRROW , m_vPos);
+
+	for(int i = 0; i < TEAM_END; ++i)
+	{
+		if(i != m_eteamnumber)
+			m_unitinfo.detect[i] -= 1;
+	}
+	m_unitinfo.is_hide = true;
+
+	m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
+	m_com_targetsearch = new CCom_Minesearch(SEARCH_ONLY_ENEMY);
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , m_com_targetsearch ));
+	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE , m_com_pathfind ));	
+
+	m_com_pathfind->Initialize(this);
+	m_com_targetsearch->Initialize(this);
+	m_unitinfo.is_active = true;
+
+	m_bplant_init = false;
+	m_plant_time = 0.f;
+}
 void CSpidermine::Update(void)
 {
 
 	if(m_bplant_init)
 		m_plant_time += GETTIME;
 
-	if(m_plant_time > 1.0f)
+	if(m_plant_time > 1.5f)
 	{
-		if(BURROW == m_unitinfo.state)
-		{
-			for(int i = 0; i < TEAM_END; ++i)
-			{
-				if(i != m_eteamnumber)
-					m_unitinfo.detect[i] -= 1;
-			}
-			m_unitinfo.is_hide = true;
-
-			m_com_pathfind = new CCom_Pathfind(m_vPos , m_rect , 32 ,16);
-			m_com_targetsearch = new CCom_Minesearch(SEARCH_ONLY_ENEMY);
-			m_componentlist.insert(COMPONENT_PAIR::value_type(COM_TARGET_SEARCH , m_com_targetsearch ));
-			m_componentlist.insert(COMPONENT_PAIR::value_type(COM_PATHFINDE , m_com_pathfind ));	
-
-			m_com_pathfind->Initialize(this);
-			m_com_targetsearch->Initialize(this);
-			m_unitinfo.is_active = true;
-
-			m_bplant_init = false;
-			m_plant_time = 0.f;
-
-			return;
-		}
+		m_bplant_init = false;
+		m_plant_time = 0.f;
 		m_unitinfo.state = PLANT;
-
 		m_sortID = SORT_CORPSE;
 	}
 
@@ -164,6 +167,8 @@ void CSpidermine::Update(void)
 	}
 	else if(PULL == m_unitinfo.state)
 	{
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MINE_BRROW , m_vPos);
+
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"PULL");
 		m_sortID = SORT_GROUND;
 
@@ -175,6 +180,13 @@ void CSpidermine::Update(void)
 	}
 	else if(MOVE == m_unitinfo.state)
 	{
+		m_moveTime += GETTIME;
+		if(m_moveTime > 0.5f)
+		{
+			m_moveTime = 0.f;
+			CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MINE_TRACE , m_vPos);
+		}
+		
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 		m_sortID = SORT_GROUND;
 	}
@@ -193,7 +205,6 @@ void CSpidermine::Render(void)
 	m_com_cc->Render();
 	m_energybar_ui->Render();
 
-	//m_com_pathfind->Render();
 	CLineMgr::GetInstance()->collisionbox_render(m_rect);
 }
 
@@ -214,6 +225,8 @@ void CSpidermine::Release(void)
 
 void CSpidermine::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_MINE_HIT , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"MINE_BOOM" , m_vPos , D3DXVECTOR2(1.f,1.f) , SORT_GROUND ,2);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);

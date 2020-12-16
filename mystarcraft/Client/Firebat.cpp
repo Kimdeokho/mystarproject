@@ -86,9 +86,10 @@ void CFirebat::Initialize(void)
 	m_com_weapon = new CCom_WFirebat();
 	m_com_targetsearch = new CCom_Meleesearch(SEARCH_ONLY_ENEMY);
 	m_com_anim = new CCom_FirebatAnim(m_matWorld);
-	//m_skill_sp = new CSkill_SP(this , m_com_weapon);
+	m_skill_sp = new CSkill_SP(this , m_com_weapon);
 	m_com_collision = new CCom_Collision(m_vPos , m_rect , m_vertex);
 	m_com_cc = new CCom_CC();
+
 
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_CC ,  m_com_cc )) ;	
 	m_componentlist.insert(COMPONENT_PAIR::value_type(COM_FOG , new CCom_fog(m_curidx32 , &m_unitinfo.fog_range) ));
@@ -124,9 +125,6 @@ void CFirebat::Update(void)
 	for( ; iter != iter_end; ++iter)
 		iter->second->Update();
 
-	//m_skill_sp->Update();
-
-
 	if(IDLE == m_unitinfo.state)
 	{
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"IDLE");
@@ -140,6 +138,7 @@ void CFirebat::Update(void)
 		((CCom_Animation*)m_com_anim)->SetAnimation(L"MOVE");
 	}
 
+	m_skill_sp->Update();
 	m_select_ui->Update();
 	m_energybar_ui->Update();
 }
@@ -184,6 +183,11 @@ void CFirebat::Inputkey_reaction(const int& nkey)
 			((CCom_Pathfind*)m_com_pathfind)->StartPathfinding();
 			m_bmagicbox = false;
 		}
+	}
+	if('T' == nkey)
+	{
+		CSoundDevice::GetInstance()->PlayBattleSound(SND_B_STIMPACK , m_vPos);
+		m_skill_sp->use_sp();
 	}
 	if('Q' == nkey)
 	{
@@ -231,6 +235,8 @@ bool CFirebat::Input_cmd(const int& nkey , bool* waitkey)
 {
 	if('A' == nkey)
 		waitkey[nkey] = true;
+	if('T' == nkey)
+		return true;
 
 	return false;
 }
@@ -342,6 +348,8 @@ void CFirebat::Update_Wireframe(void)
 
 void CFirebat::Dead(void)
 {
+	CSoundDevice::GetInstance()->PlayBattleSound(SND_B_FIREBAT_EDTH , m_vPos);
+
 	CObj* pobj = new CGeneraEff(L"SMALLBANG" , m_vPos , D3DXVECTOR2( 0.7f,0.7f) , SORT_GROUND ,1.4f);
 	pobj->Initialize();
 	CObjMgr::GetInstance()->AddEffect(pobj);
@@ -352,6 +360,6 @@ void CFirebat::Release(void)
 
 	m_com_pathfind = NULL;
 	m_com_weapon = NULL;
-	//Safe_Delete(m_skill_sp);
+	Safe_Delete(m_skill_sp);
 	CIngame_UIMgr::GetInstance()->GetResource_UI()->SetPopvalue(-1 , m_eteamnumber);
 }
